@@ -1,8 +1,11 @@
 import sbt._
 
-import Keys._
-import MdocPlugin.autoImport._
-import LaikaPlugin.autoImport._
+import Keys.*
+import MdocPlugin.autoImport.*
+import LaikaPlugin.autoImport.*
+import sbt.Def.settings
+import sbtassembly.AssemblyPlugin.assemblySettings
+
 
 ThisBuild / tlBaseVersion := "0.0" // your current series x.y
 
@@ -23,13 +26,13 @@ ThisBuild / tlSitePublishBranch := Some("main")
 
 ThisBuild / apiURL := Some(new URL("https://storch.dev/api/"))
 
-val scrImageVersion = "4.0.34"
-val pytorchVersion = "2.1.2"
-val cudaVersion = "12.3-8.9"
-val openblasVersion = "0.3.26"
-val mklVersion = "2024.0"
-ThisBuild / scalaVersion := "3.3.1"
-ThisBuild / javaCppVersion := "1.5.10"
+val scrImageVersion = "4.3.0"
+val pytorchVersion = "2.5.1"
+val cudaVersion = "12.6-9.5"
+val openblasVersion = "0.3.28"
+val mklVersion = "2025.0"
+ThisBuild / scalaVersion := "3.6.2"
+ThisBuild / javaCppVersion := "1.5.11"
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("11"))
@@ -105,6 +108,7 @@ lazy val vision = project
     libraryDependencies ++= Seq(
       "com.sksamuel.scrimage" % "scrimage-core" % scrImageVersion,
       "com.sksamuel.scrimage" % "scrimage-webp" % scrImageVersion,
+      ("com.sksamuel.scrimage" %% "scrimage-scala" % scrImageVersion).cross(CrossVersion.for3Use2_13),
       "org.scalameta" %% "munit" % "0.7.29" % Test
     )
   )
@@ -154,3 +158,23 @@ lazy val root = project
   .settings(
     javaCppVersion := (ThisBuild / javaCppVersion).value
   )
+
+ThisBuild  / assemblyMergeStrategy := {
+  case v if v.contains("module-info.class")   => MergeStrategy.discard
+  case v if v.contains("UnusedStub")          => MergeStrategy.first
+  case v if v.contains("aopalliance")         => MergeStrategy.first
+  case v if v.contains("inject")              => MergeStrategy.first
+  case v if v.contains("jline")               => MergeStrategy.discard
+  case v if v.contains("scala-asm")           => MergeStrategy.discard
+  case v if v.contains("asm")                 => MergeStrategy.discard
+  case v if v.contains("scala-compiler")      => MergeStrategy.deduplicate
+  case v if v.contains("reflect-config.json") => MergeStrategy.discard
+  case v if v.contains("jni-config.json")     => MergeStrategy.discard
+  case v if v.contains("git.properties")      => MergeStrategy.discard
+  case v if v.contains("reflect.properties")      => MergeStrategy.discard
+  case v if v.contains("compiler.properties")      => MergeStrategy.discard
+  case v if v.contains("scala-collection-compat.properties")      => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}

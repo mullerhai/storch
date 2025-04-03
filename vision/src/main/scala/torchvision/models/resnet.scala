@@ -50,7 +50,7 @@ object resnet:
     Conv2d[D](
       inPlanes,
       outPlanes,
-      kernelSize = 3,
+      kernel_size = 3,
       stride = stride,
       padding = dilation,
       groups = groups,
@@ -60,7 +60,7 @@ object resnet:
 
   /** 1x1 convolution */
   def conv1x1[D <: FloatNN: Default](inPlanes: Int, outPlanes: Int, stride: Int = 1): Conv2d[D] =
-    Conv2d[D](inPlanes, outPlanes, kernelSize = 1, stride = stride, bias = false)
+    Conv2d[D](inPlanes, outPlanes, kernel_size = 1, stride = stride, bias = false)
 
   sealed abstract class BlockBuilder:
     val expansion: Int
@@ -198,10 +198,10 @@ object resnet:
     var inplanes = 64
     var dilation = 1
     val baseWidth = widthPerGroup
-    val conv1 = register(Conv2d(3, inplanes, kernelSize = 7, stride = 2, padding = 3, bias = false))
+    val conv1 = register(Conv2d(3, inplanes, kernel_size = 7, stride = 2, padding = 3, bias = false))
     val bn1 = register(normLayer(inplanes))
     val relu = register(ReLU(inplace = true))
-    val maxpool = register(MaxPool2d(kernelSize = 3, stride = Some(2), padding = 1))
+    val maxpool = register(MaxPool2d(kernel_size = 3, stride = 2, padding = 1))
     val layer1 = register(makeLayer(block, 64, layers(0)))
     val layer2 = register(
       makeLayer(block, 128, layers(1), stride = 2, dilate = replaceStrideWithDilation(0))

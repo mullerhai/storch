@@ -67,12 +67,12 @@ import torch.internal.NativeConverters.fromNative
   */
 // format: on
 final class Dropout[ParamType <: FloatNN | ComplexNN: Default](
-    p: Double = 0.5,
+    p: Float = 0.5,
     inplace: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
-
-  private val options: DropoutOptions = DropoutOptions(p)
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
+  private val options: DropoutOptions = DropoutOptions(p.toDouble)
   options.inplace().put(inplace)
 
   override private[torch] val nativeModule: DropoutImpl = DropoutImpl(options)
@@ -83,3 +83,9 @@ final class Dropout[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = false
 
   override def toString(): String = s"${getClass().getSimpleName()}(p=$p, inplace=$inplace)"
+
+object Dropout:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      p: Float = 0.5,
+      inplace: Boolean = false
+  ): Dropout[ParamType] = new Dropout(p, inplace)

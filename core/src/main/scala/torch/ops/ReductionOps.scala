@@ -21,6 +21,7 @@ import internal.NativeConverters.*
 
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.ScalarTypeOptional
+import org.bytedeco.pytorch.TensorVector
 
 /** Reduction Ops
   *
@@ -747,6 +748,22 @@ private[torch] trait ReductionOps {
   ): Tensor[D] = fromNative(
     torchNative.sum(input.native, new ScalarTypeOptional(dtype.toScalarType))
   )
+
+  def sumWithDim[D <: FloatNN](
+      input: Tensor[D],
+      dim: Int | Seq[Int] = Seq.empty,
+      keepdim: Boolean = false
+  ): Tensor[D] =
+    // TODO factor out
+    val derivedDType = input.dtype
+    fromNative(
+      torchNative.sum(
+        input.native,
+        dim.toArray,
+        keepdim,
+        new ScalarTypeOptional(derivedDType.toScalarType)
+      )
+    )
 
   /** Returns the sum of each row of the `input` tensor in the given dimension `dim`.
     *

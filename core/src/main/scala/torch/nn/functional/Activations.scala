@@ -20,9 +20,20 @@ package functional
 
 import Derive.derive
 import org.bytedeco.pytorch
+
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.pytorch.ScalarTypeOptional
+import org.bytedeco.pytorch.{
+  RReLUFuncOptions,
+  TensorOptional,
+  DoubleOptional,
+  GELUOptions,
+  SoftminFuncOptions,
+  GumbelSoftmaxFuncOptions,
+  ScalarTypeOptional,
+  Scalar
+}
+import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
 
 private[torch] trait Activations {
 
@@ -49,12 +60,12 @@ private[torch] trait Activations {
       else ScalarTypeOptional(derivedDType.toScalarType)
     fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
 
-    /** Applies the rectified linear unit function element-wise.
-      *
-      * See [[torch.nn.ReLU]] for more details.
-      *
-      * @group nn_activation
-      */
+  /** Applies the rectified linear unit function element-wise.
+    *
+    * See [[torch.nn.ReLU]] for more details.
+    *
+    * @group nn_activation
+    */
   def relu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.relu(input.native))
 
   /** Applies the element-wise function $\text{Sigmoid}(x) = \frac{1}{1 + \exp(-x)}$
@@ -72,7 +83,7 @@ private[torch] trait Activations {
     *
     * @group nn_activation
     */
-  def silu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.silu(input.native))
+//  def silu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.silu(input.native))
 
   /** Applies a softmax function.
     *
@@ -90,4 +101,177 @@ private[torch] trait Activations {
       if dtype == input.dtype then ScalarTypeOptional()
       else ScalarTypeOptional(derivedDType.toScalarType)
     fromNative(torchNative.softmax(input.native, dim, nativeDType))
+
+//  scaled_dot_product_attention(query, key, value, attn_mask = None, dropout_p = 0.0,
+//    is_causal = False, scale = None, enable_gqa = False) -> Tensor:
+  def scaledDotProductAttention[D <: DType](
+      query: Tensor[D],
+      key: Tensor[D],
+      value: Tensor[D],
+      attn_mask: Tensor[D],
+      dropout_p: Double,
+      is_causal: Boolean,
+      scale: Double,
+      enable_gqa: Boolean
+  ): Tensor[D] = fromNative(
+    torchNative.scaled_dot_product_attention(
+      query.native,
+      key.native,
+      value.native,
+      TensorOptional(attn_mask.native),
+      dropout_p,
+      is_causal,
+      DoubleOptional(scale),
+      enable_gqa
+    )
+  )
+
+  def relu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.relu_(input.native))
+
+  def hardtanh[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.hardtanh(input.native)
+  )
+
+  def hardtanh_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.hardtanh_(input.native)
+  )
+
+  def relu6[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.relu6(input.native))
+
+  def elu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.elu(input.native))
+
+  def elu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.elu_(input.native))
+
+  def leaky_relu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.leaky_relu(input.native)
+  )
+
+  def leaky_relu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.leaky_relu_(input.native)
+  )
+
+  def prelu[D <: DType](input: Tensor[D], weight: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.prelu(input.native, weight.native)
+  )
+
+  def rrelu[D <: DType](
+      input: Tensor[D],
+      lower: Double,
+      upper: Double,
+      training: Boolean,
+      inplace: Boolean
+  ): Tensor[D] = {
+    val options = RReLUFuncOptions()
+    options.lower().put(lower)
+    options.upper().put(upper)
+    options.training().put(training)
+    options.inplace().put(inplace)
+    fromNative(torchNative.rrelu(input.native, options))
+  }
+
+  def celu[D <: DType](input: Tensor[D], alpha: Double): Tensor[D] = fromNative(
+    torchNative.celu(input.native, Scalar(alpha))
+  )
+
+  def celu_[D <: DType](input: Tensor[D], alpha: Double): Tensor[D] = fromNative(
+    torchNative.celu_(input.native, Scalar(alpha))
+  )
+
+  def selu[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.selu(input.native))
+
+  def selu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.selu_(input.native))
+
+  def glu[D <: DType](input: Tensor[D], dim: Long): Tensor[D] = fromNative(
+    torchNative.glu(input.native, dim)
+  )
+
+  def gelu[D <: DType](input: Tensor[D], approximate: Byte): Tensor[D] = {
+
+    val options = GELUOptions()
+    options.approximate().put(approximate)
+    fromNative(
+      torchNative.gelu(input.native, options)
+    )
+  }
+
+  def softplus[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.softplus(input.native)
+  )
+
+  def hardshrink[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.hardshrink(input.native)
+  )
+
+  def tanhshrink[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.tanhshrink(input.native)
+  )
+
+  def softshrink[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.softshrink(input.native)
+  )
+
+  def softsign[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.softsign(input.native)
+  )
+
+  def softmin[D <: DType](input: Tensor[D], dim: Long, dtype: DType): Tensor[D] = {
+    val options = SoftminFuncOptions(dim)
+    options.dtype().put(ScalarTypeOptional(dtype.toScalarType))
+    fromNative(
+      torchNative.softmin(input.native, options)
+    )
+  }
+
+  def gumbel_softmax[D <: DType](
+      input: Tensor[D],
+      dim: Int,
+      hard: Boolean,
+      tau: Double
+  ): Tensor[D] = {
+    val options = GumbelSoftmaxFuncOptions()
+    options.dim().put(dim)
+    options.hard().put(hard)
+    options.tau().put(tau)
+    fromNative(torchNative.gumbel_softmax(input.native, options))
+  }
+
+  def tanh[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.tanh(input.native))
+
+  def hardsigmoid[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    torchNative.hardsigmoid(input.native)
+  )
+
+  def silu[D <: DType](input: Tensor[D]): Tensor[D] = {
+
+    fromNative(torchNative.silu(input.native))
+  }
+
+  def mish[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.mish(input.native))
+
 }
+
+//  @native
+//  @Namespace("at::native")
+//  @ByVal
+//  def relu[TT <: DType](@Const @ByRef input: Tensor[TT]): Tensor[TT] = fromNative(torchNative.relu(input.native))
+
+//  def rrelu_[D <: DType](input: Tensor[D], lower: Double, upper: Double): Tensor[D] = {
+//
+//    fromNative(
+//      torchNative.rrelu_(input.native, lower, upper)
+//    )
+//  }
+
+//  def softsign_[D <: DType](input: Tensor[D]): Tensor[D] = {
+//
+//    fromNative(torchNative.softsign_(input.native))
+//  }
+
+//  def softmax[D <: DType](input: Tensor[D], dim: Long, dtype: DType = Float): Tensor[D] = fromNative(
+//    torchNative.softmax(input.native, dim, dtype.toScalarType)
+//  )
+
+//  def sigmoid[D <: DType](input: Tensor[D]): Tensor[D] = {
+//
+//    fromNative(torchNative.sigmoid(input.native))
+//  }

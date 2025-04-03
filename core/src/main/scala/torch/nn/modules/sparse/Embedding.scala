@@ -21,6 +21,10 @@ package sparse
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.EmbeddingImpl
+import org.bytedeco.pytorch.TransformerImpl
+import org.bytedeco.pytorch.MultiheadAttentionImpl
+import org.bytedeco.pytorch.ModuleListImpl
+import org.bytedeco.pytorch.SequentialImpl
 import org.bytedeco.pytorch.EmbeddingOptions
 import torch.internal.NativeConverters.{fromNative, toNative}
 
@@ -60,21 +64,40 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     numEmbeddings: Int,
     embeddingDim: Int,
-    paddingIdx: Option[Int] = None,
-    maxNorm: Option[Double] = None,
-    normType: Option[Double] = Some(2.0),
-    scaleGradByFreq: Boolean = false,
-    sparse: Boolean = false
+    paddingIdx: Option[Int] | Int = None,
+    maxNorm: Option[Float] | Float = None,
+    normType: Option[Float] | Float  = Some(2.0f),
+    scaleGradByFreq: Boolean | Option[Boolean] = false,
+    sparse: Boolean | Option[Boolean] = false
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
-    with TensorModuleBase[Int64, ParamType]:
-
+    with TensorModule[ParamType]:
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new EmbeddingOptions(numEmbeddings.toLong, embeddingDim.toLong)
-  paddingIdx.foreach(p => options.padding_idx().put(toNative(p)))
-  maxNorm.foreach(m => options.max_norm().put(m))
-  normType.foreach(n => options.norm_type().put(n))
-  options.scale_grad_by_freq().put(scaleGradByFreq)
-  options.sparse().put(sparse)
+
+  maxNorm match {
+    case m: Float => options.max_norm().put(m.toDouble)
+    case m: Option[Float] => if m.isDefined then options.max_norm().put(m.get.toDouble)
+  }
+
+  normType match {
+    case n: Float => options.norm_type().put(n.toDouble)
+    case n: Option[Float] => if n.isDefined then options.norm_type().put(n.get.toDouble)
+  }
+  scaleGradByFreq match {
+    case s: Boolean => options.scale_grad_by_freq().put(s)
+    case s: Option[Boolean] => if s.isDefined then options.scale_grad_by_freq ().put (s.get)
+  }
+  sparse match {
+    case s: Boolean => options.sparse().put(s)
+    case s: Option[Boolean] => if s.isDefined then options.sparse().put(s.get)
+  }
+
+  paddingIdx match {
+    case p: Int => options.padding_idx().put(p)
+    case p: Option[Int] => if p.isDefined then options.padding_idx().put(p.get)
+  }
+
 
   override val nativeModule: EmbeddingImpl = EmbeddingImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -86,7 +109,21 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.weight(w.native)
     w
 
-  def apply(t: Tensor[Int64]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
+  def apply(indices: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(indices.to(torch.int64).native)
+  )
+
+//  def apply(indices: Tensor[Int64],weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = fromNative(
+//    nativeModule.forward(indices.native)
+//  )
+
+  def apply(indices: Tensor[Int64 | Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = indices match {
+
+    case input: Tensor[Int64] => fromNative(nativeModule.forward(indices.native))
+    case input: Tensor[Int32] => fromNative(nativeModule.forward(indices.to(torch.int64).native))
+  }
+
+//  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"
@@ -97,3 +134,40 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     val scale = s"scaleGradByFreq=$scaleGradByFreq"
     val s = s"sparse=$sparse"
     s"${getClass().getSimpleName()}($numEmbed, $dim, $padding, $maxN, $normT, $scale, $s )"
+
+object Embedding:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      num_embeddings: Int,
+      embedding_dim: Int,
+      padding_idx: Option[Int] | Int = None,
+      max_norm: Option[Float] | Float = None,
+      norm_type: Option[Float] | Float = Some(2.0f),
+      scale_grad_by_freq: Boolean | Option[Boolean] = false,
+      sparse: Boolean = false
+  ): Embedding[ParamType] = new Embedding(
+    num_embeddings,
+    embedding_dim,
+    padding_idx,
+    max_norm,
+    norm_type,
+    scale_grad_by_freq,
+    sparse
+  )
+
+
+
+
+
+
+
+
+
+
+//if paddingIdx.isDefined then options.padding_idx().put(toNative(paddingIdx.get))
+//if maxNorm.isDefined then options.max_norm().put(maxNorm.get.toDouble)
+//if normType.isDefined then options.norm_type().put(normType.get.toDouble)
+//options.scale_grad_by_freq().put(scaleGradByFreq)
+//options.sparse().put(sparse)
+//paddingIdx.foreach(p => options.padding_idx().put(toNative(p)))
+//maxNorm.foreach(m => options.max_norm().put(m))
+//normType.foreach(n => options.norm_type().put(n))

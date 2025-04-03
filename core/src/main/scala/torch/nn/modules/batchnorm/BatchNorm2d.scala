@@ -19,9 +19,10 @@ package nn
 package modules
 package batchnorm
 
-import org.bytedeco.pytorch.{BatchNorm2dImpl, BatchNormOptions}
+import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.pytorch.{BatchNorm2dImpl, BatchNormOptions, DoubleOptional}
 import org.bytedeco.pytorch
-import torch.internal.NativeConverters.fromNative
+import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies Batch Normalization over a 4D input as described in the paper [Batch Normalization:
   * Accelerating Deep Network Training by Reducing Internal Covariate
@@ -47,7 +48,7 @@ import torch.internal.NativeConverters.fromNative
   * ```scala sc
   * import torch.nn
   * // With Learnable Parameters
-  * var m = nn.BatchNorm2d(numFeatures = 100)
+  * var m = nn.BatchNorm2d(num_features = 100)
   * // Without Learnable Parameters
   * m = nn.BatchNorm2d(100, affine = false)
   * val input = torch.randn(Seq(20, 100, 35, 45))
@@ -90,17 +91,26 @@ import torch.internal.NativeConverters.fromNative
   */
 final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
     numFeatures: Int,
-    eps: Double = 1e-05,
-    momentum: Double = 0.1,
+    eps: Float | Double = 1e-05f,
+    momentum: Float | Option[Float] = 0.1f,
     affine: Boolean = true,
     trackRunningStats: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
+  private val options = new BatchNormOptions(toNative(numFeatures)) //LongPointer(1).put(numFeatures.toLong))
+//  options.eps().put(DoublePointer(1).put(eps.toDouble))
+  eps match {
+    case e: Double => options.eps().put(e)
+    case e: Float => options.eps().put(e.toDouble)
+  }
+  momentum match {
+    case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
+    case m: Option[Float] =>
+      if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
+  }
 
-  private val options = new BatchNormOptions(numFeatures)
-  options.eps().put(eps)
-  options.momentum().put(momentum)
   options.affine().put(affine)
   options.track_running_stats().put(trackRunningStats)
 
@@ -116,4 +126,16 @@ final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
-  override def toString(): String = s"${getClass().getSimpleName()}(numFeatures=$numFeatures)"
+  override def toString(): String =
+    s"${getClass().getSimpleName()}(numFeatures=$numFeatures eps=$eps momentum=$momentum affine=$affine trackRunningStats=$trackRunningStats)"
+
+object BatchNorm2d:
+
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      num_features: Int,
+      eps: Float | Double = 1e-05f,
+      momentum: Float | Option[Float] = 0.1f,
+      affine: Boolean = true,
+      track_running_stats: Boolean = true
+  ): BatchNorm2d[ParamType] =
+    new BatchNorm2d[ParamType](num_features, eps, momentum, affine, track_running_stats)

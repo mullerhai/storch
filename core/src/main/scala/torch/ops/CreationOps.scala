@@ -22,13 +22,20 @@ import NativeConverters.*
 import Layout.Strided
 import Device.CPU
 import MemoryFormat.Contiguous
-
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{IValue, GenericDict, BoolOptional, Scalar, MemoryFormatOptional}
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  ByteVector,
+  GenericDict,
+  ScalarTypeOptional,
+  IValue,
+  MemoryFormatOptional,
+  Scalar
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 
 import java.nio.file.{Files, Path}
-import scala.collection.immutable.{VectorMap, SeqMap}
+import scala.collection.immutable.{SeqMap, VectorMap}
 import Tensor.fromNative
 
 /** Creation Ops
@@ -44,6 +51,10 @@ private[torch] trait CreationOps {
 
 // def zeros[D <: DType](size: Int*): Tensor[Float32] =
 //   zeros[D](size.toSeq)
+  def cumsum[D <: DType](input: Tensor[D], dim: Long, dtype: D = float32): Tensor[D] =
+    fromNative(
+      torchNative.cumsum(input.native, dim, ScalarTypeOptional(dtype.toScalarType))
+    )
 
   /** Returns a tensor filled with the scalar value `0`, with the shape defined by the variable
     * argument `size`.
@@ -323,7 +334,7 @@ private[torch] trait CreationOps {
 // TODO polar
 // TODO heavside
 
-  def pickleLoad(data: Array[Byte]): SeqMap[String, Tensor[DType]] =
+  def pickleLoad(data: ByteVector): SeqMap[String, Tensor[DType]] =
     val dict: GenericDict = torchNative.pickle_load(data).toGenericDict()
     // We need to extract the members in one go or we risk too early deallocation of native objects here
     val buffer = new Array[(IValue, IValue)](dict.size().toInt)
@@ -337,7 +348,7 @@ private[torch] trait CreationOps {
     })
 
   def pickleLoad(path: Path): Map[String, Tensor[DType]] =
-    val data: Array[Byte] = Files.readAllBytes(path)
+    val data: ByteVector = Files.readAllBytes(path).asInstanceOf[ByteVector]
     pickleLoad(data)
 
   def pickleSave(tensors: SeqMap[String, Tensor[DType]]) =

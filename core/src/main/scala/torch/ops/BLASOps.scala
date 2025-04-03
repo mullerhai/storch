@@ -24,4 +24,17 @@ package ops
 private[torch] trait BLASOps {
   def matmul[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     t1.matmul(t2)
+
+  def dot[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    t1.dot(t2)
+//    fromNative(
+//    native.dot(other.native)
+//  )
+
+  // todo make sure the type of s is correct
+  def vdot[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    t1.vdot(t2)
+//    fromNative(
+//    native.vdot(other.native)
+//  )
 }

@@ -24,7 +24,8 @@ import scala.collection.immutable.Iterable
 
 // format: off
 /** Implements the AdamW algorithm.
- *
+ *torch.optim.AdamW(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08,
+ *  weight_decay=0.01, amsgrad=False, *, maximize=False, foreach=None, capturable=False, differentiable=False, fused=None)
  */
 // format: on
 final class AdamW(
@@ -43,3 +44,13 @@ final class AdamW(
   options.amsgrad().put(amsgrad)
   override private[torch] val native: pytorch.AdamW = pytorch.AdamW(nativeParams, options)
 }
+
+object AdamW:
+  def apply(
+      params: Iterable[Tensor[?]],
+      lr: Double = 1e-3,
+      betas: (Double, Double) = (0.9, 0.999),
+      eps: Double = 1e-8,
+      weight_decay: Double = 0,
+      amsgrad: Boolean = false
+  ): AdamW = new AdamW(params, lr, betas, eps, weight_decay, amsgrad)

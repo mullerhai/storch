@@ -18,6 +18,8 @@ package torch
 package nn
 package functional
 
+import org.bytedeco.javacpp.CLongPointer
+import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Cast, Const, Namespace}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.{fromNative, toOptional}
@@ -56,6 +58,22 @@ private[torch] trait Linear {
       torchNative.linear(input.native, weight.native, toOptional(bias))
     )
 
+//  @native
+//  @Namespace("at::native")
+//  @ByVal def log[T, TT <: DType](@Const @ByRef self: Tensor[T, TT]): Tensor[T, TT]
+
+//  @native
+//  @Namespace("at::native")
+//  @ByVal def log_softmax[TT <: DType](@Const @ByRef self: Tensor[TT], @Cast(Array("int64_t")) dim: CLongPointer): Tensor[ TT]
+//
+
+//  @native
+//  @Namespace("at::native")
+//  @ByVal def linear[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef weight: Tensor[T, TT], @Const @ByRef bias: Tensor[T, TT]): Tensor[T, TT]
+//
+//  @native
+//  @Namespace("at::native")
+//  @ByVal def linear[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef weight: Tensor[T, TT]): Tensor[T, TT]
   /** Applies a bilinear transformation to the incoming data: $y = x_1^T A x_2 + b$
     *
     * Shape:

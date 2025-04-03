@@ -24,6 +24,7 @@ import sourcecode.Name
 final class Sequential[D <: DType](override val modules: TensorModule[D]*)
     extends Module
     with TensorModule[D]:
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   modules.zipWithIndex.foreach((module, index) =>
     this.register(module)(using Name(index.toString()))
   )

@@ -31,6 +31,10 @@ object hub:
     os.makeDir.all(modelDir)
     val filename = os.Path(URL(url).getPath).last
     val cachedFile = (modelDir / filename)
+    println(
+      s"Downloading: $url to cachefile  $cachedFile model dir ${modelDir} filename ${filename}"
+    )
+
     if !os.exists(cachedFile) then
       System.err.println(s"Downloading: $url to $cachedFile")
       Using.resource(URL(url).openStream()) { inputStream =>

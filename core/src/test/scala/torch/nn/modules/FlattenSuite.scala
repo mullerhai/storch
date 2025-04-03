@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package torch
-package nn
-package modules
+package torch.nn.modules
 
+import torch.nn
 class FlattenSuite extends munit.FunSuite {
   test("Flatten") {
     val input = torch.randn(Seq(32, 1, 5, 5))
@@ -31,3 +30,17 @@ class FlattenSuite extends munit.FunSuite {
     assert(input.reshape(160, 5).equal(o2))
   }
 }
+
+//class UNFlattenSuite extends munit.FunSuite {
+//  test("Flatten") {
+//    val input = torch.randn(Seq(32, 1, 5, 5))
+//    val m1 = nn.Unflatten()
+//    val o1 = m1(input)
+//    assertEquals(o1.shape, Seq(32, 25))
+//    assert(input.reshape(32, 25).equal(o1))
+//    val m2 = nn.Unflatten(0, 2)
+//    val o2 = m2(input)
+//    assertEquals(o2.shape, Seq(160, 5))
+//    assert(input.reshape(160, 5).equal(o2))
+//  }
+//}

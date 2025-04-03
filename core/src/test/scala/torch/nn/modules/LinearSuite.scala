@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package torch
-package nn
-package modules
+package torch.nn.modules
+
+import torch.nn.Linear
+import torch.randn
 
 class LinearSuite extends munit.FunSuite {
   test("Linear shape") {

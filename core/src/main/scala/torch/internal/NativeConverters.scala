@@ -37,7 +37,8 @@ import org.bytedeco.pytorch.GeneratorOptional
 import org.bytedeco.pytorch.TensorArrayRef
 import org.bytedeco.pytorch.TensorVector
 
-private[torch] object NativeConverters:
+//private[torch]
+object NativeConverters:
 
   inline def convertToOptional[T, U <: T | Option[T], V >: Null](i: U, f: T => V): V = i match
     case i: Option[T] => i.map(f(_)).orNull
@@ -72,11 +73,22 @@ private[torch] object NativeConverters:
       case (i, j)      => Array(i.toLong, j.toLong)
       case (i, j, k)   => Array(i, j, k).map(_.toLong)
 
-  extension (input: Int | (Int, Int) | (Int, Int, Int))
+  extension (
+      input: Int | (Int, Int) | (Int, Int, Int) | (Int, Int, Int, Int) | (Int, Int, Int, Int, Int) |
+        (Int, Int, Int, Int, Int, Int)
+  )
     def toNative = input match
-      case x: Int    => LongPointer(Array(x.toLong, x.toLong)*)
-      case (h, w)    => LongPointer(Array(h.toLong, w.toLong)*)
-      case (t, h, w) => LongPointer(Array(t.toLong, h.toLong, w.toLong)*)
+      case x: Int => LongPointer(Array(x.toLong, x.toLong)*)
+//      case x:(Int) => LongPointer(Array(x._1.toLong)*)
+      case (h, w) => LongPointer(Array(h.toLong, w.toLong)*)
+      case (t, h, w) =>
+        LongPointer(
+          Array(t.toLong, h.toLong, w.toLong)*
+        ) // LongPointer(Array(t.toLong, h.toLong, w.toLong)*)
+      case (t, h, w, d)    => LongPointer(Array(t.toLong, h.toLong, w.toLong, d.toLong)*)
+      case (t, h, w, d, c) => LongPointer(Array(t.toLong, h.toLong, w.toLong, d.toLong, c.toLong)*)
+      case (t, h, w, d, c, h2) =>
+        LongPointer(Array(t.toLong, h.toLong, w.toLong, d.toLong, c.toLong, h2.toLong)*)
 
   given doubleToDoublePointer: Conversion[Double, DoublePointer] = (input: Double) =>
     DoublePointer(Array(input)*)

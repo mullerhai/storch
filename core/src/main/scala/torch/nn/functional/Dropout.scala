@@ -17,7 +17,11 @@
 package torch
 package nn
 package functional
-
+import org.bytedeco.pytorch.{
+  DropoutFuncOptions,
+  FeatureAlphaDropoutFuncOptions,
+  AlphaDropoutFuncOptions
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 
@@ -41,4 +45,66 @@ private[torch] trait Dropout {
   // TODO dropout1d Randomly zero out entire channels (a channel is a 1D feature map, e.g., the jj-th channel of the ii-th sample in the batched input is a 1D tensor input[i,j]input[i,j]) of the input tensor).
   // TODO dropout2d Randomly zero out entire channels (a channel is a 2D feature map, e.g., the jj-th channel of the ii-th sample in the batched input is a 2D tensor input[i,j]input[i,j]) of the input tensor).
   // TODO dropout3d Randomly zero out entire channels (a channel is a 3D feature map, e.g., the jj-th channel of the ii-th sample in the batched input is a 3D tensor input[i,j]input[i,j]) of the input tensor).
+
+  def alpha_dropout[D <: DType](
+      input: Tensor[D],
+      p: Double = 0.5,
+      training: Boolean = true,
+      inplace: Boolean = false
+  ): Tensor[D] =
+    val options = new AlphaDropoutFuncOptions()
+    options.training.put(training)
+    options.inplace.put(inplace)
+    options.p.put(p)
+    fromNative(
+      torchNative.alpha_dropout(input.native, options)
+    )
+
+  def feature_alpha_dropout[D <: DType](
+      input: Tensor[D],
+      p: Double = 0.5,
+      training: Boolean = true,
+      inplace: Boolean = false
+  ): Tensor[D] =
+    val options = new FeatureAlphaDropoutFuncOptions()
+    options.training.put(training)
+    options.p.put(p)
+    options.inplace.put(inplace)
+    fromNative(
+      torchNative.feature_alpha_dropout(input.native, options)
+    )
+
+//  def dropout1d[D <: DType](input: Tensor[D], p: Double = 0.5, training: Boolean = true): Tensor[D] =
+//    fromNative(
+//      torchNative.dropout1d(input.native, p, training)
+//    )
+
+  def dropout2d[D <: DType](
+      input: Tensor[D],
+      p: Double = 0.5,
+      training: Boolean = true,
+      inplace: Boolean = false
+  ): Tensor[D] =
+    val options = new DropoutFuncOptions()
+    options.training.put(training)
+    options.inplace.put(inplace)
+    options.p.put(p)
+    fromNative(
+      torchNative.dropout2d(input.native, options)
+    )
+
+  def dropout3d[D <: DType](
+      input: Tensor[D],
+      p: Double = 0.5,
+      training: Boolean = true,
+      inplace: Boolean = false
+  ): Tensor[D] =
+    val options = new DropoutFuncOptions()
+    options.training.put(training)
+    options.inplace.put(inplace)
+    options.p.put(p)
+    fromNative(
+      torchNative.dropout3d(input.native, options)
+    )
+
 }

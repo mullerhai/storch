@@ -47,3 +47,5 @@ final class LogSoftmax[D <: DType: Default](dim: Int) extends TensorModule[D]:
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
+  override def toString = getClass().getSimpleName() + s"(dim=$dim)"

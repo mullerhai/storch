@@ -18,13 +18,13 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.CrossEntropyLossImpl
 import torch.nn.modules.Module
 import torch.internal.NativeConverters.fromNative
+import org.bytedeco.pytorch.CrossEntropyLossImpl
 
 /** This criterion computes the cross entropy loss between input and target. */
 // TODO optional args
-final class CrossEntropyLoss extends Module {
+final class CrossEntropyLoss extends LossFunc {
   override private[torch] val nativeModule: CrossEntropyLossImpl = CrossEntropyLossImpl()
 
   override def hasBias(): Boolean = false
@@ -32,4 +32,11 @@ final class CrossEntropyLoss extends Module {
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native)
   )
+
+  override def apply[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
+    val input = inputs.toSeq.head
+    fromNative(
+      nativeModule.forward(input.native, target.native) // .output()
+    )
+  }
 }

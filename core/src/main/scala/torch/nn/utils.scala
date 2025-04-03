@@ -19,7 +19,7 @@ package nn
 
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.TensorVector
-
+import org.bytedeco.pytorch.TensorListIterator
 object utils:
   def clipGradNorm_(
       parameters: Seq[Tensor[?]],

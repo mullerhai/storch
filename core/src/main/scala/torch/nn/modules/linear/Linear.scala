@@ -54,7 +54,7 @@ final class Linear[ParamType <: FloatNN: Default](
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
-
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new LinearOptions(inFeatures, outFeatures)
   options.bias().put(addBias)
 
@@ -79,3 +79,11 @@ final class Linear[ParamType <: FloatNN: Default](
 
   override def toString =
     s"${getClass.getSimpleName}(inFeatures=$inFeatures, outFeatures=$outFeatures, bias=$addBias)"
+
+object Linear:
+  def apply[ParamType <: FloatNN: Default](
+      in_features: Long,
+      out_features: Long,
+      add_bias: Boolean = true
+      // dtype: ParamType = defaultDType[ParamType]
+  ): Linear[ParamType] = new Linear(in_features, out_features, add_bias)

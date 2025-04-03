@@ -50,7 +50,7 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     // TODO
     with TensorModule[D]
     with scala.collection.immutable.Iterable[TensorModule[D]]:
-
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   modules.zipWithIndex.foreach((module, index) =>
     this.register(module)(using Name(index.toString()))
   )

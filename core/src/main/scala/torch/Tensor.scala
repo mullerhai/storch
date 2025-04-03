@@ -61,6 +61,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     s"Storch only supports tensors with up to ${Int.MaxValue} elements"
   )
 
+  def new_tensor(data: Seq[Long]): Tensor[torch.Int64] = {
+    torch.Tensor(data)
+  }
+//  fromNative(
+//    native.new_tensor(data)
+//  )
   def ==(other: ScalaType): Tensor[Bool] = eq(other)
 
   def add[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
@@ -109,6 +115,24 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def mul[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.mul(toScalar(s))
   )
+//todo make sure the type of s is correct
+//  def multiply[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
+//    native.multiply(toScalar(s))
+//  )
+  // todo make sure the type of s is correct
+  def multiply[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.multiply(other.native)
+  )
+
+  // todo make sure the type of s is correct
+  def dot[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.dot(other.native)
+  )
+
+  // todo make sure the type of s is correct
+  def vdot[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.vdot(other.native)
+  )
 
   def *[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = mul(s)
 
@@ -150,6 +174,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] |
         None.type | Ellipsis)*
   ): Tensor[D] = index(indices*)
+
+//  def apply[T <: Boolean | Long : ClassTag](
+//                                             indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] |
+//                                               None.type | Ellipsis)*
+//                                           ): Tensor[D] = index(indices *)
 
   /** Computes the absolute value of each element. */
   def abs: Tensor[D] = fromNative(native.abs())

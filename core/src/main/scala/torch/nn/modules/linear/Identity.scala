@@ -30,8 +30,13 @@ import scala.annotation.nowarn
   */
 final class Identity[D <: DType: Default](@nowarn("msg=unused explicit parameter") args: Any*)
     extends TensorModule[D]:
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   override val nativeModule: IdentityImpl = IdentityImpl()
 
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
+object Identity:
+  def apply[D <: DType: Default](@nowarn("msg=unused explicit parameter") args: Any*): Identity[D] =
+    new Identity[D](args: _*)

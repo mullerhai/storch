@@ -59,8 +59,27 @@ import scala.collection.immutable.Iterable
  *
  *  For further details regarding the algorithm we refer to
  *  [Adam: A Method for Stochastic Optimization](https://arxiv.org/abs/1412.6980).
- */
-// format: on
+//  torch.optim.SGD：随机梯度下降优化器
+//
+//2. torch.optim.Adam：Adam优化器
+//
+//3. torch.optim.Adadelta：Adadelta优化器
+//
+//4. torch.optim.Adagrad：Adagrad优化器
+//
+//5. torch.optim.Adamax：Adamax优化器
+//
+//6. torch.optim.ASGD：平均随机梯度下降优化器
+//
+//7. torch.optim.RMSprop：RMSprop优化器
+//
+//8. torch.optim.Rprop：Rprop优化器
+// 
+//9. torch.optim.LBFGS：L-BFGS优化器
+ torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False,
+ *, foreach=None, maximize=False, capturable=False, differentiable=False, fused=None)
+// format: on */
+
 final class Adam(
     params: Iterable[Tensor[?]],
     lr: Double = 1e-3,
@@ -77,3 +96,13 @@ final class Adam(
   options.amsgrad().put(amsgrad)
   override private[torch] val native: pytorch.Adam = pytorch.Adam(nativeParams, options)
 }
+
+object Adam:
+  def apply(
+             params: Iterable[Tensor[?]],
+             lr: Double = 1e-3,
+             betas: (Double, Double) = (0.9, 0.999),
+             eps: Double = 1e-8,
+             weight_decay: Double = 0,
+             amsgrad: Boolean = false
+           ) :Adam = new Adam(params,lr,betas,eps,weight_decay,amsgrad)

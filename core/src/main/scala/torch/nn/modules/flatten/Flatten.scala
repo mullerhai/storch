@@ -19,6 +19,7 @@ package nn
 package modules
 package flatten
 
+import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{FlattenImpl, FlattenOptions}
 import torch.internal.NativeConverters.fromNative
@@ -53,10 +54,10 @@ import torch.internal.NativeConverters.fromNative
 // format: on
 final class Flatten[D <: DType: Default](startDim: Int = 1, endDim: Int = -1)
     extends TensorModule[D]:
-
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = FlattenOptions()
-  options.start_dim().put(startDim)
-  options.end_dim().put(endDim)
+  options.start_dim().put(LongPointer(1).put(startDim))
+  options.end_dim().put(LongPointer(1).put(endDim))
 
   override val nativeModule: FlattenImpl = FlattenImpl(options)
 
@@ -64,4 +65,9 @@ final class Flatten[D <: DType: Default](startDim: Int = 1, endDim: Int = -1)
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
-  override def toString = getClass().getSimpleName()
+  override def toString =
+    s"${getClass.getSimpleName}(startDim = ${startDim}, endDim = ${endDim}"
+
+object Flatten:
+  def apply[D <: DType: Default](start_dim: Int = 1, end_dim: Int = -1): Flatten[D] =
+    new Flatten[D](start_dim, end_dim)

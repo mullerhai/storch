@@ -49,5 +49,12 @@ object indexing:
       Slice(step, None, start)
 
     def :: : Slice = Slice(start, None, None)
+  extension (start: Int | Option[Int])
+    def &&(end: Int | Option[Int]): Slice =
+      // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+      // So step and start are reversed here
+      Slice(start, end, Some(1))
+
+//    def :: : Slice = Slice(start, None, None)
 
 export indexing.*

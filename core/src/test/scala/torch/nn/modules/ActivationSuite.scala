@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package torch
-package nn
-package modules
+package torch.nn.modules
+
+import torch.{Tensor, nn}
 
 class ActivationSuite extends munit.FunSuite {
   test("LogSoftmax") {

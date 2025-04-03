@@ -18,14 +18,35 @@ package torch
 package nn
 package functional
 
+import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   AvgPool1dOptions,
+  LongOptional,
+  DoubleExpandingArrayOptional,
   AvgPool2dOptions,
+  FractionalMaxPool2dOptions,
+  FractionalMaxPool3dOptions,
   AvgPool3dOptions,
+  LongExpandingArrayOptional,
   MaxPool1dOptions,
+  MaxUnpool1dFuncOptions,
+  MaxUnpool2dFuncOptions,
   MaxPool2dOptions,
-  MaxPool3dOptions
+  MaxUnpool3dFuncOptions,
+  MaxPool3dOptions,
+  MaxUnpool1dOptions,
+  MaxUnpool2dOptions,
+  MaxUnpool3dOptions,
+  AdaptiveMaxPool1dOptions,
+  AdaptiveMaxPool2dOptions,
+  AdaptiveMaxPool3dOptions,
+  AdaptiveAvgPool1dOptions,
+  AdaptiveAvgPool2dOptions,
+  AdaptiveAvgPool3dOptions,
+  LPPool1dOptions,
+  LPPool2dOptions,
+  LPPool3dOptions
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.*
@@ -45,7 +66,6 @@ private[torch] trait Pooling {
     *
     * @see
     *   [[torch.nn.AdaptiveAvgPool1d]] for details and output shape.
-    *
     * @param input
     *   input tensor of shape $(\text{minibatch} , \text{in\_channels} , iW)$
     * @param kernelSize
@@ -59,7 +79,6 @@ private[torch] trait Pooling {
     *   $ceilMode
     * @param countIncludePad
     *   when true, will include the zero-padding in the averaging calculation.
-    *
     * @group nn_pooling
     */
   def avgPool1d[D <: FloatNN | Complex32](
@@ -160,7 +179,6 @@ private[torch] trait Pooling {
     *   $dilation
     * @param ceilMode
     *   $ceilMode
-    *
     * @group nn_pooling
     */
   def maxPool1d[D <: FloatNN | Complex32](
@@ -190,7 +208,6 @@ private[torch] trait Pooling {
     *   $dilation
     * @param ceilMode
     *   $ceilMode
-    *
     * @group nn_pooling
     */
   def maxPool1dWithIndices[D <: FloatNN | Complex32](
@@ -227,7 +244,6 @@ private[torch] trait Pooling {
     *
     * @see
     *   [[torch.nn.MaxPool2d]] for details.
-    *
     * @param input
     *   input tensor $(\text{minibatch} , \text{in\_channels} , iH , iW)$, minibatch dim optional.
     * @param kernelSize
@@ -240,7 +256,6 @@ private[torch] trait Pooling {
     *   $dilation
     * @param ceilMode
     *   $ceilMode
-    *
     * @group nn_pooling
     */
   def maxPool2d[D <: FloatNN | Complex32](
@@ -259,7 +274,6 @@ private[torch] trait Pooling {
     *
     * @see
     *   [[torch.nn.MaxPool2d]] for details.
-    *
     * @param input
     *   input tensor $(\text{minibatch} , \text{in\_channels} , iH , iW)$, minibatch dim optional.
     * @param kernelSize
@@ -272,7 +286,6 @@ private[torch] trait Pooling {
     *   $dilation
     * @param ceilMode
     *   $ceilMode
-    *
     * @group nn_pooling
     */
   def maxPool2dWithIndices[D <: FloatNN | Complex32](
@@ -351,5 +364,166 @@ private[torch] trait Pooling {
   // TODO adaptive_avg_pool3d Applies a 3D adaptive average pooling over an input signal composed of several input planes.
   // TODO fractional_max_pool2d Applies 2D fractional max pooling over an input signal composed of several input planes.
   // TODO fractional_max_pool3d Applies 3D fractional max pooling over an input signal composed of several input planes.
+  def adaptiveAvgPool1d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+    val options: AdaptiveAvgPool1dOptions = new AdaptiveAvgPool1dOptions(LongPointer(output_size))
+    options.output_size().put(LongOptional(output_size))
+    fromNative(torchNative.adaptive_avg_pool1d(input.native, options))
 
+  def adaptiveAvgPool2d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+    val options: AdaptiveAvgPool2dOptions = new AdaptiveAvgPool2dOptions(LongPointer(output_size))
+    options.output_size().put(LongOptional(output_size))
+    fromNative(torchNative.adaptive_avg_pool2d(input.native, options))
+
+  def adaptiveAvgPool3d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+    val options: AdaptiveAvgPool3dOptions = new AdaptiveAvgPool3dOptions(LongPointer(output_size))
+    options.output_size().put(LongOptional(output_size))
+    fromNative(torchNative.adaptive_avg_pool3d(input.native, options))
+
+  def fractionalMaxPool2d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      kernel_size: Long,
+      output_ratio: Double,
+      random_sample: Tensor[D],
+      output_size: Long
+  ): Tensor[D] =
+    val options = new FractionalMaxPool2dOptions(LongOptional(kernel_size))
+    options.output_size().put(LongExpandingArrayOptional(LongPointer(output_size)))
+    options.output_ratio().put(DoubleExpandingArrayOptional(DoublePointer(output_ratio)))
+    options._random_samples().put(random_sample.native)
+    fromNative(torchNative.fractional_max_pool2d(input.native, options))
+
+  def fractionalMaxPool3d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      kernel_size: Long,
+      output_ratio: Double,
+      random_sample: Tensor[D],
+      output_size: Long
+  ): Tensor[D] =
+    val options = new FractionalMaxPool3dOptions(LongOptional(kernel_size))
+    options.output_size().put(LongExpandingArrayOptional(LongPointer(output_size)))
+    options.output_ratio().put(DoubleExpandingArrayOptional(DoublePointer(output_ratio)))
+    options._random_samples().put(random_sample.native)
+    fromNative(torchNative.fractional_max_pool3d(input.native, options))
+
+  def adaptiveMaxPool1d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      outputSize: Int | (Int, Int)
+  ): Tensor[D] = {
+
+    val options: AdaptiveMaxPool1dOptions =
+      AdaptiveMaxPool1dOptions(toNative(outputSize))
+    fromNative(torchNative.adaptive_max_pool1d(input.native, options))
+  }
+  def adaptiveMaxPool2d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      outputSize: Int | (Int, Int, Int)
+  ): Tensor[D] = {
+    val options: AdaptiveMaxPool2dOptions =
+      AdaptiveMaxPool2dOptions(toNative(outputSize))
+    fromNative(torchNative.adaptive_max_pool2d(input.native, options))
+  }
+  def adaptiveMaxPool3d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      outputSize: Int | (Int, Int) | (Int, Int, Int)
+  ): Tensor[D] = {
+    val options: AdaptiveMaxPool3dOptions =
+      AdaptiveMaxPool3dOptions(toNative(outputSize))
+    fromNative(torchNative.adaptive_max_pool3d(input.native, options))
+  }
+  def lpPool1d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      normType: Double,
+      kernelSize: Int | (Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int) = 0,
+      ceilMode: Boolean = false
+  ): Tensor[D] = {
+    val options: LPPool1dOptions = LPPool1dOptions(normType, toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.ceil_mode().put(ceilMode)
+    fromNative(torchNative.lp_pool1d(input.native, options))
+  }
+  def lpPool2d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      normType: Double,
+      kernelSize: Int | (Int, Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int, Int) = 0,
+      ceilMode: Boolean = false
+  ): Tensor[D] = {
+    val options: LPPool2dOptions = LPPool2dOptions(normType, toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.ceil_mode().put(ceilMode)
+    fromNative(torchNative.lp_pool2d(input.native, options))
+  }
+  def lpPool3d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      normType: Double,
+      kernelSize: Int | (Int, Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int, Int) = 0,
+      ceilMode: Boolean = false
+  ): Tensor[D] = {
+    val options: LPPool3dOptions = LPPool3dOptions(normType, toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.ceil_mode().put(ceilMode)
+    fromNative(torchNative.lp_pool3d(input.native, options))
+  }
+  //  def lPPool1dOptions[D <: FloatNN | Complex32](
+  //      normType: Double,
+  //      kernelSize: Int | (Int, Int),
+  //      stride: Int | (Int, Int) | None.type,
+  //      padding: Int | (Int, Int)
+  //  ): LPPool1dOptions = {
+  //    val options: LPPool1dOptions = LPPool1dOptions(normType, toNative(kernelSize))
+  //    stride match
+  //      case s: (Int | (Int, Int)) => options.stride().put(toNative(s))
+  //      case None                   =>
+  //    options.padding().put(toNative(padding))
+  //    options
+  //  }
+
+  def maxUnpool3d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      indices: Tensor[D],
+      kernelSize: Int | (Int, Int) | (Int, Int, Int),
+      outputSize: Int | (Int, Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int, Int) = 0
+  ): Tensor[D] = {
+    val options: MaxUnpool3dFuncOptions = MaxUnpool3dFuncOptions(toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.padding().put(toNative(padding))
+    options.output_size().put(toNative(outputSize))
+    fromNative(torchNative.max_unpool3d(input.native, indices.native, options))
+  }
+  def maxUnpool2d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      indices: Tensor[D],
+      kernelSize: Int | (Int, Int),
+      outputSize: Int | (Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int) = 0
+  ): Tensor[D] = {
+    val options: MaxUnpool2dFuncOptions =
+      MaxUnpool2dFuncOptions(toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.padding().put(toNative(padding))
+    options.output_size().put(toNative(outputSize))
+    fromNative(torchNative.max_unpool2d(input.native, indices.native, options))
+  }
+  def maxUnpool1d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      indices: Tensor[D],
+      kernelSize: Int | (Int, Int),
+      outputSize: Int | (Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int), // None.type = None,
+      padding: Int | (Int, Int) = 0
+  ): Tensor[D] = {
+    val options: MaxUnpool1dFuncOptions =
+      MaxUnpool1dFuncOptions(toNative(kernelSize))
+    options.stride().put(toNative(stride))
+    options.padding().put(toNative(outputSize))
+    fromNative(torchNative.max_unpool1d(input.native, indices.native, options))
+  }
 }

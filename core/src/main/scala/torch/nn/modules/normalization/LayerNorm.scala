@@ -21,6 +21,7 @@ package nn
 package modules
 package normalization
 
+import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{LayerNormImpl, LayerNormOptions, LongVector}
 import internal.NativeConverters.fromNative
@@ -91,7 +92,7 @@ final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
     elementWiseAffine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
-
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val shape: LongVector = LongVector(normalizedShape.map(_.toLong): _*)
   private val options: LayerNormOptions = LayerNormOptions(shape)
   options.eps().put(eps)
@@ -104,5 +105,16 @@ final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  override def toString =
+    s"${getClass.getSimpleName}(normalizedShape = ${normalizedShape.mkString(" ")}, elementWiseAffine = ${elementWiseAffine},eps=$eps )"
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+
+object LayerNorm:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      normalized_shape: Seq[Int],
+      eps: Double = 1e-05,
+      element_wise_affine: Boolean = true
+  ): LayerNorm[ParamType] =
+    new LayerNorm(normalized_shape, eps, element_wise_affine)

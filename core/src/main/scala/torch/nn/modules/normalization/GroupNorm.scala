@@ -19,6 +19,7 @@ package nn
 package modules
 package normalization
 
+import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{GroupNormImpl, GroupNormOptions}
 import torch.internal.NativeConverters.fromNative
@@ -42,6 +43,7 @@ final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
     affine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: GroupNormOptions = GroupNormOptions(numGroups, numChannels)
   options.eps().put(eps)
   options.affine().put(affine)
@@ -53,5 +55,17 @@ final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  override def toString =
+    s"${getClass.getSimpleName}(numGroups = ${numGroups}, numChannels = ${numChannels},eps=$eps affine=$affine)"
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+
+object GroupNorm:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      num_groups: Int,
+      num_channels: Int,
+      eps: Double = 1e-05,
+      affine: Boolean = true
+  ): GroupNorm[ParamType] =
+    new GroupNorm(num_groups, num_channels, eps, affine)

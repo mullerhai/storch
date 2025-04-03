@@ -19,10 +19,10 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.pytorch.AdaptiveAvgPool2dImpl
+import org.bytedeco.pytorch.{AdaptiveAvgPool2dImpl, AdaptiveAvgPool2dOptions}
 import org.bytedeco.pytorch
 
-import torch.internal.NativeConverters.{fromNative, toOptional}
+import torch.internal.NativeConverters.{fromNative, toNative, toOptional}
 import org.bytedeco.pytorch.LongOptionalVector
 import org.bytedeco.pytorch.LongOptional
 
@@ -32,25 +32,64 @@ import org.bytedeco.pytorch.LongOptional
   * number of input planes.
   */
 final class AdaptiveAvgPool2d[D <: BFloat16 | Float32 | Float64: Default](
-    outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
+    outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) | (Option[Int], Int) |
+      (Int, Option[Int])
 ) extends Module {
-
+  System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
-    case (h: Int, w: Int) => new LongOptionalVector(new LongOptional(h), new LongOptional(w))
-    case x: Int           => new LongOptionalVector(new LongOptional(x), new LongOptional(x))
+    case (h: Int, w: Int) =>
+      new LongOptionalVector(new LongOptional(h), new LongOptional(w))
+    case x: Int => 
+      new LongOptionalVector(new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
       new LongOptionalVector(h.toOptional, w.toOptional)
+    case (h: Option[Int @unchecked], w: Int) =>
+      new LongOptionalVector(h.toOptional, new LongOptional(w))
+    case (h: Int, w: Option[Int @unchecked]) =>
+      new LongOptionalVector(new LongOptional(h), w.toOptional)
     case x: Option[Int] =>
       new LongOptionalVector(x.toOptional, x.toOptional)
 
-  override protected[torch] val nativeModule: AdaptiveAvgPool2dImpl = AdaptiveAvgPool2dImpl(
-    nativeOutputSize.get(0)
-  )
+  override protected[torch] val nativeModule: AdaptiveAvgPool2dImpl = AdaptiveAvgPool2dImpl(nativeOutputSize.get(0))
+
+  
 
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(
     nativeModule.forward(t.native)
   )
+
+  override def toString =
+    s"${getClass.getSimpleName}(outputSize=$outputSize)"
 }
+
+object AdaptiveAvgPool2d:
+  def apply[DT <: BFloat16 | Float32 | Float64: Default](
+      output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) |
+        (Option[Int], Int) | (Int, Option[Int])
+  ): AdaptiveAvgPool2d[DT] =
+    new AdaptiveAvgPool2d(output_size)
+
+
+
+
+
+
+
+
+
+
+
+//  val options: AdaptiveAvgPool2dOptions = AdaptiveAvgPool2dOptions(nativeOutputSize)
+//  options.output_size().put(nativeOutputSize)
+
+//  println(
+//    s"AdaptiveAvgPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )
+//  override protected[torch] val nativeModule: AdaptiveAvgPool2dImpl = AdaptiveAvgPool2dImpl(options)
+//
+//  println(
+//    s"AdaptiveAvgPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )

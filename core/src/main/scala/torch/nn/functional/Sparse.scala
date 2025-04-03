@@ -20,6 +20,28 @@ package functional
 
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
+import Derive.derive
+import org.bytedeco.pytorch
+import org.bytedeco.pytorch.{
+  kSum,
+  kMean,
+  kMax,
+  DoubleOptional,
+  LongOptional,
+  EmbeddingBagMode,
+  EmbeddingBagFuncOptions,
+  EmbeddingFuncOptions
+}
+import org.bytedeco.pytorch.{
+  BatchNormFuncOptions,
+  GroupNormFuncOptions,
+  InstanceNormFuncOptions,
+  LayerNormFuncOptions,
+  LocalResponseNormOptions,
+  NormalizeFuncOptions,
+  ScalarTypeOptional
+}
+import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 
 private[torch] trait Sparse {
 
@@ -31,4 +53,84 @@ private[torch] trait Sparse {
     */
   def oneHot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] =
     fromNative(torchNative.one_hot(input.native, numClasses))
+
+//  public native
+//  @ByRef @NoException(true) Tensor offsets();
+//  public native
+//  @ByRef @NoException(true) DoubleOptional max_norm();
+//  public native
+//  @ByRef @NoException(true) DoublePointer norm_type();
+//  public native
+//  @Cast("bool*") @ByRef @NoException(true) BoolPointer scale_grad_by_freq();
+//  public native
+//  @ByRef @NoException(true) EmbeddingBagMode mode();
+//  public native
+//  @Cast("bool*") @ByRef @NoException(true) BoolPointer sparse();
+//  public native
+//  @ByRef @NoException(true) Tensor per_sample_weights();
+//  public native
+//  @Cast("bool*") @ByRef @NoException(true) BoolPointer include_last_offset();
+//  public native
+//  @ByRef @NoException(true) LongOptional padding_idx();
+
+  def embedding_bag[D <: DType](
+      input: Tensor[D],
+      weight: Tensor[D],
+      offsets: Tensor[D],
+      max_norm: Double,
+      norm_type: Double = 2,
+      scale_grad_by_freq: Boolean = false,
+      mode: String = "",
+      sparse: Boolean = false,
+      per_sample_weight: Tensor[D],
+      include_last_offset: Boolean = false,
+      padding_idx: Long
+  ): Tensor[D] = {
+    val options = EmbeddingBagFuncOptions()
+    val bagModeNative = mode match {
+      case "sum" | "Sum"   => new kSum
+      case "mean" | "Mean" => new kMean
+      case "max" | "Max"   => new kMax
+//      case "none"|"None" => EmbeddingBagMode.None
+    }
+    options.offsets.put(offsets.native)
+    options.max_norm().put(DoubleOptional(max_norm))
+    options.norm_type().put(norm_type)
+    options.scale_grad_by_freq().put(scale_grad_by_freq)
+    options.mode().put(bagModeNative)
+    options.sparse().put(sparse)
+    options.per_sample_weights.put(per_sample_weight.native)
+    options.include_last_offset().put(include_last_offset)
+    options.padding_idx().put(LongOptional(padding_idx))
+    fromNative(torchNative.embedding_bag(input.native, weight.native, options))
+  }
+
+//  public native
+//  @ByRef @NoException(true) LongOptional padding_idx();
+//  public native
+//  @ByRef @NoException(true) DoubleOptional max_norm();
+//  public native
+//  @ByRef @NoException(true) DoublePointer norm_type();
+//  public native
+//  @Cast("bool*") @ByRef @NoException(true) BoolPointer scale_grad_by_freq();
+//  public native
+//  @Cast("bool*") @ByRef @NoException(true) BoolPointer sparse();
+  def embedding[D <: DType](
+      input: Tensor[D],
+      weight: Tensor[D],
+      padding_idx: Long,
+      max_norm: Double,
+      norm_type: Double = 2.0,
+      scale_grad_by_freq: Boolean = false,
+      sparse: Boolean = false
+  ): Tensor[D] = {
+    val options = EmbeddingFuncOptions()
+    options.padding_idx().put(padding_idx)
+    options.max_norm().put(max_norm)
+    options.norm_type().put(norm_type)
+    options.scale_grad_by_freq().put(scale_grad_by_freq)
+    options.sparse().put(sparse)
+    fromNative(torchNative.embedding(input.native, weight.native, options))
+  }
+
 }

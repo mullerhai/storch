@@ -55,14 +55,42 @@ import scala.collection.immutable.Iterable
  *   &\rule{110mm}{0.4pt}                                                          \\[-1.ex]
  * \end{aligned}
  *  $$
- *
+ * public native @ByRef @NoException(true) DoublePointer lr();
+ * public native @ByRef @NoException(true) DoublePointer momentum();
+ * public native @ByRef @NoException(true) DoublePointer dampening();
+ * public native @ByRef @NoException(true) DoublePointer weight_decay();
+ * public native @Cast("bool*") @ByRef @NoException(true) BoolPointer nesterov();
+ * torch.optim.SGD(params, lr=0.001, momentum=0, dampening=0, 
+ * weight_decay=0, nesterov=False, *,
+ * maximize=False, foreach=None, differentiable=False, fused=None)
  *  Nesterov momentum is based on the formula from
  *  [On the importance of initialization and momentum in deep learning](http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf)
  */
 // format: on
 // TODO optionial parameters
-class SGD(params: Iterable[Tensor[?]], lr: Float) extends Optimizer {
+class SGD(
+    params: Iterable[Tensor[?]],
+    lr: Float = 0.001,
+    momentum: Double = 0,
+    dampening: Double = 0,
+    weightDecay: Double = 0,
+    nesterov: Boolean = false
+) extends Optimizer {
   private val nativeParams = TensorVector(params.map(_.native).toArray*)
   private val options = SGDOptions(lr)
+  options.momentum().put(momentum)
+  options.dampening().put(dampening)
+  options.weight_decay().put(weightDecay)
+  options.nesterov().put(nesterov)
   override private[torch] val native: pytorch.SGD = pytorch.SGD(nativeParams, options)
 }
+
+object SGD:
+  def apply(
+      params: Iterable[Tensor[?]],
+      lr: Float = 0.001,
+      momentum: Double = 0,
+      dampening: Double = 0,
+      weight_decay: Double = 0,
+      nesterov: Boolean = false
+  ): SGD = new SGD(params, lr, momentum, dampening, weight_decay, nesterov)
