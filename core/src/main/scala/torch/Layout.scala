@@ -30,7 +30,7 @@ import org.bytedeco.pytorch.global.torch as torchNative
   * efficiently.
   */
 enum Layout:
-  case Strided, Sparse, SparseCsr, Mkldnn, NumOptions
+  case Strided, Sparse, SparseCsr, SparseCsc, SparseBsr, SparseBsc, Jagged, Mkldnn, NumOptions
   private[torch] def toNative: torchNative.Layout = torchNative.Layout.valueOf(this.toString)
 
 object Layout:

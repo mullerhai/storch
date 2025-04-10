@@ -268,6 +268,8 @@ type FloatNN = Float16 | Float32 | Float64 | BFloat16
 
 type IntNN = Int8 | UInt8 | Int16 | Int32 | Int64
 
+type SparseIntNN = Int16 | Int32 | Int64
+
 type ComplexNN = Complex32 | Complex64 | Complex128
 
 type BitwiseNN = Bool | IntNN

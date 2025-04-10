@@ -16,17 +16,9 @@
 
 package torch
 
-import org.bytedeco.javacpp.{
-  BoolPointer,
-  BytePointer,
-  DoublePointer,
-  FloatPointer,
-  IntPointer,
-  LongPointer,
-  ShortPointer
-}
+import org.bytedeco.javacpp.{BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.TensorIndexArrayRef
+import org.bytedeco.pytorch.{EllipsisIndexType, LongOptional, ScalarTypeOptional, SymInt, SymIntOptional, TensorIndexArrayRef}
 import org.bytedeco.pytorch.global.torch as torchNative
 import Tensor.*
 import org.bytedeco.pytorch.global.torch.ScalarType
@@ -36,17 +28,12 @@ import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag
 import internal.NativeConverters.{toOptional, toScalar}
 import spire.math.{Complex, UByte}
-
 import internal.NativeConverters
 import internal.NativeConverters.toArray
 import Device.CPU
-import Layout.Strided
-import org.bytedeco.pytorch.EllipsisIndexType
-import org.bytedeco.pytorch.SymInt
-import org.bytedeco.pytorch.SymIntOptional
-import org.bytedeco.pytorch.ScalarTypeOptional
-import scala.annotation.implicitNotFound
+import torch.Layout.{Sparse, SparseBsc, SparseBsr, SparseCsc, SparseCsr, Strided}
 
+import scala.annotation.implicitNotFound
 import torch.nn.functional as F
 
 case class TensorTuple[D <: DType](
@@ -393,6 +380,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def isConj: Boolean = native.is_conj()
 
+  def isSparse: Boolean = native.is_sparse()
   // TODO override in subclasses instead?
   def item: DTypeToScala[D] =
     import ScalarType.*
@@ -857,6 +845,44 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def toSeq: Seq[DTypeToScala[D]] = ArraySeq.unsafeWrapArray(toArray)
 
+  def values():Tensor[D] = fromNative(native.values)
+  
+  def indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.indices)
+  
+  def crow_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.crow_indices)
+  
+  def col_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.col_indices)
+  
+  def ccol_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.ccol_indices)
+  
+  def row_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.row_indices)
+  
+  def to_sparse_csr():Tensor[D] = fromNative(native.to_sparse_csr)
+
+  def to_sparse_csc():Tensor[D] = fromNative(native.to_sparse_csc)
+
+  def to_sparse_bsr(blockSize: Seq[Long]):Tensor[D] = fromNative(native.to_sparse_bsr(blockSize*))
+
+  def to_sparse_bsc(blockSize: Seq[Long]):Tensor[D]= fromNative(native.to_sparse_bsc(blockSize*))
+
+  def to_sparse_coo():Tensor[D] = fromNative(native.to_sparse)
+
+  def to_sparse_csr(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csr(LongOptional(dense_dim)))
+
+  def to_sparse_csc(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csc(LongOptional(dense_dim)))
+
+  def to_sparse_bsr(blockSize: Seq[Long],dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_bsr(blockSize.toArray,LongOptional(dense_dim)))
+
+  def to_sparse_bsc(blockSize: Seq[Long],dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_bsc(blockSize.toArray,LongOptional(dense_dim)))
+
+  def to_sparse_coo(sparse_dim:Long): Tensor[D] = fromNative(native.to_sparse(sparse_dim))
+
+  def to_dense():Tensor[D] = fromNative(native.to_dense)
+
+  def is_sparse():Boolean =  {
+    val sparseLayout = Array(Sparse,SparseCsc,SparseBsc,SparseBsr,SparseCsr)
+    if sparseLayout.contains(fromNative(native).layout) then true else false
+  }
   /** Returns the sum of the elements of the diagonal of the input 2-D matrix. */
   def trace: Tensor[D] = fromNative(native.trace)
 
