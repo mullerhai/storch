@@ -19,8 +19,8 @@ trait SparseOps {
 
   def sparse_coo_tensor[D1 <: DType, D2 <: SparseIntNN](indices: Tensor[D2],
                                                   values: Tensor[D1],
-                                                  sizeSeq: Seq[Long]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.sparse_coo_tensor(indices.native, values.native, sizeSeq *))
+                                                  sizeSeq: Seq[Int]): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.sparse_coo_tensor(indices.native, values.native, sizeSeq.map(_.toLong) *))
 
   def sparse_coo_tensor[D1 <: DType, D2 <: SparseIntNN](
                                                   indices: Tensor[D2],
@@ -49,7 +49,7 @@ trait SparseOps {
                                                   ccol_indices: Tensor[D2],
                                                   row_indices: Tensor[D2],
                                                   values: Tensor[D1],
-                                                  size: Seq[Long],
+                                                  size: Seq[Int],
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseCsc,
                                                   device: Device = CPU,
@@ -65,7 +65,7 @@ trait SparseOps {
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
     val boolOption = BoolOptional(requiresGrad)
-    fromNative(torchNative.sparse_csc_tensor(ccol_indices.native, row_indices.native, values.native,size.toArray, scalarNative, layoutNative, deviceNative, boolOption))
+    fromNative(torchNative.sparse_csc_tensor(ccol_indices.native, row_indices.native, values.native,size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
   }
 
   def is_sparse[D1 <: DType](tensor: Tensor[D1]):Boolean = {
@@ -106,7 +106,7 @@ trait SparseOps {
                                                   ccol_indices: Tensor[D2],
                                                   row_indices: Tensor[D2],
                                                   values: Tensor[D1],
-                                                  size: Seq[Long],
+                                                  size: Seq[Int],
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseBsc,
                                                   device: Device = CPU,
@@ -124,7 +124,7 @@ trait SparseOps {
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
     val boolOption = BoolOptional(requiresGrad)
-    fromNative(torchNative.sparse_bsc_tensor(ccol_indices.native, row_indices.native, values.native, size.toArray, scalarNative, layoutNative, deviceNative, boolOption))
+    fromNative(torchNative.sparse_bsc_tensor(ccol_indices.native, row_indices.native, values.native, size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
 
   }
 
@@ -134,7 +134,7 @@ trait SparseOps {
                                                   crow_indices: Tensor[D2],
                                                   col_indices: Tensor[D2],
                                                   values: Tensor[D1],
-                                                  size: Seq[Long],
+                                                  size: Seq[Int],
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseBsr,
                                                   device: Device = CPU,
@@ -151,7 +151,7 @@ trait SparseOps {
     val scalarNative =
       if dtype == values.dtype then ScalarTypeOptional()
       else ScalarTypeOptional(derivedDType.toScalarType)
-    fromNative(torchNative.sparse_bsr_tensor(crow_indices.native, col_indices.native, values.native,size.toArray, scalarNative, layoutNative, deviceNative, boolOption))
+    fromNative(torchNative.sparse_bsr_tensor(crow_indices.native, col_indices.native, values.native,size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
   }
 
   //https://pytorch.org/docs/stable/generated/torch.sparse_compressed_tensor.html
@@ -159,7 +159,7 @@ trait SparseOps {
                                                          compressed_indices: Tensor[D2],
                                                          plain_indices: Tensor[D2],
                                                          values: Tensor[D1],
-                                                         size: Seq[Long],
+                                                         size: Seq[Int],
                                                          dtype: DType|Option[DType] = DType.float32,
                                                          layout: Layout = Sparse,
                                                          device: Device = CPU,
@@ -176,7 +176,7 @@ trait SparseOps {
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
     val boolOption = BoolOptional(requiresGrad)
-    fromNative(torchNative.sparse_compressed_tensor(compressed_indices.native, plain_indices.native, values.native, size.toArray, scalarNative, layoutNative, deviceNative, boolOption))
+    fromNative(torchNative.sparse_compressed_tensor(compressed_indices.native, plain_indices.native, values.native, size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
   }
 
   def sparse_mask_out[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2],

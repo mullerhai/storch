@@ -30,7 +30,8 @@ import org.bytedeco.javacpp.PointerScope
 import torch.Device.CPU
 import torch.nn.modules.HasParams
 import Generators.genTensor
-
+import torch.Derive
+import torch.Layout.{Strided, Sparse, SparseCsc, SparseBsc, SparseBsr, SparseCsr}
 /*
  * dense = torch.randn(5, 5)
  * sparse = dense.to_sparse_csc()
@@ -43,17 +44,13 @@ import Generators.genTensor
 */
 class sparseCooSuite extends munit.FunSuite {
   test("sparseCooSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
     val batchSize =2
     val seqLength = 10
     val embedDim = 64
     val numHeads = 8
-//    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
     val input = torch.randn(Seq(batchSize,seqLength,embedDim))
     val sparseTensor = input.to_sparse()
-//    val out = multiheadAttention(input,input,input)
     println(s"sparseCooSuite ${sparseTensor.is_sparse()}||nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout} | ${sparseTensor.isSparse} |${sparseTensor.indices()}| value ${sparseTensor.values().shape.mkString(" ")}")
-
   }
 }
 
@@ -69,23 +66,27 @@ class sparseCooSuite extends munit.FunSuite {
 ***/
 class sparseCscSuite extends munit.FunSuite {
   test("sparseCscSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
+    val dense = torch.zeros(Seq(3, 3, 1, 1))
+    dense.update(Seq(0, 0), 1)
+    dense.update(Seq(1, 2), 1)
+    dense.update(Seq(2, 1), 1)
+    val spden = dense.to_sparse_csc(dense_dim = 2)
+    println(s"spden shape ${spden.shape} layout ${spden.layout} s_sparse ${spden.is_sparse()} ")
     val batchSize = 2
     val seqLength = 10
     val embedDim = 64
-    val numHeads = 8
-    //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
     val input = torch.randn(Seq(batchSize, seqLength, embedDim))
     val sparseTensor = input.to_sparse_csc()
-    //    val out = multiheadAttention(input,input,input)
-    println(s"sparseCscSuite ${sparseTensor.is_sparse()} nnz ${sparseTensor.nnz()}||layout ${sparseTensor.layout}| ${sparseTensor.row_indices()} |${sparseTensor.ccol_indices()} | value ${sparseTensor.values().shape.mkString(" ")}")
+    println(s"sparseCscSuite ${sparseTensor.is_sparse()} nnz ${sparseTensor.nnz()}||layout ${sparseTensor.layout}| ${sparseTensor.row_indices()} |${sparseTensor.ccol_indices()} | value ${sparseTensor.values().shape.mkString(" ")} | shape ${sparseTensor.shape} size ${sparseTensor.size}")
+    val tensorSparse = torch.sparse_csc_tensor(sparseTensor.ccol_indices(), sparseTensor.row_indices(), sparseTensor.values(), sparseTensor.size)
+    println(s"tensorSparse shape ${tensorSparse.shape} layout ${tensorSparse.layout} s_sparse ${tensorSparse.is_sparse()} ")
     val denseTensor = sparseTensor.to_dense()
-    println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()}")
+    println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()} ") //dense ccol ${denseTensor.ccol_indices()}
 
   }
 }
 
-/***
+/** *
  *
  * crow_indices = [0, 2, 4]
  * col_indices = [0, 1, 0, 1]
@@ -94,19 +95,17 @@ class sparseCscSuite extends munit.FunSuite {
  * torch.tensor(col_indices, dtype=torch.int64),
  * torch.tensor(values), dtype=torch.double)
  *
-***/
+ * * */
 class sparseCsrSuite extends munit.FunSuite {
   test("sparseCsrSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
     val batchSize = 2
     val seqLength = 10
     val embedDim = 64
-    val numHeads = 8
-    //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
     val input = torch.randn(Seq(batchSize, seqLength, embedDim))
     val sparseTensor = input.to_sparse_csr()
-    //    val out = multiheadAttention(input,input,input)
     println(s"sparseCsrSuite ${sparseTensor.is_sparse()}|nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout} | ${sparseTensor.crow_indices()} | ${sparseTensor.col_indices()}| value ${sparseTensor.values().shape.mkString(" ")}")
+    val tensorSparse = torch.sparse_csr_tensor(sparseTensor.crow_indices(), sparseTensor.col_indices(), sparseTensor.values())
+    println(s"tensorSparse shape ${tensorSparse.shape} layout ${tensorSparse.layout} s_sparse ${tensorSparse.is_sparse()} ")
     val denseTensor = sparseTensor.to_dense()
     println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()}")
 
@@ -131,24 +130,22 @@ class sparseCsrSuite extends munit.FunSuite {
 ***/
 class sparseBscSuite extends munit.FunSuite {
   test("sparseBscSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
-    val batchSize = 2
+    val batchSize = 20
     val seqLength = 10
-    val embedDim = 64
-    val numHeads = 8
-    val blocksize =4
-    //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
+    val embedDim = 640
     val input = torch.randn(Seq(batchSize, seqLength, embedDim))
-    val sparseTensor = input.to_sparse_bsc(Seq(4))
-    //    val out = multiheadAttention(input,input,input)
-    println(s"sparseBscSuite ${sparseTensor.is_sparse()} |nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout} | ${sparseTensor.ccol_indices()} ${sparseTensor.row_indices() } | value ${sparseTensor.values().shape.mkString(" ")}")
+    val sparseTensor = input.to_sparse_bsc(Seq(5, 5))
+    println(s"size ${sparseTensor.size}")
+    println(s"sparseBscSuite ${sparseTensor.is_sparse()} |nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout} | ${sparseTensor.ccol_indices()} ${sparseTensor.row_indices()} | value ${sparseTensor.values().shape.mkString(" ")}")
+    val tensorSparse = torch.sparse_bsc_tensor(sparseTensor.ccol_indices(), sparseTensor.row_indices(), sparseTensor.values(), sparseTensor.size)
+    println(s"tensorSparse shape ${tensorSparse.shape} layout ${tensorSparse.layout} s_sparse ${tensorSparse.is_sparse()} ")
     val denseTensor = sparseTensor.to_dense()
     println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()}")
 
   }
 }
 
-/***
+/** *
  *
  * crow_indices = [0, 1, 2]
  * col_indices = [0, 1]
@@ -159,32 +156,27 @@ class sparseBscSuite extends munit.FunSuite {
 ***/
 class sparseBsrSuite extends munit.FunSuite {
   test("sparseBsrSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
-    val batchSize = 2
+    val batchSize = 20
     val seqLength = 10
-    val embedDim = 64
-    val numHeads = 8
-    val blockSize = 4
-    //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
+    val embedDim = 640
     val input = torch.randn(Seq(batchSize, seqLength, embedDim))
-    val sparseTensor = input.to_sparse_bsr(Seq(4))
-    //    val out = multiheadAttention(input,input,input)
+    val sparseTensor = input.to_sparse_bsr(Seq(5, 5))
     println(s"sparseBsrSuite ${sparseTensor.is_sparse()}|nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout}  | ${sparseTensor.crow_indices()} | ${sparseTensor.col_indices()} | value ${sparseTensor.values().shape.mkString(" ")}")
     val denseTensor = sparseTensor.to_dense()
+    val tensorSparse = torch.sparse_bsr_tensor(sparseTensor.crow_indices(), sparseTensor.col_indices(), sparseTensor.values(), sparseTensor.size)
+    println(s"tensorSparse shape ${tensorSparse.shape} layout ${tensorSparse.layout} s_sparse ${tensorSparse.is_sparse()} ")
     println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()}")
 
   }
 }
 
-/***
+/** *
  * compressed_indices = [0, 2, 4]
  * plain_indices = [0, 1, 0, 1]
  * values = [1, 2, 3, 4]
  * torch.sparse_compressed_tensor(torch.tensor(compressed_indices, dtype=torch.int64),
  * torch.tensor(plain_indices, dtype=torch.int64),
  * torch.tensor(values), dtype=torch.double, layout=torch.sparse_csr)
- *
- *
  * dense = torch.randn(5, 5)
  * sparse = dense.to_sparse_csc()
  * sparse._nnz()
@@ -192,17 +184,17 @@ class sparseBsrSuite extends munit.FunSuite {
 ***/
 class sparseCompressSuite extends munit.FunSuite {
   test("sparseCompressSuite output shapes") {
-    //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
+    val plain_indices = torch.Tensor(Seq(0, 1, 0, 1))
+    val compressed_indices = torch.Tensor(Seq(0, 2, 4))
+    val values = torch.Tensor(Seq(1f, 2f, 3f, 4f))
+    val size = Seq(2, 2)
+    val ts = torch.sparse_compressed_tensor(compressed_indices, plain_indices, values, size, DType.float32, SparseCsr)
     val batchSize = 2
     val seqLength = 10
     val embedDim = 64
-    val numHeads = 8
-    //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
-    val input = torch.randn(Seq(batchSize, seqLength, embedDim))
+    val input = ts.to_dense() // torch.randn(Seq(batchSize, seqLength, embedDim))
     val sparseTensor = input.to_sparse()
-    //    val out = multiheadAttention(input,input,input)
     println(s"sparseComppressSuite ${sparseTensor.is_sparse()} |nnz ${sparseTensor.nnz()} |layout ${sparseTensor.layout}  | ${sparseTensor.indices()} | value ${sparseTensor.values().shape.mkString(" ")}")
-
     val denseTensor = sparseTensor.to_dense()
     println(s"denseTensor shape ${denseTensor.shape} layout ${denseTensor.layout} s_sparse ${denseTensor.is_sparse()}")
 
