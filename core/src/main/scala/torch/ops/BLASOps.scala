@@ -147,8 +147,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //  def digamma[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.digamma(t1.native))
 
-  def dist[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.dist(t1.native, t2.native))
+//  def dist[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.dist(t1.native, t2.native))
 
 //  def div[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
 //    fromNative(torchNative.div(t1.native, t2.native))
@@ -573,8 +573,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def linalg_ldl_solve[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.linalg_ldl_solve(t1.native, t2.native, t3.native))
 
-  def lerp[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.lerp(t1.native, t2.native, t3.native))
+//  def lerp[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.lerp(t1.native, t2.native, t3.native))
 
   def linalg_lu_solve[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.linalg_lu_solve(t1.native, t2.native, t3.native))
@@ -616,8 +616,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def logical_not[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.logical_not(t1.native))
 
-  def logit[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.logit(t1.native))
+//  def logit[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.logit(t1.native))
 
   def lt[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.lt(t1.native, t2.native))
@@ -632,8 +632,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def minimum[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.minimum(t1.native, t2.native))
 
-  def min[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.min(t1.native, t2.native))
+//  def min[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.min(t1.native, t2.native))
 
   def outer[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.outer(t1.native, t2.native))
@@ -726,8 +726,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def prelu[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.prelu(t1.native, t2.native))
 
-  def pow[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.pow(t1.native, t2.native))
+//  def pow[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.pow(t1.native, t2.native))
 
   def polar[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.polar(t1.native, t2.native))
@@ -891,9 +891,9 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //    val tensorRawSeq: TensorVector = torchNative.vsplit(t1.native, sliceSeq *)
 //    tensorVectorToSeqTensor(tensorRawSeq)
 
-  def where[D1 <: DType](t1: Tensor[D1]): Seq[Tensor[D1]] =
-    val tensorArray: TensorVector = torchNative.where(t1.native)
-    tensorVectorToSeqTensor(tensorArray)
+//  def where[D1 <: DType](t1: Tensor[D1]): Seq[Tensor[D1]] =
+//    val tensorArray: TensorVector = torchNative.where(t1.native)
+//    tensorVectorToSeqTensor(tensorArray)
 
   def broadcast_tensors[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Seq[Tensor[D1]] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
@@ -925,8 +925,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def nuclear_norm[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.nuclear_norm(t1.native))
 
-  def ones[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
-    fromNative(torchNative.ones(t1 *))
+//  def ones[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
+//    fromNative(torchNative.ones(t1 *))
 
   def ones_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ones_like(t1.native))
@@ -1033,8 +1033,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def rot90[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rot90(t1.native))
 
-  def round[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.round(t1.native))
+//  def round[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.round(t1.native))
 
   def row_indices_copy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.row_indices_copy(t1.native))
@@ -1271,8 +1271,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //  def square[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.square(t1.native))
 
-  def std[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.std(t1.native, true))
+//  def std[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.std(t1.native, true))
 
   def t_copy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.t_copy(t1.native))
@@ -1519,8 +1519,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //    fromNative(torchNative.asin(t1.native))
 
 
-  def argsort[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.argsort(t1.native))
+//  def argsort[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.argsort(t1.native))
 
 
   def arctan[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1545,11 +1545,11 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //    fromNative(torchNative.angle(t1.native))
 //
 
-  def amin[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.amin(t1.native))
-
-  def amax[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.amax(t1.native))
+//  def amin[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.amin(t1.native))
+//
+//  def amax[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.amax(t1.native))
 
 //  def all[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.all(t1.native))
@@ -1578,8 +1578,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def empty_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.empty_like(t1.native))
 
-  def empty[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
-    fromNative(torchNative.empty(t1 *))
+//  def empty[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
+//    fromNative(torchNative.empty(t1 *))
 
 
   def kthvalue[D1 <: DType](t1: Tensor[D1], sliceSeq: Long): (Tensor[D1], Tensor[D1]) =
@@ -1598,9 +1598,9 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
     val tup = torchNative.linalg_svd(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1), fromNative(tup.get2))
 
-  def mode[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
-    val tup = torchNative.mode(t1.native)
-    (fromNative(tup.get0), fromNative(tup.get1))
+//  def mode[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+//    val tup = torchNative.mode(t1.native)
+//    (fromNative(tup.get0), fromNative(tup.get1))
 
   def flattenDenseTensors[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
@@ -1641,8 +1641,8 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 //  def atan2[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
 //    fromNative(torchNative.atan2(t1.native, t2.native))
 
-  def polygamma[D1 <: DType](t1: Tensor[D1], lon: Long): Tensor[D1] =
-    fromNative(torchNative.polygamma(lon, t1.native))
+//  def polygamma[D1 <: DType](t1: Tensor[D1], lon: Long): Tensor[D1] =
+//    fromNative(torchNative.polygamma(lon, t1.native))
 
   def linalg_solve_ex[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): (Tensor[Promoted[D1, D2]], Tensor[Promoted[D1, D2]]) =
     val tup = torchNative.linalg_solve_ex(t1.native, t2.native)

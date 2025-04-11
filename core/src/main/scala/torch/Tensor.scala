@@ -379,8 +379,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def isNonzero: Boolean = native.is_nonzero()
 
   def isConj: Boolean = native.is_conj()
-
+  
   def isSparse: Boolean = native.is_sparse()
+  
+  
   // TODO override in subclasses instead?
   def item: DTypeToScala[D] =
     import ScalarType.*
@@ -845,6 +847,22 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def toSeq: Seq[DTypeToScala[D]] = ArraySeq.unsafeWrapArray(toArray)
 
+  def _dimV:Long = native._dimV()
+  
+  def _dimI:Long = native._dimI()
+  
+  def _nnz():Long = native._nnz()
+  
+  def nnz():Long = native._nnz()
+  
+  def dense_dim():Long = native.dense_dim()
+  
+  def sparse_dim():Long = native.sparse_dim()
+  
+  def coalesce():Tensor[D] = fromNative(native.coalesce)
+  
+  def is_coalesced():Boolean = native.is_coalesced()
+  
   def values():Tensor[D] = fromNative(native.values)
   
   def indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.indices)
@@ -867,6 +885,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def to_sparse_coo():Tensor[D] = fromNative(native.to_sparse)
 
+  def to_sparse():Tensor[D] = fromNative(native.to_sparse)
+  
   def to_sparse_csr(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csr(LongOptional(dense_dim)))
 
   def to_sparse_csc(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csc(LongOptional(dense_dim)))
@@ -879,6 +899,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def to_dense():Tensor[D] = fromNative(native.to_dense)
 
+  def to_mkldnn():Tensor[D] = fromNative(native.to_mkldnn)
+  
   def is_sparse():Boolean =  {
     val sparseLayout = Array(Sparse,SparseCsc,SparseBsc,SparseBsr,SparseCsr)
     if sparseLayout.contains(fromNative(native).layout) then true else false

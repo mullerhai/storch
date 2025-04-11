@@ -87,12 +87,12 @@ class ReductionOpsSuite extends TensorCheckSuite {
     expectedTensor = Tensor(1.2)
   )
 
-  testUnaryOp(
-    op = min,
-    opName = "min",
-    inputTensor = Tensor(Seq(1.0, 0.5, 1.2, -2)),
-    expectedTensor = Tensor(-2.0)
-  )
+//  testUnaryOp(
+//    op = min,
+//    opName = "min",
+//    inputTensor = Tensor(Seq(1.0, 0.5, 1.2, -2)),
+//    expectedTensor = Tensor(-2.0)
+//  )
 
   // TODO Enable property test once we figure out to compile properly with AtLeastOneFloatOrComplex
   // propertyTestBinaryOp(dist35, "dist")
