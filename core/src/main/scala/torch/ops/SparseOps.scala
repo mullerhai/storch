@@ -3,7 +3,6 @@ package ops
 
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-//import org.bytedeco.pytorch.global.torch.ScalarType
 import org.bytedeco.pytorch.{BoolOptional, DeviceOptional, LayoutOptional, ScalarTypeOptional}
 import torch.Device.CPU
 import torch.Derive

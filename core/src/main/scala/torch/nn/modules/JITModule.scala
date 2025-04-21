@@ -1,0 +1,163 @@
+package torch
+package nn
+package modules
+
+import org.bytedeco.pytorch
+import org.bytedeco.pytorch.{CompilationUnit, ExtraFilesMap, IValue, IValueVector, InputArchive, JitModule, OutputArchive, QualifiedName, StringIValueMap, named_buffer_iterator, named_parameter_iterator}
+import Tensor.fromNative
+import org.bytedeco.javacpp.{BytePointer, Pointer}
+
+import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}
+import scala.collection.mutable.{ListBuffer, HashMap as MutaHashMap}
+import java.io.{InputStream,OutputStream}
+import java.nio.ByteBuffer
+
+class JITModule(qualifiedName: String,
+                compilationUnit: CompilationUnit,
+                shouldMangle: Boolean = false) {
+
+  protected[torch] var _nativeModule = pytorch.Module()
+
+  private[torch] def nativeModule: pytorch.Module = _nativeModule // = pytorch.Module()
+
+  private var childModules: TreeSeqMap[String, Module] = TreeSeqMap.empty
+
+  private var nativeJitModule: JitModule = new JitModule(new QualifiedName(qualifiedName),compilationUnit,shouldMangle)
+  def apply(predictTensor: Tensor[?]):Tensor[?] = {
+    val vector = new IValueVector(predictTensor.native)
+    val pred = fromNative(nativeJitModule.forward(vector).toTensor)
+    pred
+  }
+
+  //      // Create a vector of inputs.
+  //        IValueVector inputs = new IValueVector();
+  //        inputs.push_back(new IValue(ones(1, 3, 224, 224)));
+  //
+  //        // Execute the model and turn its output into a tensor.
+  //        Tensor output = module.forward(inputs).toTensor();
+  //        print(output.slice(/*dim=*/1, /*start=*/new LongOptional(0), /*end=*/new LongOptional(5), /*step=*/1));
+  def apply(predictSeq: Seq[Int]): Tensor[?] ={
+
+    val vector = new IValueVector(torch.ones(predictSeq).native)
+    val pred =  fromNative(nativeJitModule.forward(vector).toTensor())
+    pred
+  }
+
+  def apply(predictTensor: Tensor[?],parameter:MutaHashMap[String,Tensor[?]]): Tensor[?]={
+    
+    val vector = new IValueVector(predictTensor.native)
+    val  kwargs: StringIValueMap = new StringIValueMap()
+    for((k,v) <- parameter.toList){
+      kwargs.put(new BytePointer(k),new IValue(v.native))
+    }
+    val pred = fromNative(nativeJitModule.forward(vector,kwargs).toTensor)
+    pred
+  }
+
+  def register_buffer(name: String, tensor: Tensor[?] ):Unit = nativeJitModule.register_buffer(name, tensor.native)
+  
+  def register_parameter(name: String, tensor: Tensor[?],is_buffer: Boolean):Unit = {}
+
+  def register_attribute(name: String,typez: String, value: IValue):Unit ={}
+
+  def register_module(name: String, module: JitModule)= nativeJitModule.register_module(name,module)
+  def save(fileName: String)= nativeJitModule.save(fileName)
+
+  def save(fileName: String, extraFiles: ExtraFilesMap)= nativeJitModule.save(fileName,extraFiles)
+//https://pytorch.org/docs/stable/generated/torch.jit.save.html
+  def save(outputStream: OutputStream) =nativeJitModule.save(Pointer())
+
+  def save(outputStream: OutputStream, extraFiles:ExtraFilesMap)=nativeJitModule.save(Pointer(),extraFiles)
+
+  def save_for_mobile(fileName: String) = nativeJitModule._save_for_mobile(fileName)
+
+  def deepcopy() = nativeJitModule.deepcopy()
+
+  def cloneNative() = nativeJitModule.clone()
+
+  def store_traced_inputs(funcName: String,inputs: Tensor[?])={
+    val vector = new IValueVector(inputs.native)
+    nativeJitModule.store_traced_inputs(funcName,vector)
+  }
+
+  def set_delete_memory(delete_mem:ByteBuffer)= nativeJitModule.set_delete_memory(delete_mem)
+
+  def retrieve_traced_inputs = nativeJitModule.retrieve_traced_inputs()
+
+  def eval() = nativeJitModule.eval()
+
+  def train() = nativeJitModule.train()
+
+  def train(on: Boolean) = nativeJitModule.train(on)
+
+  def is_training = nativeJitModule.is_training()
+
+  def to(device: Device): this.type =
+    nativeJitModule.to(device.toNative, false)
+    this
+
+  def namedBuffers(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+    val buffers = nativeJitModule.named_buffers(recurse)
+    var ele = buffers.begin()
+    val buff = new ListBuffer[named_buffer_iterator]()
+    while (ele != buffers.end()) {
+      buff.append(ele)
+      ele.increment()
+    }
+    TreeSeqMap.from((0 until buffers.size().toInt).map { i =>
+      val item = buff(i).access()
+      (item.name().getString(), fromNative[DType](item.value()))
+    })
+
+  def namedParameters(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+    val params = nativeJitModule.named_parameters(recurse)
+    var ele = params.begin()
+    val buffer = new ListBuffer[named_parameter_iterator]()
+    while(ele != params.end()){
+      buffer.append(ele)
+      ele.increment()
+    }
+    TreeSeqMap.from((0 until params.size().toInt).map { i =>
+      val item = buffer(i).access()
+      (item.name().getString(), fromNative[DType](item.value()))
+    })
+
+
+  def loadStateDict(stateDict: Map[String, Tensor[DType]]): Unit =
+    val tensorsToLoad = namedParameters() ++ namedBuffers()
+    // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
+    for ((key, param) <- tensorsToLoad if stateDict.contains(key))
+      noGrad {
+        param.copy_(stateDict(key))
+      }
+
+  def set_optimized(optimized: Boolean) = nativeJitModule.set_optimized(optimized)
+
+  def is_optimized() :Boolean = nativeJitModule.is_optimized()
+
+  def dump(pmb: Boolean, pav: Boolean, ppv: Boolean) = nativeJitModule.dump(pmb,pav,ppv)
+
+  def attributes(recurse: Boolean = true) = nativeJitModule.attributes(recurse)
+
+  def named_attributes(recurse: Boolean =true) = nativeJitModule.named_attributes(recurse)
+
+  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
+
+  def named_parameters(recurse: Boolean= true)= nativeJitModule.named_parameters(recurse)
+
+  def buffers(recurse: Boolean = true) = nativeJitModule.buffers(recurse)
+
+  def named_buffers(recurse: Boolean = true) = nativeJitModule.named_buffers(recurse)
+
+  def children() = nativeJitModule.children()
+
+  def named_children()= nativeJitModule.named_children()
+
+  def modules() = nativeJitModule.modules()
+
+  def named_modules() = nativeJitModule.named_modules()
+
+
+
+
+}
