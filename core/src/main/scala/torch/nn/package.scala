@@ -26,16 +26,17 @@ package object nn {
 
   export modules.Module
 
-  export modules.activation.Softmax
-  export modules.activation.LogSoftmax
-  export modules.activation.ReLU
-  export modules.activation.Tanh
   export modules.container.Sequential
   export modules.container.ModuleList
-  export modules.conv.Conv2d
+  export modules.container.ModuleDict
+
   export modules.flatten.Flatten
   export modules.linear.Linear
   export modules.linear.Identity
+  export modules.linear.Bilinear
+  export modules.flatten.Fold
+  export modules.flatten.Unflatten
+  export modules.flatten.Unfold
   export modules.normalization.GroupNorm
   export modules.normalization.LayerNorm
   export modules.normalization.RMSNorm
@@ -93,11 +94,8 @@ package object nn {
   export modules.pad.ReplicationPad1d
   export modules.pad.ReplicationPad2d
   export modules.pad.ReplicationPad3d
-  export modules.linear.Bilinear
-  export modules.flatten.Fold
-  export modules.flatten.Unflatten
-  export modules.flatten.Unfold
   export modules.conv.Conv1d
+  export modules.conv.Conv2d
   export modules.conv.Conv3d
   export modules.conv.ConvTranspose1d
   export modules.conv.ConvTranspose2d
@@ -119,29 +117,37 @@ package object nn {
   export modules.activation.ELU
   export modules.activation.GELU
   export modules.activation.GLU
+  export modules.activation.GEGLU
   export modules.activation.Hardshrink
+  export modules.activation.Hardsigmoid
+  export modules.activation.Hardswish
   export modules.activation.Hardtanh
   export modules.activation.LeakyReLU
+  export modules.activation.Lerp
   export modules.activation.LogSigmoid
-  export modules.activation.Sigmoid
+  export modules.activation.LogSoftmax
   export modules.activation.Mish
   export modules.activation.PReLU
+  export modules.activation.ReLU
   export modules.activation.ReLU6
   export modules.activation.RReLU
   export modules.activation.SELU
+  export modules.activation.Sigmoid
   export modules.activation.SiLU
+  export modules.activation.Softmax
   export modules.activation.Softmax2d
   export modules.activation.Softmin
   export modules.activation.Softplus
   export modules.activation.Softshrink
   export modules.activation.Softsign
+  export modules.activation.Tanh
   export modules.activation.Tanhshrink
   export modules.activation.Threshold
-  export loss.CrossEntropyLoss
   export loss.AdaptiveLogSoftmaxWithLoss
   export loss.BCELoss
   export loss.BCEWithLogitsLoss
   export loss.CosineEmbeddingLoss
+  export loss.CrossEntropyLoss
   export loss.CTCLoss
   export loss.HingeEmbeddingLoss
   export loss.HuberLoss

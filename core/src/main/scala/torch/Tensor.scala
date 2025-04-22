@@ -120,7 +120,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def vdot[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
     native.vdot(other.native)
   )
-
+  
+  def new_empty[D <: DType](size: Seq[Int]):Tensor[D] = fromNative(native.new_empty(size*))
+  
+  def 
   def *[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = mul(s)
 
   def mul[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
@@ -332,6 +335,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     */
   def expand(sizes: Int*) = fromNative(native.expand(sizes.map(_.toLong)*))
 
+  def corrcoef():Tensor[D] = fromNative(native.corrcoef())
+  
   def flatten: Tensor[D] = fromNative(native.flatten())
 
   def flatten(startDim: Int = 0, endDim: Int = -1): Tensor[D] = fromNative(
@@ -744,6 +749,22 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         case i: Int      => native.split(i.toLong, dim.toLong)
         case s: Seq[Int] => native.split(s.map(_.toLong).toArray, dim.toLong)
       }
+    (0L until result.size()).map(i => fromNative(result.get(i)))
+  }
+
+  def chunk(
+             chunks: Int,
+             dim: Int = 0
+           ): Seq[Tensor[D]] = {
+    val result = native.chunk(chunks.toLong, dim.toLong)
+    (0L until result.size()).map(i => fromNative(result.get(i)))
+  }
+
+  def unsafe_chunk(
+             chunks: Int,
+             dim: Int = 0
+           ): Seq[Tensor[D]] = {
+    val result = native.unsafe_chunk(chunks.toLong, dim.toLong)
     (0L until result.size()).map(i => fromNative(result.get(i)))
   }
 

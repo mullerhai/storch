@@ -1314,7 +1314,7 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
     fromNative(torchNative.uniform(t1.native))
 
 
-  def unsqueeze[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
+  def unsqueeze_raw[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
     fromNative(torchNative.unsqueeze(t1.native, dim))
 
   def vander[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
