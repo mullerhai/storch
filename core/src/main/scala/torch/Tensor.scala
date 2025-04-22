@@ -18,7 +18,7 @@ package torch
 
 import org.bytedeco.javacpp.{BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{EllipsisIndexType, LongOptional, ScalarTypeOptional, SymInt, SymIntOptional, TensorIndexArrayRef}
+import org.bytedeco.pytorch.{EllipsisIndexType,ScalarOptional, LongOptional, ScalarTypeOptional, SymInt, SymIntOptional, TensorIndexArrayRef}
 import org.bytedeco.pytorch.global.torch as torchNative
 import Tensor.*
 import org.bytedeco.pytorch.global.torch.ScalarType
@@ -120,10 +120,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def vdot[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
     native.vdot(other.native)
   )
-  
-  def new_empty[D <: DType](size: Seq[Int]):Tensor[D] = fromNative(native.new_empty(size*))
-  
-  def 
+
+  def new_empty[D <: DType](size: Seq[Int]):Tensor[D] = fromNative(native.new_empty(size.map(_.toLong)*))
+
   def *[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = mul(s)
 
   def mul[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
@@ -336,7 +335,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def expand(sizes: Int*) = fromNative(native.expand(sizes.map(_.toLong)*))
 
   def corrcoef():Tensor[D] = fromNative(native.corrcoef())
-  
+
   def flatten: Tensor[D] = fromNative(native.flatten())
 
   def flatten(startDim: Int = 0, endDim: Int = -1): Tensor[D] = fromNative(
@@ -386,8 +385,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def isConj: Boolean = native.is_conj()
   
   def isSparse: Boolean = native.is_sparse()
-  
-  
+
+  def clip(): Tensor[D] = fromNative(native.clip())
+
+  def clamp(): Tensor[D] = fromNative(native.clamp())
+
+
+
   // TODO override in subclasses instead?
   def item: DTypeToScala[D] =
     import ScalarType.*
@@ -439,11 +443,18 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def <(other: ScalaType): Tensor[Bool] = lt(other)
 
+  def clip[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]]= fromNative(native.clip(new ScalarOptional(toScalar(min))))
+
+  def clamp[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]]= fromNative(native.clamp(new ScalarOptional(toScalar(min))))
+
   def matmul[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] =
     fromNative(native.matmul(u.native))
 
   def `@`[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] = matmul(u)
 
+  def norm(): Tensor[D] = fromNative(native.norm())
+
+  def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(native.norm(toScalar(s)))
   /** Fills elements of self tensor with value where mask is `true`. The shape of mask must be
     * [broadcastable](https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics)
     * with the shape of the underlying tensor.
