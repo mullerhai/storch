@@ -5,5 +5,11 @@ package activation
 
 import org.bytedeco.pytorch
 import torch.internal.NativeConverters.fromNative
-//import org.bytedeco.pytorch.{HardsigmoidImpl, ELUOptions}
-class Hardsigmoid
+
+
+final class Hardsigmoid[D <: DType: Default] extends TensorModule[D]:
+ 
+  override def hasBias(): Boolean = false
+
+  override def toString = getClass().getSimpleName()
+  def apply(t: Tensor[D]): Tensor[D] = torch.hardsigmoid(t)
