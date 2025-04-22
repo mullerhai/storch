@@ -77,11 +77,23 @@ trait JitOps {
     torchNative.load(modelPath, deviceOpt, weightsOnly)
   }
 
+  def from_pretrain_model(modelFilePath: String): JitModule = torchNative.load(modelFilePath)
+
   def from_pretrain_model(modelPath: String, device: String, weightsOnly: Boolean): JitModule = {
     val deviceOpt: DeviceOptional = new DeviceOptional(new Device(device))
     torchNative.load(modelPath, deviceOpt, weightsOnly)
   }
 
+  def from_pretrain_model(
+            modelPath: String,
+            device: String,
+            extrafilesMap: ExtraFilesMap,
+            weightsOnly: Boolean
+          ): JitModule = {
+    val deviceOpt: DeviceOptional = new DeviceOptional(new Device(device))
+    torchNative.load(modelPath, deviceOpt, extrafilesMap, weightsOnly)
+  }
+  
   def load(
       modelPath: String,
       device: String,

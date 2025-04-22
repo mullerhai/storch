@@ -3,24 +3,24 @@ package nn
 package modules
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{CompilationUnit, ExtraFilesMap, IValue, IValueVector, InputArchive, JitModule, OutputArchive, QualifiedName, StringIValueMap, named_buffer_iterator, named_parameter_iterator}
+import org.bytedeco.pytorch.{CompilationUnit, ExtraFilesMap, IValue, IValueVector, InputArchive, JitModule, OutputArchive, QualifiedName, StringIValueMap, named_buffer_iterator, named_attribute_iterator, named_parameter_iterator}
 import Tensor.fromNative
 import org.bytedeco.javacpp.{BytePointer, Pointer}
 
 import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}
 import scala.collection.mutable.{ListBuffer, HashMap as MutaHashMap}
-import java.io.{InputStream,OutputStream}
+import java.io.{InputStream,OutputStream,ByteArrayOutputStream}
 import java.nio.ByteBuffer
 
 class JITModule(qualifiedName: String,
                 compilationUnit: CompilationUnit,
                 shouldMangle: Boolean = false) {
 
-  protected[torch] var _nativeModule = pytorch.Module()
+  protected[torch] var _nativeModule = new JitModule(new QualifiedName(qualifiedName),compilationUnit,shouldMangle)
 
-  private[torch] def nativeModule: pytorch.Module = _nativeModule // = pytorch.Module()
+  private[torch] def nativeModule: JitModule = _nativeModule
 
-  private var childModules: TreeSeqMap[String, Module] = TreeSeqMap.empty
+  private var childModules: TreeSeqMap[String, JitModule] = TreeSeqMap.empty
 
   private var nativeJitModule: JitModule = new JitModule(new QualifiedName(qualifiedName),compilationUnit,shouldMangle)
   def apply(predictTensor: Tensor[?]):Tensor[?] = {
@@ -32,7 +32,6 @@ class JITModule(qualifiedName: String,
   //      // Create a vector of inputs.
   //        IValueVector inputs = new IValueVector();
   //        inputs.push_back(new IValue(ones(1, 3, 224, 224)));
-  //
   //        // Execute the model and turn its output into a tensor.
   //        Tensor output = module.forward(inputs).toTensor();
   //        print(output.slice(/*dim=*/1, /*start=*/new LongOptional(0), /*end=*/new LongOptional(5), /*step=*/1));
@@ -65,9 +64,18 @@ class JITModule(qualifiedName: String,
 
   def save(fileName: String, extraFiles: ExtraFilesMap)= nativeJitModule.save(fileName,extraFiles)
 //https://pytorch.org/docs/stable/generated/torch.jit.save.html
-  def save(outputStream: OutputStream) =nativeJitModule.save(Pointer())
+  def save(outputStream: ByteArrayOutputStream) = {
+    val byteArray: Array[Byte] = outputStream.toByteArray()
+    val bytePointer: BytePointer = new BytePointer(byteArray*)
+    nativeJitModule.save(bytePointer)
+  }
 
-  def save(outputStream: OutputStream, extraFiles:ExtraFilesMap)=nativeJitModule.save(Pointer(),extraFiles)
+  def save(outputStream: ByteArrayOutputStream, extraFiles:ExtraFilesMap) = {
+
+    val byteArray: Array[Byte] = outputStream.toByteArray()
+    val bytePointer: BytePointer = new BytePointer(byteArray *)
+    nativeJitModule.save(bytePointer,extraFiles)
+  }
 
   def save_for_mobile(fileName: String) = nativeJitModule._save_for_mobile(fileName)
 
@@ -137,13 +145,49 @@ class JITModule(qualifiedName: String,
 
   def dump(pmb: Boolean, pav: Boolean, ppv: Boolean) = nativeJitModule.dump(pmb,pav,ppv)
 
-  def attributes(recurse: Boolean = true) = nativeJitModule.attributes(recurse)
+  def attributes(recurse: Boolean = true) = {
 
-  def named_attributes(recurse: Boolean =true) = nativeJitModule.named_attributes(recurse)
+    val attr = nativeJitModule.attributes(recurse)
+    var ele = attr.begin()
+    val buffer = new ListBuffer[IValue]()
+    while (ele != attr.end()) {
+      buffer.append(ele.access())
+      ele.increment()
+    }
+    ArraySeq.unsafeWrapArray(buffer.toArray)
+  }
 
-  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
+  def named_attributes(recurse: Boolean =true) = {
+
+    val nameAttr = nativeJitModule.named_attributes(recurse)
+    var ele = nameAttr.begin()
+    val buffer = new ListBuffer[named_attribute_iterator]()
+    while (ele != nameAttr.end()) {
+      buffer.append(ele)
+      ele.increment()
+    }
+    TreeSeqMap.from((0 until nameAttr.size().toInt).map { i =>
+      val item = buffer(i).access()
+      (item.name().getString(), item.value())
+    })
+  }
+
+//  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
 
   def named_parameters(recurse: Boolean= true)= nativeJitModule.named_parameters(recurse)
+
+  def parameters: Seq[Tensor[?]] = parameters(recurse = true)
+
+  def parameters(recurse: Boolean): Seq[Tensor[?]] = {
+    val params = nativeJitModule.parameters(recurse)
+    var ele = params.begin()
+    val buffer = new ListBuffer[Tensor[?]]()
+    while (ele != params.end()) {
+      buffer.append(fromNative[DType](ele.access()))
+      ele.increment()
+    }
+    ArraySeq.unsafeWrapArray(buffer.toArray)//.map(fromNative[DType])
+  }
 
   def buffers(recurse: Boolean = true) = nativeJitModule.buffers(recurse)
 
