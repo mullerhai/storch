@@ -38,7 +38,7 @@ package object nn {
   export modules.linear.Identity
   export modules.normalization.GroupNorm
   export modules.normalization.LayerNorm
-  export modules.pooling.AdaptiveAvgPool2d
+  export modules.normalization.RMSNorm
   export modules.normalization.LocalResponseNorm
   export modules.sparse.Embedding
   export modules.sparse.FMEmbedding
@@ -60,6 +60,7 @@ package object nn {
   export modules.sparse.CrossMapLRN2d
   export modules.sparse.CosineSimilarity
   export modules.pooling.AdaptiveAvgPool1d
+  export modules.pooling.AdaptiveAvgPool2d
   export modules.pooling.AdaptiveAvgPool3d
   export modules.pooling.AdaptiveMaxPool3d
   export modules.pooling.AdaptiveMaxPool2d
@@ -136,7 +137,6 @@ package object nn {
   export modules.activation.Softsign
   export modules.activation.Tanhshrink
   export modules.activation.Threshold
-//  export modules.activation.LogSigmoid
   export loss.CrossEntropyLoss
   export loss.AdaptiveLogSoftmaxWithLoss
   export loss.BCELoss

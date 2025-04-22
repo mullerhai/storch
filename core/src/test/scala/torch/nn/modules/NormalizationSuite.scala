@@ -29,6 +29,15 @@ class LocalResponseNormSuite extends munit.FunSuite {
   }
 }
 
+class RMSNormSuite extends munit.FunSuite {
+  test("RMSNormSuite output shapes") {
+    val m12 = nn.RMSNorm(normalized_shape = Seq(20,30))
+    val input1 = torch.randn(Seq(20, 20, 30))
+    //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
+//    assertEquals(m12(input1).shape, Seq(20, 6, 10, 10)) //torch.Size([20, 6, 10, 10])
+        println(m12(input1))
+  }
+}
 
 class GroupNormSuite extends munit.FunSuite {
   test("GroupNormSuite output shapes") {

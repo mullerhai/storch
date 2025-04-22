@@ -18,7 +18,7 @@ package torch
 package ops
 
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{PackedSequence, TensorVector}
+import org.bytedeco.pytorch.{PackedSequence, TensorVector, TensorOptional, DoubleOptional}
 import torch.internal.NativeConverters.fromNative
 
 import scala.collection.mutable.ListBuffer
@@ -1014,6 +1014,14 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
 
   def rms_norm[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.rms_norm(t1.native, sliceSeq *))
+
+  def rms_norm[D1 <: DType](t1: Tensor[D1], normalizedShape: Seq[Long], weight:Option[Tensor[Float32]], eps: Option[Double]): Tensor[D1] = {
+    val weightOpt = if weight.isDefined then new TensorOptional(weight.get.native) else new TensorOptional()
+    val epsOpt = if eps.isDefined then new DoubleOptional(eps.get) else new DoubleOptional()
+    fromNative(torchNative.rms_norm(t1.native, normalizedShape.toArray , weightOpt, epsOpt))
+  }
+    
+
 
   def roll[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.roll(t1.native, sliceSeq *))

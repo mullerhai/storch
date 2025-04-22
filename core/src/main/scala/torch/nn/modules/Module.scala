@@ -246,7 +246,6 @@ trait HasParams[ParamType <: FloatNN | ComplexNN: Default] extends Module:
 
 trait HasWeight[ParamType <: FloatNN | ComplexNN]:
   def weight: Tensor[ParamType]
-
 /** Transforms a single tensor into another one of the same type. */
 trait TensorModule[D <: DType] extends Module with (Tensor[D] => Tensor[D]):
   override def toString(): String = "TensorModule"
