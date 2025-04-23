@@ -9,13 +9,14 @@ import sbtassembly.AssemblyPlugin.assemblySettings
 
 ThisBuild / tlBaseVersion := "0.0" // your current series x.y
 
-ThisBuild / organization := "dev.storch"
+ThisBuild / organization :=  "io.github.mullerhai"//"dev.storch"
 ThisBuild / organizationName := "storch.dev"
 ThisBuild / startYear := Some(2022)
 ThisBuild / licenses := Seq(License.Apache2)
 ThisBuild / developers := List(
   // your GitHub handle and name
-  tlGitHubDev("sbrunk", "Sören Brunk")
+  tlGitHubDev("sbrunk", "Sören Brunk"),
+  tlGitHubDev("mullerhai", "mullerhai")
 )
 
 // publish to s01.oss.sonatype.org (set to true to publish to oss.sonatype.org instead)
@@ -75,6 +76,29 @@ lazy val commonSettings = Seq(
     "+publish",
     "tlSonatypeBundleReleaseIfRelevant"
   ).mkString("; ", "; ", "")
+)
+publishTo := sonatypePublishToBundle.value
+// For all Sonatype accounts created on or after February 2021
+//import xerial.sbt.Sonatype.sonatype01
+
+//ThisBuild / sonatypeCredentialHost := sonatype01
+import xerial.sbt.Sonatype.sonatypeCentralHost
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+
+import ReleaseTransformations._
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("+publishSigned"),
+  releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges,
 )
 
 lazy val core = project
