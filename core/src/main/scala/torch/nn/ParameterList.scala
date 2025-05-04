@@ -21,9 +21,9 @@ class ParameterList[D <: DType] extends ParameterListImpl {
 
   override def end(): _root_.org.bytedeco.pytorch.StringTensorDictItemVector.Iterator = super.end()
 
-  def at(idx: Long): Tensor[D] = fromNative(super.at(idx))
+  def at_native(idx: Long): Tensor[D] = fromNative(super.at(idx))
 
-  def get(idx: Long): Tensor[D] = fromNative(super.get(idx))
+  def get_native(idx: Long): Tensor[D] = fromNative(super.get(idx))
 
   override def size(): Long = super.size()
 

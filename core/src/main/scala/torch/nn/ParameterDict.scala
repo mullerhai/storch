@@ -19,10 +19,10 @@ class ParameterDict[D <: DType] extends ParameterDictImpl{
 
 //  override def pop(key: _root_.org.bytedeco.javacpp.BytePointer): _root_.org.bytedeco.pytorch.Tensor = super.pop(key)
 
-  def pop(key: String): Tensor[D] = fromNative[D](super.pop(key))
+  def pop_native(key: String): Tensor[D] = fromNative[D](super.pop(key))
 
   //_root_.org.bytedeco.pytorch.StringVector
-  def keys():Seq[String]  = {
+  def keys_native():Seq[String]  = {
     val keyVector = super.keys()
     val buffer = new ListBuffer[String]()
     var it = keyVector.begin()
@@ -37,7 +37,7 @@ class ParameterDict[D <: DType] extends ParameterDictImpl{
 
 
   // _root_.org.bytedeco.pyto    rch.TensorVector
-  def values():Seq[Tensor[D]] = {
+  def values_native():Seq[Tensor[D]] = {
     val tensorVector = super.values()
     val buffer = new ListBuffer[Tensor[D]]()
     var it = tensorVector.begin()
@@ -64,5 +64,5 @@ class ParameterDict[D <: DType] extends ParameterDictImpl{
 
 //  override def get(key: _root_.org.bytedeco.javacpp.BytePointer): _root_.org.bytedeco.pytorch.Tensor = super.get(key)
 
-  def get(key: String): Tensor[D] = fromNative(super.get(key))
+  def get_native(key: String): Tensor[D] = fromNative(super.get(key))
 }
