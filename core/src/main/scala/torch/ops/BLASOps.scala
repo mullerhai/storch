@@ -43,8 +43,8 @@ private[torch] trait BLASOps {
 //    fromNative(
 //    native.vdot(other.native)
 //  )
-def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
-  fromNative(torchNative.put(t1.native, t2.native, t3.native))
+  def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 | D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.put(t1.native, t2.native, t3.native))
 
   def bmm[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.bmm(t1.native, t2.native))
@@ -1021,7 +1021,7 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
     fromNative(torchNative.rms_norm(t1.native, normalizedShape.toArray , weightOpt, epsOpt))
   }
     
-
+  
 
   def roll[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.roll(t1.native, sliceSeq *))
@@ -1498,7 +1498,7 @@ def put[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2], t3: Tensor[D1 
   def arctanh[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.arctanh(t1.native))
 
-
+  
   def bincount[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.bincount(t1.native))
 

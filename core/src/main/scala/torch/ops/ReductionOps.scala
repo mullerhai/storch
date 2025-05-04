@@ -935,4 +935,37 @@ private[torch] trait ReductionOps {
       if nativeDim.isEmpty then torchNative.count_nonzero(input.native)
       else torchNative.count_nonzero(input.native, nativeDim: _*)
     )
+//    public static native T_TensorTensor_T topk(
+//    @Const @ByRef Tensor var0,
+//    @Cast({"int64_t"}) long var1
+//    , @Cast({"int64_t"}) long var3,
+//    @Cast({"bool"}) boolean var5,
+//    @Cast({"bool"}) boolean var6);
+//
+//    @Namespace("at")
+//    @ByVal
+//    public static native T_TensorTensor_T topk(
+//    @Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1);
+
+  def topk[D <: DType](input: Tensor[D],
+                                     k: Int):TensorTuple[D] ={
+
+    val valueIndices = torchNative.topk(input.native,k.toLong)
+    val values = fromNative[D](valueIndices.get0())
+    val indices = new Int64Tensor(valueIndices.get1())
+    TensorTuple(values,indices)
+  }
+
+  def topk[D <: DType](input: Tensor[D],
+                                     k: Int,
+                                     dim: Int,
+                                     largest: Boolean,
+                                     sorted: Boolean,
+                                    ):TensorTuple[D] ={
+
+    val valueIndices = torchNative.topk(input.native,k.toLong,dim.toLong,largest,sorted)
+    val values = fromNative[D](valueIndices.get0())
+    val indices = new Int64Tensor(valueIndices.get1())
+    TensorTuple(values,indices)
+  }
 }

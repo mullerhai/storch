@@ -25,6 +25,7 @@ import MemoryFormat.Contiguous
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   BoolOptional,
+  LongOptional,
   ByteVector,
   GenericDict,
   ScalarTypeOptional,
@@ -48,7 +49,29 @@ private[torch] trait CreationOps {
 // TODO as_tensor
 // TODO as_strided
 // TODO frombuffer
+    
 
+  //    @Namespace("at")
+  //    @ByVal
+  //    public static native Tensor as_strided(@Const @ByRef 
+  //    Tensor var0, 
+  //    @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") 
+  //    long[] var1, 
+  //    @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") 
+  //    long... var2);
+  def as_strided[D <: DType](input: Tensor[D],
+                             size: Seq[Int],
+                             stride: Seq[Int],
+                             storageOffset: Option[Int] = None): Tensor[D] ={
+   if storageOffset.isDefined then fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong).toArray,new LongOptional(storageOffset.get.toLong)))
+   else fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong).toArray,new LongOptional()))
+  }
+
+  def as_strided[D <: DType](input: Tensor[D],
+                             size: Seq[Int],
+                             stride: Seq[Int]): Tensor[D] = {
+    fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong)*))
+  }
 // def zeros[D <: DType](size: Int*): Tensor[Float32] =
 //   zeros[D](size.toSeq)
   def cumsum[D <: DType](input: Tensor[D], dim: Long, dtype: D = float32): Tensor[D] =

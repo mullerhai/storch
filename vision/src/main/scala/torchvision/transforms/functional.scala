@@ -75,3 +75,70 @@ object functional:
     val intImage = (_pic.permute(1, 2, 0) * 255).to(dtype = int8)
     val bytes = intImage.toArray
     ImmutableImage.loader().fromBytes(bytes)
+
+//  def Compose()=???
+//
+//  def Resize()=???
+//
+//  def CenterCrop() =???
+//
+//  def RandomCrop() = ???
+//
+//  def RandomResizedCrop() =???
+//
+//  def FiveCrop() =???
+//
+//  def TenCrop() =???
+//
+//  def Lambda()= ???
+//
+//  def Normalize() =???
+//
+//  def RandomHorizontalFlip() = ???
+//
+//  def RandomVerticalFlip() =???
+//
+//  def RandomRotation() =???
+//
+//  def Pad() =???
+//
+//  def ColorJitter() =???
+//
+//  def Grayscale() =???
+//
+//  def RandomGrayscale() =???
+//
+//  def RandomAffine()= ???
+//
+//  def RandomErasing() =???
+//
+//  def RandomChoice() =???
+//
+//  def RandomApply()= ???
+//
+//  def RandomOrder() =???
+//
+//  def RandomPerspective() =???
+//
+//  def GaussianBlur() =???
+//
+//  def InterpolationMode()=???
+//
+//  def RandomInvert() =???
+//
+//  def RandomPosterize() =???
+//
+//  def RandomSolarize() =???
+//
+//  def RandomAdjustSharpness() =???
+//
+//  def RandomAutocontrast() =???
+//
+//  def RandomEqualize() =???
+//
+//  def ElasticTransform() =???
+//
+//  def LinearTransformation() =???
+
+
+

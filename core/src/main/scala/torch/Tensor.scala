@@ -18,7 +18,7 @@ package torch
 
 import org.bytedeco.javacpp.{BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{EllipsisIndexType,ScalarOptional, LongOptional, ScalarTypeOptional, SymInt, SymIntOptional, TensorIndexArrayRef}
+import org.bytedeco.pytorch.{EllipsisIndexType, LongOptional, Node, ScalarOptional, ScalarTypeOptional, SymInt, SymIntOptional, TensorIndexArrayRef, TensorTensorHook, VoidTensorHook}
 import org.bytedeco.pytorch.global.torch as torchNative
 import Tensor.*
 import org.bytedeco.pytorch.global.torch.ScalarType
@@ -35,6 +35,8 @@ import torch.Layout.{Sparse, SparseBsc, SparseBsr, SparseCsc, SparseCsr, Strided
 
 import scala.annotation.implicitNotFound
 import torch.nn.functional as F
+
+import scala.collection.mutable.ListBuffer
 
 case class TensorTuple[D <: DType](
     values: Tensor[D],
@@ -59,6 +61,81 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def add[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.add(toScalar(s))
   )
+
+  def grad_fn(): Node = native.grad_fn()
+
+  def set_requires_grad(requires_grad: Boolean) = native.set_requires_grad(requires_grad)
+
+  def requires_grad():Boolean = native.requires_grad()
+
+  def requires_grad_() = native.requires_grad_()
+
+  def requires_grad_(required_grad: Boolean) = native.requires_grad_(required_grad)
+
+  def is_leaf(): Boolean = native.is_leaf()
+
+  def output_nr(): Long = native.output_nr()
+
+  def retains_grad(): Boolean = native.retains_grad()
+
+  def _version(): Long = native._version()
+
+  def is_view(): Boolean = native.is_view()
+
+  def name(): String = native.name().toString()
+
+  def remove_hook(pos: Int):Unit = native.remove_hook(pos)
+
+  def sizes(): Seq[Int] = {
+    val longArrayRef = native.sizes()
+    val sizesBuffer = new ListBuffer[Int]()
+    for (i <- 0 until longArrayRef.size().toInt) {
+      val element = longArrayRef.get(i.toLong)
+      sizesBuffer.append(element.toInt)
+    }
+    sizesBuffer.toSeq
+
+  }
+
+  def strides(): Seq[Int] ={
+    val stridesRef = native.strides()
+    val stridesBuffer = new ListBuffer[Int]()
+    for (i <- 0 until stridesRef.size().toInt) {
+      val element = stridesRef.get(i.toLong)
+      stridesBuffer.append(element.toInt)
+    }
+    stridesBuffer.toSeq
+  }
+
+  def set_data(data: Tensor[D]) = native.set_data(data.native)
+
+  def data() = native.data()
+
+  def ndimension(): Long = native.ndimension()
+
+  def nbytes(): Long = native.nbytes()
+
+  def itemsize():Long = native.itemsize()
+
+  def element_size():Long = native.element_size()
+
+  def has_storage():Boolean = native.has_storage()
+
+  def has_names: Boolean = native.has_names()
+  
+  def get_named_tensor_meta = native.get_named_tensor_meta()
+  
+  def storage() = native.storage()
+
+  def variable_data() = native.variable_data()
+
+  def tensor_data() = native.tensor_data()
+
+  def register_hook(hook: VoidTensorHook) = native.register_hook(hook)
+
+  def register_hook(hook: TensorTensorHook) = native.register_hook(hook)
+
+  def key_set() = native.key_set()
 
   def +[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = add(s)
 
@@ -376,6 +453,50 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def isCuda: Boolean = native.is_cuda()
 
+  def is_neg: Boolean = native.is_neg()
+  
+  def is_cuda: Boolean = native.is_cuda()
+  
+  def is_cpu: Boolean = native.is_cpu()
+  
+  def is_xpu: Boolean = native.is_xpu()
+  
+  def is_ipu: Boolean = native.is_ipu()
+  
+  def is_hpu: Boolean = native.is_hpu()
+  
+  def is_xla: Boolean = native.is_xla()
+  
+  def is_privateuseone: Boolean = native.is_privateuseone()
+  
+  def is_hip: Boolean = native.is_hip()
+  
+  def is_ve: Boolean = native.is_ve()
+  
+  def is_mtia: Boolean = native.is_mtia()
+  
+  def is_lazy: Boolean = native.is_lazy()
+  
+  def is_mkldnn: Boolean = native.is_mkldnn()
+  
+  def is_vulkan: Boolean = native.is_vulkan()
+  
+  def is_metal: Boolean = native.is_metal()
+  
+  def is_maia: Boolean = native.is_maia()
+  
+  def is_meta: Boolean = native.is_meta()
+  
+  def is_inference: Boolean = native.is_inference()
+  
+  def is_nested: Boolean = native.is_nested() 
+  
+  def is_mps: Boolean = native.is_mps()
+  
+  def is_sparse_csr: Boolean = native.is_sparse_csr()
+  
+  def is_sparse_native: Boolean = native.is_sparse()
+  
   def isQuantized: Boolean = native.is_quantized()
 
   def isnan: Tensor[Bool] = fromNative(native.isnan())
