@@ -1315,15 +1315,18 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def copysign(other: Tensor[D]): Tensor[D] = fromNative(native.copysign(other.native))
+
   def copysign_(other: Tensor[D]): this.type = {
     native.copysign_(other.native)
     this
   }
 
   def bmm(mat2: Tensor[D]):Tensor[D] = fromNative(native.bmm(mat2.native))
+
   def broadcast_to(size: Seq[Int]):Tensor[D] = fromNative(native.broadcast_to(size.map(_.toLong)*))
 
   def _lazy_clone():Tensor[D] =fromNative(native._lazy_clone())
+
   def tensor_split(tensor_indices_or_sections: Tensor[D],dim: Int=0): Seq[Tensor[D]] = {
     val res = native.tensor_split(tensor_indices_or_sections.native, dim.toLong)
     var it = res.begin()
@@ -1392,6 +1395,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def logical_or(other: Tensor[D]): Tensor[D] = fromNative(native.logical_or(other.native))
 
   def logical_and(other: Tensor[D]): Tensor[D] = fromNative(native.logical_and(other.native))
+
   def logical_xor_(other: Tensor[D]): this.type = {
     native.logical_xor_(other.native)
     this
@@ -1471,6 +1475,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 //  def cos(): Tensor[D] = fromNative(native.cos())
 
   def cosh(): Tensor[D] = fromNative(native.cosh())
+
   def cos_(): this.type = {
     native.cos_()
     this
