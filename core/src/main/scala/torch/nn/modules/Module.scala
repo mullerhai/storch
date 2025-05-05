@@ -20,7 +20,7 @@ package modules
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{InputArchive, OutputArchive}
-import Tensor.fromNative
+import torch.internal.NativeConverters.fromNative
 
 import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}
 

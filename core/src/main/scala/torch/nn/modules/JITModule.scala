@@ -4,7 +4,7 @@ package modules
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{CompilationUnit, ExtraFilesMap, IValue, IValueVector, InputArchive, JitModule, OutputArchive, QualifiedName, StringIValueMap, named_buffer_iterator, named_attribute_iterator, named_parameter_iterator}
-import Tensor.fromNative
+import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.{BytePointer, Pointer}
 
 import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}

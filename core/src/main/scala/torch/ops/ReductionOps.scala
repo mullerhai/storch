@@ -17,8 +17,8 @@
 package torch
 package ops
 
-import internal.NativeConverters.*
-
+import torch.internal.NativeConverters.*
+import torch.Int64Tensor
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.ScalarTypeOptional
 import org.bytedeco.pytorch.TensorVector

@@ -37,7 +37,7 @@ import org.bytedeco.pytorch.global.torch as torchNative
 
 import java.nio.file.{Files, Path}
 import scala.collection.immutable.{SeqMap, VectorMap}
-import Tensor.fromNative
+import torch.internal.NativeConverters.fromNative
 
 /** Creation Ops
   *

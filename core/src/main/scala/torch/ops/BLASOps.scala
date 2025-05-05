@@ -18,7 +18,7 @@ package torch
 package ops
 
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{PackedSequence, TensorVector, TensorOptional, DoubleOptional}
+import org.bytedeco.pytorch.{DoubleOptional, PackedSequence, Scalar, TensorOptional, TensorOptionalList, TensorVector}
 import torch.internal.NativeConverters.fromNative
 
 import scala.collection.mutable.ListBuffer
@@ -28,6 +28,117 @@ import scala.collection.mutable.ListBuffer
   * https://pytorch.org/docs/stable/torch.html#blas-and-lapack-operations
   */
 private[torch] trait BLASOps {
+
+  //Tensor scatter_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1,
+  // @Const @ByRef Tensor var3, @Const @ByRef Tensor var4,
+  // @StringView String var5, @Cast({"bool"}) boolean var6);
+  //torch.scatter_reduce(input, dim, index, src, reduce, *, include_self=True
+  //dim (int) – the axis along which to index
+  //
+  //index (LongTensor) – the indices of elements to scatter and reduce.
+  //
+  //src (Tensor) – the source elements to scatter and reduce
+  //
+  //reduce (str) – the reduction operation to apply for non-unique indices ("sum", "prod", "mean", "amax", "amin")
+  //
+  //include_self (bool) – whether elements from the self tensor are included in the reduction
+  def scatter_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[Int64], reduceMode: String, includeSelf: Boolean): Tensor[D] = {
+    
+    fromNative(torchNative.scatter_reduce(input.native,dim.toLong,index.native,src.native,reduceMode,includeSelf))
+  }
+
+  def scatter_add[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D]): Tensor[D] = {
+    fromNative(torchNative.scatter_add(input.native, dim.toLong, index.native, src.native))
+
+  }
+  
+  //torch.scatter(input, dim, index, src) → Tensor
+//  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D]) : Tensor[D]= {
+//    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native))
+//  }
+
+  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D], scatterMode: String): Tensor[D] = {
+    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native, scatterMode))
+  }
+
+  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Scalar): Tensor[D] = {
+
+    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src))
+  }
+
+  //dim (int) – the axis along which to index
+  //
+  //index (LongTensor) – the indices of elements to scatter and add, can be either empty or of the same dimensionality as src. When empty, the operation returns self unchanged.
+  // Tensor scatter_add(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, 
+  // @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
+  //src (Tensor) – the source elements to scatter and add
+  
+///Tensor index_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4, @StringView String var5
+// torch.index_reduce(input: Tensor, dim: int, index: Tensor, source: Tensor, reduce: str, *, include_self: bool = True, out: Optional[Tensor]) → Tensor
+  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D], reduceMode: String, includeSelf: Boolean = true) : Tensor[D]={
+    fromNative(torchNative.index_reduce(input.native,dim.toLong,index.native,src.native, reduceMode, includeSelf))
+
+  }
+
+  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D], reduceMode: String): Tensor[D] = {
+    fromNative(torchNative.index_reduce(input.native, dim.toLong, index.native, src.native, reduceMode))
+
+  }
+
+  //dim (int) – dimension along which to index
+  //
+  //index (LongTensor) – indices of self tensor to fill in
+  //
+  //value (float) – the value to fill with
+  // Tensor.index_fill_(dim, index, value) → Tensor
+  //index_fill(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
+  def index_fill[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64], value: Tensor[D2]): Tensor[D1] = {
+    fromNative(torchNative.index_fill(input.native, dim.toLong, index.native, value.native))
+
+  }
+
+  //dim (int) – dimension along which to index
+  //
+  //index (LongTensor) – indices of tensor to select from
+  //
+  //tensor (Tensor) – the tensor containing values to copy
+  //Tensor.index_copy_(dim, index, tensor) → Tensor
+  // index_copy(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
+  def index_copy[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64], tensor: Tensor[D2]): Tensor[D1] = {
+    fromNative[D1](torchNative.index_copy(input.native, dim.toLong, index.native, tensor.native))
+
+  }
+  
+  // index_put(@Const @ByRef Tensor var0, @Const @ByRef TensorOptionalList var1, @Const @ByRef Tensor var2, @Cast({"bool"}) boolean var3);
+  // indices (tuple of LongTensor) – tensors used to index into self.
+  //values (Tensor) – tensor of same dtype as self.
+  //accumulate (bool) – whether to accumulate into self
+  //Tensor.index_put_(indices, values, accumulate=False) → Tensor
+  def index_put[D <: DType](input: Tensor[D], indices: Seq[Tensor[Int64]], value: Tensor[D], accumulate: Boolean = false): Tensor[D] = {
+    val list = new TensorOptionalList()
+    indices.zipWithIndex.map(tensorIndex => list.set(tensorIndex._2,new TensorOptional(tensorIndex._1.native)))
+    fromNative(torchNative.index_put(input.native, list, value.native, accumulate))
+
+  }
+
+// Tensor segment_reduce(@Const @ByRef Tensor var0, @StringView String var1);
+  def segment_reduce[D <: DType](input: Tensor[D], reduceMode: String): Tensor[D] = {
+    fromNative(torchNative.segment_reduce(input.native, reduceMode))
+
+  }
+  
+
+  //    public static native Tensor scatter(@Const @ByRef Tensor var0, @ByVal Dimname var1, @Const @ByRef Tensor var2, @Const @ByRef Tensor var3);
+  //   //    public static native Tensor scatter(@Const @ByRef Tensor var0, @ByVal Dimname var1, @Const @ByRef Tensor var2, @Const @ByRef Scalar var3);
+  
+  // public static native Tensor scatter(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Scalar var4, @StringView BytePointer var5);
+  //    public static native Tensor scatter(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Scalar var4, @StringView String var5);
+
+  //torch.scatter(input, dim, index, src) → Tensor
+
+
+
+
   def matmul[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     t1.matmul(t2)
 
