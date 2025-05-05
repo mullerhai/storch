@@ -34,7 +34,7 @@ import org.bytedeco.pytorch.{
   Scalar
 }
 import org.bytedeco.pytorch.global.torch as torchNative
-
+import org.bytedeco.pytorch.global.torch.ScalarType
 import java.nio.file.{Files, Path}
 import scala.collection.immutable.{SeqMap, VectorMap}
 import torch.internal.NativeConverters.fromNative
@@ -348,6 +348,97 @@ private[torch] trait CreationOps {
         NativeConverters.tensorOptions(derivedDType, layout, device, requiresGrad)
       )
     )
+
+    //input (Tensor) – float tensor to quantize
+    //scales (Tensor) – float 1D tensor of scales to use, size should match input.size(axis)
+    //zero_points (int) – integer 1D tensor of offset to use, size should match input.size(axis)
+    //axis (int) – dimension on which apply per-channel quantization
+    //dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
+  //torch.quantize_per_channel(input, scales, zero_points, axis, dtype) → Tensor
+///  public static native Tensor quantize_per_channel(
+    // @Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
+    // @Const @ByRef Tensor var2, @Cast({"int64_t"}) long var3, ScalarType var5);
+    //dtypes: torch.quint8, torch.qint8, torch.qint32
+  def quantize_per_channel[D <: DType, U <: ScalaType](input: Tensor[D],
+                           scales: Tensor[Float32],
+                           zero_points:Tensor[Int64],
+                           axis:Int,
+                           dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+
+    fromNative(torchNative.quantize_per_channel(input.native,scales.native, zero_points.native,axis.toLong,dtype))
+  }
+//  torch.quantize_per_tensor(input, scale, zero_point, dtype) → Tensor
+  //    public static native Tensor quantize_per_tensor(@Const @ByRef Tensor var0, double var1, @Cast({"int64_t"}) long var3, ScalarType var5);
+//input (Tensor) – float tensor or list of tensors to quantize
+//
+//scale (float or Tensor) – scale to apply in quantization formula
+//
+//zero_point (int or Tensor) – offset in integer value that maps to float zero
+//
+//dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
+//    public static native Tensor quantize_per_tensor(@Const @ByRef Tensor var0,
+//    @Const @ByRef Tensor var1, @Const @ByRef Tensor var2, ScalarType var3);
+    ////dtypes: torch.quint8, torch.qint8, torch.qint32
+  def quantize_per_tensor[D <: DType, U <: ScalaType](input: Tensor[D],
+                          scales: Tensor[Float32],
+                          zero_points:Tensor[Int64],
+                          dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+
+    fromNative(torchNative.quantize_per_tensor(input.native, scales.native, zero_points.native,dtype))
+  }
+
+// //dtypes: torch.quint8, torch.qint8, torch.qint32
+  def quantize_per_tensor_single[D <: DType, U <: ScalaType](input: Tensor[D],
+                          scale: Double,
+                          axis: Int,
+                          dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+
+    fromNative(torchNative.quantize_per_tensor(input.native, scale, axis.toLong,dtype))
+  }
+
+  //  public static native Tensor full_like(
+  //  @Const @ByRef Tensor var0,
+  //  @Const @ByRef Scalar var1, @ByVal(nullValue = "at::TensorOptions{}") T
+  //  ensorOptions var2, @ByVal(nullValue = "std::optional<at::MemoryFormat>(::std::nullopt)")
+  //  MemoryFormatOptional var3);
+
+  //    public static native Tensor full_like(
+  //    @Const @ByRef Tensor var0, @Const @ByRef Scalar var1);
+
+  //    public static native Tensor full_like(
+  //    @Const @ByRef Tensor var0, @Const @ByRef Scalar var1,
+  //    @ByVal ScalarTypeOptional var2, @ByVal LayoutOptional var3,
+  //    @ByVal DeviceOptional var4, @ByVal BoolOptional var5,
+  //    @ByVal MemoryFormatOptional var6);
+//torch.full_like(input, fill_value, \*, dtype=None, layout=torch.strided,
+  // device=None, requires_grad=False, memory_format=torch.preserve_format) → Tensor
+//Tensor torch_full_like(@Const
+  // @ByRef Tensor var0,
+  // @Const @ByRef Scalar var1,
+  // @ByVal(TensorOptions var2,
+  // " MemoryFormatOptional var3);
+  def full_like[D <: DType, D1 <: Derive, U <: ScalaType](
+                                                 input: Tensor[D],
+                                                 fillValue: U,
+                                                 dtype: D1 = derive,
+                                                 layout: Layout = Strided,
+                                                 device: Device = CPU,
+                                                 requiresGrad: Boolean = false,
+                                                 memoryFormat: MemoryFormat = MemoryFormat.Preserve
+                                               ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
+    val derivedDType = dtype match
+      case _: Derive => scalaToDType(fillValue)
+//      case t: DType => t
+    fromNative(
+      torchNative.torch_full_like(
+        input.native,
+        toScalar(fillValue),
+        NativeConverters.tensorOptions(derivedDType, layout, device, requiresGrad),
+        memoryFormat.toNativeOptional
+      )
+    )
+
+
 
 // TODO fullLike
 // TODO quantize_per_tensor

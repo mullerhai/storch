@@ -1163,7 +1163,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def arccos(): Tensor[D] = fromNative(native.arccos())
 
-  def add(other: Tensor[D]): Tensor[D] = fromNative(native.add(other.native))
+//  def add(other: Tensor[D]): Tensor[D] = fromNative(native.add(other.native))
 
   def addmv(mat: Tensor[D], vec: Tensor[D]): Tensor[D] = fromNative(native.addmv(mat.native, vec.native))
 
@@ -1526,11 +1526,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def diff : Tensor[D] = fromNative(native.diff())
 
-  def dot(other: Tensor[D]): Tensor[D] = fromNative(native.dot(other.native))
+//  def dot(other: Tensor[D]): Tensor[D] = fromNative(native.dot(other.native))
 
-  def vdot(other: Tensor[D]): Tensor[D] = fromNative(native.vdot(other.native))
+//  def vdot(other: Tensor[D]): Tensor[D] = fromNative(native.vdot(other.native))
 
-  def div(other: Tensor[D]): Tensor[D] = fromNative(native.div(other.native))
+//  def div(other: Tensor[D]): Tensor[D] = fromNative(native.div(other.native))
 
   def divide(other: Tensor[D]): Tensor[D] = fromNative(native.divide(other.native))
 
@@ -1556,7 +1556,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def new_empty(size: Seq[Int]): Tensor[D] = fromNative(native.new_empty(size.map(_.toLong).toArray*))
+//  def new_empty(size: Seq[Int]): Tensor[D] = fromNative(native.new_empty(size.map(_.toLong).toArray*))
 
   def new_zeros(size: Seq[Int]): Tensor[D] = fromNative(native.new_zeros(size.map(_.toLong).toArray*))
 
@@ -1739,7 +1739,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def logsumexp(dim: Seq[Int]): Tensor[D] = fromNative(native.logsumexp(dim.map(_.toLong)*))
 
-  def matmul(other: Tensor[D]): Tensor[D] = fromNative(native.matmul(other.native))
+//  def matmul(other: Tensor[D]): Tensor[D] = fromNative(native.matmul(other.native))
 
   def matrix_power(n: Int): Tensor[D] = fromNative(native.matrix_power(n.toLong))
 
@@ -1752,7 +1752,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val s = fromNative[D](res.get1())
     (r, s)
   }
-  def max(dim: Int): (Tensor[D], Tensor[Int64]) = {
+  def max_with_dim(dim: Int): (Tensor[D], Tensor[Int64]) = {
     val res = native.max(dim.toLong)
     val r = fromNative[D](res.get0())
     val s = fromNative[Int64](res.get1())
@@ -1845,9 +1845,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def mv(vec: Tensor[D]): Tensor[D] = fromNative(native.mv(vec.native))
 
-  def mul(other: Tensor[D]): Tensor[D] = fromNative(native.mul(other.native))
+//  def mul(other: Tensor[D]): Tensor[D] = fromNative(native.mul(other.native))
 
-  def multiply(other: Tensor[D]):Tensor[D] = fromNative(native.multiply(other.native))
+//  def multiply(other: Tensor[D]):Tensor[D] = fromNative(native.multiply(other.native))
 
   def mvlgamma(p: Long): Tensor[D] = fromNative(native.mvlgamma(p))
   def mul_(other: Tensor[D]): this.type = {
@@ -2250,7 +2250,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def positive():Tensor[D] = fromNative(native.positive())
 
 
-  def sub(other: Tensor[D]): Tensor[D] = fromNative(native.sub(other.native))
+//  def sub(other: Tensor[D]): Tensor[D] = fromNative(native.sub(other.native))
 
   def subtract(other: Tensor[D]): Tensor[D] = fromNative(native.subtract(other.native))
 
@@ -2294,7 +2294,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def q_per_channel_zero_points():Tensor[D]=fromNative(native.q_per_channel_zero_points())
   def q_per_channel_axis():Long = native.q_per_channel_axis()
   def int_repr():Tensor[D] =fromNative(native.int_repr())
-  def qscheme():QScheme = native.qscheme()
+  def qscheme() = native.qscheme()
   def _autocast_to_full_precision(cuda_enabled: Boolean, cpu_enabled: Boolean):Tensor[D]= fromNative(native._autocast_to_full_precision(cuda_enabled,cpu_enabled))
   def set_(source: Storage): this.type = {
     native.set_(source)
@@ -2873,10 +2873,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 //  def max(): Tensor[D]= fromNative(native.max())
   def fmax(other: Tensor[D]): Tensor[D]= fromNative(native.fmax(other.native))
 
-  def maximum(other: Tensor[D]): Tensor[D]= fromNative(native.maximum(other.native))
+//  def maximum(other: Tensor[D]): Tensor[D]= fromNative(native.maximum(other.native))
 
   def max(other: Tensor[D]): Tensor[D]= fromNative(native.max(other.native))
-  def minimum(other: Tensor[D]): Tensor[D]= fromNative(native.minimum(other.native))
+//  def minimum(other: Tensor[D]): Tensor[D]= fromNative(native.minimum(other.native))
   def min(other: Tensor[D]): Tensor[D]= fromNative(native.min(other.native))
 
   def quantile(q:Tensor[D]): Tensor[D]= fromNative(native.quantile(q.native))

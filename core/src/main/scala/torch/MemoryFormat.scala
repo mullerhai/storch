@@ -39,7 +39,7 @@ enum MemoryFormat:
     */
   case ChannelsLast
   case ChannelsLast3d
-
+  case NumOptions
   private[torch] def toNative: torchNative.MemoryFormat =
     torchNative.MemoryFormat.valueOf(this.toString)
   private[torch] def toNativeOptional: pytorch.MemoryFormatOptional =
