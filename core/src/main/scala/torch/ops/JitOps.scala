@@ -2,13 +2,12 @@ package torch
 package ops
 
 import org.bytedeco.javacpp.{BytePointer, Pointer, PointerPointer}
-import org.bytedeco.pytorch.{Tensor, *}
 import org.bytedeco.pytorch.global.torch as torchNative
+import org.bytedeco.pytorch.{Tensor, *}
 import torch.nn.modules.TensorModule
+
 import java.io.{ByteArrayOutputStream, InputStream, ObjectOutputStream}
-import torch.nn.modules.TensorModule
 import java.nio.ByteBuffer
-import java.io.{ByteArrayOutputStream, InputStream, ObjectOutputStream}
 import scala.collection.mutable
 
 trait JitOps {

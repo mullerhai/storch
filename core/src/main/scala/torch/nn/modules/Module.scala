@@ -82,11 +82,28 @@ abstract class Module {
   def registerModule[M <: Module](child: M, n: String = "")(using name: sourcecode.Name): M =
     register(child = child)(using name)
 
+  def register_module[M <: Module](child: M, n: String = "")(using name: sourcecode.Name): M =
+    register(child = child)(using name)
+
+  def register_module[M <: Module](name: String, child: M): M =
+    register(child = child)(using name)
+
   def registerParameter[D <: DType](t: Tensor[D], requiresGrad: Boolean = true, n: String = "")(
       using name: sourcecode.Name
   ): Tensor[D] =
     val name_ = if n.trim().isEmpty() then name.value else n.trim()
     nativeModule.register_parameter(name_, t.native, requiresGrad)
+    t
+
+  def register_parameter_r[D <: DType](t: Tensor[D], requiresGrad: Boolean = true, n: String = "")(
+    using name: sourcecode.Name
+  ): Tensor[D] =
+    val name_ = if n.trim().isEmpty() then name.value else n.trim()
+    nativeModule.register_parameter(name_, t.native, requiresGrad)
+    t
+
+  def register_parameter[D <: DType](name:String, t: Tensor[D], requiresGrad: Boolean = true): Tensor[D] =
+    nativeModule.register_parameter(name, t.native, requiresGrad)
     t
 
   def registerBuffer[D <: DType](t: Tensor[D], n: String = "")(using
@@ -98,6 +115,9 @@ abstract class Module {
 
   /** Adds a buffer to the module. */
   def registerBuffer[D <: DType](name: String, tensor: Tensor[D]): Tensor[D] =
+    fromNative(nativeModule.register_buffer(name, tensor.native))
+
+  def register_buffer[D <: DType](name: String, tensor: Tensor[D]): Tensor[D] =
     fromNative(nativeModule.register_buffer(name, tensor.native))
 
   def hasBias(): Boolean = modules.exists(_.hasBias())
