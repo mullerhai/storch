@@ -18,9 +18,8 @@ package torch
 
 import org.bytedeco.javacpp.{BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{EllipsisIndexType,TensorOptional,Generator, GeneratorOptional, LongOptional,DoubleOptional, Node, ScalarOptional, ScalarTypeOptional, Storage, SymInt, SymIntOptional, TensorIndexArrayRef, TensorOptionalList, TensorTensorHook, VoidTensorHook}
+import org.bytedeco.pytorch.{BoolOptional, DoubleOptional, EllipsisIndexType, Generator, GeneratorOptional, LongOptional, Node, ScalarOptional, ScalarTypeOptional, Storage, SymInt, SymIntOptional, TensorArrayRefOptional, TensorIndexArrayRef, TensorOptional, TensorOptionalList, TensorTensorHook, TensorVector, VoidTensorHook}
 import org.bytedeco.pytorch.global.torch as torchNative
-//import Tensor.*
 import org.bytedeco.pytorch.global.torch.ScalarType
 
 import java.nio.{Buffer, ByteBuffer, DoubleBuffer, FloatBuffer, IntBuffer, LongBuffer, ShortBuffer}
@@ -322,6 +321,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.backward()
   }
 
+  def backward(gradient: Tensor[D], retain_graph: Option[Boolean] = Some(true), create_graph: Boolean = false, inputs: Option[Seq[Tensor[D]]] = None ): Unit = {
+    if !this.requiresGrad then this.requiresGrad_=(true)
+    val nativeRetainGraph = if retain_graph.isDefined then  new BoolOptional(retain_graph.get) else new BoolOptional()
+    val nativeInputsRef = if inputs.isDefined then
+      val tensorVector = new TensorVector(inputs.get.map(_.native)*)
+      new TensorArrayRefOptional(tensorVector) else new TensorArrayRefOptional()
+    native.backward(gradient.native, nativeRetainGraph, create_graph, nativeInputsRef)
+  }
+
+
   /** Returns a new Tensor, detached from the current graph.
     *
     * The result will never require gradient.
@@ -458,6 +467,20 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def >(other: ScalaType): Tensor[Bool] = gt(other)
 
   def isContiguous: Boolean = native.is_contiguous()
+
+  def cuda(): Tensor[D] = fromNative(native.cuda())
+
+  def cpu(): Tensor[D] = fromNative(native.cpu())
+
+  def hip(): Tensor[D] = fromNative(native.hip())
+
+  def ve(): Tensor[D] = fromNative(native.ve())
+
+  def vulkan(): Tensor[D] = fromNative(native.vulkan())
+
+  def metal(): Tensor[D] = fromNative(native.metal())
+
+  def meta(): Tensor[D] = fromNative(native.meta())
 
   def isCuda: Boolean = native.is_cuda()
 
@@ -1083,9 +1106,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 
   def put[D2 <: DType](x: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.put(x.native))
-  
+
   def toBackend(b: Int): Tensor[D] = fromNative(native.toBackend(b))
-  
+
   def not(): Tensor[D] = fromNative(native.not())
 
   def subtract(): Tensor[D] = fromNative(native.subtract())
@@ -1113,9 +1136,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 
   def get(index: Tensor[Int64]) :Tensor[D] = fromNative(native.get(index.native))
-  
+
   def get(index: Int) :Tensor[D] = fromNative(native.get(index.toLong))
-  
+
   def mutable_grad(): Tensor[D] = fromNative(native.mutable_grad())
 
   def conj_physical(): Tensor[D] = fromNative(native.conj_physical())
@@ -2006,7 +2029,15 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def slice(dim: Int, start: Int, end: Int, step: Int = 1): Tensor[D] = fromNative(native.slice(dim.toLong, new LongOptional(start.toLong), new LongOptional(end.toLong), step.toLong))
+  def slice(dim: Int, start: Int, end: Int, step: Int): Tensor[D] = fromNative(native.slice(dim.toLong, new LongOptional(start.toLong), new LongOptional(end.toLong), step.toLong))
+
+  def slice(dim: Int, start: Option[Int] = None, end: Option[Int] = None, step: Int = 1): Tensor[D] = {
+
+    val startOption = if start.isDefined then new LongOptional(start.get.toLong) else new LongOptional()
+    val endOption = if end.isDefined then new LongOptional(end.get.toLong) else new LongOptional()
+    fromNative(native.slice(dim.toLong, startOption, endOption, step.toLong))
+
+  }
 
   def slice(): Tensor[D] = fromNative(native.slice())
   def slice_inverse[D1 <: DType](src: Tensor[D1],dim: Int,start:Int,end:Int, step: Int =1): Tensor[Promoted[D1, D]] = fromNative(native.slice_inverse(src.native,dim.toLong,new LongOptional(start.toLong),new LongOptional(end.toLong),step.toLong))
@@ -3302,7 +3333,7 @@ object Tensor:
             )
             .clone()
         ).to(device = device)
-//        tensor.set_requires_grad(requiresGrad) 
+//        tensor.set_requires_grad(requiresGrad)
 //        tensor
       case data: U =>
         val tensor = fromScalar(data)
