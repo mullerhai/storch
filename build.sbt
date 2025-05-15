@@ -101,8 +101,8 @@ releaseProcess := Seq[ReleaseStep](
   pushChanges,
 )
 
-lazy val core = project
-  .in(file("core"))
+lazy val storch_core = project
+  .in(file("storch_core"))
   .settings(commonSettings)
   .settings(
     javaCppPresetLibs ++= Seq(
@@ -125,8 +125,8 @@ lazy val core = project
     )
   )
 
-lazy val vision = project
-  .in(file("vision"))
+lazy val storch_vision = project
+  .in(file("storch_vision"))
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -136,10 +136,10 @@ lazy val vision = project
       "org.scalameta" %% "munit" % "0.7.29" % Test
     )
   )
-  .dependsOn(core)
+  .dependsOn(storch_core)
 
-lazy val examples = project
-  .in(file("examples"))
+lazy val storch_examples = project
+  .in(file("storch_examples"))
   .enablePlugins(NoPublishPlugin)
   .settings(
     commonSettings,
@@ -154,7 +154,7 @@ lazy val examples = project
       "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4"
     )
   )
-  .dependsOn(vision)
+  .dependsOn(storch_vision)
 
 lazy val docs = project
   .in(file("site"))
@@ -168,17 +168,17 @@ lazy val docs = project
       "MKL_VERSION" -> mklVersion,
       "CUDA_VERSION" -> cudaVersion
     ),
-    ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(examples),
+    ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(storch_examples),
     Laika / sourceDirectories ++= Seq(sourceDirectory.value),
     laikaIncludeAPI := true,
     laikaGenerateAPI / mappings := (ScalaUnidoc / packageDoc / mappings).value
   )
-  .dependsOn(vision)
+  .dependsOn(storch_vision)
 
-lazy val root = project
+lazy val storch_root = project
   .enablePlugins(NoPublishPlugin)
   .in(file("."))
-  .aggregate(core, vision, examples, docs)
+  .aggregate(storch_core, storch_vision, storch_examples, docs)
   .settings(
     javaCppVersion := (ThisBuild / javaCppVersion).value
   )

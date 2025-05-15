@@ -110,10 +110,10 @@ class GruNet[D <: BFloat16 | Float32: Default](
 object LstmNetApp extends App {
   val device = if torch.cuda.isAvailable then CUDA else CPU
   println(s"Using device: $device")
-  val model  = GruNet().to(device)
+//  val model  = GruNet().to(device)
 //  val model = LstmNet().to(device)
 //  val model = RnnNet().to(device)
-//  val model = LstmNet().to(device)
+  val model = LstmNet().to(device)
 //  val model  = TransformerClassifier(embedding_dim = 128 , num_heads= 6, num_layers=6, hidden_dim = 30, num_classes=10, dropout_rate=0.1).to(device)
   // prepare data FashionMNIST
   //  val dataPath = Paths.get("data/mnist")
