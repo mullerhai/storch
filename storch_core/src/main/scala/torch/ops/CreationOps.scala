@@ -83,11 +83,33 @@ private[torch] trait CreationOps {
     * @group creation_ops
     */
   def zeros[D <: DType](
+                         size: Seq[Int] | Int,
+                         dtype: D,
+                         requires_grad: Boolean
+                       ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
+
+//  def zeros[D <: DType](
+//                         size: Seq[Int] | Int,
+//                         requires_grad: Boolean
+//                       ): Tensor[D] = this.zeros(size, torch.float32, Strided, CPU, requires_grad)
+
+  def ones[D <: DType](
+                         size: Seq[Int] | Int,
+                         dtype: D,
+                         requires_grad: Boolean
+                       ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
+
+//  def ones[D <: DType](
+//                         size: Seq[Int] | Int,
+//                         requires_grad: Boolean
+//                       ): Tensor[D] = this.ones(size, torch.float32, Strided, CPU, requires_grad)
+//
+  def zeros[D <: DType](
       size: Seq[Int] | Int,
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     val nativeSize = size match
       case s: Seq[Int] => s.map(_.toLong).toArray
@@ -95,9 +117,19 @@ private[torch] trait CreationOps {
     fromNative(
       torchNative.torch_zeros(
         nativeSize,
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
+
+  def zeros_like[D <: DType, D2 <: DType | Derive](
+                                                   input: Tensor[D],
+                                                   dtype: D2 = derive,
+                                                   layout: Layout | Derive = derive,
+                                                   device: Device | Derive = derive,
+                                                   requires_grad: Boolean = false,
+                                                   memoryFormat: MemoryFormat = MemoryFormat.Preserve
+                                                 ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_zeros_like)
 
   /** @group creation_ops
     */
@@ -106,10 +138,10 @@ private[torch] trait CreationOps {
       dtype: D2 = derive,
       layout: Layout | Derive = derive,
       device: Device | Derive = derive,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       memoryFormat: MemoryFormat = MemoryFormat.Preserve
   ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
-    xLike(input, dtype, layout, device, requiresGrad, memoryFormat, torchNative.torch_zeros_like)
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_zeros_like)
 
   /** Returns a tensor filled with the scalar value `1`, with the shape defined by the variable
     * argument `size`.
@@ -123,7 +155,7 @@ private[torch] trait CreationOps {
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     val nativeSize = size match
       case s: Seq[Int] => s.map(_.toLong).toArray
@@ -131,9 +163,19 @@ private[torch] trait CreationOps {
     fromNative(
       torchNative.torch_ones(
         nativeSize,
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
+
+  def ones_like[D <: DType, D2 <: DType | Derive](
+                                                  input: Tensor[D],
+                                                  dtype: D2 = derive,
+                                                  layout: Layout | Derive = derive,
+                                                  device: Device | Derive = derive,
+                                                  requires_grad: Boolean = false,
+                                                  memoryFormat: MemoryFormat = MemoryFormat.Preserve
+                                                ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_ones_like)
 
   /** @group creation_ops */
   def onesLike[D <: DType, D2 <: DType | Derive](
@@ -141,10 +183,10 @@ private[torch] trait CreationOps {
       dtype: D2 = derive,
       layout: Layout | Derive = derive,
       device: Device | Derive = derive,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       memoryFormat: MemoryFormat = MemoryFormat.Preserve
   ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
-    xLike(input, dtype, layout, device, requiresGrad, memoryFormat, torchNative.torch_ones_like)
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_ones_like)
 
 // format: off
 /** Returns a 1-D tensor of size $`\left\lceil \frac{\text{end} - \text{start}}{\text{step}} \right\rceil`$ with values
@@ -174,7 +216,7 @@ private[torch] trait CreationOps {
       dtype: D = derive,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[DTypeOrDeriveArange[D, Start, End, Step]] =
     val derivedDType = dtype match
       case _: Derive => derivedArangeType(start, end, step)
@@ -184,7 +226,7 @@ private[torch] trait CreationOps {
         toScalar(start),
         toScalar(end),
         toScalar(step),
-        NativeConverters.tensorOptions(derivedDType, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(derivedDType, layout, device, requires_grad)
       )
     )
 
@@ -196,14 +238,14 @@ private[torch] trait CreationOps {
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     fromNative(
       torchNative.torch_linspace(
         new Scalar(start),
         new Scalar(end),
         steps,
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
 
@@ -216,14 +258,14 @@ private[torch] trait CreationOps {
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ) = fromNative(
     torchNative.torch_logspace(
       new Scalar(start),
       new Scalar(end),
       steps,
       base,
-      NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+      NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
     )
   )
 
@@ -239,7 +281,7 @@ private[torch] trait CreationOps {
     *   the desired layout of the returned tensor.
     * @param device
     *   the desired device of the returned tensor.
-    * @param requiresGrad
+    * @param requires_grad
     *   If autograd should record operations on the returned tensor.
     *
     * @group creation_ops
@@ -250,9 +292,9 @@ private[torch] trait CreationOps {
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] = fromNative(
-    torchNative.torch_eye(n, NativeConverters.tensorOptions(dtype, layout, device, requiresGrad))
+    torchNative.torch_eye(n, NativeConverters.tensorOptions(dtype, layout, device, requires_grad))
   )
 // def empty(size: Long*): Tensor[D] = fromNative(torchNative.torch_empty(size*))
 
@@ -261,11 +303,22 @@ private[torch] trait CreationOps {
     * @group creation_ops
     */
   def empty[D <: DType](
+                         size: Seq[Int],
+                         dtype: D ,
+                         requires_grad: Boolean
+                       ):Tensor[D] = this.empty(size,dtype,Strided,CPU,requires_grad,false,Contiguous)
+
+//  def empty[D <: DType](
+//                         size: Seq[Int],
+//                         requires_grad: Boolean
+//                       ): Tensor[D] = this.empty[Float32](size, float32, Strided, CPU, requires_grad, false, Contiguous)
+
+  def empty[D <: DType](
       size: Seq[Int],
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       pinMemory: Boolean = false,
       memoryFormat: MemoryFormat = Contiguous
   ): Tensor[D] =
@@ -273,7 +326,7 @@ private[torch] trait CreationOps {
       torchNative.torch_empty(
         size.toArray.map(_.toLong),
         NativeConverters
-          .tensorOptions(dtype, layout, device, requiresGrad)
+          .tensorOptions(dtype, layout, device, requires_grad)
           .pinned_memory(BoolOptional(pinMemory)),
         new MemoryFormatOptional(memoryFormat.toNative)
       )
@@ -291,12 +344,22 @@ private[torch] trait CreationOps {
       dtype: D2 = derive,
       layout: Layout | Derive = derive,
       device: Device | Derive = derive,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       memoryFormat: MemoryFormat = MemoryFormat.Preserve
   ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
-    xLike(input, dtype, layout, device, requiresGrad, memoryFormat, torchNative.torch_empty_like)
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_empty_like)
 
-// // TODO emptyStrided
+  def empty_like[D <: DType, D2 <: DType | Derive](
+                                                   input: Tensor[D],
+                                                   dtype: D2 = derive,
+                                                   layout: Layout | Derive = derive,
+                                                   device: Device | Derive = derive,
+                                                   requires_grad: Boolean = false,
+                                                   memoryFormat: MemoryFormat = MemoryFormat.Preserve
+                                                 ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_empty_like)
+
+  // // TODO emptyStrided
 
   /** Creates a tensor of size `size` filled with `fillValue`. The tensor's dtype is inferred from
     * `fillValue`.
@@ -311,7 +374,7 @@ private[torch] trait CreationOps {
     *   the desired layout of the returned Tensor.
     * @param device
     *   the desired device of the returned tensor.
-    * @param requiresGrad
+    * @param requires_grad
     *   If autograd should record operations on the returned tensor.
     * @tparam T
     *   the data type of the returned tensor, or `Default` if the type should be derived from
@@ -329,7 +392,7 @@ private[torch] trait CreationOps {
       dtype: D = derive,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
     val derivedDType = dtype match
       case _: Derive => scalaToDType(fillValue)
@@ -338,7 +401,7 @@ private[torch] trait CreationOps {
       torchNative.torch_full(
         size.toArray.map(_.toLong),
         toScalar(fillValue),
-        NativeConverters.tensorOptions(derivedDType, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(derivedDType, layout, device, requires_grad)
       )
     )
 
@@ -416,7 +479,7 @@ private[torch] trait CreationOps {
                                                  dtype: D1 = derive,
                                                  layout: Layout = Strided,
                                                  device: Device = CPU,
-                                                 requiresGrad: Boolean = false,
+                                                 requires_grad: Boolean = false,
                                                  memoryFormat: MemoryFormat = MemoryFormat.Preserve
                                                ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
     val derivedDType = dtype match
@@ -426,7 +489,7 @@ private[torch] trait CreationOps {
       torchNative.torch_full_like(
         input.native,
         toScalar(fillValue),
-        NativeConverters.tensorOptions(derivedDType, layout, device, requiresGrad),
+        NativeConverters.tensorOptions(derivedDType, layout, device, requires_grad),
         memoryFormat.toNativeOptional
       )
     )
@@ -453,6 +516,8 @@ private[torch] trait CreationOps {
       // TODO better error handling
       (key.toStringRef().getString(), fromNative[DType](value.toTensor().clone()))
     })
+
+  def pickle_load(path: Path) = pickleLoad(path)
 
   def pickleLoad(path: Path): Map[String, Tensor[DType]] =
     val data: ByteVector = Files.readAllBytes(path).asInstanceOf[ByteVector]

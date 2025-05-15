@@ -62,9 +62,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.add(toScalar(s))
   )
 
-  def grad_fn(): Node = native.grad_fn()
+  def grad_fn(): Node = {
+    val gradFn = native.grad_fn()
+    println(s"grad fn is  ${gradFn.getptr.name().getString}")
+    gradFn
+  }
 
-  def gradFn(): Node = native.grad_fn()
+  def gradFn(): Node = {
+    val gradFn = native.grad_fn()
+    println(s"gradient function is  ${gradFn.getptr.name().getString}")
+    gradFn
+  }
+  
+  def grad_fn_name : String = native.grad_fn().getptr.name().getString
 
   def set_requires_grad(requires_grad: Boolean) = native.set_requires_grad(requires_grad)
 
@@ -2176,12 +2186,17 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def sspaddmm[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]):Tensor[Promoted[D1, D]]= fromNative(native.sspaddmm(mat1.native,mat2.native))
+ 
   def istft(n_fft: Long):Tensor[D]= fromNative(native.istft(n_fft))
 //  def sum(): Tensor[D] = fromNative(native.sum())
   def sum(dim: Seq[Int]):Tensor[D] = fromNative(native.sum(dim.map(_.toLong)*))
+  
   def sum(dim: Seq[Int],keepdim: Boolean,dtype: ScalarTypeOptional):Tensor[D] = fromNative(native.sum(dim.map(_.toLong).toArray,keepdim,dtype))
+  
   def nansum():Tensor[D] = fromNative(native.nansum())
+  
   def sum_to_size(size: Seq[Int]):Tensor[D] = fromNative(native.sum_to_size(size.map(_.toLong)*))
+  
   def sinc(): Tensor[D] = fromNative(native.sinc())
 
   def sinh(): Tensor[D] = fromNative(native.sinh())
@@ -3266,6 +3281,16 @@ object Tensor:
       case ScalarType.NumOptions    => new NumOptionsTensor(native)
     ).asInstanceOf[Tensor[D]]
 
+  def apply[U <: ScalaType : ClassTag](
+                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                        requires_grad: Boolean,
+                                        device: Device 
+                                      ): Tensor[ScalaToDType[U]] = this.apply(data,Strided,device,requires_grad)
+
+  def apply[U <: ScalaType : ClassTag](
+                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                        requires_grad: Boolean
+                                      ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
   /** Constructs a tensor with no autograd history (also known as a “leaf tensor”) by copying data.
     */
   // TODO support arbitrary multidimensional arrays as input
