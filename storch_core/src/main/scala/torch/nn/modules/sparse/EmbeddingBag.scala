@@ -143,16 +143,20 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.forward(input.native.to(ScalarType.Long))
   )
 
-  def apply(indices: Tensor[Int64|Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = indices match {
-    case input : Tensor[Int64] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
-    case input : Tensor[Int32] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
-  } 
+  def apply(indices: Tensor[Int64]|Tensor[Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
+    indices.dtype match
+      case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
+      case torch.int32 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
+  }
+
+  //    case input : Tensor[Int64] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
+  //    case input : Tensor[Int32] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
 
 //  def apply(indices: Tensor[Int32 |Int64], weight: Option[String] = None,word:Option[String] = None,seq:Int =0): Tensor[ParamType] = fromNative(
 //    nativeModule.forward(indices.native.to(ScalarType.Long))
 //  )
 
-  def apply(input: Tensor[ParamType], offsets: Tensor[Int64], size: Seq[Int]): Tensor[ParamType] = {
+  def apply(input: Tensor[ParamType], offsets: Tensor[Int64]|Tensor[Int32], size: Seq[Int]): Tensor[ParamType] = {
     fromNative(
       nativeModule.forward(
         input.native.to(ScalarType.Long),
@@ -178,7 +182,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(
       input: Tensor[ParamType],
-      offsets: Tensor[Int64],
+      offsets: Tensor[Int64]|Tensor[Int32],
       per_sample_weights: Tensor[ParamType]
   ): Tensor[ParamType] = {
     fromNative(

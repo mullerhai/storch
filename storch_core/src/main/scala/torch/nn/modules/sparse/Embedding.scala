@@ -117,12 +117,13 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
 //    nativeModule.forward(indices.native)
 //  )
 
-  def apply(indices: Tensor[Int64 | Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = indices match {
-
-    case input: Tensor[Int64] => fromNative(nativeModule.forward(indices.native))
-    case input: Tensor[Int32] => fromNative(nativeModule.forward(indices.to(torch.int64).native))
+  def apply(indices: Tensor[Int64] | Tensor[Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
+    indices.dtype match
+      case torch.int64 => fromNative(nativeModule.forward(indices.native))
+      case torch.int32 => fromNative(nativeModule.forward(indices.to(torch.int64).native))
   }
 
+  //case input: Tensor[Int32]
 //  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =

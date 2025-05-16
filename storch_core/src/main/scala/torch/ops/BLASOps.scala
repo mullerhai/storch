@@ -42,13 +42,16 @@ private[torch] trait BLASOps {
   //reduce (str) – the reduction operation to apply for non-unique indices ("sum", "prod", "mean", "amax", "amin")
   //
   //include_self (bool) – whether elements from the self tensor are included in the reduction
-  def scatter_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Tensor[Int64], reduceMode: String, includeSelf: Boolean): Tensor[D] = {
-    
-    fromNative(torchNative.scatter_reduce(input.native,dim.toLong,index.native,src.native,reduceMode,includeSelf))
+  def scatter_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D], reduceMode: String, includeSelf: Boolean): Tensor[D] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.scatter_reduce(input.native,dim.toLong,index.native,src.native,reduceMode,includeSelf))
+      case torch.int32 => fromNative(torchNative.scatter_reduce(input.native,dim.toLong,index.to(dtype = torch.int64).native,src.native,reduceMode,includeSelf))
   }
 
-  def scatter_add[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Tensor[D]): Tensor[D] = {
-    fromNative(torchNative.scatter_add(input.native, dim.toLong, index.native, src.native))
+  def scatter_add[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D]): Tensor[D] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.scatter_add(input.native, dim.toLong, index.native, src.native))
+      case torch.int32 => fromNative(torchNative.scatter_add(input.native, dim.toLong, index.to(dtype =torch.int64).native, src.native))
 
   }
   
@@ -57,13 +60,16 @@ private[torch] trait BLASOps {
 //    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native))
 //  }
 
-  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Tensor[D], scatterMode: String): Tensor[D] = {
-    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native, scatterMode))
+  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D], scatterMode: String): Tensor[D] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native, scatterMode))
+      case torch.int32 => fromNative(torchNative.scatter(input.native, dim.toLong, index.to(dtype = torch.int64).native, src.native, scatterMode))
   }
 
-  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Scalar): Tensor[D] = {
-
-    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src))
+  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Scalar): Tensor[D] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src))
+      case torch.int32 => fromNative(torchNative.scatter(input.native, dim.toLong, index.to(dtype = torch.int64).native, src))
   }
 
   //dim (int) – the axis along which to index
@@ -75,13 +81,18 @@ private[torch] trait BLASOps {
   
 ///Tensor index_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4, @StringView String var5
 // torch.index_reduce(input: Tensor, dim: int, index: Tensor, source: Tensor, reduce: str, *, include_self: bool = True, out: Optional[Tensor]) → Tensor
-  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Tensor[D], reduceMode: String, includeSelf: Boolean = true) : Tensor[D]={
-    fromNative(torchNative.index_reduce(input.native,dim.toLong,index.native,src.native, reduceMode, includeSelf))
+  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D], reduceMode: String, includeSelf: Boolean = true) : Tensor[D]={
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.index_reduce(input.native,dim.toLong,index.native,src.native, reduceMode, includeSelf))
+      case torch.int32 => fromNative(torchNative.index_reduce(input.native,dim.toLong,index.to(dtype = torch.int64).native,src.native, reduceMode, includeSelf))
 
   }
 
-  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32], src: Tensor[D], reduceMode: String): Tensor[D] = {
-    fromNative(torchNative.index_reduce(input.native, dim.toLong, index.native, src.native, reduceMode))
+  def index_reduce[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D], reduceMode: String): Tensor[D] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.index_reduce(input.native, dim.toLong, index.native, src.native, reduceMode))
+      case torch.int32 => fromNative(torchNative.index_reduce(input.native, dim.toLong, index.to(dtype = torch.int64).native, src.native, reduceMode))
+
 
   }
 
@@ -92,9 +103,10 @@ private[torch] trait BLASOps {
   //value (float) – the value to fill with
   // Tensor.index_fill_(dim, index, value) → Tensor
   //index_fill(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
-  def index_fill[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64|Int32], value: Tensor[D2]): Tensor[D1] = {
-    fromNative(torchNative.index_fill(input.native, dim.toLong, index.native, value.native))
-
+  def index_fill[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64]|Tensor[Int32], value: Tensor[D2]): Tensor[D1] = {
+    index.dtype match
+      case torch.int64 => fromNative(torchNative.index_fill(input.native, dim.toLong, index.native, value.native))
+      case torch.int32 => fromNative(torchNative.index_fill(input.native, dim.toLong, index.to(dtype = torch.int64).native, value.native))
   }
 
   //dim (int) – dimension along which to index
@@ -104,8 +116,10 @@ private[torch] trait BLASOps {
   //tensor (Tensor) – the tensor containing values to copy
   //Tensor.index_copy_(dim, index, tensor) → Tensor
   // index_copy(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
-  def index_copy[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64|Int32], source: Tensor[D2]): Tensor[D1] = {
-    fromNative[D1](torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
+  def index_copy[D1 <: DType, D2 <: DType](input: Tensor[D1], dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D2]): Tensor[D1] = {
+    index.dtype match
+      case torch.int64 => fromNative[D1](torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
+      case torch.int32 =>  fromNative[D1](torchNative.index_copy(input.native, dim.toLong, index.to(dtype = torch.int64).native, source.native))
 
   }
   
@@ -114,9 +128,13 @@ private[torch] trait BLASOps {
   //values (Tensor) – tensor of same dtype as self.
   //accumulate (bool) – whether to accumulate into self
   //Tensor.index_put_(indices, values, accumulate=False) → Tensor
-  def index_put[D <: DType](input: Tensor[D], indices: Seq[Tensor[Int64|Int32]], value: Tensor[D], accumulate: Boolean = false): Tensor[D] = {
+  def index_put[D <: DType](input: Tensor[D], indices: Seq[Tensor[Int64]]|Seq[Tensor[Int32]], value: Tensor[D], accumulate: Boolean = false): Tensor[D] = {
     val list = new TensorOptionalList()
-    indices.zipWithIndex.map(tensorIndex => list.set(tensorIndex._2,new TensorOptional(tensorIndex._1.native)))
+    indices.zipWithIndex.map(tensorIndex => {
+      tensorIndex._1.dtype match
+        case torch.int64 => list.set(tensorIndex._2,new TensorOptional(tensorIndex._1.native))
+        case torch.int32 => list.set(tensorIndex._2,new TensorOptional(tensorIndex._1.to(dtype = torch.int64).native))
+    })
     fromNative(torchNative.index_put(input.native, list, value.native, accumulate))
 
   }
