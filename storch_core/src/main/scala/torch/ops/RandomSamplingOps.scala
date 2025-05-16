@@ -110,6 +110,16 @@ private[torch] trait RandomSamplingOps {
   ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
     xLike(input, dtype, layout, device, requiresGrad, memoryFormat, torchNative.torch_rand_like)
 
+  def rand_like[D <: DType, D2 <: DType | Derive](
+                                                  input: Tensor[D],
+                                                  dtype: D2 = derive,
+                                                  layout: Layout | Derive = derive,
+                                                  device: Device | Derive = derive,
+                                                  requires_grad: Boolean = false,
+                                                  memoryFormat: MemoryFormat = MemoryFormat.Preserve
+                                                ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_rand_like)
+
   /** Returns a tensor filled with random integers generated uniformly between `low` (inclusive) and
     * `high` (exclusive).
     *

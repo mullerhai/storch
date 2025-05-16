@@ -27,7 +27,7 @@ trait SparseOps {
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = Sparse,
                                                   device: Device = CPU,
-                                                  requiresGrad: Boolean = false
+                                                  requires_grad: Boolean = false
                                                  ): Tensor[Promoted[D1, D2]] = {
     val derivedDType = dtype match
       case None => values.dtype
@@ -38,7 +38,7 @@ trait SparseOps {
       else ScalarTypeOptional(derivedDType.toScalarType)
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
     fromNative(torchNative.sparse_coo_tensor(indices.native, values.native, scalarNative, layoutNative, deviceNative, boolOption,boolOption))
   }
 
@@ -52,7 +52,7 @@ trait SparseOps {
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseCsc,
                                                   device: Device = CPU,
-                                                  requiresGrad: Boolean = false
+                                                  requires_grad: Boolean = false
                                                  ): Tensor[Promoted[D1, D2]] = {
     val derivedDType = dtype match
       case None => values.dtype
@@ -63,7 +63,7 @@ trait SparseOps {
       else ScalarTypeOptional(derivedDType.toScalarType)
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
     fromNative(torchNative.sparse_csc_tensor(ccol_indices.native, row_indices.native, values.native,size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
   }
 
@@ -84,7 +84,7 @@ trait SparseOps {
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseCsr,
                                                   device: Device = CPU,
-                                                  requiresGrad: Boolean = false
+                                                  requires_grad: Boolean = false
                                                  ): Tensor[Promoted[D1, D2]] = {
     val derivedDType = dtype match
       case None => values.dtype
@@ -95,7 +95,7 @@ trait SparseOps {
       else ScalarTypeOptional(derivedDType.toScalarType)
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
 
     fromNative(torchNative.sparse_csr_tensor(crow_indices.native, col_indices.native, values.native, scalarNative, layoutNative, deviceNative, boolOption))
   }
@@ -109,7 +109,7 @@ trait SparseOps {
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseBsc,
                                                   device: Device = CPU,
-                                                  requiresGrad: Boolean = false
+                                                  requires_grad: Boolean = false
                                                  ): Tensor[Promoted[D1, D2]] = {
 
     val derivedDType = dtype match
@@ -122,7 +122,7 @@ trait SparseOps {
       else ScalarTypeOptional(derivedDType.toScalarType)
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
     fromNative(torchNative.sparse_bsc_tensor(ccol_indices.native, row_indices.native, values.native, size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
 
   }
@@ -137,11 +137,11 @@ trait SparseOps {
                                                   dtype: DType|Option[DType] = DType.float32,
                                                   layout: Layout = SparseBsr,
                                                   device: Device = CPU,
-                                                  requiresGrad: Boolean = false
+                                                  requires_grad: Boolean = false
                                                  ): Tensor[Promoted[D1, D2]] = {
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
     val derivedDType = dtype match
 //      case _: Derive => values.dtype
       case None => values.dtype
@@ -162,7 +162,7 @@ trait SparseOps {
                                                          dtype: DType|Option[DType] = DType.float32,
                                                          layout: Layout = Sparse,
                                                          device: Device = CPU,
-                                                         requiresGrad: Boolean = false
+                                                         requires_grad: Boolean = false
                                                         ): Tensor[Promoted[D1, D2]] = {
     val derivedDType = dtype match
 //      case _: Derive => values.dtype
@@ -174,7 +174,7 @@ trait SparseOps {
       else ScalarTypeOptional(derivedDType.toScalarType)
     val layoutNative: LayoutOptional = LayoutOptional(layout.toNative)
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
-    val boolOption = BoolOptional(requiresGrad)
+    val boolOption = BoolOptional(requires_grad)
     fromNative(torchNative.sparse_compressed_tensor(compressed_indices.native, plain_indices.native, values.native, size.map(_.toLong).toArray, scalarNative, layoutNative, deviceNative, boolOption))
   }
 

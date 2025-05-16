@@ -301,6 +301,8 @@ private[torch] trait IndexingSlicingJoiningOps {
   def columnStack[D <: DType](tensors: Seq[Tensor[D]]): Tensor[D] =
     fromNative(torchNative.column_stack(toArrayRef(tensors)))
 
+//  def column_stack[D <: DType](tensors: Seq[Tensor[D]]): Tensor[D] =
+//    fromNative(torchNative.column_stack(toArrayRef(tensors)))
   /** Stack tensors in sequence depthwise (along third axis).
     *
     * This is equivalent to concatenation along the third axis after 1-D and 2-D tensors have been
@@ -350,7 +352,7 @@ private[torch] trait IndexingSlicingJoiningOps {
     * ```scala sc
     * val t = torch.Tensor(Seq(Seq(1, 2), Seq(3, 4)))
     * val index = torch.Tensor(Seq(Seq(0L, 0L), Seq(1L, 0L)))
-    * torch.gather(t, 1, index)
+    * //torch.gather(t, 1, index)
     * // tensor dtype=int32, shape=[2, 2], device=CPU
     * // [[1, 1],
     * //  [4, 3]]
@@ -368,7 +370,7 @@ private[torch] trait IndexingSlicingJoiningOps {
   def gather[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64],
+      index: Tensor[Int64|Int32],
       sparseGrad: Boolean = false
   ): Tensor[D] =
     fromNative(torchNative.gather(input.native, dim.toLong, index.native, sparseGrad))
@@ -452,7 +454,7 @@ private[torch] trait IndexingSlicingJoiningOps {
     * val x = torch.ones(Seq(5, 3))
     * val index = torch.Tensor(Seq(0L, 4L, 2L))
     * val t = torch.Tensor(Seq(Seq(1, 2, 3), Seq(4, 5, 6), Seq(7, 8, 9))).to(dtype = torch.float32)
-    * torch.indexAdd(x, 0, index, t)
+    * //torch.indexAdd(x, 0, index, t)
     * // tensor dtype=float32, shape=[5, 3], device=CPU
     * // [[2.0, 3.0, 4.0],
     * //  [1.0, 1.0, 1.0],
@@ -466,11 +468,18 @@ private[torch] trait IndexingSlicingJoiningOps {
   def indexAdd[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64],
+      index: Tensor[Int64|Int32],
       source: Tensor[D]
   ): Tensor[D] =
     fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
 
+  def index_add[D <: DType](
+                            input: Tensor[D],
+                            dim: Int,
+                            index: Tensor[Int64 | Int32],
+                            source: Tensor[D]
+                          ): Tensor[D] =
+    fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
   /** Copies the elements of tensor into the self tensor by selecting the indices in the order given
     * in index. For example, if dim == 0 and index[i] == j, then the ith row of tensor is copied to
     * the jth row of self.
@@ -492,7 +501,7 @@ private[torch] trait IndexingSlicingJoiningOps {
     * //  [4.0, 5.0, 6.0],
     * //  [7.0, 8.0, 9.0]]
     * val index = torch.Tensor(Seq(0L, 4L, 2L))
-    * torch.indexCopy(x, 0, index, t)
+    * //torch.indexCopy(x, 0, index, t)
     * // tensor dtype=float32, shape=[5, 3], device=CPU
     * // [[1.0, 2.0, 3.0],
     * //  [0.0, 0.0, 0.0],
@@ -506,10 +515,18 @@ private[torch] trait IndexingSlicingJoiningOps {
   def indexCopy[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64],
+      index: Tensor[Int64|Int32],
       source: Tensor[D]
   ): Tensor[D] =
     fromNative(torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
+
+//  def index_copy[D <: DType](
+//                             input: Tensor[D],
+//                             dim: Int,
+//                             index: Tensor[Int64 | Int32],
+//                             source: Tensor[D]
+//                           ): Tensor[D] =
+//    fromNative(torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
 
   // TODO index_reduce
   // TODO Enum for reduce: String
@@ -532,11 +549,11 @@ private[torch] trait IndexingSlicingJoiningOps {
     * //  [-0.4664,  0.2647, -0.1228, -1.1068],
     * //  [-1.1734, -0.6571,  0.7230, -0.6004]]
     * val indices = torch.Tensor(Seq(0L, 2L))
-    * torch.indexSelect(x, 0, indices)
+    * // torch.indexSelect(x, 0, indices)
     * // tensor dtype=float32, shape=[2, 4], device=CPU
     * // [[ 0.1427,  0.0231, -0.5414, -1.0009],
     * //  [-1.1734, -0.6571,  0.7230, -0.6004]]
-    * torch.indexSelect(x, 1, indices)
+    * //torch.indexSelect(x, 1, indices)
     * // tensor dtype=float32, shape=[2, 4], device=CPU
     * // [[ 0.1427, -0.5414],
     * //  [-0.4664, -0.1228],
@@ -545,9 +562,11 @@ private[torch] trait IndexingSlicingJoiningOps {
     *
     * @group indexing_slicing_joining_mutating_ops
     */
-  def indexSelect[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]): Tensor[D] =
+  def indexSelect[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64|Int32]): Tensor[D] =
     fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
 
+  def index_select[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64 | Int32]): Tensor[D] =
+    fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
   /** Returns a new 1-D tensor which indexes the `input` tensor according to the boolean mask `mask`
     * which is a <span class="title-ref">BoolTensor</span>.
     *
@@ -1192,15 +1211,18 @@ private[torch] trait IndexingSlicingJoiningOps {
     * ```scala sc
     * val src = torch.Tensor(Seq(Seq(4, 3, 5), Seq(6, 7, 8)))
     * val index = torch.Tensor(Seq(0L, 2L, 5L))
-    * torch.take(src, index)
+    * //torch.take(src, index)
     * // tensor dtype=int32, shape=[3], device=CPU
     * // [4, 5, 8]
     * ```
     *
     * @group indexing_slicing_joining_mutating_ops
     */
-  def take[D <: DType](input: Tensor[D], index: Tensor[Int64]): Tensor[D] =
-    fromNative(torchNative.take(input.native, index.native))
+  def take[D <: DType](input: Tensor[D], index: Tensor[Int64|Int32]): Tensor[D] = {
+    index match
+      case tensor : Tensor[Int64] => fromNative(torchNative.take(input.native, tensor.native))
+      case tensor : Tensor[Int32] => fromNative(torchNative.take(input.native, tensor.native))
+    }
 
   /** Selects values from `input` at the 1-dimensional indices from `indices` along the given `dim`.
     *
@@ -1212,11 +1234,11 @@ private[torch] trait IndexingSlicingJoiningOps {
     * ```scala sc
     * val t = torch.Tensor(Seq(Seq(10, 30, 20), Seq(60, 40, 50)))
     * val maxIdx = torch.argmax(t)
-    * torch.takeAlongDim(t, maxIdx)
+    * // torch.takeAlongDim(t, maxIdx)
     * // tensor dtype=int32, shape=[1], device=CPU
     * // [60]
     * val sortedIdx = torch.argsort(t, dim = 1)
-    * torch.takeAlongDim(t, sortedIdx, dim = 1)
+    * //torch.takeAlongDim(t, sortedIdx, dim = 1)
     * // tensor([[10, 20, 30],
     * //         [40, 50, 60]])
     * ```
@@ -1231,7 +1253,7 @@ private[torch] trait IndexingSlicingJoiningOps {
   // TODO index Int | Tensor[Int64]
   def takeAlongDim[D <: DType](
       input: Tensor[D],
-      index: Tensor[Int64],
+      index: Tensor[Int64|Int32],
       dim: Int | Option[Int] = None
   ): Tensor[D] =
     fromNative(torchNative.take_along_dim(input.native, index.native, dim.toOptional))

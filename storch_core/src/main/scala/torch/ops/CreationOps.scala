@@ -32,6 +32,8 @@ import java.nio.file.{Files, Path, Paths}
 import scala.collection.immutable.{SeqMap, VectorMap}
 import torch.internal.NativeConverters.fromNative
 
+import scala.reflect.ClassTag
+
 /** Creation Ops
   *
   * https://pytorch.org/docs/stable/torch.html#creation-ops
@@ -42,7 +44,22 @@ private[torch] trait CreationOps {
 // TODO as_tensor
 // TODO as_strided
 // TODO frombuffer
-    
+  def tensor[U <: ScalaType : ClassTag](
+                                      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                      layout: Layout = Strided,
+                                      device: Device = CPU,
+                                      requires_grad: Boolean = false
+                                    ): Tensor[ScalaToDType[U]] = Tensor.apply(data,layout,device,requires_grad)
+  def tensor[U <: ScalaType : ClassTag](
+                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                        requires_grad: Boolean
+                                      ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
+
+  def tensor[U <: ScalaType : ClassTag](
+                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                        requires_grad: Boolean,
+                                        device: Device
+                                      ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad,device)
 
   //    @Namespace("at")
   //    @ByVal
@@ -88,10 +105,6 @@ private[torch] trait CreationOps {
                          requires_grad: Boolean
                        ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
-//  def zeros[D <: DType](
-//                         size: Seq[Int] | Int,
-//                         requires_grad: Boolean
-//                       ): Tensor[D] = this.zeros(size, torch.float32, Strided, CPU, requires_grad)
 
   def ones[D <: DType](
                          size: Seq[Int] | Int,
