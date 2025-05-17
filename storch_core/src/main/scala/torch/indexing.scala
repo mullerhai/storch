@@ -53,8 +53,35 @@ object indexing:
     def &&(end: Int | Option[Int]): Slice =
       // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
       // So step and start are reversed here
-      Slice(start, end, Some(1))
+        Slice(start, end, Some(1))
+  extension (start: Int | Option[Int])
+    def &#(end: Int, step: Int): Slice = Slice(start, end ,step)
+
+  extension (end: Int | Option[Int] )
+    def &^(slice: Slice): Slice = Slice(slice.start, end, slice.step)
+        // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+        // So step and start are reversed here
+
+
+  extension (start: Int | Option[Int] )
+    def #&(slice: Slice): Slice = Slice(start, slice.start, slice.step)
+        // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+        // So step and start are reversed here
 
 //    def :: : Slice = Slice(start, None, None)
 
 export indexing.*
+
+/*
+*  python  scala
+*   :       ::  --- [all]
+*   k:      k.::    [only start]
+*   -k:      -k.::  [only start ]
+*   :k      0.&&(k)  [only end]
+*   ::k     0.::(k)  [only step]
+*   s:e:t    slice(s,e,t) 0.&:() [start, end, step]
+*   (k,r, c,..)  Seq(k,r,c..) [Select some index]
+*  s::k     s.::(k)  [only start and step]
+*  s:e       s.&&(e) [ only start end ]
+*  :e:t      slice(0,e,t) [only end step]
+* */

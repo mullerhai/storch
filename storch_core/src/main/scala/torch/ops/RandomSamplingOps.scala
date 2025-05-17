@@ -21,8 +21,8 @@ import Layout.Strided
 import Device.CPU
 import internal.NativeConverters
 import NativeConverters.*
-
 import org.bytedeco.pytorch.global.torch as torchNative
+import torch.Float32
 
 /** Random Sampling
   *
@@ -67,17 +67,20 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
+  def rand[D <: FloatNN | ComplexNN](size: Int*)(requires_grad:Boolean,dtype: D): Tensor[D] ={
+    rand(size.toSeq, dtype, Strided, CPU, requires_grad)
+  }
   def rand[D <: FloatNN | ComplexNN](
       size: Seq[Int],
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     fromNative(
       torchNative.torch_rand(
         size.toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
 
@@ -105,10 +108,10 @@ private[torch] trait RandomSamplingOps {
       dtype: D2 = derive,
       layout: Layout | Derive = derive,
       device: Device | Derive = derive,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       memoryFormat: MemoryFormat = MemoryFormat.Preserve
   ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
-    xLike(input, dtype, layout, device, requiresGrad, memoryFormat, torchNative.torch_rand_like)
+    xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_rand_like)
 
   def rand_like[D <: DType, D2 <: DType | Derive](
                                                   input: Tensor[D],
@@ -145,6 +148,13 @@ private[torch] trait RandomSamplingOps {
     *   the dtype of the created tensor.
     */
   def randint[D <: DType](
+                           low: Long,
+                           high: Long,
+                           size: Int*)(requires_grad: Boolean, dtype: D):Tensor[D] ={
+    randint(low = low, high = high, size = size.toSeq, generator = None, dtype = dtype, layout = Strided, device = CPU, requires_grad = requires_grad)
+  }
+
+  def randint[D <: DType](
       low: Long = 0,
       high: Long,
       size: Seq[Int],
@@ -152,7 +162,7 @@ private[torch] trait RandomSamplingOps {
       dtype: D = int64,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     fromNative(
       torchNative.torch_randint(
@@ -160,24 +170,28 @@ private[torch] trait RandomSamplingOps {
         high,
         size.toArray.map(_.toLong),
         generator.toOptional,
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
 
 // TODO randint_like Returns a tensor with the same shape as Tensor input filled with random integers generated uniformly between low (inclusive) and high (exclusive).
 
 // TODO Randnd acepts Seq[Int] | Int
+
+  def randn[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D):Tensor[D] ={
+    randn(size = size.toSeq, dtype = dtype, layout = Strided, device = CPU, requires_grad = requires_grad)
+  }
   def randn[D <: FloatNN | ComplexNN](
       size: Seq[Int],
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false
+      requires_grad: Boolean = false
   ): Tensor[D] =
     fromNative(
       torchNative.torch_randn(
         size.toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
 
@@ -192,13 +206,13 @@ private[torch] trait RandomSamplingOps {
       dtype: D = int64,
       layout: Layout = Strided,
       device: Device = CPU,
-      requiresGrad: Boolean = false,
+      requires_grad: Boolean = false,
       pinMemory: Boolean = false
   ): Tensor[D] =
     fromNative(
       torchNative.torch_randperm(
         n,
-        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad, pinMemory)
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad, pinMemory)
       )
     )
 

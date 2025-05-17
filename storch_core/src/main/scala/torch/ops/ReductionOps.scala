@@ -765,6 +765,24 @@ private[torch] trait ReductionOps {
       )
     )
 
+  def sum_keep_dim[D <: FloatNN](
+                                  input: Tensor[D],
+                                  dim: Int | Seq[Int] = Seq.empty,
+                                  keepdim: Boolean = false
+                                ): Tensor[D] ={
+      // TODO factor out
+      val derivedDType = input.dtype
+      fromNative(
+        torchNative.sum(
+          input.native,
+          dim.toArray,
+          keepdim,
+          new ScalarTypeOptional(derivedDType.toScalarType)
+        )
+      )
+    }
+
+
   /** Returns the sum of each row of the `input` tensor in the given dimension `dim`.
     *
     * If dim is a list of dimensions, reduce over all of them.
