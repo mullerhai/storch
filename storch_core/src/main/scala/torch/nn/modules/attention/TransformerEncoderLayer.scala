@@ -85,6 +85,10 @@ final class TransformerEncoderLayer[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false // options.bias().get()
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   override def apply(src: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(src.native)
   )

@@ -37,6 +37,8 @@ final class PixelShuffle[D <: BFloat16 | Float32 | Float64: Default](upscaleFact
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString(): String =
     s"${getClass.getSimpleName}(upscaleFactor=$upscaleFactor)"
 

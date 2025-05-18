@@ -90,6 +90,10 @@ final class FMEmbedding[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.weight(w.native)
     w
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   def apply(indices: Tensor[Int64 | Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = indices match{

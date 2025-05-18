@@ -82,6 +82,8 @@ final class AlphaDropout[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString(): String = s"${getClass().getSimpleName()}(p=$p, inplace=$inplace)"
 
 object AlphaDropout:

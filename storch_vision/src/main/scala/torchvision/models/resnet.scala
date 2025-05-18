@@ -194,7 +194,8 @@ object resnet:
   )(using Default[D])(
       normLayer: (Int => HasWeight[D] & TensorModule[D]) =
         (numFeatures => BatchNorm2d[D](numFeatures))
-  ) extends Module {
+  ) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
     var inplanes = 64
     var dilation = 1
     val baseWidth = widthPerGroup

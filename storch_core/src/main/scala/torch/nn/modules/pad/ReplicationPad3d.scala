@@ -35,9 +35,10 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ReplicationPad3d[D <: BFloat16 | Float32 | Float64: Default](
+final class ReplicationPad3d[ParamType <: BFloat16 | Float32 | Float64: Default](
     padding: Int | (Int, Int, Int, Int, Int, Int)
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val paddingNative = padding match {
     case (top, bottom, left, right, int, float) => toNative(top, bottom, left, right, int, float)
@@ -54,16 +55,17 @@ final class ReplicationPad3d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   override def toString =
     s"${getClass.getSimpleName}(padding = ${padding})"
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
 }
 
 object ReplicationPad3d:
-  def appply[D <: BFloat16 | Float32 | Float64: Default](
+  def appply[ParamType <: BFloat16 | Float32 | Float64: Default](
       padding: Int | (Int, Int, Int, Int, Int, Int)
-  ): ReplicationPad3d[D] =
-    new ReplicationPad3d[D](padding)
+  ): ReplicationPad3d[ParamType] =
+    new ReplicationPad3d[ParamType](padding)

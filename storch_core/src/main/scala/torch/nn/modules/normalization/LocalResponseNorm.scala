@@ -102,6 +102,7 @@ final class LocalResponseNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  def reset(): Unit = nativeModule.reset()
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =

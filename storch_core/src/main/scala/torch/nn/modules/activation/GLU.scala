@@ -38,6 +38,8 @@ final class GLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString = getClass().getSimpleName() + s"(dim=$dim)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 

@@ -26,7 +26,8 @@ import org.bytedeco.pytorch.CrossEntropyLossImpl
 // TODO optional args
 final class CrossEntropyLoss extends LossFunc {
   override private[torch] val nativeModule: CrossEntropyLossImpl = CrossEntropyLossImpl()
-
+  def weight[D <: DType](): Tensor[D] = fromNative(nativeModule.weight())
+  def reset(): Unit = nativeModule.reset()
   override def hasBias(): Boolean = false
 
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(

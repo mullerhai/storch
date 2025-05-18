@@ -41,6 +41,8 @@ final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString = getClass().getSimpleName() + s"(size=$size,alpha=$alpha,inplace=$inplace)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 

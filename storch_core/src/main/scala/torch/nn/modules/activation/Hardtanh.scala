@@ -33,6 +33,7 @@ final class Hardtanh[D <: DType: Default](
     maxVal: Float,
     inplace: Boolean = false
 ) extends TensorModule[D]:
+
   private val options = new HardtanhOptions(size.toLong)
   options.inplace().put(inplace)
   options.min_val().put(minVal.toDouble)

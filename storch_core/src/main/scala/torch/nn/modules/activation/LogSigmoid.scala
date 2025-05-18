@@ -35,6 +35,7 @@ final class LogSigmoid[D <: DType: Default](inplace: Boolean = false) extends Te
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName() + s"(inplace=$inplace)"

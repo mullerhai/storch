@@ -55,6 +55,7 @@ final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  def reset(): Unit = nativeModule.reset()
   override def toString =
     s"${getClass.getSimpleName}(numGroups = ${numGroups}, numChannels = ${numChannels},eps=$eps affine=$affine)"
 

@@ -42,6 +42,8 @@ final class GELU[D <: DType: Default](size: Int, approximate: Float, inplace: Bo
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString =
     getClass().getSimpleName() + s"(size=$size,approximate=$approximate,inplace=$inplace)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))

@@ -144,6 +144,8 @@ final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString(): String =
     s"${getClass().getSimpleName()} size = ${size} scaleFactor = ${scaleFactor} upsampleMode = ${mode
         .toString()} alignCorners= ${alignCorners})"

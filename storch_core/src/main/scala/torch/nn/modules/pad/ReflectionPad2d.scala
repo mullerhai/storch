@@ -35,9 +35,10 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ReflectionPad2d[D <: BFloat16 | Float32 | Float64: Default](
+final class ReflectionPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
     padding: Int | (Int, Int) | (Int, Int, Int, Int)
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val paddingNative = padding match {
     case (top, bottom, left, right) => toNative(top, bottom, left, right)
@@ -55,16 +56,17 @@ final class ReflectionPad2d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   override def toString =
     s"${getClass.getSimpleName}(padding = ${padding},)"
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
 }
 
 object ReflectionPad2d:
-  def apply[D <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
       padding: Int | (Int, Int) | (Int, Int, Int, Int)
-  ): ReflectionPad2d[D] =
-    new ReflectionPad2d[D](padding)
+  ): ReflectionPad2d[ParamType] =
+    new ReflectionPad2d[ParamType](padding)

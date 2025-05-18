@@ -77,7 +77,17 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
+  def apply(packed_input: PackedSequence): PackedSequenceTensor = {
 
+    val output = nativeModule.forward_with_packed_input(packed_input)
+    (output.get0(), fromNative(output.get1()))
+  }
+
+  def apply(packed_input: PackedSequence, hx: Tensor[ParamType]): PackedSequenceTensor = {
+
+    val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
+    (output.get0(), fromNative(output.get1()))
+  }
 
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensor = {
 
@@ -90,8 +100,17 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
     (output.get0(),fromNative(output.get1()))
   }
-  
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
+  def all_weights(): Seq[Tensor[ParamType]] = {
+    val vec = nativeModule.all_weights()
+    torch.tensorVectorToSeqTensor(vec)
+  }
+
+    
   def weight: TensorVector = nativeModule.all_weights()
 
   override def hasBias(): Boolean = options.bias().get()

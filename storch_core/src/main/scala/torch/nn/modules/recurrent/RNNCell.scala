@@ -60,6 +60,27 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: RNNCellImpl = RNNCellImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
+  //  public native @ByRef Tensor weight_ih(); public native RNNCellImplBase weight_ih(Tensor setter);
+  //  public native @ByRef Tensor weight_hh(); public native RNNCellImplBase weight_hh(Tensor setter);
+  //  public native @ByRef Tensor bias_ih(); public native RNNCellImplBase bias_ih(Tensor setter);
+  //  public native @ByRef Tensor bias_hh(); public native RNNCellImplBase bias_hh(Tensor setter);
+  def weight_ih(weight: Tensor[ParamType]) = nativeModule.weight_ih(weight.native)
+
+  def weight_hh(weight: Tensor[ParamType]) = nativeModule.weight_hh(weight.native)
+
+  def bias_ih(bias: Tensor[ParamType]) = nativeModule.bias_ih(bias.native)
+
+  def bias_hh(bias: Tensor[ParamType]) = nativeModule.bias_hh(bias.native)
+  
+  def weight_ih(): Tensor[ParamType] = fromNative(nativeModule.weight_ih())
+  
+  def weight_hh(): Tensor[ParamType] = fromNative(nativeModule.weight_hh())
+  
+  def bias_ih(): Tensor[ParamType] = fromNative(nativeModule.bias_ih())
+  
+  def bias_hh(): Tensor[ParamType] = fromNative(nativeModule.bias_hh())
+  
+  
   def apply(input: Tensor[ParamType], hx: Tensor[ParamType]): Tensor[ParamType] = {
     val fore = nativeModule.forward(input.native, hx.native)
     fromNative(fore)
@@ -72,6 +93,10 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
 //todo forward_with_packed_input   
   def weight: TensorVector =
     TensorVector(nativeModule.weight_hh(), nativeModule.weight_ih()) // all_weights()
+
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
 
   override def hasBias(): Boolean = options.bias().get()
 

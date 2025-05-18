@@ -31,10 +31,11 @@ import org.bytedeco.pytorch.LongOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AdaptiveMaxPool1d[D <: BFloat16 | Float32 | Float64: Default](
+final class AdaptiveMaxPool1d[ParamType <: BFloat16 | Float32 | Float64: Default](
     outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int),
     returnIndices: Boolean = false
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
@@ -52,10 +53,12 @@ final class AdaptiveMaxPool1d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def reset(): Unit = nativeModule.reset()
+  
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
-  def forward_with_indices(t: Tensor[D]): (Tensor[D], Tensor[D]) =
+  def forward_with_indices(t: Tensor[ParamType]): (Tensor[ParamType], Tensor[ParamType]) =
     val outputWithIndices = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
   override def toString =
@@ -63,8 +66,8 @@ final class AdaptiveMaxPool1d[D <: BFloat16 | Float32 | Float64: Default](
 }
 
 object AdaptiveMaxPool1d:
-  def apply[DT <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
       output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int),
       return_indices: Boolean = false
-  ): AdaptiveMaxPool1d[DT] =
+  ): AdaptiveMaxPool1d[ParamType] =
     new AdaptiveMaxPool1d(output_size, return_indices)

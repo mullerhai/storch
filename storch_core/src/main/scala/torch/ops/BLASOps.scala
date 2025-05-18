@@ -18,7 +18,7 @@ package torch
 package ops
 
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{DoubleOptional, PackedSequence, Scalar, TensorOptional, TensorOptionalList, TensorVector}
+import org.bytedeco.pytorch.{DoubleOptional, LongOptional, PackedSequence, Scalar, TensorOptional, TensorOptionalList, TensorVector}
 import torch.internal.NativeConverters.fromNative
 
 import scala.collection.mutable.ListBuffer
@@ -437,6 +437,15 @@ private[torch] trait BLASOps {
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
     fromNative(torchNative.pad_sequence(tensorVector))
 
+  def pad_packed_sequence[D1 <: DType](packedSequence: PackedSequence):(Tensor[D1],Tensor[D1]) =
+    val tensorVec = torchNative.pad_packed_sequence(packedSequence)
+    (fromNative(tensorVec.get0()), fromNative(tensorVec.get1()))
+
+  //torch.nn.utils.rnn.pad_packed_sequence(sequence, batch_first=False, padding_value=0.0, total_length=None)[source]
+  def pad_packed_sequence[D1 <: DType](packedSequence: PackedSequence, batch_first: Boolean = false, padding_value: Double = 0.0, total_length:Option[Long] = None): (Tensor[D1], Tensor[D1]) =
+    val native_length = if total_length.isDefined then new LongOptional(total_length.get) else new LongOptional()
+    val tensorVec = torchNative.pad_packed_sequence(packedSequence, batch_first, padding_value, native_length)
+    (fromNative(tensorVec.get0()), fromNative(tensorVec.get1()))
 //  def permute[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
 //    fromNative(torchNative.permute(t1.native, sliceSeq *))
 
@@ -924,8 +933,99 @@ private[torch] trait BLASOps {
 //  def median[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.median(t1.native))
 
+  def clip_grad_norm_(
+                       parameters: Seq[Tensor[?]],
+                       max_norm: Double
+                     ): Double =
+    torchNative.clip_grad_norm_(
+      TensorVector(parameters.map(_.native).toArray *),
+      max_norm
+    )
 
-//  def min[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def clip_grad_norm_(
+                       parameters: Tensor[?],
+                       max_norm: Double
+                     ): Double =
+    torchNative.clip_grad_norm_(
+      parameters.native,
+      max_norm
+    )
+
+  def clip_grad_norm_(
+                       parameters: Tensor[?],
+                       max_norm: Double,
+                       norm_type: Double = 2.0,
+                       error_if_nonfinite: Boolean = false
+                     ): Double =
+    torchNative.clip_grad_norm_(
+      parameters.native,
+      max_norm,
+      norm_type,
+      error_if_nonfinite
+    )
+
+  //  norm_type: Double = 2.0,
+  //                       error_if_nonfinite: Boolean = false
+  def clip_grad_norm_(
+                       parameters: Seq[Tensor[?]],
+                       max_norm: Double,
+                       norm_type: Double,
+                       error_if_nonfinite: Boolean
+                     ): Double =
+    torchNative.clip_grad_norm_(
+      TensorVector(parameters.map(_.native).toArray *),
+      max_norm,
+      norm_type,
+      error_if_nonfinite
+    )
+
+  //    public static native void clip_grad_value_(@Const @ByRef TensorVector var0, double var1);
+  //    public static native void clip_grad_value_(@ByVal Tensor var0, double var1);
+  //torch.nn.utils.clip_grad_value_(parameters, clip_value, foreach=None)
+  def clip_grad_value_(
+                        parameters: Seq[Tensor[?]],
+                        clip_value: Double
+                      ): Unit =
+    torchNative.clip_grad_value_(
+      TensorVector(parameters.map(_.native).toArray *),
+      clip_value
+    )
+
+  def clip_grad_value_(
+                        parameters: Tensor[?],
+                        clip_value: Double
+                      ): Unit =
+    torchNative.clip_grad_value_(
+      parameters.native,
+      clip_value
+    )
+
+  def gammainc[D1 <: DType, D2 <: DType](input: Tensor[D1], other: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.gammainc(input.native, other.native))
+
+
+  def gammaincc[D1 <: DType, D2 <: DType](input: Tensor[D1], other: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.gammaincc(input.native, other.native))
+
+  def parameters_to_vector(
+                            parameters: Seq[Tensor[?]]
+                          ): Tensor[?] = {
+    val tensor = torchNative.parameters_to_vector(
+      TensorVector(parameters.map(_.native).toArray *)
+    )
+    fromNative(tensor)
+  }
+
+  def vector_to_parameters(
+                            vec: Tensor[?],
+                            parameters: Seq[Tensor[?]]
+                          ): Unit =
+    torchNative.vector_to_parameters(
+      vec.native,
+      TensorVector(parameters.map(_.native).toArray *)
+    )
+
+  //  def min[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.min(t1.native))
 
   def mish[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -988,13 +1088,40 @@ private[torch] trait BLASOps {
     val tup = torchNative.adaptive_max_pool1d(t1.native, sliceSeq *)
     (fromNative(tup.get0), fromNative(tup.get1))
 
-  def pack_sequence[D1 <: DType](tensorArray: Seq[Tensor[D1]]): PackedSequence =
-    val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
+  //>>> from torch.nn.utils.rnn import pack_sequence
+  //>>> a = torch.tensor([1, 2, 3])
+  //>>> b = torch.tensor([4, 5])
+  //>>> c = torch.tensor([6])
+  //>>> pack_sequence([a, b, c])
+  //PackedSequence(data=tensor([1, 4, 6, 2, 5, 3]), batch_sizes=tensor([3, 2, 1]), sorted_indices=None, unsorted_indices=None)
+  //torch.nn.utils.rnn.pack_sequence(sequences, enforce_sorted=True)
+  def pack_sequence[D1 <: DType](sequences: Seq[Tensor[D1]]): PackedSequence =
+    val tensorVector = TensorVector(sequences.map(_.native).toArray *)
     val packSeq = torchNative.pack_sequence(tensorVector)
     packSeq
 
-  def pack_padded_sequence[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): PackedSequence =
-    val packPadSeq = torchNative.pack_padded_sequence(t1.native, t2.native)
+  def pack_sequence[D1 <: DType](sequences: Seq[Tensor[D1]], enforce_sorted: Boolean = true): PackedSequence =
+    val tensorVector = TensorVector(sequences.map(_.native).toArray *)
+    val packSeq = torchNative.pack_sequence(tensorVector, enforce_sorted)
+    packSeq
+
+  //    public static native PackedSequence pack_sequence(@ByVal TensorVector var0, @Cast({"bool"}) boolean var1);
+  //    public static native PackedSequence pack_sequence(@ByVal TensorVector var0);
+
+//     public static native PackedSequence pack_padded_sequence(@ByVal Tensor var0, @ByVal Tensor var1, @Cast({"bool"}) boolean var2, @Cast({"bool"}) boolean var3);
+
+  //    public static native PackedSequence pack_padded_sequence(@ByVal Tensor var0, @ByVal Tensor var1);
+  //
+  //   public static native T_TensorTensor_T pad_packed_sequence(@ByVal PackedSequence var0);
+
+  //    public static native T_TensorTensor_T pad_packed_sequence(@ByVal PackedSequence var0, @Cast({"bool"}) boolean var1, double var2, @ByVal(nullValue = "std::optional<int64_t>(torch::nullopt)") LongOptional var4);
+  //torch.nn.utils.rnn.pack_padded_sequence(input, lengths, batch_first=False, enforce_sorted=True)
+  def pack_padded_sequence[D1 <: DType, D2 <: DType](input: Tensor[D1], lengths: Tensor[D2]): PackedSequence =
+    val packPadSeq = torchNative.pack_padded_sequence(input.native, lengths.native)
+    packPadSeq
+
+  def pack_padded_sequence[D1 <: DType, D2 <: DType](input: Tensor[D1], lengths: Tensor[D2], batch_first: Boolean = false, enforce_sorted: Boolean = true): PackedSequence =
+    val packPadSeq = torchNative.pack_padded_sequence(input.native, lengths.native, batch_first, enforce_sorted)
     packPadSeq
 
   def nonzero_numpy[D1 <: DType](t1: Tensor[D1]): Seq[Tensor[D1]] =
@@ -1220,6 +1347,10 @@ private[torch] trait BLASOps {
   def softshrink[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.softshrink(t1.native))
 
+  def invert_permutation[D <: DType](permutation: Tensor[D]): Tensor[D] = {
+
+    fromNative(torchNative.invert_permutation(permutation.native))
+  }
 
   def special_airy_ai[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.special_airy_ai(t1.native))

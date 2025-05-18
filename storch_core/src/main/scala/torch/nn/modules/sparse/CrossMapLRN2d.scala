@@ -82,6 +82,7 @@ final class CrossMapLRN2d[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   def apply(t: Tensor[Int64]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =

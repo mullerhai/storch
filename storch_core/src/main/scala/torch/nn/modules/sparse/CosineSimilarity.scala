@@ -92,6 +92,7 @@ final class CosineSimilarity[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   def apply(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input1.native, input2.native)
   )

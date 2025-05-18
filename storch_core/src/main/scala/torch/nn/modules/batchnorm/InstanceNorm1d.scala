@@ -68,6 +68,18 @@ final class InstanceNorm1d[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
+  def reset_running_stats(): Unit = nativeModule.reset_running_stats()
+
+  def running_mean(): Tensor[ParamType] = fromNative(nativeModule.running_mean())
+
+  def running_var(): Tensor[ParamType] = fromNative(nativeModule.running_var())
+
+  def num_batches_tracked(): Tensor[ParamType] = fromNative(nativeModule.num_batches_tracked())
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
 

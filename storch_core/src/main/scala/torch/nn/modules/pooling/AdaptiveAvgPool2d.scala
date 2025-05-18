@@ -31,10 +31,11 @@ import org.bytedeco.pytorch.LongOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AdaptiveAvgPool2d[D <: BFloat16 | Float32 | Float64: Default](
+final class AdaptiveAvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default](
     outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) | (Option[Int], Int) |
       (Int, Option[Int])
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
@@ -57,7 +58,8 @@ final class AdaptiveAvgPool2d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def reset(): Unit = nativeModule.reset()
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
 
@@ -66,10 +68,10 @@ final class AdaptiveAvgPool2d[D <: BFloat16 | Float32 | Float64: Default](
 }
 
 object AdaptiveAvgPool2d:
-  def apply[DT <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
       output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) |
         (Option[Int], Int) | (Int, Option[Int])
-  ): AdaptiveAvgPool2d[DT] =
+  ): AdaptiveAvgPool2d[ParamType] =
     new AdaptiveAvgPool2d(output_size)
 
 

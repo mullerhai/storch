@@ -61,6 +61,7 @@ final class Flatten[D <: DType: Default](startDim: Int = 1, endDim: Int = -1)
 
   override val nativeModule: FlattenImpl = FlattenImpl(options)
 
+  def reset(): Unit = nativeModule.reset()
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))

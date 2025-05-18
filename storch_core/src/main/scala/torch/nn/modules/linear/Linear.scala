@@ -63,6 +63,10 @@ final class Linear[ParamType <: FloatNN: Default](
 
   override def hasBias(): Boolean = options.bias().get()
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   def weight = fromNative[ParamType](nativeModule.weight())
   def weight_=(t: Tensor[ParamType]): Tensor[ParamType] =
     nativeModule.weight(t.native)

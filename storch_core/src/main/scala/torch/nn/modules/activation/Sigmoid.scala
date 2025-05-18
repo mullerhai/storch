@@ -35,6 +35,8 @@ final class Sigmoid[D <: DType: Default](inplace: Boolean = false) extends Tenso
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName()

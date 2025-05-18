@@ -105,6 +105,7 @@ final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  def reset(): Unit = nativeModule.reset()
   override def toString =
     s"${getClass.getSimpleName}(normalizedShape = ${normalizedShape.mkString(" ")}, elementWiseAffine = ${elementWiseAffine},eps=$eps )"
 

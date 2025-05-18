@@ -110,6 +110,8 @@ final class FractionalMaxPool2d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize,outputSize ${outputSize} outputRatio ${outputRatio} returnIndices ${returnIndices} randomSamples ${randomSamples} )"
 

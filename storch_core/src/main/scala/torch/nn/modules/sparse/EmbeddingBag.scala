@@ -139,6 +139,10 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.weight(w.native)
     w
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input.native.to(ScalarType.Long))
   )

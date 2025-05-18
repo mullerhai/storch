@@ -119,6 +119,12 @@ final class ConvTranspose2d[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = options.bias().get()
 
+  def bias_(): Tensor[ParamType] = fromNative(nativeModule.bias)
+  
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   override def toString =
     s"${getClass.getSimpleName} ($inChannels, $outChannels, kernelSize=$kernelSize, stride=$stride, padding=$padding, bias=$bias)"
 

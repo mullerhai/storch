@@ -35,6 +35,7 @@ final class LeakyReLU[D <: DType: Default](negativeSlope: Float, inplace: Boolea
 
   override protected[torch] val nativeModule: LeakyReLUImpl = LeakyReLUImpl(options)
 
+  def reset(): Unit = nativeModule.reset()
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))

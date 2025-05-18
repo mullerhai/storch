@@ -35,10 +35,11 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ConstantPad3d[D <: BFloat16 | Float32 | Float64: Default](
+final class ConstantPad3d[ParamType <: BFloat16 | Float32 | Float64: Default](
     padding: Int | (Int, Int, Int, Int, Int, Int),
     value: Float | Double
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val paddingNative = padding match {
     case (top, bottom, left, right, int, float) => toNative(top, bottom, left, right, int, float)
@@ -59,17 +60,18 @@ final class ConstantPad3d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   override def toString =
     s"${getClass.getSimpleName}(padding = ${padding}, value = ${value})"
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
 }
 
 object ConstantPad3d:
-  def apply[D <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
       padding: Int | (Int, Int, Int, Int, Int, Int),
       value: Float | Double
-  ): ConstantPad3d[D] =
-    new ConstantPad3d[D](padding, value)
+  ): ConstantPad3d[ParamType] =
+    new ConstantPad3d[ParamType](padding, value)

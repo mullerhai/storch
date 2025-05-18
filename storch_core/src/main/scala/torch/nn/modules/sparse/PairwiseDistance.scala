@@ -92,6 +92,7 @@ final class PairwiseDistance[ParamType <: FloatNN | ComplexNN: Default](
   nativeModule.to(paramType.toScalarType, false)
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   def apply(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input1.native, input2.native)
   )

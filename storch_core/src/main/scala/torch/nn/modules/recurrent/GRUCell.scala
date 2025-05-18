@@ -53,6 +53,27 @@ final class GRUCell[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: GRUCellImpl = GRUCellImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
+  def weight_ih(weight: Tensor[ParamType]) = nativeModule.weight_ih(weight.native)
+
+  def weight_hh(weight: Tensor[ParamType]) = nativeModule.weight_hh(weight.native)
+
+  def bias_ih(bias: Tensor[ParamType]) = nativeModule.bias_ih(bias.native)
+
+  def bias_hh(bias: Tensor[ParamType]) = nativeModule.bias_hh(bias.native)
+  
+  
+  def weight_ih(): Tensor[ParamType] = fromNative(nativeModule.weight_ih())
+
+  def weight_hh(): Tensor[ParamType] = fromNative(nativeModule.weight_hh())
+
+  def bias_ih(): Tensor[ParamType] = fromNative(nativeModule.bias_ih())
+
+  def bias_hh(): Tensor[ParamType] = fromNative(nativeModule.bias_hh())
+
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   def apply(input: Tensor[ParamType], hx: Tensor[ParamType]): Tensor[ParamType] = {
     val fore = nativeModule.forward(input.native, hx.native)
     fromNative(fore)

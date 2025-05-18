@@ -127,6 +127,43 @@ final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = true
 
+  def reset(): Unit = nativeModule.reset()
+  
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+  
+  def reset_running_stats(): Unit = nativeModule.reset_running_stats()
+  
+//  def weight(): Tensor[ParamType] = fromNative(nativeModule.weight())
+//  
+//  def bias(): Tensor[ParamType] = fromNative(nativeModule.bias())
+  
+  def running_mean(): Tensor[ParamType] = fromNative(nativeModule.running_mean())
+  
+  def running_var(): Tensor[ParamType] = fromNative(nativeModule.running_var())
+  
+  def num_batches_tracked(): Tensor[ParamType] = fromNative(nativeModule.num_batches_tracked())
+  
+  //  public native @ByRef Tensor weight(); public native InstanceNorm1dImplBaseBase weight(Tensor setter);
+  //
+  //  /** The learned bias.
+  //   *  Only defined if the {@code affine} option was {@code true} upon construction. */
+  //  public native @ByRef Tensor bias(); public native InstanceNorm1dImplBaseBase bias(Tensor setter);
+  //
+  //  /** The running mean.
+  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+  //   *  construction. */
+  //  public native @ByRef Tensor running_mean(); public native InstanceNorm1dImplBaseBase running_mean(Tensor setter);
+  //
+  //  /** The running variance.
+  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+  //   *  construction. */
+  //  public native @ByRef Tensor running_var(); public native InstanceNorm1dImplBaseBase running_var(Tensor setter);
+  //
+  //  /** The number of the forward call.
+  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+  //   *  construction. */
+  //  public native @ByRef Tensor num_batches_tracked(); public native InstanceNorm1dImplBaseBase num_batches_tracked(Tensor setter);
+  
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =

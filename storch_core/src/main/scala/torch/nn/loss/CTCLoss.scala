@@ -12,6 +12,7 @@ final class CTCLoss extends LossFunc {
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
   def apply[D <: DType](
       input: Tensor[D],
       target: Tensor[?],

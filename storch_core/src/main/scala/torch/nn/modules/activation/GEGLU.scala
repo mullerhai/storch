@@ -26,7 +26,7 @@ final class GEGLU[D <: FloatNN: Default](dim: Int)
   val linearLayer = register(nn.Linear(dim, dim*2))
 
   override def hasBias(): Boolean = false
-
+  
   override def toString =
     getClass().getSimpleName() + s"(dim=$dim)"
 

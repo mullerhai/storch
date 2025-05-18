@@ -75,6 +75,10 @@ final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: TransformerDecoderImpl = TransformerDecoderImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   override def hasBias(): Boolean = false // options.bias().get()
 
   def apply(

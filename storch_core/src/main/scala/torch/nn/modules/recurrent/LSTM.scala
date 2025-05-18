@@ -112,7 +112,20 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     (fromNative(fore.get0()), (fromNative(fore2.get0()), fromNative(fore2.get1())))
   }
 
+  def apply(packed_input: PackedSequence): PackedSequenceTensorTensor = {
 
+    val output = nativeModule.forward_with_packed_input(packed_input)
+    (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
+
+  }
+
+  def apply(packed_input: PackedSequence, hx: Tensor[ParamType], cx: Tensor[ParamType]): PackedSequenceTensorTensor = {
+    val hxx = new T_TensorTensor_T(hx.native, cx.native)
+    val hxx_opt = new T_TensorTensor_TOptional(hxx)
+    val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
+    (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
+  }
+  
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensorTensor = {
 
     val output = nativeModule.forward_with_packed_input(packed_input)
@@ -126,7 +139,16 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
     (output.get0(),fromNative(output.get1().get0()),fromNative(output.get1().get1()))
   }
+
+  def all_weights(): Seq[Tensor[ParamType]] = {
+    val vec = nativeModule.all_weights()
+    torch.tensorVectorToSeqTensor(vec)
+  }
   def weight: TensorVector = nativeModule.all_weights()
+
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
 
   override def hasBias(): Boolean = options.bias().get()
 

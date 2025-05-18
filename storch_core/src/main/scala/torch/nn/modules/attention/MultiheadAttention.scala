@@ -100,6 +100,50 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
     )
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
+  
+  //  public native @Cast("bool") boolean _qkv_same_embed_dim(); public native MultiheadAttentionImpl _qkv_same_embed_dim(boolean setter);
+  //  public native @ByRef Tensor in_proj_weight(); public native MultiheadAttentionImpl in_proj_weight(Tensor setter);
+  //  public native @ByRef Tensor in_proj_bias(); public native MultiheadAttentionImpl in_proj_bias(Tensor setter);
+  //  public native @ByRef Tensor bias_k(); public native MultiheadAttentionImpl bias_k(Tensor setter);
+  //  public native @ByRef Tensor bias_v(); public native MultiheadAttentionImpl bias_v(Tensor setter);
+  //  public native @ByRef Tensor q_proj_weight(); public native MultiheadAttentionImpl q_proj_weight(Tensor setter);
+  //  public native @ByRef Tensor k_proj_weight(); public native MultiheadAttentionImpl k_proj_weight(Tensor setter);
+  //  public native @ByRef Tensor v_proj_weight(); public native MultiheadAttentionImpl v_proj_weight(Tensor setter);
+  //  public native @Cast("int64_t") long head_dim(); public native MultiheadAttentionImpl head_dim(long setter);
+
+  def in_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl= nativeModule.in_proj_weight(weight.native)
+
+  def in_proj_bias(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.in_proj_bias(bias.native)
+
+  def bias_k(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.bias_k(bias.native)
+
+  def bias_v(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.bias_v(bias.native)
+  
+
+  def q_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.q_proj_weight(weight.native)
+
+  def k_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.k_proj_weight(weight.native)
+
+  def v_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.v_proj_weight(weight.native)
+  
+  
+  
+  def in_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.in_proj_weight())
+  
+  def in_proj_bias(): Tensor[ParamType] = fromNative(nativeModule.in_proj_bias())
+  
+  def bias_k(): Tensor[ParamType] = fromNative(nativeModule.bias_k())
+  def bias_v(): Tensor[ParamType] = fromNative(nativeModule.bias_v())
+  
+  def q_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.q_proj_weight())
+  
+  def k_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.k_proj_weight())
+  
+  def v_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.v_proj_weight())
+  
+  def head_dim(): Long = nativeModule.head_dim()
+  
+  
 
   override def hasBias(): Boolean = options.bias().get()
 

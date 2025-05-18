@@ -85,6 +85,10 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false // options.bias().get()
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule.reset_parameters()
+
   override def toString =
     s"${getClass.getSimpleName}(numLayers=$numLayers, bias=$bias activation=${activation.toString} norm=$norm   )"
 

@@ -57,6 +57,8 @@ final class MaxUnpool3d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
 
   override private[torch] val nativeModule: MaxUnpool3dImpl = MaxUnpool3dImpl(options)
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def hasBias(): Boolean = false
 
   override def toString(): String =

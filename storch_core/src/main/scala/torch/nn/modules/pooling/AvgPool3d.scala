@@ -32,14 +32,15 @@ import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AvgPool3d[D <: BFloat16 | Float32 | Float64: Default](
+final class AvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default](
     kernelSize: Int | (Int, Int) | (Int, Int, Int),
     stride: Int | (Int, Int) | (Int, Int, Int),
     padding: Int | (Int, Int, Int) = 0,
     ceilMode: Boolean = false,
     countIncludePad: Boolean = true,
     divisorOverride: Option[Int] = None
-) extends Module {
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val options = new AvgPool3dOptions(toNative(kernelSize))
 
@@ -70,7 +71,9 @@ final class AvgPool3d[D <: BFloat16 | Float32 | Float64: Default](
 
   override def hasBias(): Boolean = false
 
-  def apply(t: Tensor[D]): Tensor[D] = fromNative(
+  def reset(): Unit = nativeModule.reset()
+  
+  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
 
@@ -80,14 +83,14 @@ final class AvgPool3d[D <: BFloat16 | Float32 | Float64: Default](
 }
 
 object AvgPool3d:
-  def apply[DT <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
       kernel_size: Int | (Int, Int) | (Int, Int, Int),
       stride: Int | (Int, Int) | (Int, Int, Int),
       padding: Int | (Int, Int, Int) = 0,
       ceil_mode: Boolean = false,
       count_include_pad: Boolean = true,
       divisor_override: Option[Int] = None
-  ): AvgPool3d[DT] =
+  ): AvgPool3d[ParamType] =
     new AvgPool3d(
       kernel_size,
       stride,

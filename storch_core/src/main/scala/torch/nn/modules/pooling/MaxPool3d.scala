@@ -61,6 +61,8 @@ final class MaxPool3d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
 
   override def hasBias(): Boolean = false
 
+  def reset(): Unit = nativeModule.reset()
+  
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding, dilation=$dilation, ceilMode=$ceilMode)"
 
