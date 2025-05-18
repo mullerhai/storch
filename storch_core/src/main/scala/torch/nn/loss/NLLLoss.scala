@@ -13,9 +13,9 @@ final class NLLLoss extends LossFunc {
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
-  def weight[D <: DType]() : Tensor[D] = fromNative(nativeModule.weight())
-  
+
+  def weight[D <: DType](): Tensor[D] = fromNative(nativeModule.weight())
+
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native)
   )
@@ -30,6 +30,6 @@ final class NLLLoss extends LossFunc {
 }
 
 object NLLLoss {
-  
-  def apply() : NLLLoss = new NLLLoss()
+
+  def apply(): NLLLoss = new NLLLoss()
 }

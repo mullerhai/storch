@@ -22,7 +22,8 @@ package recurrent
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  LSTMImpl,PackedSequence,
+  LSTMImpl,
+  PackedSequence,
   LSTMOptions,
   T_TensorT_TensorTensor_T_T,
   T_TensorTensor_T,
@@ -49,7 +50,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
-  type PackedSequenceTensorTensor = (PackedSequence, Tensor[ParamType], Tensor[ParamType]) //T_PackedSequenceT_TensorTensor_T_T
+  type PackedSequenceTensorTensor =
+    (PackedSequence, Tensor[ParamType], Tensor[ParamType]) // T_PackedSequenceT_TensorTensor_T_T
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new LSTMOptions(inputSize.toLong, hiddenSize.toLong)
   options.input_size().put(LongPointer(1).put(inputSize.toLong))
@@ -63,12 +65,12 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
 
   override private[torch] val nativeModule: LSTMImpl = LSTMImpl(options)
   nativeModule.to(paramType.toScalarType, false)
-  
+
   def apply(
-             t: Tensor[ParamType],
-             h0: Tensor[ParamType],
-             c0: Tensor[ParamType]
-           ): Tuple3[Tensor[ParamType], Tensor[ParamType], Tensor[ParamType]] = {
+      t: Tensor[ParamType],
+      h0: Tensor[ParamType],
+      c0: Tensor[ParamType]
+  ): Tuple3[Tensor[ParamType], Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(h0.native, c0.native)
     val hx_opt = new T_TensorTensor_TOptional(hx)
     val fore = nativeModule.forward(t.native, hx_opt)
@@ -77,16 +79,16 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def apply(
-             input: Tensor[ParamType],
-             hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
-           ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
+      input: Tensor[ParamType],
+      hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
+  ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
     val hx = new T_TensorTensor_T(hidden_state._1.native, hidden_state._2.native)
     val hx_opt = new T_TensorTensor_TOptional(hx)
     val fore = nativeModule.forward(input.native, hx_opt)
     val fore2 = fore.get1()
     (fromNative(fore.get0()), (fromNative(fore2.get0()), fromNative(fore2.get1())))
   }
-  
+
   def apply(
       t: Tensor[ParamType],
       h0: Option[Tensor[ParamType]] = None,
@@ -100,9 +102,9 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def apply(
-             input: Tensor[ParamType],
-             hidden_state: Option[Tuple2[Tensor[ParamType],Tensor[ParamType]]],
-           ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
+      input: Tensor[ParamType],
+      hidden_state: Option[Tuple2[Tensor[ParamType], Tensor[ParamType]]]
+  ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
     val hx = new T_TensorTensor_T(hidden_state.get._1.native, hidden_state.get._2.native)
     val hx_opt = new T_TensorTensor_TOptional(hx)
     val fore = nativeModule.forward(input.native, hx_opt)
@@ -117,25 +119,33 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
 
   }
 
-  def apply(packed_input: PackedSequence, hx: Tensor[ParamType], cx: Tensor[ParamType]): PackedSequenceTensorTensor = {
+  def apply(
+      packed_input: PackedSequence,
+      hx: Tensor[ParamType],
+      cx: Tensor[ParamType]
+  ): PackedSequenceTensorTensor = {
     val hxx = new T_TensorTensor_T(hx.native, cx.native)
     val hxx_opt = new T_TensorTensor_TOptional(hxx)
     val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
     (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
   }
-  
+
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensorTensor = {
 
     val output = nativeModule.forward_with_packed_input(packed_input)
-    (output.get0(),fromNative(output.get1().get0()),fromNative(output.get1().get1()))
+    (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
 
   }
 
-  def forward_with_packed_input(packed_input: PackedSequence, hx: Tensor[ParamType], cx: Tensor[ParamType]): PackedSequenceTensorTensor = {
+  def forward_with_packed_input(
+      packed_input: PackedSequence,
+      hx: Tensor[ParamType],
+      cx: Tensor[ParamType]
+  ): PackedSequenceTensorTensor = {
     val hxx = new T_TensorTensor_T(hx.native, cx.native)
     val hxx_opt = new T_TensorTensor_TOptional(hxx)
     val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
-    (output.get0(),fromNative(output.get1().get0()),fromNative(output.get1().get1()))
+    (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
   }
 
   def all_weights(): Seq[Tensor[ParamType]] = {
@@ -166,18 +176,6 @@ object LSTM:
       bidirectional: Boolean = false
   ): LSTM[ParamType] =
     new LSTM(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)
-
-
-
-
-
-
-
-
-
-
-
-
 
 //options.hidden_size().put(hiddenSize.toLong)
 //options.num_layers().put(numLayers)

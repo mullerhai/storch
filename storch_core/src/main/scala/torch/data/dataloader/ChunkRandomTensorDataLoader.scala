@@ -48,20 +48,6 @@ class ChunkRandomTensorDataLoader(dataset: ChunkMapTensorDataset, option: DataLo
   override def options(): FullDataLoaderOptions = super.options()
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  override def begin(): ExampleIterator = super.begin()
 //
 //  override def end(): ExampleIterator = super.end()

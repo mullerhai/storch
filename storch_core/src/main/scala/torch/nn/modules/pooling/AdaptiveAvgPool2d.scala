@@ -40,7 +40,7 @@ final class AdaptiveAvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
       new LongOptionalVector(new LongOptional(h), new LongOptional(w))
-    case x: Int => 
+    case x: Int =>
       new LongOptionalVector(new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
@@ -52,9 +52,9 @@ final class AdaptiveAvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
     case x: Option[Int] =>
       new LongOptionalVector(x.toOptional, x.toOptional)
 
-  override protected[torch] val nativeModule: AdaptiveAvgPool2dImpl = AdaptiveAvgPool2dImpl(nativeOutputSize.get(0))
-
-  
+  override protected[torch] val nativeModule: AdaptiveAvgPool2dImpl = AdaptiveAvgPool2dImpl(
+    nativeOutputSize.get(0)
+  )
 
   override def hasBias(): Boolean = false
 
@@ -73,16 +73,6 @@ object AdaptiveAvgPool2d:
         (Option[Int], Int) | (Int, Option[Int])
   ): AdaptiveAvgPool2d[ParamType] =
     new AdaptiveAvgPool2d(output_size)
-
-
-
-
-
-
-
-
-
-
 
 //  val options: AdaptiveAvgPool2dOptions = AdaptiveAvgPool2dOptions(nativeOutputSize)
 //  options.output_size().put(nativeOutputSize)

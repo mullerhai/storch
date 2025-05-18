@@ -37,7 +37,6 @@ class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset)
     extends CMD(chunkDataset)
     with Dataset {
 
-
   override def get_batch_example(indices: Long): ExampleOptional = super.get_batch_example(indices)
 
   override def size(): SizeTOptional = super.size()
@@ -50,25 +49,6 @@ class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset)
 
   override def get_batch(request: Long*): ExampleVector = super.get_batch(request: _*)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 //

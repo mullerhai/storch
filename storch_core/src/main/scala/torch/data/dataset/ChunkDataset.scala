@@ -31,7 +31,6 @@ class ChunkDataset(
 ) extends CDS(chunkReader, sampler1, sampler2, datasetOptions)
     with Dataset {
 
-
   override def get_batch(batch_size: Long): ExampleVectorOptional =
     super.get_batch(datasetOptions.batch_size().get())
 
@@ -47,11 +46,6 @@ class ChunkDataset(
 
   override def load(archive: InputArchive): Unit = super.load(archive)
 }
-
-
-
-
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 //

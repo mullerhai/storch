@@ -33,7 +33,7 @@ final class Tanhshrink[D <: DType: Default] extends TensorModule[D]:
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName()

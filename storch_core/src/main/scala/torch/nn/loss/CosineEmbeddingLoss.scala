@@ -28,5 +28,5 @@ final class CosineEmbeddingLoss extends LossFunc {
   }
 }
 object CosineEmbeddingLoss {
-  def apply() : CosineEmbeddingLoss = new CosineEmbeddingLoss()
+  def apply(): CosineEmbeddingLoss = new CosineEmbeddingLoss()
 }

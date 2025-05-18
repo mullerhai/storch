@@ -53,7 +53,7 @@
 //      throw new IllegalArgumentException("Input tensor does not have enough dimensions")
 //    }
 //  }
-//  
+//
 //  // 辅助函数，获取图像尺寸
 //  def getImageNumChannels(img: Tensor): Int = {
 //    val sizes = img.sizes()
@@ -139,8 +139,8 @@
 //    }
 //    torchGlobal.nn.functional.pad(img, padSizes, paddingMode, fill)
 //  }
-//  
-//  
+//
+//
 //  // 辅助函数，裁剪图像
 //  def crop(img: Tensor, top: Int, left: Int, height: Int, width: Int): Tensor = {
 //    img.slice(-2, top, top + height).slice(-1, left, left + width)
@@ -169,8 +169,8 @@
 //    val croppedImg = crop(img, top, left, height, width)
 //    resize(croppedImg, size, interpolation, antialias = antialias)
 //  }
-//  
-//  
+//
+//
 //  // 辅助函数，水平翻转图像
 //  def hflip(img: Tensor): Tensor = {
 //    torchGlobal.flip(img, -1)

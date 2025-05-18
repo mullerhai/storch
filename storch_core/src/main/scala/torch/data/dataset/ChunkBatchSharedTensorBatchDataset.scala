@@ -38,26 +38,6 @@ class ChunkBatchSharedTensorBatchDataset(chunkReader: ChunkTensorDataReader)
   ): _root_.org.bytedeco.pytorch.ChunkMapTensorDataset = super.map(transform)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 //
 //  override def size(): SizeTOptional = super.size()

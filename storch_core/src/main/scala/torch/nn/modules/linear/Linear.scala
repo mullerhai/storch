@@ -38,7 +38,7 @@ import internal.NativeConverters.fromNative
   * ```
   *
   * @group nn_linear
-  *     // dtype: ParamType = defaultDType[ParamType]
+  * // dtype: ParamType = defaultDType[ParamType]
   * @param inFeatures
   *   size of each input sample
   * @param outFeatures

@@ -49,7 +49,7 @@ abstract class Module {
   def parameters(recurse: Boolean): Seq[Tensor[?]] =
     ArraySeq.unsafeWrapArray(nativeModule.parameters().get).map(fromNative[DType])
 
-  def stateDict():Map[String, Tensor[?]] ={
+  def stateDict(): Map[String, Tensor[?]] = {
     val tensorsToLoad = namedParameters() ++ namedBuffers()
     tensorsToLoad
   }
@@ -66,13 +66,13 @@ abstract class Module {
 
   def modules(recurse: Boolean): Seq[Module] =
     childModules.values.flatMap(child => child +: child.modules).toSeq.distinct
-    
+
   def modules: Seq[Module] = modules(recurse = true)
 
   def namedChildren: SeqMap[String, Module] = childModules
-  
+
   def children(): Seq[Module] = modules(true)
-  
+
   def namedModules: SeqMap[String, Module] =
     namedChildren.flatMap((_, module) => module.namedModules)
 
@@ -105,13 +105,17 @@ abstract class Module {
     t
 
   def register_parameter_r[D <: DType](t: Tensor[D], requiresGrad: Boolean = true, n: String = "")(
-    using name: sourcecode.Name
+      using name: sourcecode.Name
   ): Tensor[D] =
     val name_ = if n.trim().isEmpty() then name.value else n.trim()
     nativeModule.register_parameter(name_, t.native, requiresGrad)
     t
 
-  def register_parameter[D <: DType](name:String, t: Tensor[D], requiresGrad: Boolean = true): Tensor[D] =
+  def register_parameter[D <: DType](
+      name: String,
+      t: Tensor[D],
+      requiresGrad: Boolean = true
+  ): Tensor[D] =
     nativeModule.register_parameter(name, t.native, requiresGrad)
     t
 
@@ -152,18 +156,18 @@ abstract class Module {
   def asTransformerDecoder = nativeModule.asTransformerDecoder()
 
   def asMultiheadAttention = nativeModule.asMultiheadAttention()
-  
-  def asTransformerEncoderLayer = nativeModule.asTransformerEncoderLayer ()
+
+  def asTransformerEncoderLayer = nativeModule.asTransformerEncoderLayer()
   def asTransformerDecoderLayer = nativeModule.asTransformerDecoderLayer()
   def asGroupNorm = nativeModule.asGroupNorm()
   def asCrossMapLRN2d = nativeModule.asCrossMapLRN2d()
   def asLocalResponseNorm = nativeModule.asLocalResponseNorm()
   def asLayerNorm = nativeModule.asLayerNorm()
-  def asUpsample = nativeModule.asUpsample ()
-  def asPixelUnshuffle = nativeModule.asPixelUnshuffle ()
-  def asPixelShuffle = nativeModule.asPixelShuffle ()
-  def asGRUCell = nativeModule.asGRUCell ()
-  def asLSTMCell = nativeModule.asLSTMCell ()
+  def asUpsample = nativeModule.asUpsample()
+  def asPixelUnshuffle = nativeModule.asPixelUnshuffle()
+  def asPixelShuffle = nativeModule.asPixelShuffle()
+  def asGRUCell = nativeModule.asGRUCell()
+  def asLSTMCell = nativeModule.asLSTMCell()
   def asRNNCell = nativeModule.asRNNCell()
   def asGRU = nativeModule.asGRU()
   def asLSTM = nativeModule.asLSTM()
@@ -175,11 +179,11 @@ abstract class Module {
   def asAdaptiveAvgPool3d = nativeModule.asAdaptiveAvgPool3d()
   def asMaxPool3d = nativeModule.asMaxPool3d()
   def asAvgPool3d = nativeModule.asAvgPool3d()
-  def asZeroPad3d= nativeModule.asZeroPad3d()
+  def asZeroPad3d = nativeModule.asZeroPad3d()
   def asConstantPad3d = nativeModule.asConstantPad3d()
   def asReplicationPad3d = nativeModule.asReplicationPad3d()
   def asReflectionPad3d = nativeModule.asReflectionPad3d()
-  def asLPPool2d= nativeModule.asLPPool2d()
+  def asLPPool2d = nativeModule.asLPPool2d()
   def asFractionalMaxPool2d = nativeModule.asFractionalMaxPool2d()
   def asMaxUnpool2d = nativeModule.asMaxUnpool2d()
   def asAdaptiveMaxPool2d = nativeModule.asAdaptiveMaxPool2d()
@@ -252,7 +256,6 @@ abstract class Module {
   def asNLLLoss = nativeModule.asNLLLoss()
   def asCrossEntropyLoss = nativeModule.asCrossEntropyLoss()
   def asBCEWithLogitsLoss = nativeModule.asBCEWithLogitsLoss()
-  
 
   override def toString(): String = getClass().getSimpleName()
 
@@ -275,6 +278,7 @@ trait HasParams[ParamType <: FloatNN | ComplexNN: Default] extends Module:
 
 trait HasWeight[ParamType <: FloatNN | ComplexNN]:
   def weight: Tensor[ParamType]
+
 /** Transforms a single tensor into another one of the same type. */
 trait TensorModule[D <: DType] extends Module with (Tensor[D] => Tensor[D]):
   override def toString(): String = "TensorModule"

@@ -45,7 +45,7 @@ final class PixelUnshuffle[D <: BFloat16 | Float32 | Float64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(downscaleFactor=$downscaleFactor)"
 
@@ -54,15 +54,5 @@ final class PixelUnshuffle[D <: BFloat16 | Float32 | Float64: Default](
 object PixelUnshuffle:
   def apply[D <: BFloat16 | Float32 | Float64: Default](downscale_factor: Int): PixelUnshuffle[D] =
     new PixelUnshuffle[D](downscale_factor)
-
-
-
-
-
-
-
-
-
-
 
 //  private val options: PixelUnshuffleOptions = PixelUnshuffleOptions(toNative(downscaleFactor))

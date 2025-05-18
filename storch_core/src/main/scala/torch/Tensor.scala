@@ -16,9 +16,37 @@
 
 package torch
 
-import org.bytedeco.javacpp.{BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
+import org.bytedeco.javacpp.{
+  BoolPointer,
+  BytePointer,
+  DoublePointer,
+  FloatPointer,
+  IntPointer,
+  LongPointer,
+  ShortPointer
+}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{BoolOptional, DoubleOptional, EllipsisIndexType, Generator, GeneratorOptional, LongOptional, Node, ScalarOptional, ScalarTypeOptional, Storage, SymInt, SymIntOptional, TensorArrayRefOptional, TensorIndexArrayRef, TensorOptional, TensorOptionalList, TensorTensorHook, TensorVector, VoidTensorHook}
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  DoubleOptional,
+  EllipsisIndexType,
+  Generator,
+  GeneratorOptional,
+  LongOptional,
+  Node,
+  ScalarOptional,
+  ScalarTypeOptional,
+  Storage,
+  SymInt,
+  SymIntOptional,
+  TensorArrayRefOptional,
+  TensorIndexArrayRef,
+  TensorOptional,
+  TensorOptionalList,
+  TensorTensorHook,
+  TensorVector,
+  VoidTensorHook
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch.ScalarType
 
@@ -46,7 +74,6 @@ case class TensorTuple[D <: DType](
 trait TensorCreator[A, T <: DType] {
   def create(data: Seq[A]): Tensor[T]
 }
-
 
 object TensorCreator:
   given longCreator: TensorCreator[Long, Int64] with
@@ -86,17 +113,20 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def gradFn(): Node = {
     val gradFn = native.grad_fn()
-    if gradFn != null then  println(s"gradient function is  ${gradFn.getptr.name().getString}")
+    if gradFn != null then println(s"gradient function is  ${gradFn.getptr.name().getString}")
     gradFn
   }
-  
-  def grad_fn_name : String = if native.grad_fn() != null then  native.grad_fn().getptr.name().getString else "grad_fn is none ,can not invoke, please set required_grad with true or wait backward method excuted "
+
+  def grad_fn_name: String = if native.grad_fn() != null then
+    native.grad_fn().getptr.name().getString
+  else
+    "grad_fn is none ,can not invoke, please set required_grad with true or wait backward method excuted "
 
   def set_requires_grad(requires_grad: Boolean) = native.set_requires_grad(requires_grad)
 
   def setRequiresGrad(requires_grad: Boolean) = native.set_requires_grad(requires_grad)
 
-  def requires_grad():Boolean = native.requires_grad()
+  def requires_grad(): Boolean = native.requires_grad()
 
   def requires_grad_() = native.requires_grad_()
 
@@ -114,7 +144,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def name(): String = native.name().toString()
 
-  def remove_hook(pos: Int):Unit = native.remove_hook(pos)
+  def remove_hook(pos: Int): Unit = native.remove_hook(pos)
 
   def sizes(): Seq[Int] = {
     val longArrayRef = native.sizes()
@@ -127,7 +157,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   }
 
-  def strides(): Seq[Int] ={
+  def strides(): Seq[Int] = {
     val stridesRef = native.strides()
     val stridesBuffer = new ListBuffer[Int]()
     for (i <- 0 until stridesRef.size().toInt) {
@@ -145,16 +175,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def nbytes(): Long = native.nbytes()
 
-  def itemsize():Long = native.itemsize()
+  def itemsize(): Long = native.itemsize()
 
-  def element_size():Long = native.element_size()
+  def element_size(): Long = native.element_size()
 
-  def has_storage():Boolean = native.has_storage()
+  def has_storage(): Boolean = native.has_storage()
 
   def has_names: Boolean = native.has_names()
-  
+
   def get_named_tensor_meta = native.get_named_tensor_meta()
-  
+
   def storage() = native.storage()
 
   def variable_data() = native.variable_data()
@@ -228,7 +258,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.vdot(other.native)
   )
 
-  def new_empty[D <: DType](size: Seq[Int]):Tensor[D] = fromNative(native.new_empty(size.map(_.toLong)*))
+  def new_empty[D <: DType](size: Seq[Int]): Tensor[D] = fromNative(
+    native.new_empty(size.map(_.toLong)*)
+  )
 
   def *[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = mul(s)
 
@@ -347,15 +379,21 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.backward()
   }
 
-  def backward(gradient: Tensor[D], retain_graph: Option[Boolean] = Some(true), create_graph: Boolean = false, inputs: Option[Seq[Tensor[D]]] = None ): Unit = {
+  def backward(
+      gradient: Tensor[D],
+      retain_graph: Option[Boolean] = Some(true),
+      create_graph: Boolean = false,
+      inputs: Option[Seq[Tensor[D]]] = None
+  ): Unit = {
     if !this.requiresGrad then this.requiresGrad_=(true)
-    val nativeRetainGraph = if retain_graph.isDefined then  new BoolOptional(retain_graph.get) else new BoolOptional()
+    val nativeRetainGraph =
+      if retain_graph.isDefined then new BoolOptional(retain_graph.get) else new BoolOptional()
     val nativeInputsRef = if inputs.isDefined then
       val tensorVector = new TensorVector(inputs.get.map(_.native)*)
-      new TensorArrayRefOptional(tensorVector) else new TensorArrayRefOptional()
+      new TensorArrayRefOptional(tensorVector)
+    else new TensorArrayRefOptional()
     native.backward(gradient.native, nativeRetainGraph, create_graph, nativeInputsRef)
   }
-
 
   /** Returns a new Tensor, detached from the current graph.
     *
@@ -454,7 +492,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     */
   def expand(sizes: Int*) = fromNative(native.expand(sizes.map(_.toLong)*))
 
-  def corrcoef():Tensor[D] = fromNative(native.corrcoef())
+  def corrcoef(): Tensor[D] = fromNative(native.corrcoef())
 
   def flatten: Tensor[D] = fromNative(native.flatten())
 
@@ -511,49 +549,49 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def isCuda: Boolean = native.is_cuda()
 
   def is_neg: Boolean = native.is_neg()
-  
+
   def is_cuda: Boolean = native.is_cuda()
-  
+
   def is_cpu: Boolean = native.is_cpu()
-  
+
   def is_xpu: Boolean = native.is_xpu()
-  
+
   def is_ipu: Boolean = native.is_ipu()
-  
+
   def is_hpu: Boolean = native.is_hpu()
-  
+
   def is_xla: Boolean = native.is_xla()
-  
+
   def is_privateuseone: Boolean = native.is_privateuseone()
-  
+
   def is_hip: Boolean = native.is_hip()
-  
+
   def is_ve: Boolean = native.is_ve()
-  
+
   def is_mtia: Boolean = native.is_mtia()
-  
+
   def is_lazy: Boolean = native.is_lazy()
-  
+
   def is_mkldnn: Boolean = native.is_mkldnn()
-  
+
   def is_vulkan: Boolean = native.is_vulkan()
-  
+
   def is_metal: Boolean = native.is_metal()
-  
+
   def is_maia: Boolean = native.is_maia()
-  
+
   def is_meta: Boolean = native.is_meta()
-  
+
   def is_inference: Boolean = native.is_inference()
-  
-  def is_nested: Boolean = native.is_nested() 
-  
+
+  def is_nested: Boolean = native.is_nested()
+
   def is_mps: Boolean = native.is_mps()
-  
+
   def is_sparse_csr: Boolean = native.is_sparse_csr()
-  
+
   def is_sparse_native: Boolean = native.is_sparse()
-  
+
   def isQuantized: Boolean = native.is_quantized()
 
   def isnan: Tensor[Bool] = fromNative(native.isnan())
@@ -561,14 +599,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def isNonzero: Boolean = native.is_nonzero()
 
   def isConj: Boolean = native.is_conj()
-  
+
   def isSparse: Boolean = native.is_sparse()
 
   def clip(): Tensor[D] = fromNative(native.clip())
 
   def clamp(): Tensor[D] = fromNative(native.clamp())
-
-
 
   // TODO override in subclasses instead?
   def item: DTypeToScala[D] =
@@ -621,9 +657,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def <(other: ScalaType): Tensor[Bool] = lt(other)
 
-  def clip[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]]= fromNative(native.clip(new ScalarOptional(toScalar(min))))
+  def clip[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.clip(new ScalarOptional(toScalar(min)))
+  )
 
-  def clamp[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]]= fromNative(native.clamp(new ScalarOptional(toScalar(min))))
+  def clamp[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.clamp(new ScalarOptional(toScalar(min)))
+  )
 
   def matmul[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] =
     fromNative(native.matmul(u.native))
@@ -632,7 +672,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def norm(): Tensor[D] = fromNative(native.norm())
 
-  def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(native.norm(toScalar(s)))
+  def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.norm(toScalar(s))
+  )
+
   /** Fills elements of self tensor with value where mask is `true`. The shape of mask must be
     * [broadcastable](https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics)
     * with the shape of the underlying tensor.
@@ -950,32 +993,33 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def chunk(
-             chunks: Int,
-             dim: Int = 0
-           ): Seq[Tensor[D]] = {
+      chunks: Int,
+      dim: Int = 0
+  ): Seq[Tensor[D]] = {
     val result = native.chunk(chunks.toLong, dim.toLong)
     (0L until result.size()).map(i => fromNative(result.get(i)))
   }
 
   def unsafe_chunk(
-             chunks: Int,
-             dim: Int = 0
-           ): Seq[Tensor[D]] = {
+      chunks: Int,
+      dim: Int = 0
+  ): Seq[Tensor[D]] = {
     val result = native.unsafe_chunk(chunks.toLong, dim.toLong)
     (0L until result.size()).map(i => fromNative(result.get(i)))
   }
 
-  def take(indices: Tensor[Int64]|Tensor[Int32]): Tensor[D] = {
+  def take(indices: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     indices.dtype match
       case torch.int64 => fromNative(native.take(indices.native))
       case torch.int32 => fromNative(native.take(indices.to(dtype = torch.int64).native))
   }
 
-  def take_along_dim(indices: Tensor[Int64]|Tensor[Int32], dim: Int) = {
+  def take_along_dim(indices: Tensor[Int64] | Tensor[Int32], dim: Int) = {
 
     indices.dtype match
       case torch.int64 => native.take_along_dim(indices.native, toOptional(dim))
-      case torch.int32 => native.take_along_dim(indices.to(dtype = torch.int64).native, toOptional(dim))
+      case torch.int32 =>
+        native.take_along_dim(indices.to(dtype = torch.int64).native, toOptional(dim))
   }
 
   def to(device: Device | Option[Device]): Tensor[D] = device match
@@ -1073,71 +1117,77 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def toSeq: Seq[DTypeToScala[D]] = ArraySeq.unsafeWrapArray(toArray)
 
-  def _dimV:Long = native._dimV()
-  
-  def _dimI:Long = native._dimI()
-  
-  def _nnz():Long = native._nnz()
-  
-  def nnz():Long = native._nnz()
-  
-  def dense_dim():Long = native.dense_dim()
-  
-  def sparse_dim():Long = native.sparse_dim()
-  
-  def coalesce():Tensor[D] = fromNative(native.coalesce)
-  
-  def is_coalesced():Boolean = native.is_coalesced()
-  
-  def values():Tensor[D] = fromNative(native.values)
-  
-  def indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.indices)
-  
-  def crow_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.crow_indices)
-  
-  def col_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.col_indices)
-  
-  def ccol_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.ccol_indices)
-  
-  def row_indices[D2 <: SparseIntNN]():Tensor[D2] = fromNative(native.row_indices)
-  
-  def to_sparse_csr():Tensor[D] = fromNative(native.to_sparse_csr)
+  def _dimV: Long = native._dimV()
 
-  def to_sparse_csc():Tensor[D] = fromNative(native.to_sparse_csc)
+  def _dimI: Long = native._dimI()
 
-  def to_sparse_bsr(blockSize: Seq[Long]):Tensor[D] = fromNative(native.to_sparse_bsr(blockSize*))
+  def _nnz(): Long = native._nnz()
 
-  def to_sparse_bsc(blockSize: Seq[Long]):Tensor[D]= fromNative(native.to_sparse_bsc(blockSize*))
+  def nnz(): Long = native._nnz()
 
-  def to_sparse_coo():Tensor[D] = fromNative(native.to_sparse)
+  def dense_dim(): Long = native.dense_dim()
 
-  def to_sparse():Tensor[D] = fromNative(native.to_sparse)
-  
-  def to_sparse_csr(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csr(LongOptional(dense_dim)))
+  def sparse_dim(): Long = native.sparse_dim()
 
-  def to_sparse_csc(dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_csc(LongOptional(dense_dim)))
+  def coalesce(): Tensor[D] = fromNative(native.coalesce)
 
-  def to_sparse_bsr(blockSize: Seq[Long],dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_bsr(blockSize.toArray,LongOptional(dense_dim)))
+  def is_coalesced(): Boolean = native.is_coalesced()
 
-  def to_sparse_bsc(blockSize: Seq[Long],dense_dim:Long): Tensor[D] = fromNative(native.to_sparse_bsc(blockSize.toArray,LongOptional(dense_dim)))
+  def values(): Tensor[D] = fromNative(native.values)
 
-  def to_sparse_coo(sparse_dim:Long): Tensor[D] = fromNative(native.to_sparse(sparse_dim))
+  def indices[D2 <: SparseIntNN](): Tensor[D2] = fromNative(native.indices)
 
-  def to_dense():Tensor[D] = fromNative(native.to_dense)
+  def crow_indices[D2 <: SparseIntNN](): Tensor[D2] = fromNative(native.crow_indices)
 
-  def to_mkldnn():Tensor[D] = fromNative(native.to_mkldnn)
-  
-  def is_sparse():Boolean =  {
-    val sparseLayout = Array(Sparse,SparseCsc,SparseBsc,SparseBsr,SparseCsr)
+  def col_indices[D2 <: SparseIntNN](): Tensor[D2] = fromNative(native.col_indices)
+
+  def ccol_indices[D2 <: SparseIntNN](): Tensor[D2] = fromNative(native.ccol_indices)
+
+  def row_indices[D2 <: SparseIntNN](): Tensor[D2] = fromNative(native.row_indices)
+
+  def to_sparse_csr(): Tensor[D] = fromNative(native.to_sparse_csr)
+
+  def to_sparse_csc(): Tensor[D] = fromNative(native.to_sparse_csc)
+
+  def to_sparse_bsr(blockSize: Seq[Long]): Tensor[D] = fromNative(native.to_sparse_bsr(blockSize*))
+
+  def to_sparse_bsc(blockSize: Seq[Long]): Tensor[D] = fromNative(native.to_sparse_bsc(blockSize*))
+
+  def to_sparse_coo(): Tensor[D] = fromNative(native.to_sparse)
+
+  def to_sparse(): Tensor[D] = fromNative(native.to_sparse)
+
+  def to_sparse_csr(dense_dim: Long): Tensor[D] = fromNative(
+    native.to_sparse_csr(LongOptional(dense_dim))
+  )
+
+  def to_sparse_csc(dense_dim: Long): Tensor[D] = fromNative(
+    native.to_sparse_csc(LongOptional(dense_dim))
+  )
+
+  def to_sparse_bsr(blockSize: Seq[Long], dense_dim: Long): Tensor[D] = fromNative(
+    native.to_sparse_bsr(blockSize.toArray, LongOptional(dense_dim))
+  )
+
+  def to_sparse_bsc(blockSize: Seq[Long], dense_dim: Long): Tensor[D] = fromNative(
+    native.to_sparse_bsc(blockSize.toArray, LongOptional(dense_dim))
+  )
+
+  def to_sparse_coo(sparse_dim: Long): Tensor[D] = fromNative(native.to_sparse(sparse_dim))
+
+  def to_dense(): Tensor[D] = fromNative(native.to_dense)
+
+  def to_mkldnn(): Tensor[D] = fromNative(native.to_mkldnn)
+
+  def is_sparse(): Boolean = {
+    val sparseLayout = Array(Sparse, SparseCsc, SparseBsc, SparseBsr, SparseCsr)
     if sparseLayout.contains(fromNative(native).layout) then true else false
   }
-
 
   def __dispatch_requires_grad_(): this.type = {
     native.__dispatch_requires_grad_()
     this
   }
-
 
   def put[D2 <: DType](x: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.put(x.native))
 
@@ -1147,35 +1197,41 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def subtract(): Tensor[D] = fromNative(native.subtract())
 
+  def addPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.addPut(other.native)
+  )
 
-  def addPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.addPut(other.native))
+  def subtractPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.subtractPut(other.native)
+  )
 
+  def multiplyPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.multiplyPut(other.native)
+  )
 
-  def subtractPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.subtractPut(other.native))
+  def dividePut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.dividePut(other.native)
+  )
 
+  def andPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.andPut(other.native)
+  )
 
-  def multiplyPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.multiplyPut(other.native))
+  def orPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.orPut(other.native)
+  )
 
-  def dividePut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.dividePut(other.native))
+  def xorPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.xorPut(other.native)
+  )
 
-
-  def andPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.andPut(other.native))
-
-
-  def orPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.orPut(other.native))
-
-
-  def xorPut[D2 <: DType](other: Tensor[D2]) :Tensor[Promoted[D, D2]] = fromNative(native.xorPut(other.native))
-
-
-
-  def get(index: Tensor[Int64]|Tensor[Int32]) :Tensor[D] = {
+  def get(index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     index.dtype match
       case torch.int64 => fromNative(native.get(index.native))
       case torch.int32 => fromNative(native.get(index.to(dtype = torch.int64).native))
   }
 
-  def get(index: Int) :Tensor[D] = fromNative(native.get(index.toLong))
+  def get(index: Int): Tensor[D] = fromNative(native.get(index.toLong))
 
   def mutable_grad(): Tensor[D] = fromNative(native.mutable_grad())
 
@@ -1192,19 +1248,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   //  def rename_():
 //  def align_to(other: Tensor[D]): Tensor[D] = fromNative(native.align_to(other.native))
-  def align_as[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(native.align_as(other.native))
+  def align_as[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
+    native.align_as(other.native)
+  )
 
   def angle(): Tensor[D] = fromNative(native.angle())
 
   def chalf(): Tensor[D] = fromNative(native.chalf())
 
-
-
   def absolute(): Tensor[D] = fromNative(native.absolute())
 
   def sgn(): Tensor[D] = fromNative(native.sgn())
 
-  def abs_():Tensor[D] = fromNative(native.abs_())
+  def abs_(): Tensor[D] = fromNative(native.abs_())
 
   def absolute_(): this.type = {
     native.absolute_()
@@ -1216,28 +1272,36 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-
   def argmax(): Tensor[D] = fromNative(native.argmax())
 
   def argmin(): Tensor[D] = fromNative(native.argmin())
-  def argmin(dim: Int, keepdim: Boolean =false): Tensor[D] = fromNative(native.argmin(new LongOptional(dim.toLong),keepdim))
+  def argmin(dim: Int, keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.argmin(new LongOptional(dim.toLong), keepdim)
+  )
 
-  def argmax_dimInt(dim: Int, keepdim: Boolean =false): Tensor[D] = fromNative(native.argmax(new LongOptional(dim.toLong),keepdim))
+  def argmax_dimInt(dim: Int, keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.argmax(new LongOptional(dim.toLong), keepdim)
+  )
 
-  def all(dim: Seq[Int], keepdim: Boolean): Tensor[D] = fromNative(native.all(dim.map(_.toLong).toArray, keepdim))
+  def all(dim: Seq[Int], keepdim: Boolean): Tensor[D] = fromNative(
+    native.all(dim.map(_.toLong).toArray, keepdim)
+  )
 
-  def all(dim: Seq[Int]): Tensor[D] = fromNative(native.all(dim.map(_.toLong) *))
+  def all(dim: Seq[Int]): Tensor[D] = fromNative(native.all(dim.map(_.toLong)*))
 
-  def all(dim: Int, keepdim: Boolean = false): Tensor[D] = fromNative(native.all(dim.toLong, keepdim))
+  def all(dim: Int, keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.all(dim.toLong, keepdim)
+  )
 
   def all(dim: Int): Tensor[D] = fromNative(native.all(dim.toLong))
-  def any(dim: Seq[Int],keepdim: Boolean): Tensor[D] = fromNative(native.any(dim.map(_.toLong).toArray, keepdim))
+  def any(dim: Seq[Int], keepdim: Boolean): Tensor[D] = fromNative(
+    native.any(dim.map(_.toLong).toArray, keepdim)
+  )
 
   def any(dim: Seq[Int]): Tensor[D] = fromNative(native.any(dim.map(_.toLong)*))
 
 //  def any(dim: Int, keepdim: Boolean = false): Tensor[D] = fromNative(native.any(dim.toLong,keepdim))
   def any(dim: Int): Tensor[D] = fromNative(native.any(dim.toLong))
-
 
 //  def acos(): Tensor[D] = fromNative(native.acos())
 
@@ -1245,9 +1309,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def add(other: Tensor[D]): Tensor[D] = fromNative(native.add(other.native))
 
-  def addmv[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]): Tensor[Promoted[D1, D2]] = fromNative(native.addmv(mat.native, vec.native))
+  def addmv[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(native.addmv(mat.native, vec.native))
 
-  def addr[D1 <: DType, D2 <: DType](vec1: Tensor[D1], vec2: Tensor[D2]): Tensor[Promoted[D1, D2]] = fromNative(native.addr(vec1.native, vec2.native))
+  def addr[D1 <: DType, D2 <: DType](vec1: Tensor[D1], vec2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(native.addr(vec1.native, vec2.native))
 
   def acos_(): this.type = {
     native.acos_()
@@ -1259,13 +1325,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def add_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def add_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.add_(other.native)
     this
   }
 
-  def addmv_[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]) : this.type = {
-    native.addmv_(mat.native,vec.native)
+  def addmv_[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]): this.type = {
+    native.addmv_(mat.native, vec.native)
     this
   }
 
@@ -1286,7 +1352,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def arctanh(): Tensor[D] = fromNative(native.arctanh())
 
-  def as_strided(li: Seq[Int], li2: Seq[Int]): Tensor[D] = fromNative(native.as_strided(li.map(_.toLong).toArray, li2.map(_.toLong)*))
+  def as_strided(li: Seq[Int], li2: Seq[Int]): Tensor[D] = fromNative(
+    native.as_strided(li.map(_.toLong).toArray, li2.map(_.toLong)*)
+  )
 
   def acosh_(): this.type = {
     native.acosh_()
@@ -1318,8 +1386,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def as_strided_(li: Seq[Int], li2: Seq[Int]) : this.type = {
-    native.as_strided_( li.map(_.toLong).toArray, li2.map(_.toLong)*)
+  def as_strided_(li: Seq[Int], li2: Seq[Int]): this.type = {
+    native.as_strided_(li.map(_.toLong).toArray, li2.map(_.toLong)*)
     this
   }
 
@@ -1351,30 +1419,32 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def index_put(indices: Seq[Tensor[Int64]], value: Tensor[D],k: Boolean): this.type = {
+  def index_put(indices: Seq[Tensor[Int64]], value: Tensor[D], k: Boolean): this.type = {
     val list = new TensorOptionalList()
     indices.map(tensor => list.push_back(new TensorOptional(tensor.native)))
     native.index_put(list, value.native, k)
     this
   }
-  //index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
+  // index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
   def index_put_(indices: Seq[Tensor[Int64]], value: Tensor[D]): this.type = {
     val list = new TensorOptionalList()
     indices.map(tensor => list.push_back(new TensorOptional(tensor.native)))
     native.index_put_(list, value.native)
     this
   }
-  def bincount[D1 <: DType](weights: Tensor[D1], minlength: Int =0): Tensor[Promoted[D, D1]] = fromNative(native.bincount(new TensorOptional(weights.native),minlength.toLong))
+  def bincount[D1 <: DType](weights: Tensor[D1], minlength: Int = 0): Tensor[Promoted[D, D1]] =
+    fromNative(native.bincount(new TensorOptional(weights.native), minlength.toLong))
 
   def bincount(): Tensor[D] = fromNative(native.bincount())
-  def baddbmm[D1 <:DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.baddbmm(batch1.native, batch2.native))
+  def baddbmm[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] =
+    fromNative(native.baddbmm(batch1.native, batch2.native))
 
   def bernoulli(p: Double): Tensor[D] = fromNative(native.bernoulli(p))
 
   def bernoulli(): Tensor[D] = fromNative(native.bernoulli())
 
   def bitwise_not(): Tensor[D] = fromNative(native.bitwise_not())
-  def baddbmm_[D1 <:DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
+  def baddbmm_[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
     native.baddbmm_(batch1.native, batch2.native)
     this
   }
@@ -1384,7 +1454,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def bernoulli_() : this.type = {
+  def bernoulli_(): this.type = {
     native.bernoulli_()
     this
   }
@@ -1394,24 +1464,28 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def copysign[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.copysign(other.native))
+  def copysign[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.copysign(other.native)
+  )
 
   def copysign_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.copysign_(other.native)
     this
   }
 
-  def bmm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.bmm(mat2.native))
+  def bmm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bmm(mat2.native)
+  )
 
-  def broadcast_to(size: Seq[Int]):Tensor[D] = fromNative(native.broadcast_to(size.map(_.toLong)*))
+  def broadcast_to(size: Seq[Int]): Tensor[D] = fromNative(native.broadcast_to(size.map(_.toLong)*))
 
-  def _lazy_clone():Tensor[D] =fromNative(native._lazy_clone())
+  def _lazy_clone(): Tensor[D] = fromNative(native._lazy_clone())
 
-  def tensor_split(tensor_indices_or_sections: Tensor[Int64],dim: Int=0): Seq[Tensor[D]] = {
+  def tensor_split(tensor_indices_or_sections: Tensor[Int64], dim: Int = 0): Seq[Tensor[D]] = {
     val res = native.tensor_split(tensor_indices_or_sections.native, dim.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -1422,18 +1496,18 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.tensor_split(tensor_indices_or_sections.native)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
 
   }
-  def tensor_split_with_dim(indices: Seq[Int],dim: Int=0): Seq[Tensor[D]] = {
+  def tensor_split_with_dim(indices: Seq[Int], dim: Int = 0): Seq[Tensor[D]] = {
     val res = native.tensor_split(indices.map(_.toLong).toArray, dim.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -1453,40 +1527,46 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.tensor_split(sections.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
-  def tensor_split(sections: Int,dim: Int):Seq[Tensor[D]] = {
-    val res = native.tensor_split(sections.toLong,dim.toLong)
+  def tensor_split(sections: Int, dim: Int): Seq[Tensor[D]] = {
+    val res = native.tensor_split(sections.toLong, dim.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
 
-  def logical_xor[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.logical_xor(other.native))
+  def logical_xor[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.logical_xor(other.native)
+  )
 
-  def logical_or[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.logical_or(other.native))
+  def logical_or[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.logical_or(other.native)
+  )
 
-  def logical_and[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.logical_and(other.native))
+  def logical_and[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.logical_and(other.native)
+  )
 
-  def logical_xor_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def logical_xor_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.logical_xor_(other.native)
     this
   }
 
-  def logical_or_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def logical_or_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.logical_or_(other.native)
     this
   }
 
-  def logical_and_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def logical_and_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.logical_and_(other.native)
     this
   }
@@ -1499,11 +1579,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def clamp(min: Float): Tensor[D] = fromNative(native.clamp(new ScalarOptional(toScalar(min))))
 
+  def clamp_max[D1 <: DType](max: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.clamp_max(max.native)
+  )
 
-  def clamp_max[D1 <:DType](max: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.clamp_max(max.native))
-
-  def clamp_min[D1 <:DType](min: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.clamp_min(min.native))
-
+  def clamp_min[D1 <: DType](min: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.clamp_min(min.native)
+  )
 
   def clip(min: Float): Tensor[D] = fromNative(native.clip(new ScalarOptional(toScalar(min))))
 
@@ -1517,12 +1599,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def clamp_max_[D1 <:DType](max: Tensor[D1]): this.type = {
+  def clamp_max_[D1 <: DType](max: Tensor[D1]): this.type = {
     native.clamp_max_(max.native)
     this
   }
 
-  def clamp_min_[D1 <:DType](min: Tensor[D1]): this.type = {
+  def clamp_min_[D1 <: DType](min: Tensor[D1]): this.type = {
     native.clamp_min_(min.native)
     this
   }
@@ -1537,7 +1619,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def copy_[D1 <:DType](src: Tensor[D1]): this.type = {
+  def copy_[D1 <: DType](src: Tensor[D1]): this.type = {
     native.copy_(src.native)
     this
   }
@@ -1566,20 +1648,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def cummax[D1 <: DType, D2 <: DType](dim: Int): (Tensor[D1],Tensor[D2]) = {
+  def cummax[D1 <: DType, D2 <: DType](dim: Int): (Tensor[D1], Tensor[D2]) = {
     val res = native.cummax(dim.toLong)
     val c = fromNative[D1](res.get0())
     val m = fromNative[D2](res.get1())
     (c, m)
   }
 
-  def cummin[D1 <: DType, D2 <: DType](dim: Int): (Tensor[D1],Tensor[D2]) = {
-    val res =native.cummin(dim.toLong)
+  def cummin[D1 <: DType, D2 <: DType](dim: Int): (Tensor[D1], Tensor[D2]) = {
+    val res = native.cummin(dim.toLong)
     val c = fromNative[D1](res.get0())
     val m = fromNative[D2](res.get1())
-    (c,m)
+    (c, m)
   }
-
 
   def cumprod(dim: Int): Tensor[D] = fromNative(native.cumprod(dim.toLong))
 
@@ -1595,10 +1676,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def diag_embed(offset: Int = 0, dim1: Int = 0, dim2: Int = 1): Tensor[D] = fromNative(native.diag_embed(offset.toLong, dim1.toLong, dim2.toLong))
+  def diag_embed(offset: Int = 0, dim1: Int = 0, dim2: Int = 1): Tensor[D] = fromNative(
+    native.diag_embed(offset.toLong, dim1.toLong, dim2.toLong)
+  )
   def diag_embed: Tensor[D] = fromNative(native.diag_embed())
 
-  def diagflat(offset:Int=0): Tensor[D] = fromNative(native.diagflat(offset.toLong))
+  def diagflat(offset: Int = 0): Tensor[D] = fromNative(native.diagflat(offset.toLong))
 
   def diagflat: Tensor[D] = fromNative(native.diagflat())
   def fill_diagonal_(fill_value: Float): this.type = {
@@ -1606,10 +1689,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def diagonal : Tensor[D] = fromNative(native.diagonal())
-  def diagonal(offset: Int=0,dim1: Int  =0,dim2: Int =1) : Tensor[D] = fromNative(native.diagonal(offset.toLong,dim1.toLong,dim2.toLong))
+  def diagonal: Tensor[D] = fromNative(native.diagonal())
+  def diagonal(offset: Int = 0, dim1: Int = 0, dim2: Int = 1): Tensor[D] = fromNative(
+    native.diagonal(offset.toLong, dim1.toLong, dim2.toLong)
+  )
 
-  def diff : Tensor[D] = fromNative(native.diff())
+  def diff: Tensor[D] = fromNative(native.diff())
 
 //  def dot(other: Tensor[D]): Tensor[D] = fromNative(native.dot(other.native))
 
@@ -1617,9 +1702,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def div(other: Tensor[D]): Tensor[D] = fromNative(native.div(other.native))
 
-  def divide[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.divide(other.native))
+  def divide[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.divide(other.native)
+  )
 
-  def true_divide[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.true_divide(other.native))
+  def true_divide[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.true_divide(other.native)
+  )
 
   def div_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.div_(other.native)
@@ -1643,19 +1732,25 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def new_empty(size: Seq[Int]): Tensor[D] = fromNative(native.new_empty(size.map(_.toLong).toArray*))
 
-  def new_zeros(size: Seq[Int]): Tensor[D] = fromNative(native.new_zeros(size.map(_.toLong).toArray*))
+  def new_zeros(size: Seq[Int]): Tensor[D] = fromNative(
+    native.new_zeros(size.map(_.toLong).toArray*)
+  )
 
   def new_ones(size: Seq[Int]): Tensor[D] = fromNative(native.new_ones(size.map(_.toLong).toArray*))
 
-  def expand(size: Seq[Int],implicits: Boolean = false): Tensor[D] = fromNative(native.expand(size.map(_.toLong).toArray,implicits))
+  def expand(size: Seq[Int], implicits: Boolean = false): Tensor[D] = fromNative(
+    native.expand(size.map(_.toLong).toArray, implicits)
+  )
 
   def expand_with_size(size: Seq[Int]): Tensor[D] = fromNative(native.expand(size.map(_.toLong)*))
 
-  def expand_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.expand_as(other.native))
+  def expand_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.expand_as(other.native)
+  )
 
-
-  def unflatten(dim: Int, sizes:Seq[Int]): Tensor[D] = fromNative(native.unflatten(dim.toLong, sizes.map(_.toLong)*))
-
+  def unflatten(dim: Int, sizes: Seq[Int]): Tensor[D] = fromNative(
+    native.unflatten(dim.toLong, sizes.map(_.toLong)*)
+  )
 
   def erf(): Tensor[D] = fromNative(native.erf())
 
@@ -1692,12 +1787,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-
 //  def fill(value: Tensor[D]): Tensor[D] = fromNative(native.fill(value.native))
 
   def floor(): Tensor[D] = fromNative(native.floor())
 
-  def floor_divide[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.floor_divide(other.native))
+  def floor_divide[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.floor_divide(other.native)
+  )
 
   def frac(): Tensor[D] = fromNative(native.frac())
 
@@ -1721,37 +1817,50 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def gcd_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def gcd_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.gcd_(other.native)
     this
   }
 
-  def gcd[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.gcd(other.native))
+  def gcd[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.gcd(other.native)
+  )
   def lcm_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.lcm_(other.native)
     this
   }
 
-  def lcm[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.lcm(other.native))
+  def lcm[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.lcm(other.native)
+  )
 
 //  def index_put(): Tensor[D] = fromNative(native.index_put())
-  def index_copy(dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D]):Tensor[D] = {
+  def index_copy(dim: Int, index: Tensor[Int64] | Tensor[Int32], source: Tensor[D]): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(native.index_copy(dim.toLong, index.native,source.native))
-      case torch.int32 => fromNative(native.index_copy(dim.toLong, index.to(dtype = torch.int64).native,source.native))
+      case torch.int64 => fromNative(native.index_copy(dim.toLong, index.native, source.native))
+      case torch.int32 =>
+        fromNative(
+          native.index_copy(dim.toLong, index.to(dtype = torch.int64).native, source.native)
+        )
   }
 
-  def index_copy_(dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D]): this.type = {
+  def index_copy_(dim: Int, index: Tensor[Int64] | Tensor[Int32], source: Tensor[D]): this.type = {
     index.dtype match
-      case torch.int64 => native.index_copy_(dim.toLong, index.native,source.native)
-      case torch.int32 => native.index_copy_(dim.toLong, index.to(dtype = torch.int64).native,source.native)
+      case torch.int64 => native.index_copy_(dim.toLong, index.native, source.native)
+      case torch.int32 =>
+        native.index_copy_(dim.toLong, index.to(dtype = torch.int64).native, source.native)
     this
   }
 
-
-
-  def isclose[D1 <: DType](other: Tensor[D1],rtol:Double = 1e-05,atol:Double = 1e-08,equal_nan:Boolean = false): Tensor[Promoted[D1, D]] = fromNative(native.isclose(other.native,rtol,atol,equal_nan))
-  def isclose[D1 <: DType](other:Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.isclose(other.native))
+  def isclose[D1 <: DType](
+      other: Tensor[D1],
+      rtol: Double = 1e-05,
+      atol: Double = 1e-08,
+      equal_nan: Boolean = false
+  ): Tensor[Promoted[D1, D]] = fromNative(native.isclose(other.native, rtol, atol, equal_nan))
+  def isclose[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.isclose(other.native)
+  )
 
   def is_distributed(): Boolean = native.is_distributed()
   def isreal(): Tensor[D] = fromNative(native.isreal())
@@ -1759,21 +1868,27 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def is_nonzero(): Boolean = native.is_nonzero()
 
   def dispatch_is_signed(): Boolean = native.__dispatch_is_signed()
-  def dispatch_is_inference():Boolean = native.__dispatch_is_inference()
+  def dispatch_is_inference(): Boolean = native.__dispatch_is_inference()
   def kthvalue[D1 <: DType](k: Int): (Tensor[D1], Tensor[D1]) = {
     val res = native.kthvalue(k.toLong)
     val r = fromNative[D1](res.get0())
     val s = fromNative[D1](res.get1())
     (r, s)
   }
-  def kthvalue[D1 <:DType](k:Int,dim: Int,keepdim:Boolean =false): (Tensor[D1], Tensor[D1]) = {
-    val res = native.kthvalue(k.toLong,dim.toLong, keepdim)
+  def kthvalue[D1 <: DType](
+      k: Int,
+      dim: Int,
+      keepdim: Boolean = false
+  ): (Tensor[D1], Tensor[D1]) = {
+    val res = native.kthvalue(k.toLong, dim.toLong, keepdim)
     val r = fromNative[D1](res.get0())
     val s = fromNative[D1](res.get1())
     (r, s)
   }
 
-  def kron[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.kron(other.native))
+  def kron[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.kron(other.native)
+  )
   def nan_to_num_(): this.type = {
     native.nan_to_num_()
     this
@@ -1781,7 +1896,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def nan_to_num(): Tensor[D] = fromNative(native.nan_to_num())
 
-  def ldexp[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.ldexp(other.native))
+  def ldexp[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.ldexp(other.native)
+  )
 
 //  def log(): Tensor[D] = fromNative(native.log())
 
@@ -1790,7 +1907,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def log1p(): Tensor[D] = fromNative(native.log1p())
 
   def log2(): Tensor[D] = fromNative(native.log2())
-  def ldexp_[D1 <: DType](other:Tensor[D1]): this.type = {
+  def ldexp_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.ldexp_(other.native)
     this
   }
@@ -1815,18 +1932,26 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def logaddexp[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.logaddexp(other.native))
-  def logaddexp2[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.logaddexp2(other.native))
+  def logaddexp[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.logaddexp(other.native)
+  )
+  def logaddexp2[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.logaddexp2(other.native)
+  )
   def xlogy_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.xlogy_(other.native)
     this
   }
 
-  def xlogy[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.xlogy(other.native))
+  def xlogy[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.xlogy(other.native)
+  )
   def log_softmax(dim: Int): Tensor[D] = fromNative(native.log_softmax(dim.toLong))
   def logsumexp(dim: Int): Tensor[D] = fromNative(native.logsumexp(dim.toLong))
 
-  def logsumexp(dim: Seq[Int], keepdim: Boolean = false): Tensor[D] = fromNative(native.logsumexp(dim.map(_.toLong).toArray,keepdim))
+  def logsumexp(dim: Seq[Int], keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.logsumexp(dim.map(_.toLong).toArray, keepdim)
+  )
 
   def logsumexp(dim: Seq[Int]): Tensor[D] = fromNative(native.logsumexp(dim.map(_.toLong)*))
 
@@ -1836,9 +1961,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def matrix_exp(): Tensor[D] = fromNative(native.matrix_exp())
 
-
-  def aminmax(dim: Int,keepdim: Boolean = false): (Tensor[D], Tensor[Int64]) = {
-    val res = native.aminmax(new LongOptional(dim.toLong),keepdim)
+  def aminmax(dim: Int, keepdim: Boolean = false): (Tensor[D], Tensor[Int64]) = {
+    val res = native.aminmax(new LongOptional(dim.toLong), keepdim)
     val r = fromNative[D](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
@@ -1859,7 +1983,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def amax(): Tensor[D] = fromNative(native.amax())
 
-  def amax(dim: Seq[Int], keepdim: Boolean = false): Tensor[D] = fromNative(native.amax(dim.map(_.toLong).toArray, keepdim))
+  def amax(dim: Seq[Int], keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.amax(dim.map(_.toLong).toArray, keepdim)
+  )
 
 //  def mean_with_dim(dim: Seq[Int],keepdim:Boolean = false): Tensor[D] = fromNative(native.mean(dim.map(_.toLong).toArray,keepdim))
 
@@ -1874,42 +2000,44 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def nanmean(): Tensor[D] = fromNative(native.nanmean())
 
   def median(): Tensor[D] = fromNative(native.median())
-  def nanmedian():Tensor[D] = fromNative(native.nanmedian())
+  def nanmedian(): Tensor[D] = fromNative(native.nanmedian())
 
-
-  def median[D1 <:DType](dim: Int = 1): (Tensor[D1], Tensor[Int64]) = {
+  def median[D1 <: DType](dim: Int = 1): (Tensor[D1], Tensor[Int64]) = {
     val res = native.median(dim.toLong)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
-  def median_with_dim[D1 <:DType](dim: Int = 1, keepdim: Boolean = false): (Tensor[D1], Tensor[Int64]) = {
+  def median_with_dim[D1 <: DType](
+      dim: Int = 1,
+      keepdim: Boolean = false
+  ): (Tensor[D1], Tensor[Int64]) = {
     val res = native.median(dim.toLong, keepdim)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
-  def nanmedian[D1 <:DType](dim: Int , keepdim: Boolean = false): (Tensor[D1], Tensor[Int64]) = {
+  def nanmedian[D1 <: DType](dim: Int, keepdim: Boolean = false): (Tensor[D1], Tensor[Int64]) = {
     val res = native.nanmedian(dim.toLong, keepdim)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
-  def nanmedian[D1 <:DType](dim: Int ): (Tensor[D1], Tensor[Int64]) = {
+  def nanmedian[D1 <: DType](dim: Int): (Tensor[D1], Tensor[Int64]) = {
     val res = native.nanmedian(dim.toLong)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
 
-  def min[D1 <:DType](dim: Int ): (Tensor[D1], Tensor[Int64]) = {
+  def min[D1 <: DType](dim: Int): (Tensor[D1], Tensor[Int64]) = {
     val res = native.min(dim.toLong)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
 
-  def min[D1 <:DType](dim: Int, keepdim: Boolean = false): (Tensor[D], Tensor[Int64]) = {
+  def min[D1 <: DType](dim: Int, keepdim: Boolean = false): (Tensor[D], Tensor[Int64]) = {
     val res = native.min(dim.toLong, keepdim)
     val r = fromNative[D](res.get0())
     val s = fromNative[Int64](res.get1())
@@ -1917,21 +2045,25 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
   def amin(): Tensor[D] = fromNative(native.amin())
 
-  def amin(dim: Seq[Int], keepdim:Boolean = false): Tensor[D] = fromNative(native.amin(dim.map(_.toLong).toArray,keepdim))
+  def amin(dim: Seq[Int], keepdim: Boolean = false): Tensor[D] = fromNative(
+    native.amin(dim.map(_.toLong).toArray, keepdim)
+  )
 
-  def mm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.mm(mat2.native))
+  def mm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.mm(mat2.native)
+  )
 
-  def mode[D1 <:DType](dim: Int =1, keepdim: Boolean =false): (Tensor[D1], Tensor[Int64]) = {
-    val res = native.mode(dim.toLong,keepdim)
+  def mode[D1 <: DType](dim: Int = 1, keepdim: Boolean = false): (Tensor[D1], Tensor[Int64]) = {
+    val res = native.mode(dim.toLong, keepdim)
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
     (r, s)
   }
-  def mode[D1 <:DType]: (Tensor[D1],Tensor[Int64]) = {
+  def mode[D1 <: DType]: (Tensor[D1], Tensor[Int64]) = {
     val res = native.mode()
     val r = fromNative[D1](res.get0())
     val s = fromNative[Int64](res.get1())
-    (r,s)
+    (r, s)
   }
 
   def mv[D1 <: DType](vec: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.mv(vec.native))
@@ -1946,7 +2078,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def multiply_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def multiply_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.multiply_(other.native)
     this
   }
@@ -1956,15 +2088,25 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def narrow_copy(dim: Int, start: Int, length: Int): Tensor[D] = fromNative(native.narrow_copy(dim.toLong, start.toLong, length.toLong))
-  def narrow(dim: Int, start: Int, length:Int) :Tensor[D] = fromNative(native.narrow(dim.toLong,start.toLong, length.toLong))
-  def narrow(dim: Int, start: Tensor[D], length:Int) :Tensor[D] = fromNative(native.narrow(dim.toLong,start.native, length.toLong))
-  def permute_with_seq(dims: Seq[Int]) :Tensor[D] = fromNative(native.permute(dims.map(_.toLong)*))
-  def moveaxis(source:Seq[Int],destination:Seq[Int]) :Tensor[D] = fromNative(native.moveaxis(source.map(_.toLong).toArray, destination.map(_.toLong)*))
-  def movedim(source:Int,destination:Int) :Tensor[D] = fromNative(native.movedim(source.toLong, destination.toLong))
+  def narrow_copy(dim: Int, start: Int, length: Int): Tensor[D] = fromNative(
+    native.narrow_copy(dim.toLong, start.toLong, length.toLong)
+  )
+  def narrow(dim: Int, start: Int, length: Int): Tensor[D] = fromNative(
+    native.narrow(dim.toLong, start.toLong, length.toLong)
+  )
+  def narrow(dim: Int, start: Tensor[D], length: Int): Tensor[D] = fromNative(
+    native.narrow(dim.toLong, start.native, length.toLong)
+  )
+  def permute_with_seq(dims: Seq[Int]): Tensor[D] = fromNative(native.permute(dims.map(_.toLong)*))
+  def moveaxis(source: Seq[Int], destination: Seq[Int]): Tensor[D] = fromNative(
+    native.moveaxis(source.map(_.toLong).toArray, destination.map(_.toLong)*)
+  )
+  def movedim(source: Int, destination: Int): Tensor[D] = fromNative(
+    native.movedim(source.toLong, destination.toLong)
+  )
 
   def numpy_T(): Tensor[D] = fromNative(native.numpy_T())
-  def matrix_H() :Tensor[D] = fromNative(native.matrix_H())
+  def matrix_H(): Tensor[D] = fromNative(native.matrix_H())
 
 //  def adjoint() :Tensor[D] = fromNative(native.adjoint())
 
@@ -1976,7 +2118,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def pinverse(): Tensor[D] = fromNative(native.pinverse())
 
-  def ravel() :Tensor[D] = fromNative(native.ravel())
+  def ravel(): Tensor[D] = fromNative(native.ravel())
 
   def rad_deg(): Tensor[D] = fromNative(native.rad2deg())
 
@@ -2013,11 +2155,17 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def repeat_with_seq(repeats: Seq[Int]): Tensor[D] = fromNative(native.repeat(repeats.map(_.toLong)*))
+  def repeat_with_seq(repeats: Seq[Int]): Tensor[D] = fromNative(
+    native.repeat(repeats.map(_.toLong)*)
+  )
 
-  def repeat_interleave[D1 <: DType](repeats: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.repeat_interleave(repeats.native))
+  def repeat_interleave[D1 <: DType](repeats: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.repeat_interleave(repeats.native)
+  )
 
-  def reshape_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.reshape_as(other.native))
+  def reshape_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.reshape_as(other.native)
+  )
   def round_(): this.type = {
     native.round_()
     this
@@ -2041,8 +2189,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def hardshrink(): Tensor[D] = fromNative(native.hardshrink())
 
-  def prelu[D1 <: DType](weight: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.prelu(weight.native))
-
+  def prelu[D1 <: DType](weight: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.prelu(weight.native)
+  )
 
   def rsqrt(): Tensor[D] = fromNative(native.rsqrt())
 
@@ -2067,38 +2216,84 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-
   def logit_(eps: Double): this.type = {
     native.logit_(new DoubleOptional(eps))
     this
   }
 
-  def slice(dim: Int, start: Int, end: Int, step: Int): Tensor[D] = fromNative(native.slice(dim.toLong, new LongOptional(start.toLong), new LongOptional(end.toLong), step.toLong))
+  def slice(dim: Int, start: Int, end: Int, step: Int): Tensor[D] = fromNative(
+    native.slice(
+      dim.toLong,
+      new LongOptional(start.toLong),
+      new LongOptional(end.toLong),
+      step.toLong
+    )
+  )
 
-  def slice(dim: Int, start: Option[Int] = None, end: Option[Int] = None, step: Int = 1): Tensor[D] = {
+  def slice(
+      dim: Int,
+      start: Option[Int] = None,
+      end: Option[Int] = None,
+      step: Int = 1
+  ): Tensor[D] = {
 
-    val startOption = if start.isDefined then new LongOptional(start.get.toLong) else new LongOptional()
+    val startOption =
+      if start.isDefined then new LongOptional(start.get.toLong) else new LongOptional()
     val endOption = if end.isDefined then new LongOptional(end.get.toLong) else new LongOptional()
     fromNative(native.slice(dim.toLong, startOption, endOption, step.toLong))
 
   }
 
   def slice(): Tensor[D] = fromNative(native.slice())
-  def slice_inverse[D1 <: DType](src: Tensor[D1],dim: Int,start:Int,end:Int, step: Int =1): Tensor[Promoted[D1, D]] = fromNative(native.slice_inverse(src.native,dim.toLong,new LongOptional(start.toLong),new LongOptional(end.toLong),step.toLong))
+  def slice_inverse[D1 <: DType](
+      src: Tensor[D1],
+      dim: Int,
+      start: Int,
+      end: Int,
+      step: Int = 1
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.slice_inverse(
+      src.native,
+      dim.toLong,
+      new LongOptional(start.toLong),
+      new LongOptional(end.toLong),
+      step.toLong
+    )
+  )
 
-  def slice_inverse[D1 <: DType](src: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.slice_inverse(src.native))
-  def slice_scatter[D1 <: DType](src: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.slice_scatter(src.native))
-  def select_scatter[D1 <: DType](src:Tensor[D1],dim: Int, index: Int):Tensor[Promoted[D1, D]] = fromNative(native.select_scatter(src.native,dim.toLong,index.toLong))
-  def diagonal_scatter[D1 <:DType](src: Tensor[D1],offset: Int,dim1: Int =0, dim2: Int =1): Tensor[Promoted[D1, D]] = fromNative(native.diagonal_scatter(src.native,offset.toLong,dim1.toLong,dim2.toLong))
-  def diagonal_scatter[D1 <:DType](src:Tensor[D1]):Tensor[Promoted[D1, D]] = fromNative(native.diagonal_scatter(src.native))
-  def as_strided_scatter[D1 <:DType](src:Tensor[D1],size:Seq[Int],stride:Seq[Int]):Tensor[Promoted[D1, D]]={
-    fromNative(native.as_strided_scatter(src.native,size.map(_.toLong).toArray,stride.map(_.toLong)*))
+  def slice_inverse[D1 <: DType](src: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.slice_inverse(src.native)
+  )
+  def slice_scatter[D1 <: DType](src: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.slice_scatter(src.native)
+  )
+  def select_scatter[D1 <: DType](src: Tensor[D1], dim: Int, index: Int): Tensor[Promoted[D1, D]] =
+    fromNative(native.select_scatter(src.native, dim.toLong, index.toLong))
+  def diagonal_scatter[D1 <: DType](
+      src: Tensor[D1],
+      offset: Int,
+      dim1: Int = 0,
+      dim2: Int = 1
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.diagonal_scatter(src.native, offset.toLong, dim1.toLong, dim2.toLong)
+  )
+  def diagonal_scatter[D1 <: DType](src: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.diagonal_scatter(src.native)
+  )
+  def as_strided_scatter[D1 <: DType](
+      src: Tensor[D1],
+      size: Seq[Int],
+      stride: Seq[Int]
+  ): Tensor[Promoted[D1, D]] = {
+    fromNative(
+      native.as_strided_scatter(src.native, size.map(_.toLong).toArray, stride.map(_.toLong)*)
+    )
   }
   def unsafe_split_with_sizes(split_sizes: Seq[Int]): Seq[Tensor[D]] = {
-    val res = native.unsafe_split_with_sizes(split_sizes.map(_.toLong) *)
+    val res = native.unsafe_split_with_sizes(split_sizes.map(_.toLong)*)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -2109,38 +2304,38 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.unsafe_split_with_sizes(split_sizes.map(_.toLong).toArray, dim.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
   def split_with_sizes(split_sizes: Seq[Int]): Seq[Tensor[D]] = {
-    val res = native.split_with_sizes(split_sizes.map(_.toLong) *)
+    val res = native.split_with_sizes(split_sizes.map(_.toLong)*)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
 
-  def split_with_sizes(split_sizes: Seq[Int],dim:Int =0): Seq[Tensor[D]] = {
+  def split_with_sizes(split_sizes: Seq[Int], dim: Int = 0): Seq[Tensor[D]] = {
     val res = native.split_with_sizes(split_sizes.map(_.toLong).toArray, dim.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
   def hsplit(indices: Seq[Int]): Seq[Tensor[D]] = {
-    val res = native.hsplit(indices.map(_.toLong) *)
+    val res = native.hsplit(indices.map(_.toLong)*)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -2151,7 +2346,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.hsplit(sections.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -2159,10 +2354,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def vsplit(indices: Seq[Int]): Seq[Tensor[D]] = {
-    val res = native.vsplit(indices.map(_.toLong) *)
+    val res = native.vsplit(indices.map(_.toLong)*)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -2173,7 +2368,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.vsplit(sections.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
@@ -2183,13 +2378,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val res = native.dsplit(indices.map(_.toLong)*)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
-    while(!it.equals(res.end())){
+    while (!it.equals(res.end())) {
       tensorList.append(fromNative(it.get()))
       it = it.increment()
     }
     tensorList.toSeq
   }
-  def dsplit(sections: Int):Seq[Tensor[D]]= {
+  def dsplit(sections: Int): Seq[Tensor[D]] = {
     val res = native.dsplit(sections.toLong)
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
@@ -2199,7 +2394,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     }
     tensorList.toSeq
   }
-  def smm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.smm(mat2.native))
+  def smm[D1 <: DType](mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.smm(mat2.native)
+  )
 
   def squeeze_(): this.type = {
     native.squeeze_()
@@ -2208,7 +2405,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def squeeze(dim: Int): Tensor[D] = fromNative(native.squeeze(dim.toLong))
 
-  def squeeze(dim: Seq[Int]): Tensor[D] = fromNative(native.squeeze(dim.map(_.toLong) *))
+  def squeeze(dim: Seq[Int]): Tensor[D] = fromNative(native.squeeze(dim.map(_.toLong)*))
   def squeeze_(dim: Int): this.type = {
     native.squeeze_(dim.toLong)
     this
@@ -2219,18 +2416,21 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def sspaddmm[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]):Tensor[Promoted[D1, D]]= fromNative(native.sspaddmm(mat1.native,mat2.native))
- 
-  def istft(n_fft: Long):Tensor[D]= fromNative(native.istft(n_fft))
+  def sspaddmm[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]): Tensor[Promoted[D1, D]] =
+    fromNative(native.sspaddmm(mat1.native, mat2.native))
+
+  def istft(n_fft: Long): Tensor[D] = fromNative(native.istft(n_fft))
 //  def sum(): Tensor[D] = fromNative(native.sum())
-  def sum(dim: Seq[Int]):Tensor[D] = fromNative(native.sum(dim.map(_.toLong)*))
-  
-  def sum(dim: Seq[Int],keepdim: Boolean,dtype: ScalarTypeOptional):Tensor[D] = fromNative(native.sum(dim.map(_.toLong).toArray,keepdim,dtype))
-  
-  def nansum():Tensor[D] = fromNative(native.nansum())
-  
-  def sum_to_size(size: Seq[Int]):Tensor[D] = fromNative(native.sum_to_size(size.map(_.toLong)*))
-  
+  def sum(dim: Seq[Int]): Tensor[D] = fromNative(native.sum(dim.map(_.toLong)*))
+
+  def sum(dim: Seq[Int], keepdim: Boolean, dtype: ScalarTypeOptional): Tensor[D] = fromNative(
+    native.sum(dim.map(_.toLong).toArray, keepdim, dtype)
+  )
+
+  def nansum(): Tensor[D] = fromNative(native.nansum())
+
+  def sum_to_size(size: Seq[Int]): Tensor[D] = fromNative(native.sum_to_size(size.map(_.toLong)*))
+
   def sinc(): Tensor[D] = fromNative(native.sinc())
 
   def sinh(): Tensor[D] = fromNative(native.sinh())
@@ -2273,13 +2473,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def std_with_dim(dim: Seq[Int], unbiased: Boolean = false,keepdim: Boolean = false): Tensor[D] = fromNative(native.std(dim.map(_.toLong).toArray,unbiased, keepdim))
-  def std(dim: Seq[Int], unbias: Boolean = false): Tensor[D] = fromNative(native.std(dim.map(_.toLong).toArray,unbias))
+  def std_with_dim(dim: Seq[Int], unbiased: Boolean = false, keepdim: Boolean = false): Tensor[D] =
+    fromNative(native.std(dim.map(_.toLong).toArray, unbiased, keepdim))
+  def std(dim: Seq[Int], unbias: Boolean = false): Tensor[D] = fromNative(
+    native.std(dim.map(_.toLong).toArray, unbias)
+  )
 
   def std(unbiased: Boolean): Tensor[D] = fromNative(native.std(unbiased))
 
-
-  def prod_with_dim(dim: Long,keepdim: Boolean =false ,dtype: ScalarTypeOptional): Tensor[D] = fromNative(native.prod(dim,keepdim,dtype))
+  def prod_with_dim(dim: Long, keepdim: Boolean = false, dtype: ScalarTypeOptional): Tensor[D] =
+    fromNative(native.prod(dim, keepdim, dtype))
   def prod(dim: Long): Tensor[D] = fromNative(native.prod(dim))
   def prod(): Tensor[D] = fromNative(native.prod())
 
@@ -2301,20 +2504,24 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def tile(dims:Seq[Int]):Tensor[D] = fromNative(native.tile(dims.map(_.toLong)*))
+  def tile(dims: Seq[Int]): Tensor[D] = fromNative(native.tile(dims.map(_.toLong)*))
   def transpose_(dim0: Long, dim1: Long): this.type = {
     native.transpose_(dim0, dim1)
     this
   }
 
-  def flip(dims:Seq[Int]):Tensor[D] = fromNative(native.flip(dims.map(_.toLong)*))
-  def fliplr():Tensor[D] = fromNative(native.fliplr())
-  def flipud():Tensor[D] = fromNative(native.flipud())
+  def flip(dims: Seq[Int]): Tensor[D] = fromNative(native.flip(dims.map(_.toLong)*))
+  def fliplr(): Tensor[D] = fromNative(native.fliplr())
+  def flipud(): Tensor[D] = fromNative(native.flipud())
 
-  def roll(shifts: Seq[Int],dims:Seq[Int]):Tensor[D] = fromNative(native.roll(shifts.map(_.toLong).toArray,dims.map(_.toLong)*))
-  def roll(shifts: Seq[Int]):Tensor[D] = fromNative(native.roll(shifts.map(_.toLong)*))
-  def rot90(k:Int,dims:Seq[Int]):Tensor[D] = fromNative(native.rot90(k.toLong, dims.map(_.toLong)*))
-  def rot90():Tensor[D] = fromNative(native.rot90())
+  def roll(shifts: Seq[Int], dims: Seq[Int]): Tensor[D] = fromNative(
+    native.roll(shifts.map(_.toLong).toArray, dims.map(_.toLong)*)
+  )
+  def roll(shifts: Seq[Int]): Tensor[D] = fromNative(native.roll(shifts.map(_.toLong)*))
+  def rot90(k: Int, dims: Seq[Int]): Tensor[D] = fromNative(
+    native.rot90(k.toLong, dims.map(_.toLong)*)
+  )
+  def rot90(): Tensor[D] = fromNative(native.rot90())
   def trunc_(): this.type = {
     native.trunc_()
     this
@@ -2328,95 +2535,125 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def trunc(): Tensor[D] = fromNative(native.trunc())
 
   def fix(): Tensor[D] = fromNative(native.fix())
-  def type_as[D1 <: DType](other: Tensor[D1]):Tensor[Promoted[D1, D]] = fromNative(native.type_as(other.native))
+  def type_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.type_as(other.native)
+  )
   def unsqueeze_(dim: Int): this.type = {
     native.unsqueeze_(dim.toLong)
     this
   }
 
   def `var`(unbiased: Boolean): Tensor[D] = fromNative(native.`var`(unbiased))
-  def `var`(dim: Seq[Int],unbiased: Boolean, keepdim: Boolean): Tensor[D] = fromNative(native.`var`(dim.map(_.toLong).toArray,unbiased,keepdim))
-  def `var`(dim: Seq[Int],unbiased: Boolean): Tensor[D] = fromNative(native.`var`(dim.map(_.toLong).toArray,unbiased))
-  def `var`():Tensor[D] = fromNative(native.`var`())
-  def view_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.view_as(other.native))
-  def frexp():(Tensor[D],Tensor[D]) ={
+  def `var`(dim: Seq[Int], unbiased: Boolean, keepdim: Boolean): Tensor[D] = fromNative(
+    native.`var`(dim.map(_.toLong).toArray, unbiased, keepdim)
+  )
+  def `var`(dim: Seq[Int], unbiased: Boolean): Tensor[D] = fromNative(
+    native.`var`(dim.map(_.toLong).toArray, unbiased)
+  )
+  def `var`(): Tensor[D] = fromNative(native.`var`())
+  def view_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.view_as(other.native)
+  )
+  def frexp(): (Tensor[D], Tensor[D]) = {
     val fr = native.frexp()
     val f = fromNative[D](fr.get0())
     val r = fromNative[D](fr.get1())
-    (f,r)
+    (f, r)
   }
-  def resize_as_[D1 <:DType](template: Tensor[D1]): this.type = {
+  def resize_as_[D1 <: DType](template: Tensor[D1]): this.type = {
     native.resize_as_(template.native)
     this
   }
 
-  def resize_as_sparse_[D1 <:DType](template:Tensor[D1]):Tensor[D] = fromNative(native.resize_as_sparse_(template.native))
-  def positive():Tensor[D] = fromNative(native.positive())
-
+  def resize_as_sparse_[D1 <: DType](template: Tensor[D1]): Tensor[D] = fromNative(
+    native.resize_as_sparse_(template.native)
+  )
+  def positive(): Tensor[D] = fromNative(native.positive())
 
 //  def sub(other: Tensor[D]): Tensor[D] = fromNative(native.sub(other.native))
 
-  def subtract[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.subtract(other.native))
+  def subtract[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.subtract(other.native)
+  )
 
-  def heaviside[D1 <:DType](values: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.heaviside(values.native))
+  def heaviside[D1 <: DType](values: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.heaviside(values.native)
+  )
 
-  def addmm[D1 <:DType](mat1: Tensor[D1], mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.addmm(mat1.native, mat2.native))
+  def addmm[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.addmm(mat1.native, mat2.native)
+  )
 
-  def sub_[D1 <:DType](other: Tensor[D1]) : Tensor[Promoted[D1, D]] = fromNative(native.sub_(other.native))
+  def sub_[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.sub_(other.native)
+  )
 
-  def subtract_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def subtract_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.subtract_(other.native)
     this
   }
 
-  def heaviside_[D1 <:DType](values: Tensor[D1]): this.type = {
+  def heaviside_[D1 <: DType](values: Tensor[D1]): this.type = {
     native.heaviside_(values.native)
     this
   }
 
-  def addmm_[D1 <:DType](mat1: Tensor[D1], mat2: Tensor[D1]): this.type = {
+  def addmm_[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]): this.type = {
     native.addmm_(mat1.native, mat2.native)
     this
   }
 
-  def sparse_resize_(size:Seq[Int],sparse_dim:Int,dense_dim:Int  ): this.type = {
-    native.sparse_resize_(size.map(_.toLong).toArray,sparse_dim.toLong,dense_dim.toLong)
+  def sparse_resize_(size: Seq[Int], sparse_dim: Int, dense_dim: Int): this.type = {
+    native.sparse_resize_(size.map(_.toLong).toArray, sparse_dim.toLong, dense_dim.toLong)
     this
   }
 
-  def sparse_resize_and_clear_(size:Seq[Int],sparse_dim:Int,dense_dim:Int ) : this.type = {
-    native.sparse_resize_and_clear_(size.map(_.toLong).toArray,sparse_dim.toLong,dense_dim.toLong)
+  def sparse_resize_and_clear_(size: Seq[Int], sparse_dim: Int, dense_dim: Int): this.type = {
+    native.sparse_resize_and_clear_(size.map(_.toLong).toArray, sparse_dim.toLong, dense_dim.toLong)
     this
   }
 
-  def sparse_mask[D1 <: DType](mask: Tensor[Bool]):Tensor[Promoted[D1, D]] = fromNative(native.sparse_mask(mask.native))
+  def sparse_mask[D1 <: DType](mask: Tensor[Bool]): Tensor[Promoted[D1, D]] = fromNative(
+    native.sparse_mask(mask.native)
+  )
 //  def to_mkldnn():Tensor[D] = fromNative(native.to_mkldnn())
-  def dequantize():Tensor[D] = fromNative(native.dequantize())
-  def q_scale():Double=native.q_scale()
-  def q_zero_point():Long = native.q_zero_point()
-  def q_per_channel_scales():Tensor[D] = fromNative(native.q_per_channel_scales())
-  def q_per_channel_zero_points():Tensor[D]=fromNative(native.q_per_channel_zero_points())
-  def q_per_channel_axis():Long = native.q_per_channel_axis()
-  def int_repr():Tensor[D] =fromNative(native.int_repr())
+  def dequantize(): Tensor[D] = fromNative(native.dequantize())
+  def q_scale(): Double = native.q_scale()
+  def q_zero_point(): Long = native.q_zero_point()
+  def q_per_channel_scales(): Tensor[D] = fromNative(native.q_per_channel_scales())
+  def q_per_channel_zero_points(): Tensor[D] = fromNative(native.q_per_channel_zero_points())
+  def q_per_channel_axis(): Long = native.q_per_channel_axis()
+  def int_repr(): Tensor[D] = fromNative(native.int_repr())
   def qscheme() = native.qscheme()
-  def _autocast_to_full_precision(cuda_enabled: Boolean, cpu_enabled: Boolean):Tensor[D]= fromNative(native._autocast_to_full_precision(cuda_enabled,cpu_enabled))
+  def _autocast_to_full_precision(cuda_enabled: Boolean, cpu_enabled: Boolean): Tensor[D] =
+    fromNative(native._autocast_to_full_precision(cuda_enabled, cpu_enabled))
   def set_(source: Storage): this.type = {
     native.set_(source)
     this
   }
 
-  def set_[D1 <:DType](source: Tensor[D1], storage_offset: Int, size: Seq[Int],stride:Seq[Int]): this.type = {
-    native.set_(source.native, storage_offset.toLong, size.map(_.toLong).toArray,stride.map(_.toLong)*)
+  def set_[D1 <: DType](
+      source: Tensor[D1],
+      storage_offset: Int,
+      size: Seq[Int],
+      stride: Seq[Int]
+  ): this.type = {
+    native.set_(
+      source.native,
+      storage_offset.toLong,
+      size.map(_.toLong).toArray,
+      stride.map(_.toLong)*
+    )
     this
   }
 
-  def set_[D1 <:DType](source:Tensor[D1],storage_offset: Int,size:Seq[Int]): this.type = {
-    native.set_(source.native,storage_offset.toLong,size.map(_.toLong)*)
+  def set_[D1 <: DType](source: Tensor[D1], storage_offset: Int, size: Seq[Int]): this.type = {
+    native.set_(source.native, storage_offset.toLong, size.map(_.toLong)*)
     this
   }
 
-  def is_set_to[D1 <:DType](tensor: Tensor[D1]):Boolean = native.is_set_to(tensor.native)
-  def set_[D1 <: DType](source:Tensor[D1]): this.type = {
+  def is_set_to[D1 <: DType](tensor: Tensor[D1]): Boolean = native.is_set_to(tensor.native)
+  def set_[D1 <: DType](source: Tensor[D1]): this.type = {
     native.set_(source.native)
     this
   }
@@ -2426,71 +2663,120 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def masked_fill_[D1 <:DType](mask: Tensor[Bool], value: Tensor[D1]): this.type = {
-    native.masked_fill_(mask.native,value.native)
+  def masked_fill_[D1 <: DType](mask: Tensor[Bool], value: Tensor[D1]): this.type = {
+    native.masked_fill_(mask.native, value.native)
     this
   }
 
-  def masked_fill[D1 <:DType](mask: Tensor[Bool], value: Tensor[D1]): Tensor[Promoted[D, D1]] = fromNative(native.masked_fill(mask.native, value.native))
+  def masked_fill[D1 <: DType](mask: Tensor[Bool], value: Tensor[D1]): Tensor[Promoted[D, D1]] =
+    fromNative(native.masked_fill(mask.native, value.native))
 
-  def masked_scatter_[D1 <:DType](mask: Tensor[Bool], source: Tensor[D1]): this.type = {
-    native.masked_scatter_(mask.native,source.native)
+  def masked_scatter_[D1 <: DType](mask: Tensor[Bool], source: Tensor[D1]): this.type = {
+    native.masked_scatter_(mask.native, source.native)
     this
   }
 
-  def put_[D1 <:DType](index:Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): this.type = {
+  def put_[D1 <: DType](index: Tensor[Int64] | Tensor[Int32], source: Tensor[D1]): this.type = {
     index.dtype match
-      case torch.int64 => native.put_(index.native,source.native)
-      case torch.int32 => native.put_(index.to(dtype = torch.int64).native,source.native)
+      case torch.int64 => native.put_(index.native, source.native)
+      case torch.int32 => native.put_(index.to(dtype = torch.int64).native, source.native)
     this
   }
 
-  def index_add_[D1 <: DType](dim: Int, index: Tensor[Int64]|Tensor[Int32] , source: Tensor[D1]): this.type = {
+  def index_add_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.index_add_(dim.toLong,index.native,source.native)
-      case torch.int32 => native.index_add_(dim.toLong,index.to(dtype = torch.int64).native,source.native)
+      case torch.int64 => native.index_add_(dim.toLong, index.native, source.native)
+      case torch.int32 =>
+        native.index_add_(dim.toLong, index.to(dtype = torch.int64).native, source.native)
     this
   }
 
-  def index_reduce_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1], reduceMode: String): this.type = {
+  def index_reduce_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      reduceMode: String
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.index_reduce_(dim.toLong,index.native,source.native,reduceMode)
-      case torch.int32 => native.index_reduce_(dim.toLong,index.to(dtype = torch.int64).native,source.native,reduceMode)
+      case torch.int64 => native.index_reduce_(dim.toLong, index.native, source.native, reduceMode)
+      case torch.int32 =>
+        native.index_reduce_(
+          dim.toLong,
+          index.to(dtype = torch.int64).native,
+          source.native,
+          reduceMode
+        )
     this
   }
 
-  def index_fill_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): this.type = {
+  def index_fill_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.index_fill_(dim.toLong,index.native,source.native)
-      case torch.int32 => native.index_fill_(dim.toLong,index.to(dtype = torch.int64).native,source.native)
+      case torch.int64 => native.index_fill_(dim.toLong, index.native, source.native)
+      case torch.int32 =>
+        native.index_fill_(dim.toLong, index.to(dtype = torch.int64).native, source.native)
     this
   }
 
-  def scatter_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): this.type = {
+  def scatter_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.scatter_(dim.toLong,index.native,source.native)
-      case torch.int32 => native.scatter_(dim.toLong,index.to(dtype = torch.int64).native,source.native)
+      case torch.int64 => native.scatter_(dim.toLong, index.native, source.native)
+      case torch.int32 =>
+        native.scatter_(dim.toLong, index.to(dtype = torch.int64).native, source.native)
     this
   }
 
-  def scatter_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1] ,reduceMode: String): this.type = {
+  def scatter_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      reduceMode: String
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.scatter_(dim.toLong,index.native,source.native,reduceMode)
-      case torch.int32 => native.scatter_(dim.toLong,index.to(dtype = torch.int64).native,source.native,reduceMode )
+      case torch.int64 => native.scatter_(dim.toLong, index.native, source.native, reduceMode)
+      case torch.int32 =>
+        native.scatter_(dim.toLong, index.to(dtype = torch.int64).native, source.native, reduceMode)
     this
   }
 
-  def scatter_add_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D1]): this.type = {
+  def scatter_add_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1]
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.scatter_add_(dim.toLong,index.native,src.native)
-      case torch.int32 => native.scatter_add_(dim.toLong,index.to(dtype = torch.int64).native,src.native)
+      case torch.int64 => native.scatter_add_(dim.toLong, index.native, src.native)
+      case torch.int32 =>
+        native.scatter_add_(dim.toLong, index.to(dtype = torch.int64).native, src.native)
     this
   }
 
-  def scatter_reduce_[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D1], reduceMode: String) : this.type = {
+  def scatter_reduce_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1],
+      reduceMode: String
+  ): this.type = {
     index.dtype match
-      case torch.int64 => native.scatter_reduce_(dim.toLong,index.native,src.native,reduceMode)
-      case torch.int32 => native.scatter_reduce_(dim.toLong,index.to(dtype = torch.int64).native,src.native,reduceMode)
+      case torch.int64 => native.scatter_reduce_(dim.toLong, index.native, src.native, reduceMode)
+      case torch.int32 =>
+        native.scatter_reduce_(
+          dim.toLong,
+          index.to(dtype = torch.int64).native,
+          src.native,
+          reduceMode
+        )
     this
   }
 
@@ -2499,87 +2785,164 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
   // mask D2 Bool
-  def masked_scatter[D1 <:DType](mask: Tensor[Bool], source: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.masked_scatter(mask.native, source.native))
+  def masked_scatter[D1 <: DType](mask: Tensor[Bool], source: Tensor[D1]): Tensor[Promoted[D1, D]] =
+    fromNative(native.masked_scatter(mask.native, source.native))
 
-  def put[D1 <:DType](index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): Tensor[Promoted[D1, D]] = {
+  def put[D1 <: DType](
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
       case torch.int64 => fromNative(native.put(index.native, source.native))
-      case torch.int32 => fromNative(native.put(index.to(dtype = torch.int64).native, source.native))
+      case torch.int32 =>
+        fromNative(native.put(index.to(dtype = torch.int64).native, source.native))
   }
 
-  def index_add[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): Tensor[Promoted[D1, D]]= {
+  def index_add[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
       case torch.int64 => fromNative(native.index_add(dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(native.index_add(dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int32 =>
+        fromNative(
+          native.index_add(dim.toLong, index.to(dtype = torch.int64).native, source.native)
+        )
   }
 
-  def index_reduce[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1], reduceMode: String): Tensor[Promoted[D1, D]] = {
+  def index_reduce[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      reduceMode: String
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
-      case torch.int64 => fromNative(native.index_reduce(dim.toLong, index.native, source.native, reduceMode))
-      case torch.int32 => fromNative(native.index_reduce(dim.toLong, index.to(dtype = torch.int64).native, source.native, reduceMode))
+      case torch.int64 =>
+        fromNative(native.index_reduce(dim.toLong, index.native, source.native, reduceMode))
+      case torch.int32 =>
+        fromNative(
+          native.index_reduce(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native,
+            reduceMode
+          )
+        )
   }
 
-  def index_fill[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): Tensor[Promoted[D1, D]] = {
+  def index_fill[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
       case torch.int64 => fromNative(native.index_fill(dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(native.index_fill(dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int32 =>
+        fromNative(
+          native.index_fill(dim.toLong, index.to(dtype = torch.int64).native, source.native)
+        )
 
   }
 
-  def scatter[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1]): Tensor[Promoted[D1, D]] = {
+  def scatter[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
       case torch.int64 => fromNative(native.scatter(dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(native.scatter(dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int32 =>
+        fromNative(native.scatter(dim.toLong, index.to(dtype = torch.int64).native, source.native))
   }
 
-  def scatter[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], source: Tensor[D1], reduceMode: String): Tensor[Promoted[D1, D]] = {
+  def scatter[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      reduceMode: String
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
-      case torch.int64 => fromNative(native.scatter(dim.toLong, index.native, source.native, reduceMode))
-      case torch.int32 => fromNative(native.scatter(dim.toLong, index.to(dtype = torch.int64).native, source.native, reduceMode))
+      case torch.int64 =>
+        fromNative(native.scatter(dim.toLong, index.native, source.native, reduceMode))
+      case torch.int32 =>
+        fromNative(
+          native.scatter(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native,
+            reduceMode
+          )
+        )
   }
 
-  def scatter_add[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D1]): Tensor[Promoted[D1, D]] = {
+  def scatter_add[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
       case torch.int64 => fromNative(native.scatter_add(dim.toLong, index.native, src.native))
-      case torch.int32 => fromNative(native.scatter_add(dim.toLong, index.to(dtype = torch.int64).native, src.native))
+      case torch.int32 =>
+        fromNative(native.scatter_add(dim.toLong, index.to(dtype = torch.int64).native, src.native))
 
   }
 
-  def scatter_reduce[D1 <:DType](dim: Int, index: Tensor[Int64]|Tensor[Int32], src: Tensor[D1], reduceMode: String): Tensor[Promoted[D1, D]] = {
+  def scatter_reduce[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1],
+      reduceMode: String
+  ): Tensor[Promoted[D1, D]] = {
     index.dtype match
-      case torch.int64 => fromNative(native.scatter_reduce(dim.toLong, index.native, src.native, reduceMode))
-      case torch.int32 => fromNative(native.scatter_reduce(dim.toLong, index.to(dtype = torch.int64).native, src.native, reduceMode))
+      case torch.int64 =>
+        fromNative(native.scatter_reduce(dim.toLong, index.native, src.native, reduceMode))
+      case torch.int32 =>
+        fromNative(
+          native.scatter_reduce(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            src.native,
+            reduceMode
+          )
+        )
   }
 
 //  def eq(other: Tensor[D]): Tensor[D] = fromNative(native.eq(other.native))
 
-  def bitwise_and[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.bitwise_and(other.native))
+  def bitwise_and[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bitwise_and(other.native)
+  )
 
-  def bitwise_or[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.bitwise_or(other.native))
+  def bitwise_or[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bitwise_or(other.native)
+  )
 
-  def bitwise_xor[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.bitwise_xor(other.native))
+  def bitwise_xor[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bitwise_xor(other.native)
+  )
 
-  def bitwise_and_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def bitwise_and_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.bitwise_and_(other.native)
     this
   }
 
-  def bitwise_or_[D1 <:DType](other: Tensor[D1]) : this.type = {
+  def bitwise_or_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.bitwise_or_(other.native)
     this
   }
 
-  def bitwise_xor_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def bitwise_xor_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.bitwise_xor_(other.native)
     this
   }
 
-  def bitwise_left_shift_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def bitwise_left_shift_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.bitwise_left_shift_(other.native)
     this
   }
 
-  def bitwise_right_shift_[D1 <:DType](other: Tensor[D1]) : this.type = {
+  def bitwise_right_shift_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.bitwise_right_shift_(other.native)
     this
   }
@@ -2610,24 +2973,25 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   // D1 Int , D2 Float
-  def lerp_[D1 <:DType, D2 <:DType](end:Tensor[D1],weight:Tensor[D2]): this.type = {
+  def lerp_[D1 <: DType, D2 <: DType](end: Tensor[D1], weight: Tensor[D2]): this.type = {
     native.lerp_(end.native, weight.native)
     this
   }
 
-  def addbmm_[D1 <:DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
-    native.addbmm_(batch1.native,batch2.native)
+  def addbmm_[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
+    native.addbmm_(batch1.native, batch2.native)
     this
   }
 
-  def addbmm[D1 <:DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.addbmm(batch1.native, batch2.native))
+  def addbmm[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] =
+    fromNative(native.addbmm(batch1.native, batch2.native))
 
-  def random_(to: Long) : this.type = {
+  def random_(to: Long): this.type = {
     native.random_(to)
     this
   }
 
-  def random_(from:Long, to: Long): this.type = {
+  def random_(from: Long, to: Long): this.type = {
     native.random_(from, new LongOptional(to))
     this
   }
@@ -2643,11 +3007,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def uniform_(from: Double, to: Double, seed: Option[Long] = None): this.type = {
-    if seed.isDefined then 
+    if seed.isDefined then
       val generator = new Generator()
       generator.set_current_seed(seed.get)
-      native.uniform_(from,to, new GeneratorOptional(generator))
-    else  native.uniform_(from,to, new GeneratorOptional())
+      native.uniform_(from, to, new GeneratorOptional(generator))
+    else native.uniform_(from, to, new GeneratorOptional())
     this
   }
 
@@ -2662,7 +3026,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       generator.set_current_seed(seed.get)
       native.cauchy_(median, sigma, new GeneratorOptional(generator))
     else native.cauchy_(median, sigma, new GeneratorOptional())
-  
+
     this
   }
 
@@ -2676,7 +3040,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       val generator = new Generator()
       generator.set_current_seed(seed.get)
       native.log_normal_(mean, std, new GeneratorOptional(generator))
-    else native.log_normal_(mean, std,new GeneratorOptional())
+    else native.log_normal_(mean, std, new GeneratorOptional())
     this
   }
 
@@ -2699,101 +3063,130 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def ne_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def ne_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.ne_(other.native)
     this
   }
 
-  def not_equal_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def not_equal_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.not_equal_(other.native)
     this
   }
 
-  def ge_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def ge_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.ge_(other.native)
     this
   }
 
-  def greater_equal_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def greater_equal_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.greater_equal_(other.native)
     this
   }
 
-  def le_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def le_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.le_(other.native)
     this
   }
 
-  def less_equal_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def less_equal_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.less_equal_(other.native)
     this
   }
 
-  def gt_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def gt_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.gt_(other.native)
     this
   }
 
-  def greater_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def greater_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.greater_(other.native)
     this
   }
 
-  def lt_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def lt_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.lt_(other.native)
     this
   }
 
-  def less_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def less_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.less_(other.native)
     this
   }
 
-  def ne[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.ne(other.native))
+  def ne[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.ne(other.native)
+  )
 
-  def not_equal[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.not_equal(other.native))
+  def not_equal[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.not_equal(other.native)
+  )
 
-  def ge[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.ge(other.native))
+  def ge[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.ge(other.native)
+  )
 
-  def greater_equal[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]]= fromNative(native.greater_equal(other.native))
+  def greater_equal[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.greater_equal(other.native)
+  )
 
-  def le[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.le(other.native))
+  def le[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.le(other.native)
+  )
 
-  def less_equal[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.less_equal(other.native))
+  def less_equal[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.less_equal(other.native)
+  )
 
-  def gt[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.gt(other.native))
+  def gt[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.gt(other.native)
+  )
 
-  def greater[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.greater(other.native))
+  def greater[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.greater(other.native)
+  )
 
-  def lt[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.lt(other.native))
+  def lt[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.lt(other.native)
+  )
 
-  def less[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.less(other.native))
+  def less[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.less(other.native)
+  )
   def diag(diagonal: Long = 0): Tensor[D] = fromNative(native.diag(diagonal))
   def triu(diagonal: Long = 0): Tensor[D] = fromNative(native.triu(diagonal))
   def diag(): Tensor[D] = fromNative(native.diag())
   def triu(): Tensor[D] = fromNative(native.triu())
-  def cross[D1 <:DType](other: Tensor[D1],dim: Int): Tensor[Promoted[D1, D]] = fromNative(native.cross(other.native, new LongOptional(dim.toLong)))
-  def cross[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.cross(other.native))
+  def cross[D1 <: DType](other: Tensor[D1], dim: Int): Tensor[Promoted[D1, D]] = fromNative(
+    native.cross(other.native, new LongOptional(dim.toLong))
+  )
+  def cross[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.cross(other.native)
+  )
 //  def take(index: Tensor[Int64]):Tensor[D] = fromNative(native.take(index.native))
 
-  def take_along_dim(indices: Tensor[Int64]|Tensor[Int32]):Tensor[D] = {
+  def take_along_dim(indices: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     indices.dtype match
       case torch.int64 => fromNative(native.take_along_dim(indices.native))
       case torch.int32 => fromNative(native.take_along_dim(indices.to(dtype = torch.int64).native))
   }
-  def index_select(dim: Int, index: Tensor[Int64]|Tensor[Int32]) : Tensor[D] = {
+  def index_select(dim: Int, index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(native.index_select(dim.toLong,index.native))
-      case torch.int32 => fromNative(native.index_select(dim.toLong,index.to(dtype = torch.int64).native))
+      case torch.int64 => fromNative(native.index_select(dim.toLong, index.native))
+      case torch.int32 =>
+        fromNative(native.index_select(dim.toLong, index.to(dtype = torch.int64).native))
   }
 
-  //mask bool
-  def masked_select[D1 <:DType](mask: Tensor[Bool]): Tensor[D] = fromNative(native.masked_select(mask.native))
+  // mask bool
+  def masked_select[D1 <: DType](mask: Tensor[Bool]): Tensor[D] = fromNative(
+    native.masked_select(mask.native)
+  )
 
-  def nonzero():Tensor[D] = fromNative(native.nonzero())
-  def nonzero_static(size: Int,fill_value: Int = 1):Tensor[D] = fromNative(native.nonzero_static(size.toLong,fill_value.toLong))
-  def nonzero_static(size: Int):Tensor[D] = fromNative(native.nonzero_static(size.toLong))
-  def nonzero_numpy():Seq[Tensor[D]] ={
+  def nonzero(): Tensor[D] = fromNative(native.nonzero())
+  def nonzero_static(size: Int, fill_value: Int = 1): Tensor[D] = fromNative(
+    native.nonzero_static(size.toLong, fill_value.toLong)
+  )
+  def nonzero_static(size: Int): Tensor[D] = fromNative(native.nonzero_static(size.toLong))
+  def nonzero_numpy(): Seq[Tensor[D]] = {
     val res = native.nonzero_numpy()
     var it = res.begin()
     val tensorList = new ListBuffer[Tensor[D]]()
@@ -2804,106 +3197,143 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     tensorList.toSeq
   }
   def argwhere(): Tensor[D] = fromNative(native.argwhere())
-  def gather(dim: Long, index: Tensor[Int64]|Tensor[Int32], sparse_grad: Boolean = false) :Tensor[D] ={
+  def gather(
+      dim: Long,
+      index: Tensor[Int64] | Tensor[Int32],
+      sparse_grad: Boolean = false
+  ): Tensor[D] = {
     index.dtype match
       case torch.int64 => fromNative(native.gather(dim.toLong, index.native, sparse_grad))
-      case torch.int32 => fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native, sparse_grad))
+      case torch.int32 =>
+        fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native, sparse_grad))
   }
 
-  def gather(dim: Long, index: Tensor[Int64]|Tensor[Int32]): Tensor[D] = {
+  def gather(dim: Long, index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     index.dtype match
       case torch.int64 => fromNative(native.gather(dim.toLong, index.native))
-      case torch.int32 => fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native))
+      case torch.int32 =>
+        fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native))
   }
 
+  def addcmul[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.addcmul(t1.native, t2.native)
+  )
 
-  def addcmul[D1 <:DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.addcmul(t1.native, t2.native))
+  def addcdiv[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.addcdiv(t1.native, t2.native)
+  )
 
-  def addcdiv[D1 <:DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.addcdiv(t1.native, t2.native))
-
-  def addcmul_[D1 <:DType](t1: Tensor[D1], t2: Tensor[D1]): this.type = {
-    native.addcmul_(t1.native,t2.native)
+  def addcmul_[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): this.type = {
+    native.addcmul_(t1.native, t2.native)
     this
   }
 
-  def addcdiv_[D1 <:DType](t1: Tensor[D1], t2: Tensor[D1]): this.type = {
-    native.addcdiv_(t1.native,t2.native)
+  def addcdiv_[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): this.type = {
+    native.addcdiv_(t1.native, t2.native)
     this
   }
 
-  def triangular_solve[D1 <:DType, D2<:DType](a: Tensor[D1], upper: Boolean = true, transpose: Boolean = false, unitriangular: Boolean = false): (Tensor[D2], Tensor[D2]) = {
-    val res = native.triangular_solve(a.native,upper, transpose, unitriangular)
+  def triangular_solve[D1 <: DType, D2 <: DType](
+      a: Tensor[D1],
+      upper: Boolean = true,
+      transpose: Boolean = false,
+      unitriangular: Boolean = false
+  ): (Tensor[D2], Tensor[D2]) = {
+    val res = native.triangular_solve(a.native, upper, transpose, unitriangular)
     val t = fromNative[D2](res.get0())
     val s = fromNative[D2](res.get1())
     (t, s)
   }
-  def triangular_solve[D1 <:DType, D2 <:DType](a: Tensor[D1]):(Tensor[D2], Tensor[D2]) ={
+  def triangular_solve[D1 <: DType, D2 <: DType](a: Tensor[D1]): (Tensor[D2], Tensor[D2]) = {
     val res = native.triangular_solve(a.native)
     val t = fromNative[D2](res.get0())
     val s = fromNative[D2](res.get1())
-    (t,s)
+    (t, s)
   }
-  def svd[D1 <:DType](some: Boolean = true, compute_uv: Boolean = true): (Tensor[D1], Tensor[D1], Tensor[D1]) = {
-    val res = native.svd(some,compute_uv)
+  def svd[D1 <: DType](
+      some: Boolean = true,
+      compute_uv: Boolean = true
+  ): (Tensor[D1], Tensor[D1], Tensor[D1]) = {
+    val res = native.svd(some, compute_uv)
     val s = fromNative[D1](res.get0())
     val v = fromNative[D1](res.get1())
     val d = fromNative[D1](res.get2())
     (s, v, d)
   }
-  def svd[D1 <:DType](): (Tensor[D1], Tensor[D1], Tensor[D1] )={
+  def svd[D1 <: DType](): (Tensor[D1], Tensor[D1], Tensor[D1]) = {
     val res = native.svd()
-    val s  = fromNative[D1](res.get0())
+    val s = fromNative[D1](res.get0())
     val v = fromNative[D1](res.get1())
     val d = fromNative[D1](res.get2())
-    (s,v,d)
+    (s, v, d)
   }
   def swapaxes_(axis0: Long, axis1: Long): this.type = {
-    native.swapaxes_(axis0,axis1)
+    native.swapaxes_(axis0, axis1)
     this
   }
 
   def swapdims_(dim0: Long, dim1: Long): this.type = {
-    native.swapdims_(dim0,dim1)
+    native.swapdims_(dim0, dim1)
     this
   }
 
-  def swapaxes(axis0: Long, axis1: Long): Tensor[D] = fromNative(native.swapaxes(axis0,axis1))
-  def swapdims(dim0: Long, dim1: Long): Tensor[D] = fromNative(native.swapdims(dim0,dim1))
+  def swapaxes(axis0: Long, axis1: Long): Tensor[D] = fromNative(native.swapaxes(axis0, axis1))
+  def swapdims(dim0: Long, dim1: Long): Tensor[D] = fromNative(native.swapdims(dim0, dim1))
 
   def cholesky(): Tensor[D] = fromNative(native.cholesky())
   def cholesky(upper: Boolean = false): Tensor[D] = fromNative(native.cholesky(upper))
-  def cholesky_solve[D1 <:DType](input2: Tensor[D1], upper: Boolean =false): Tensor[Promoted[D1, D]] = fromNative(native.cholesky_solve(input2.native,upper))
-  def cholesky_solve[D1 <:DType](input2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.cholesky_solve(input2.native))
-  def cholesky_inverse(upper: Boolean = false): Tensor[D] = fromNative(native.cholesky_inverse(upper))
+  def cholesky_solve[D1 <: DType](
+      input2: Tensor[D1],
+      upper: Boolean = false
+  ): Tensor[Promoted[D1, D]] = fromNative(native.cholesky_solve(input2.native, upper))
+  def cholesky_solve[D1 <: DType](input2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.cholesky_solve(input2.native)
+  )
+  def cholesky_inverse(upper: Boolean = false): Tensor[D] = fromNative(
+    native.cholesky_inverse(upper)
+  )
   def cholesky_inverse(): Tensor[D] = fromNative(native.cholesky_inverse())
-  def geqrf[D1 <:DType, D2<:DType](): (Tensor[D1], Tensor[D2]) = {
+  def geqrf[D1 <: DType, D2 <: DType](): (Tensor[D1], Tensor[D2]) = {
     val res = native.geqrf()
     val q = fromNative[D1](res.get0())
     val r = fromNative[D2](res.get1())
     (q, r)
 
   }
-  def qr[D1 <:DType, D2<:DType](some: Boolean = true): (Tensor[D1], Tensor[D2]) = {
+  def qr[D1 <: DType, D2 <: DType](some: Boolean = true): (Tensor[D1], Tensor[D2]) = {
     val res = native.qr(some)
     val q = fromNative[D1](res.get0())
     val r = fromNative[D2](res.get1())
     (q, r)
 
   }
-  def qr[D1 <:DType, D2 <:DType]():(Tensor[D1], Tensor[D2]) = {
+  def qr[D1 <: DType, D2 <: DType](): (Tensor[D1], Tensor[D2]) = {
     val res = native.qr()
     val q = fromNative[D1](res.get0())
     val r = fromNative[D2](res.get1())
-    (q,r)
+    (q, r)
 
   }
-  def orgqr[D1 <:DType](input2: Tensor[D1]):Tensor[Promoted[D1, D]] = fromNative(native.orgqr(input2.native))
-  def ormqr[D1 <:DType](input2: Tensor[D1], input3: Tensor[D1],left: Boolean = true, transpose: Boolean = true ):Tensor[Promoted[D1, D]]= fromNative(native.ormqr(input2.native,input3.native,left, transpose))
-  def ormqr[D1 <:DType](input2: Tensor[D1], input3: Tensor[D1]):Tensor[Promoted[D1, D]]= fromNative(native.ormqr(input2.native,input3.native))
-  //todo need make sure
-  def lu_solve[D1 <:DType,D2 <:DType](LU_data: Tensor[D1],LU_pivots: Tensor[D2]): Tensor[Promoted[D1, D]]= fromNative(native.lu_solve(LU_data.native,LU_pivots.native))
+  def orgqr[D1 <: DType](input2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.orgqr(input2.native)
+  )
+  def ormqr[D1 <: DType](
+      input2: Tensor[D1],
+      input3: Tensor[D1],
+      left: Boolean = true,
+      transpose: Boolean = true
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.ormqr(input2.native, input3.native, left, transpose)
+  )
+  def ormqr[D1 <: DType](input2: Tensor[D1], input3: Tensor[D1]): Tensor[Promoted[D1, D]] =
+    fromNative(native.ormqr(input2.native, input3.native))
+  // todo need make sure
+  def lu_solve[D1 <: DType, D2 <: DType](
+      LU_data: Tensor[D1],
+      LU_pivots: Tensor[D2]
+  ): Tensor[Promoted[D1, D]] = fromNative(native.lu_solve(LU_data.native, LU_pivots.native))
 
-  def multinomial(num_samples: Int): Tensor[D]= fromNative(native.multinomial(num_samples.toLong))
+  def multinomial(num_samples: Int): Tensor[D] = fromNative(native.multinomial(num_samples.toLong))
   def lgamma_(): this.type = {
     native.lgamma_()
     this
@@ -2937,37 +3367,57 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def sign(): Tensor[D] = fromNative(native.sign())
   def signbit(): Tensor[D] = fromNative(native.signbit())
-  def dist[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.dist(other.native))
+  def dist[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.dist(other.native)
+  )
 
-  def atan2_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def atan2_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.atan2_(other.native)
     this
   }
 
-  def arctan2_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def arctan2_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.arctan2_(other.native)
     this
   }
 
-  def atan2[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.atan2(other.native))
+  def atan2[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.atan2(other.native)
+  )
 
-  def arctan2[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.arctan2(other.native))
-  def lerp[D1 <:DType](ends: Tensor[Int64]|Tensor[Int32], weight: Tensor[D1]):Tensor[Promoted[D1, D]] = {
+  def arctan2[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.arctan2(other.native)
+  )
+  def lerp[D1 <: DType](
+      ends: Tensor[Int64] | Tensor[Int32],
+      weight: Tensor[D1]
+  ): Tensor[Promoted[D1, D]] = {
     ends.dtype match
-      case torch.int64 => fromNative(native.lerp(ends.native,weight.native))
-      case torch.int32 => fromNative(native.lerp(ends.to(dtype = torch.int64).native,weight.native))
+      case torch.int64 => fromNative(native.lerp(ends.native, weight.native))
+      case torch.int32 =>
+        fromNative(native.lerp(ends.to(dtype = torch.int64).native, weight.native))
   }
 
-  def histc(bins: Long, min: Double, max:Double):Tensor[D] = fromNative(native.histc(bins,toScalar(min),toScalar(max)))
-  def histc():Tensor[D]= fromNative(native.histc())
-  def histogram[D1 <:DType, D2 <:DType](bins: Int, range: Seq[Double],weight:Option[Tensor[D1]],density: Boolean =false): (Tensor[D1], Tensor[D2]) = {
-    val his = native.histogram(bins.toLong,range.toArray, new TensorOptional(weight.get.native),density)
+  def histc(bins: Long, min: Double, max: Double): Tensor[D] = fromNative(
+    native.histc(bins, toScalar(min), toScalar(max))
+  )
+  def histc(): Tensor[D] = fromNative(native.histc())
+  def histogram[D1 <: DType, D2 <: DType](
+      bins: Int,
+      range: Seq[Double],
+      weight: Option[Tensor[D1]],
+      density: Boolean = false
+  ): (Tensor[D1], Tensor[D2]) = {
+    val his =
+      native.histogram(bins.toLong, range.toArray, new TensorOptional(weight.get.native), density)
     val h1 = fromNative[D1](his.get0())
     val h2 = fromNative[D2](his.get1())
     (h1, h2)
   }
 
-  def histogram[D1 <:DType, D2 <:DType](bins: Tensor[Int64]|Tensor[Int32]): (Tensor[D1], Tensor[D2]) = {
+  def histogram[D1 <: DType, D2 <: DType](
+      bins: Tensor[Int64] | Tensor[Int32]
+  ): (Tensor[D1], Tensor[D2]) = {
     val his = bins.dtype match
       case torch.int64 => native.histogram(bins.native)
       case torch.int32 => native.histogram(bins.to(dtype = torch.int64).native)
@@ -2975,66 +3425,75 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val h2 = fromNative[D2](his.get1())
     (h1, h2)
   }
-  def histogram[D1 <:DType,D2 <:DType]():(Tensor[D1],Tensor[D2]) = {
+  def histogram[D1 <: DType, D2 <: DType](): (Tensor[D1], Tensor[D2]) = {
     val his = native.histogram()
     val h1 = fromNative[D1](his.get0())
     val h2 = fromNative[D2](his.get1())
-    (h1,h2)
+    (h1, h2)
   }
-  def fmod_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def fmod_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.fmod_(other.native)
     this
   }
 
-  def fmod[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.fmod(other.native))
-  def hypot[D1 <:DType](other: Tensor[D1]) : Tensor[Promoted[D1, D]] = fromNative(native.hypot(other.native))
-  def hypot_[D1 <:DType](other: Tensor[D1]) : this.type = {
+  def fmod[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.fmod(other.native)
+  )
+  def hypot[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.hypot(other.native)
+  )
+  def hypot_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.hypot_(other.native)
     this
   }
 
-  def igamma[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.igamma(other.native))
+  def igamma[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.igamma(other.native)
+  )
 
-  def igamma_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def igamma_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.igamma_(other.native)
     this
   }
 
-  def igammac_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def igammac_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.igammac_(other.native)
     this
   }
 
-  def igammac[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.igammac(other.native))
+  def igammac[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.igammac(other.native)
+  )
 
-  def nextafter_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def nextafter_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.nextafter_(other.native)
     this
   }
 
+  def nextafter[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.nextafter(other.native)
+  )
 
-
-
-  def nextafter[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.nextafter(other.native))
-
-  def remainder_[D1 <:DType](other: Tensor[D1]): this.type = {
+  def remainder_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.remainder_(other.native)
     this
   }
 
-  def remainder[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.remainder(other.native))
+  def remainder[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.remainder(other.native)
+  )
 
   def renorm_(p: Float, dim: Long, maxnorm: Float): this.type = {
-    native.renorm_(toScalar(p),dim,toScalar(maxnorm))
+    native.renorm_(toScalar(p), dim, toScalar(maxnorm))
     this
   }
 
-  def pow_[D1 <:DType](exponent:Tensor[D1]): this.type = {
+  def pow_[D1 <: DType](exponent: Tensor[D1]): this.type = {
     native.pow_(exponent.native)
     this
   }
 
-  def float_power_[D1 <:DType](exponent: Tensor[D1]): this.type = {
+  def float_power_[D1 <: DType](exponent: Tensor[D1]): this.type = {
     native.float_power_(exponent.native)
     this
   }
@@ -3051,51 +3510,77 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def min(): Tensor[D]= fromNative(native.min())
 
-  def fmin[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.fmin(other.native))
+  def fmin[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.fmin(other.native)
+  )
 //  def max(): Tensor[D]= fromNative(native.max())
-  def fmax[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]]= fromNative(native.fmax(other.native))
+  def fmax[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.fmax(other.native)
+  )
 
 //  def maximum(other: Tensor[D]): Tensor[D]= fromNative(native.maximum(other.native))
 
-  def max[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.max(other.native))
+  def max[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.max(other.native)
+  )
 //  def minimum(other: Tensor[D]): Tensor[D]= fromNative(native.minimum(other.native))
-  def min[D1 <:DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.min(other.native))
+  def min[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.min(other.native)
+  )
 
-  def quantile[D1 <:DType](q:Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.quantile(q.native))
-  def quantile[D1 <:DType](q: Double): Tensor[Promoted[D1, D]] = fromNative(native.quantile(q))
-  def nanquantile[D1 <:DType](q: Double): Tensor[Promoted[D1, D]] = fromNative(native.nanquantile(q))
-  def nanquantile[D1 <:DType](q: Tensor[D1]): Tensor[Promoted[D1, D]]= fromNative(native.nanquantile(q.native))
+  def quantile[D1 <: DType](q: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.quantile(q.native)
+  )
+  def quantile[D1 <: DType](q: Double): Tensor[Promoted[D1, D]] = fromNative(native.quantile(q))
+  def nanquantile[D1 <: DType](q: Double): Tensor[Promoted[D1, D]] = fromNative(
+    native.nanquantile(q)
+  )
+  def nanquantile[D1 <: DType](q: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.nanquantile(q.native)
+  )
 
-  def msort(): Tensor[D]= fromNative(native.msort())
-  def sort():(Tensor[D], Tensor[D])= {
+  def msort(): Tensor[D] = fromNative(native.msort())
+  def sort(): (Tensor[D], Tensor[D]) = {
     val res = native.sort()
     val s = fromNative[D](res.get0())
     val t = fromNative[D](res.get1())
-    (s,t)
+    (s, t)
   }
-  def argsort(stable: Boolean): Tensor[D]= fromNative(native.argsort(stable))
-  def argsort(): Tensor[D]= fromNative(native.argsort())
-  def topk(k: Int, dim: Int, largest: Boolean = true, sorted:Boolean =true ):(Tensor[D],Tensor[Int64] )= {
+  def argsort(stable: Boolean): Tensor[D] = fromNative(native.argsort(stable))
+  def argsort(): Tensor[D] = fromNative(native.argsort())
+  def topk(
+      k: Int,
+      dim: Int,
+      largest: Boolean = true,
+      sorted: Boolean = true
+  ): (Tensor[D], Tensor[Int64]) = {
 
-    val res = native.topk(k.toLong,dim.toLong,largest,sorted)
+    val res = native.topk(k.toLong, dim.toLong, largest, sorted)
     val s = fromNative[D](res.get0())
     val t = fromNative[Int64](res.get1())
     (s, t)
   }
-  def topk(k: Int):(Tensor[D],Tensor[Int64]) ={
+  def topk(k: Int): (Tensor[D], Tensor[Int64]) = {
     val res = native.topk(k.toLong)
     val s = fromNative[D](res.get0())
     val t = fromNative[Int64](res.get1())
     (s, t)
   }
 
+  def unfold(dimension: Long, size: Long, step: Long): Tensor[D] = fromNative(
+    native.unfold(dimension, size, step)
+  )
+  def float_power[D1 <: DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.float_power(exponent.native)
+  )
 
-  def unfold(dimension: Long,size: Long, step: Long): Tensor[D]= fromNative(native.unfold(dimension,size,step))
-  def float_power[D1 <:DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.float_power(exponent.native))
+  def pow[D1 <: DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.pow(exponent.native)
+  )
 
-  def pow[D1 <:DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.pow(exponent.native))
-
-  def renorm(p: Float, dim: Long, maxnorm: Float): Tensor[D] = fromNative(native.renorm(toScalar(p),dim,toScalar(maxnorm)))
+  def renorm(p: Float, dim: Long, maxnorm: Float): Tensor[D] = fromNative(
+    native.renorm(toScalar(p), dim, toScalar(maxnorm))
+  )
 
   def alias(): Tensor[D] = fromNative(native.alias())
 
@@ -3109,22 +3594,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def det(): Tensor[D] = fromNative(native.det())
 
-  def slogdet[D1 <:DType]():(Tensor[D], Tensor[D1])= {
+  def slogdet[D1 <: DType](): (Tensor[D], Tensor[D1]) = {
     val detTuple = native.slogdet()
     val d1 = fromNative[D](detTuple.get0())
     val d2 = fromNative[D1](detTuple.get1())
     (d1, d2)
   }
-
-
-
-
-
-
-
-
-
-
 
   def logdet(): Tensor[D] = fromNative(native.logdet())
 
@@ -3134,39 +3609,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def ger(vec2: Tensor[D]): Tensor[D] = fromNative(native.ger(vec2.native))
   def to_padded_tensor(padding: Double): Tensor[D] = fromNative(native.to_padded_tensor(padding))
-  def `var` (dim: Int): Tensor[D] = fromNative(native.`var`(dim))
+  def `var`(dim: Int): Tensor[D] = fromNative(native.`var`(dim))
 
-  def std( dim: Int) : Tensor[D] = fromNative(native.std(dim))
+  def std(dim: Int): Tensor[D] = fromNative(native.std(dim))
 //  def requires_grad_(): Tensor[D] = fromNative(native.requires_grad_())
 //
 //  def requires_grad_(requires_grad: Boolean= true): Tensor[D] = fromNative(native.requires_grad_(requires_grad))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /** Returns the sum of the elements of the diagonal of the input 2-D matrix. */
   def trace: Tensor[D] = fromNative(native.trace)
@@ -3387,16 +3835,17 @@ object Tensor:
       case ScalarType.NumOptions    => new NumOptionsTensor(native)
     ).asInstanceOf[Tensor[D]]
 
-  def apply[U <: ScalaType : ClassTag](
-                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                        requires_grad: Boolean,
-                                        device: Device 
-                                      ): Tensor[ScalaToDType[U]] = this.apply(data,Strided,device,requires_grad)
+  def apply[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      requires_grad: Boolean,
+      device: Device
+  ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, device, requires_grad)
 
-  def apply[U <: ScalaType : ClassTag](
-                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                        requires_grad: Boolean
-                                      ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
+  def apply[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      requires_grad: Boolean
+  ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
+
   /** Constructs a tensor with no autograd history (also known as a “leaf tensor”) by copying data.
     */
   // TODO support arbitrary multidimensional arrays as input
@@ -3470,7 +3919,7 @@ object Tensor:
         val tensor = fromScalar(data)
         tensor.set_requires_grad(requiresGrad)
         tensor.to(device = device)
-      case _       => throw new IllegalArgumentException("Unsupported type")
+      case _ => throw new IllegalArgumentException("Unsupported type")
 
   def fromScalar[S <: ScalaType](
       s: S,
@@ -3500,16 +3949,6 @@ extension [S <: ScalaType](s: S)
   ): Tensor[Promoted[D, ScalaToDType[S]]] = t.pow(s)
   def **[S2 <: ScalaType](other: S2): DTypeToScala[Promoted[ScalaToDType[S], ScalaToDType[S2]]] =
     Tensor.fromScalar(s).pow(other).item
-
-
-
-
-
-
-
-
-
-
 
 //  def new_tensor(data: Seq[Long]): Tensor[torch.Int64] = {
 //    torch.Tensor(data)

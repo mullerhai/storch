@@ -37,21 +37,20 @@ final class GELU[D <: DType: Default](size: Int, approximate: Float | Double, in
 
   val options = GELUOptions(size)
   approximate match
-    case a : Float => options.approximate().put(a.toByte)
-    case a : Double => options.approximate().put(a.toByte)
-  
+    case a: Float  => options.approximate().put(a.toByte)
+    case a: Double => options.approximate().put(a.toByte)
 
   override val nativeModule: GELUImpl = GELUImpl(options)
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString =
     getClass().getSimpleName() + s"(size=$size,approximate=$approximate,inplace=$inplace)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
-
 object GELU {
-  def apply[D <: DType: Default](size: Int, approximate: Float, inplace: Boolean):GELU[D] = new GELU(size, approximate, inplace)
+  def apply[D <: DType: Default](size: Int, approximate: Float, inplace: Boolean): GELU[D] =
+    new GELU(size, approximate, inplace)
 }

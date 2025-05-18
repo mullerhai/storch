@@ -52,7 +52,7 @@ final class MaxUnpool1d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding)"
 
@@ -74,22 +74,6 @@ object MaxUnpool1d:
       stride: Int | (Int, Int),
       padding: Int | (Int, Int) = 0
   ): MaxUnpool1d[D] = new MaxUnpool1d(kernel_size, stride, padding)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  options.padding().put(toNative(padding))
 //  options.kernel_size().put(toNative(kernelSize))

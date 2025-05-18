@@ -35,10 +35,10 @@ final class Softshrink[D <: DType: Default](lambda: Float) extends TensorModule[
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName() + s"(lambda=$lambda)"
 
 object Softshrink:
-  def apply[D <: DType: Default](lambda: Float):Softshrink[D] = new Softshrink(lambda)
+  def apply[D <: DType: Default](lambda: Float): Softshrink[D] = new Softshrink(lambda)

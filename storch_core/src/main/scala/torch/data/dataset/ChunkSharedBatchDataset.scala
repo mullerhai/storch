@@ -34,7 +34,6 @@ class ChunkSharedBatchDataset(chunkDataset: ChunkDataset) extends CSBD(chunkData
 
   var native: CMD = null
 
-
   override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 
   override def size(): SizeTOptional = super.size()

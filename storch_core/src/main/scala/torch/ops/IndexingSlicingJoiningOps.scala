@@ -370,12 +370,21 @@ private[torch] trait IndexingSlicingJoiningOps {
   def gather[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64]|Tensor[Int32],
+      index: Tensor[Int64] | Tensor[Int32],
       sparse_grad: Boolean = false
   ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.gather(input.native, dim.toLong, index.native, sparse_grad))
-      case torch.int32 => fromNative(torchNative.gather(input.native, dim.toLong, index.to(dtype = torch.int64).native, sparse_grad))
+      case torch.int64 =>
+        fromNative(torchNative.gather(input.native, dim.toLong, index.native, sparse_grad))
+      case torch.int32 =>
+        fromNative(
+          torchNative.gather(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            sparse_grad
+          )
+        )
   }
 
   /** Splits `input`, a tensor with one or more dimensions, into multiple tensors horizontally
@@ -471,24 +480,43 @@ private[torch] trait IndexingSlicingJoiningOps {
   def indexAdd[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64]|Tensor[Int32],
+      index: Tensor[Int64] | Tensor[Int32],
       source: Tensor[D]
   ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(torchNative.index_add(input.native, dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int64 =>
+        fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_add(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native
+          )
+        )
   }
 
   def index_add[D <: DType](
-                            input: Tensor[D],
-                            dim: Int,
-                            index: Tensor[Int64] | Tensor[Int32],
-                            source: Tensor[D]
-                          ): Tensor[D] ={
+      input: Tensor[D],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D]
+  ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(torchNative.index_add(input.native, dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int64 =>
+        fromNative(torchNative.index_add(input.native, dim.toLong, index.native, source.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_add(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native
+          )
+        )
   }
+
   /** Copies the elements of tensor into the self tensor by selecting the indices in the order given
     * in index. For example, if dim == 0 and index[i] == j, then the ith row of tensor is copied to
     * the jth row of self.
@@ -524,12 +552,21 @@ private[torch] trait IndexingSlicingJoiningOps {
   def indexCopy[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64]|Tensor[Int32],
+      index: Tensor[Int64] | Tensor[Int32],
       source: Tensor[D]
-  ): Tensor[D] ={
+  ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(torchNative.index_copy(input.native, dim.toLong, index.to(dtype = torch.int64).native, source.native))
+      case torch.int64 =>
+        fromNative(torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_copy(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native
+          )
+        )
   }
 //    fromNative(torchNative.index_copy(input.native, dim.toLong, index.native, source.native))
 
@@ -575,17 +612,33 @@ private[torch] trait IndexingSlicingJoiningOps {
     *
     * @group indexing_slicing_joining_mutating_ops
     */
-  def indexSelect[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64]|Tensor[Int32]): Tensor[D] ={
+  def indexSelect[D <: DType](
+      input: Tensor[D],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32]
+  ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
-      case torch.int32 => fromNative(torchNative.index_select(input.native, dim.toLong, index.to(dtype = torch.int64).native))
+      case torch.int64 =>
+        fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_select(input.native, dim.toLong, index.to(dtype = torch.int64).native)
+        )
   }
 //    fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
 
-  def index_select[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64] | Tensor[Int32]): Tensor[D] ={
+  def index_select[D <: DType](
+      input: Tensor[D],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32]
+  ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
-      case torch.int32 => fromNative(torchNative.index_select(input.native, dim.toLong, index.to(dtype = torch.int64).native))
+      case torch.int64 =>
+        fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_select(input.native, dim.toLong, index.to(dtype = torch.int64).native)
+        )
   }
 //    fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
   /** Returns a new 1-D tensor which indexes the `input` tensor according to the boolean mask `mask`
@@ -938,12 +991,21 @@ private[torch] trait IndexingSlicingJoiningOps {
   def scatter[D <: DType](
       input: Tensor[D],
       dim: Int,
-      index: Tensor[Int64]|Tensor[Int32],
+      index: Tensor[Int64] | Tensor[Int32],
       source: Tensor[D]
   ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.scatter(input.native, dim.toLong, index.native, source.native))
-      case torch.int32 => fromNative(torchNative.scatter(input.native, dim.toLong, index.to(dtype =torch.int64).native, source.native))
+      case torch.int64 =>
+        fromNative(torchNative.scatter(input.native, dim.toLong, index.native, source.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.scatter(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native
+          )
+        )
   }
 
   // TODO Add docs diagonalScatter
@@ -998,8 +1060,17 @@ private[torch] trait IndexingSlicingJoiningOps {
   ): Tensor[D] = {
 
     index.dtype match
-      case torch.int64 => fromNative(torchNative.scatter_add(input.native, dim.toLong, index.native, src.native))
-      case torch.int32 => fromNative(torchNative.scatter_add(input.native, dim.toLong, index.to(dtype =torch.int64).native, src.native))
+      case torch.int64 =>
+        fromNative(torchNative.scatter_add(input.native, dim.toLong, index.native, src.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.scatter_add(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            src.native
+          )
+        )
   }
 
   // TODO scatter_reduce
@@ -1246,12 +1317,13 @@ private[torch] trait IndexingSlicingJoiningOps {
     *
     * @group indexing_slicing_joining_mutating_ops
     */
-  def take[D <: DType](input: Tensor[D], index: Tensor[Int64]|Tensor[Int32]): Tensor[D] = {
+  def take[D <: DType](input: Tensor[D], index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     println(s"take index dtype: ${index.dtype}")
     index.dtype match
       case torch.int64 => fromNative(torchNative.take(input.native, index.native))
-      case torch.int32 => fromNative(torchNative.take(input.native, index.to(dtype = torch.int64).native))
-    }
+      case torch.int32 =>
+        fromNative(torchNative.take(input.native, index.to(dtype = torch.int64).native))
+  }
 
   /** Selects values from `input` at the 1-dimensional indices from `indices` along the given `dim`.
     *
@@ -1282,12 +1354,20 @@ private[torch] trait IndexingSlicingJoiningOps {
   // TODO index Int | Tensor[Int64]
   def take_along_dim[D <: DType](
       input: Tensor[D],
-      index: Tensor[Int64]|Tensor[Int32],
+      index: Tensor[Int64] | Tensor[Int32],
       dim: Int | Option[Int] = None
   ): Tensor[D] = {
     index.dtype match
-      case torch.int64 => fromNative(torchNative.take_along_dim(input.native, index.native, dim.toOptional))
-      case torch.int32 => fromNative(torchNative.take_along_dim(input.native, index.to(dtype =torch.int64).native, dim.toOptional))
+      case torch.int64 =>
+        fromNative(torchNative.take_along_dim(input.native, index.native, dim.toOptional))
+      case torch.int32 =>
+        fromNative(
+          torchNative.take_along_dim(
+            input.native,
+            index.to(dtype = torch.int64).native,
+            dim.toOptional
+          )
+        )
   }
 
   /** Splits a tensor into multiple sub-tensors, all of which are views of `input`, along dimension

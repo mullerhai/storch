@@ -53,7 +53,7 @@ final class MaxUnpool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding)"
 
@@ -76,14 +76,6 @@ object MaxUnpool2d:
       padding: Int | (Int, Int) = 0
   ): MaxUnpool2d[D] =
     new MaxUnpool2d(kernel_size, stride, padding)
-
-
-
-
-
-
-
-
 
 // outputSize: Array[Int]  =4
 //  def apply(t: Tensor[D]): Tensor[D] = // fromNative(nativeModule.forward(t.native))

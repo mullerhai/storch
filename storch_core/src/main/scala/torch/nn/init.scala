@@ -226,6 +226,13 @@ object init:
     torchNative.xavier_normal_(t.native, gain)
     t
 
+  def xavier_normal_[D <: DType](
+                                 t: Tensor[D],
+                                 gain: Double = 1.0
+                               ): t.type =
+    torchNative.xavier_normal_(t.native, gain)
+    t
+
   /** Fills the input [[Tensor]] with values according to the method described in "Understanding the
     * difficulty of training deep feedforward neural networks"" - Glorot, X. & Bengio, Y. (2010),
     * using a normal distribution. Values are scaled by the gain parameter. The resulting tensor
@@ -243,6 +250,13 @@ object init:
       t: Tensor[D],
       gain: Double = 1.0
   ): t.type =
+    torchNative.xavier_uniform_(t.native, gain)
+    t
+
+  def xavier_uniform_[D <: DType](
+                                  t: Tensor[D],
+                                  gain: Double = 1.0
+                                ): t.type =
     torchNative.xavier_uniform_(t.native, gain)
     t
 
@@ -278,6 +292,15 @@ object init:
     torchNative.kaiming_uniform_(t.native, a, mode.toNative, nonlinearity.toNative)
     t
 
+  def kaiming_uniform_[D <: DType](
+                                   t: Tensor[D],
+                                   a: Double = 0,
+                                   mode: Mode = Mode.FanIn,
+                                   nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+                                 ): t.type =
+    torchNative.kaiming_uniform_(t.native, a, mode.toNative, nonlinearity.toNative)
+    t
+
   /** Fills the input Tensor with values according to the method described in "Delving deep into
     * rectifiers: Surpassing human-level performance on ImageNet classification - He, K. et al.
     * (2015), using a normal distribution. The resulting tensor will have values sampled from
@@ -307,6 +330,15 @@ object init:
       mode: Mode = Mode.FanIn,
       nonlinearity: NonLinearity = NonLinearity.LeakyReLU
   ): t.type =
+    torchNative.kaiming_normal_(t.native, a, mode.toNative, nonlinearity.toNative)
+    t
+
+  def kaiming_normal_[D <: DType](
+                                  t: Tensor[D],
+                                  a: Double = 0,
+                                  mode: Mode = Mode.FanIn,
+                                  nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+                                ): t.type =
     torchNative.kaiming_normal_(t.native, a, mode.toNative, nonlinearity.toNative)
     t
 

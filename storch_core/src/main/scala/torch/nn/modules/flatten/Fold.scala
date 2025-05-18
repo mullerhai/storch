@@ -77,30 +77,30 @@ final class Fold[D <: DType: Default](
   }
 
   stride match {
-    case s: Int => options.stride().put(Array(s.toLong) *)
-    case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong) *)
+    case s: Int        => options.stride().put(Array(s.toLong)*)
+    case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
   }
 
   outputSize match {
-    case s: Int => options.output_size().put(Array(s.toLong) *)
-    case s: (Int, Int) => options.output_size().put(Array(s._1.toLong, s._2.toLong) *)
-    case s: (Int, Int, Int) => options.output_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong) *)
+    case s: Int        => options.output_size().put(Array(s.toLong)*)
+    case s: (Int, Int) => options.output_size().put(Array(s._1.toLong, s._2.toLong)*)
+    case s: (Int, Int, Int) =>
+      options.output_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
   }
-   
-  kernelSize match {
-    case s: Int => options.kernel_size().put(Array(s.toLong) *)
-    case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong) *)
-    case s: (Int, Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong) *)
-  }
-  
 
-  
+  kernelSize match {
+    case s: Int        => options.kernel_size().put(Array(s.toLong)*)
+    case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
+    case s: (Int, Int, Int) =>
+      options.kernel_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+  }
+
   override val nativeModule: FoldImpl = FoldImpl(options)
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
@@ -115,23 +115,6 @@ object Fold:
       stride: Int | (Int, Int) = 1
   ): Fold[D] = new Fold[D](output_size, kernel_size, dilation, padding, stride)
 
-
-
-
-
-
-
-
-
-
-
-
- 
- 
- 
- 
-
 //  options.stride().put(toNative(stride))
 //  options.output_size().put(toNative(outputSize))
 //  options.kernel_size().put(toNative(kernelSize))
-   

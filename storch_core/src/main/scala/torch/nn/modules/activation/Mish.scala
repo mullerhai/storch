@@ -34,10 +34,10 @@ final class Mish[D <: DType: Default] extends TensorModule[D]:
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName()
 
 object Mish:
-  def apply[D <: DType: Default]() : Mish[D] = new Mish()
+  def apply[D <: DType: Default](): Mish[D] = new Mish()

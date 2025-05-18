@@ -99,7 +99,6 @@ final class LocalResponseNorm[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: LocalResponseNormImpl = LocalResponseNormImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
-
   override def hasBias(): Boolean = true
 
   def reset(): Unit = nativeModule.reset()
@@ -118,6 +117,3 @@ object LocalResponseNorm:
       beta: Double = 0.75,
       k: Double = 1.0
   ): LocalResponseNorm[ParamType] = new LocalResponseNorm(size, alpha, beta, k)
-
-
-

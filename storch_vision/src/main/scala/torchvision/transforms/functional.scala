@@ -139,6 +139,3 @@ object functional:
 //  def ElasticTransform() =???
 //
 //  def LinearTransformation() =???
-
-
-

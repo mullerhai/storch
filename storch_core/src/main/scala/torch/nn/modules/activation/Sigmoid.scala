@@ -23,21 +23,17 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{SigmoidImpl}
 import torch.internal.NativeConverters.fromNative
 
-/** Applies the rectified linear unit function element-wise:
-  * //  private val options = new SigmoidOptions()
- * //  options.inplace().put(inplace)
-  * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
+/** Applies the rectified linear unit function element-wise: // private val options = new
+  * SigmoidOptions() // options.inplace().put(inplace) $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class Sigmoid[D <: DType: Default](inplace: Boolean = false) extends TensorModule[D]:
-
-
 
   override protected[torch] val nativeModule: SigmoidImpl = SigmoidImpl()
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName()

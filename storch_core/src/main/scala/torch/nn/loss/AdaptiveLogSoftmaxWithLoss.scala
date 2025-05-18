@@ -38,13 +38,18 @@ final class AdaptiveLogSoftmaxWithLoss(
 
   def shortlist_size(): Long = nativeModule.shortlist_size()
 
-  def predict[D <:DType](input: Tensor[D]):Tensor[D]= fromNative(nativeModule.predict(input.native))
+  def predict[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    nativeModule.predict(input.native)
+  )
 
-  def cutoffs_() = nativeModule.cutoffs() //todo make as Seq[Long]
+  def cutoffs_() = nativeModule.cutoffs() // todo make as Seq[Long]
 
-  def log_prob[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(nativeModule.log_prob(input.native))
+  def log_prob[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+    nativeModule.log_prob(input.native)
+  )
 
-  def get_full_log_prob[D <: DType](input: Tensor[D], head_output: Tensor[D]): Tensor[D] = fromNative(nativeModule._get_full_log_prob(input.native,head_output.native))
+  def get_full_log_prob[D <: DType](input: Tensor[D], head_output: Tensor[D]): Tensor[D] =
+    fromNative(nativeModule._get_full_log_prob(input.native, head_output.native))
 
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native).output()

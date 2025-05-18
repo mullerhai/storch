@@ -100,41 +100,43 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
     )
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
-  
 
   def qkv_same_embed_dim(): Boolean = nativeModule._qkv_same_embed_dim()
-  
-  def in_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl= nativeModule.in_proj_weight(weight.native)
 
-  def in_proj_bias(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.in_proj_bias(bias.native)
+  def in_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl =
+    nativeModule.in_proj_weight(weight.native)
+
+  def in_proj_bias(bias: Tensor[ParamType]): MultiheadAttentionImpl =
+    nativeModule.in_proj_bias(bias.native)
 
   def bias_k(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.bias_k(bias.native)
 
   def bias_v(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.bias_v(bias.native)
-  
-  def q_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.q_proj_weight(weight.native)
 
-  def k_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.k_proj_weight(weight.native)
+  def q_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl =
+    nativeModule.q_proj_weight(weight.native)
 
-  def v_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.v_proj_weight(weight.native)
-  
+  def k_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl =
+    nativeModule.k_proj_weight(weight.native)
+
+  def v_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl =
+    nativeModule.v_proj_weight(weight.native)
+
   def in_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.in_proj_weight())
-  
+
   def in_proj_bias(): Tensor[ParamType] = fromNative(nativeModule.in_proj_bias())
-  
+
   def bias_k(): Tensor[ParamType] = fromNative(nativeModule.bias_k())
-  
+
   def bias_v(): Tensor[ParamType] = fromNative(nativeModule.bias_v())
-  
+
   def q_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.q_proj_weight())
-  
+
   def k_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.k_proj_weight())
-  
+
   def v_proj_weight(): Tensor[ParamType] = fromNative(nativeModule.v_proj_weight())
-  
+
   def head_dim(): Long = nativeModule.head_dim()
-  
-  
 
   override def hasBias(): Boolean = options.bias().get()
 
@@ -168,19 +170,6 @@ object MultiheadAttention:
   )
   enum TransformerActivation:
     case kReLU, kGELU, TensorMapper
- 
- 
-
-
-
-
-
-
-
-
-
-
-
 
 //  options.kdim().put(LongPointer(1).put(kDim.toLong))
 //  options.vdim().put(LongPointer(1).put(vDim.toLong))

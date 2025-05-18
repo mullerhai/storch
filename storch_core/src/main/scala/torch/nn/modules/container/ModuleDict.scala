@@ -60,7 +60,9 @@ import scala.reflect.ClassTag.Any
   *   [[container ModuleList https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html#ModuleList]]
   */
 object ModuleDict {
-  def apply[D <: DType](nameModules: (String, TensorModule[D])*): ModuleDict[D] = new ModuleDict(nameModules*)
+  def apply[D <: DType](nameModules: (String, TensorModule[D])*): ModuleDict[D] = new ModuleDict(
+    nameModules*
+  )
 }
 final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
     extends Module
@@ -132,14 +134,6 @@ final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
   def apply(name: String): torch.nn.modules.TensorModule[D] = moduleWithNameMap.get(name).get
 
   def length: Int = modules.length
-
-
-
-
-
-
-
-
 
 //    val all = modules.appended(module)
 // TODO: make modules list mutable?

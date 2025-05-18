@@ -40,12 +40,13 @@ final class Softmin[D <: DType: Default](dim: Int, threshold: Float, beta: Float
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString = getClass().getSimpleName() + s"(dim=$dim threshold=$threshold beta=$beta)"
 
 object Softmin:
-  def apply[D <: DType: Default](dim: Int, threshold: Float, beta: Float): Softmin[D] = new Softmin(dim, threshold, beta)
+  def apply[D <: DType: Default](dim: Int, threshold: Float, beta: Float): Softmin[D] =
+    new Softmin(dim, threshold, beta)
 //  option.beta().put(beta) .toDouble
 //  option.threshold().put(threshold) .toDouble

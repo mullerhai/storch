@@ -34,7 +34,6 @@ final class LPPool3d[D <: BFloat16 | Float32 | Float64: Default](
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: LPPool3dOptions = LPPool3dOptions(toNative(kernelSize))
 
-
   stride match {
     case s: Int             => options.stride().put(Array(s.toLong, s.toLong, s.toLong)*)
     case s: (Int, Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
@@ -53,7 +52,7 @@ final class LPPool3d[D <: BFloat16 | Float32 | Float64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, normType=$normType,  ceilMode=$ceilMode)"
 
@@ -67,21 +66,6 @@ object LPPool3d:
       ceil_mode: Boolean = false
   ): LPPool3d[D] =
     new LPPool3d[D](norm_type, kernel_size, stride, ceil_mode)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  private val options: LPPool3dOptions = kernelSize match {
 //    case k: Int             => LPPool3dOptions(toNative((k, k, k)))

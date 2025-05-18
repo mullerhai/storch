@@ -33,7 +33,7 @@ import torch.{Tensor, nn, noGrad}
 class EmbeddingSuite1 extends munit.FunSuite {
   test("EmbeddingSuite1 output shapes") {
     val m12 = nn.Embedding(10, 3)
-    val input1 = torch.arange(1, 9).view(2, 4) //.to(torch.float32)
+    val input1 = torch.arange(1, 9).view(2, 4) // .to(torch.float32)
     val out = m12(input1.to(torch.int32))
     assertEquals(out.shape, Seq(2, 4, 3))
   }
@@ -47,11 +47,10 @@ class EmbeddingSuite2 extends munit.FunSuite {
     val m12 = nn.Embedding(10, 3, padding_idx = Some(0))
     val input1 = torch.Tensor(Seq(Seq(0, 2, 0, 5))).to(torch.float32)
     val out = m12(input1)
-    assertEquals(out.shape, Seq(1, 4, 3)) 
+    assertEquals(out.shape, Seq(1, 4, 3))
     println(m12.weight)
   }
 }
-
 
 import org.bytedeco.pytorch.global.torch as tch
 
@@ -70,12 +69,19 @@ class EmbeddingBagRawSuite extends munit.FunSuite {
     //    val m123 = nn.EmbeddingBag(num_embeddings = val options = new EmbeddingBagOptions(numEmbeddings.toLong, embeddingDim.toLong)10, embedding_dim = 3, mode = "sum") // (5, 7), padding_mode = "reflect")
 
     val input23 = torch.Tensor(Seq(1, 2, 4, 5, 4, 3, 2, 9)).to(torch.int32) // 16, 10)) // indices
-    val offsets = torch.Tensor(Seq(0.0, 4.0)).to(torch.int8) //weight
+    val offsets = torch.Tensor(Seq(0.0, 4.0)).to(torch.int8) // weight
     val pre = torch.zeros(input23.size).to(torch.int32) // per_sample_weigh 16 short
     //    val offset = tch.new
     val model = EmbeddingBagImpl(options)
-    println(s"input type ${input23.native.dtype().name().getString()} offsets ${offsets.native.dtype().name().getString()} pre ${pre.native.dtype().name().getString()}")
-    val output = model.forward(input23.native.to(ScalarType.Long), offsets.native.to(ScalarType.Long), pre.native.to(ScalarType.Float))
+    println(s"input type ${input23.native.dtype().name().getString()} offsets ${offsets.native
+        .dtype()
+        .name()
+        .getString()} pre ${pre.native.dtype().name().getString()}")
+    val output = model.forward(
+      input23.native.to(ScalarType.Long),
+      offsets.native.to(ScalarType.Long),
+      pre.native.to(ScalarType.Float)
+    )
     println(s"output ${fromNative(output).shape}")
     //
     //    val size = torch.empty(input23.size)
@@ -88,11 +94,15 @@ class EmbeddingBagRawSuite extends munit.FunSuite {
   }
 }
 
-
 class EmbeddingBagSuite extends munit.FunSuite {
   test("EmbeddingBagSuite output shapes") {
-    val m123 = nn.EmbeddingBag(num_embeddings = 10, embedding_dim = 3, mode = "sum") // (5, 7), padding_mode = "reflect")
-    val input23 = torch.Tensor(Seq(1, 2, 4, 5, 4, 3, 2, 9)).to(torch.float32) // 16, 10)) //, 64, 8, 9))
+    val m123 = nn.EmbeddingBag(
+      num_embeddings = 10,
+      embedding_dim = 3,
+      mode = "sum"
+    ) // (5, 7), padding_mode = "reflect")
+    val input23 =
+      torch.Tensor(Seq(1, 2, 4, 5, 4, 3, 2, 9)).to(torch.float32) // 16, 10)) //, 64, 8, 9))
     val offsets = torch.Tensor(Seq(0, 4))
     val size = torch.empty(input23.size)
     val output = m123(input23.to(m123.paramType), offsets.to(torch.int64), size.to(m123.paramType))
@@ -103,7 +113,6 @@ class EmbeddingBagSuite extends munit.FunSuite {
     //    assertEquals(m12(input,offsets).shape, Seq(2,3)) //, 64, 5, 7))
   }
 }
-
 
 class EmbeddingSuite extends munit.FunSuite {
 
@@ -176,7 +185,6 @@ class EmbeddingSuite extends munit.FunSuite {
       assert(torch.allclose(embedding.weight, expectedOutput, atol = 1e-4))
     }
   }
-
 
   test("EmbeddingBag") {
     {

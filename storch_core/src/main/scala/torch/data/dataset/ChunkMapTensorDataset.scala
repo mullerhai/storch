@@ -36,7 +36,6 @@ class ChunkMapTensorDataset(chunkDataset: ChunkSharedTensorBatchDataset)
     extends CMTD(chunkDataset)
     with Dataset {
 
-
   override def get_batch_example(indices: Long): TensorExampleOptional =
     super.get_batch_example(indices)
 
@@ -51,25 +50,4 @@ class ChunkMapTensorDataset(chunkDataset: ChunkSharedTensorBatchDataset)
   override def get_batch(request: Long*): TensorExampleVector = super.get_batch(request: _*)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
-

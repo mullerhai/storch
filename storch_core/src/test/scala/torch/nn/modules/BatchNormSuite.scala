@@ -27,7 +27,7 @@ class InstanceNorm2dSuite1 extends munit.FunSuite {
     val m12 = nn.InstanceNorm2d(num_features = 100, affine = true)
     val input1 = torch.randn(Seq(20, 100, 35, 45))
     //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
-    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45)) //torch.Size([20, 100,35,45])
+    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45)) // torch.Size([20, 100,35,45])
     //    println(m12(input))
   }
 }
@@ -39,7 +39,7 @@ class InstanceNorm3dSuite extends munit.FunSuite {
     val m12 = nn.InstanceNorm3d(num_features = 100, affine = false)
     val input1 = torch.randn(Seq(20, 100, 35, 45, 10))
     //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
-    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45, 10)) //torch.Size([20, 100,35,45])
+    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45, 10)) // torch.Size([20, 100,35,45])
     //    println(m12(input))
   }
 }
@@ -58,7 +58,8 @@ class InstanceNorm3dRawSuite extends munit.FunSuite {
     options.affine().put(affine) // BoolPointer(if affine then 1 else 0))
     momentum match {
       case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
-      case m: Option[Float] => if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
+      case m: Option[Float] =>
+        if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
     }
 
     options.num_features().put(LongPointer(1).put(numFeatures))
@@ -94,7 +95,8 @@ class InstanceNorm2dRawSuite extends munit.FunSuite {
     options.affine().put(affine) // BoolPointer(if affine then 1 else 0))
     momentum match {
       case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
-      case m: Option[Float] => if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
+      case m: Option[Float] =>
+        if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
     }
 
     options.num_features().put(LongPointer(1).put(numFeatures))
@@ -110,7 +112,7 @@ class InstanceNorm2dRawSuite extends munit.FunSuite {
     //    val batchNorm = nn.InstanceNorm2d(100, affine = false)
     //    val input = torch.randn(Seq(20, 100, 35, 45))
     //    val output = batchNorm(input)
-    println(s"output shape: ${output.shape}") //output shape: ArraySeq(20, 100, 35, 45)
+    println(s"output shape: ${output.shape}") // output shape: ArraySeq(20, 100, 35, 45)
 
   }
 }
@@ -121,13 +123,13 @@ class InstanceNorm2dSuite extends munit.FunSuite {
     val m12 = nn.InstanceNorm3d(num_features = 100, affine = false)
     val input1 = torch.randn(Seq(20, 100, 35, 45, 10))
     //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
-    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45, 10)) //torch.Size([20, 100,35,45])
+    assertEquals(m12(input1).shape, Seq(20, 100, 35, 45, 10)) // torch.Size([20, 100,35,45])
     //    println(m12(input))
 
     val batchNorm = nn.InstanceNorm2d(100, affine = false)
     val input = torch.randn(Seq(20, 100, 35, 45))
     val output = batchNorm(input)
-    println(s"output shape: ${output.shape}") //output shape: ArraySeq(20, 100, 35, 45)
+    println(s"output shape: ${output.shape}") // output shape: ArraySeq(20, 100, 35, 45)
   }
 }
 
@@ -148,7 +150,7 @@ class batchNorm3dSuite extends munit.FunSuite {
     val batchNorm = nn.BatchNorm3d(100, affine = false, eps = 1e-05f)
     val input = torch.randn(Seq(20, 100, 35, 45, 10))
     val output = batchNorm(input)
-    println(s"output shape: ${output.shape}") //output shape: ArraySeq(20, 100, 35, 45, 10)
+    println(s"output shape: ${output.shape}") // output shape: ArraySeq(20, 100, 35, 45, 10)
   }
 }
 
@@ -158,7 +160,7 @@ class batchNorm2dSuite extends munit.FunSuite {
     val batchNorm = nn.BatchNorm2d(100, affine = false)
     val input = torch.randn(Seq(20, 100, 35, 45))
     val output = batchNorm(input)
-    println(s"output shape: ${output.shape}") //output shape: ArraySeq(20, 100, 35, 45)
+    println(s"output shape: ${output.shape}") // output shape: ArraySeq(20, 100, 35, 45)
   }
 }
 
@@ -185,11 +187,14 @@ class batchNorm1dRawSuite extends munit.FunSuite {
     options.eps().put(DoublePointer(1).put(eps))
     momentum match {
       case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
-      case m: Option[Float] => if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
+      case m: Option[Float] =>
+        if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
     }
     //  options.momentum().put(DoublePointer(momentum))
-    options.affine().put(affine) //BoolPointer(if affine then 1 else 0))
-    options.track_running_stats().put(trackRunningStats) //BoolPointer(if trackRunningStats then 1 else 0))
+    options.affine().put(affine) // BoolPointer(if affine then 1 else 0))
+    options
+      .track_running_stats()
+      .put(trackRunningStats) // BoolPointer(if trackRunningStats then 1 else 0))
     println("options: ${options}")
     val nativeModule: BatchNorm1dImpl = BatchNorm1dImpl(options)
     val input = torch.randn(Seq(20, 100)).native
@@ -207,33 +212,36 @@ class BatchNormSuite extends munit.FunSuite {
     bbatchNormSuite1d()
   }
 
-  def bbatchNormSuite1d():Unit ={
+  def bbatchNormSuite1d(): Unit = {
     val numFeatures: Int = 100
     val eps: Double = 1e-05
     val momentum: Float | Option[Float] = 0.1f
-    val affine: Boolean =  true
+    val affine: Boolean = true
     val trackRunningStats: Boolean = true
     println(s"numFeatures: ${numFeatures}")
     val options = new BatchNormOptions(LongPointer(1).put(numFeatures))
     options.eps().put(DoublePointer(1).put(eps))
     momentum match {
       case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
-      case m: Option[Float] => if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
+      case m: Option[Float] =>
+        if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
     }
     //  options.momentum().put(DoublePointer(momentum))
-    options.affine().put(affine) //BoolPointer(if affine then 1 else 0))
-    options.track_running_stats().put(trackRunningStats) //BoolPointer(if trackRunningStats then 1 else 0))
+    options.affine().put(affine) // BoolPointer(if affine then 1 else 0))
+    options
+      .track_running_stats()
+      .put(trackRunningStats) // BoolPointer(if trackRunningStats then 1 else 0))
     println("options: ${options}")
     val nativeModule: BatchNorm1dImpl = BatchNorm1dImpl(options)
     val input = torch.randn(Seq(20, 100)).native
-    val output = fromNative( nativeModule.forward(input))
+    val output = fromNative(nativeModule.forward(input))
     println(s"output shape: ${output.shape}")
   }
   test("BatchNorm3d") {
     torch.manualSeed(0)
     System.setProperty("org.bytedeco.javacpp.logger.debug", "true")
     val m = BatchNorm3d(num_features = 3)
-    val input = torch.randn(Seq(3, 3, 10, 10,3))
+    val input = torch.randn(Seq(3, 3, 10, 10, 3))
     val output = m(input)
     assertEquals(output.shape, input.shape)
     val expectedOutput = Tensor(
@@ -249,7 +257,7 @@ class BatchNormSuite extends munit.FunSuite {
     torch.manualSeed(0)
     System.setProperty("org.bytedeco.javacpp.logger.debug", "true")
     val m = BatchNorm2d(num_features = 3)
-    val input = torch.randn(Seq(3, 3,10,10))
+    val input = torch.randn(Seq(3, 3, 10, 10))
     val output = m(input)
     assertEquals(output.shape, input.shape)
     val expectedOutput = Tensor(

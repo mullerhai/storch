@@ -24,18 +24,18 @@ class LocalResponseNormSuite extends munit.FunSuite {
     val m12 = new LocalResponseNorm(size = 2)
     val input1 = torch.randn(Seq(32, 5, 24, 24))
     val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
-    assertEquals(m12(input1).shape, Seq(32, 5, 24, 24)) //torch.Size([100])
+    assertEquals(m12(input1).shape, Seq(32, 5, 24, 24)) // torch.Size([100])
     //    println(m12(input))
   }
 }
 
 class RMSNormSuite extends munit.FunSuite {
   test("RMSNormSuite output shapes") {
-    val m12 = nn.RMSNorm(normalized_shape = Seq(20,30))
+    val m12 = nn.RMSNorm(normalized_shape = Seq(20, 30))
     val input1 = torch.randn(Seq(20, 20, 30))
     //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
 //    assertEquals(m12(input1).shape, Seq(20, 6, 10, 10)) //torch.Size([20, 6, 10, 10])
-        println(m12(input1))
+    println(m12(input1))
   }
 }
 
@@ -44,7 +44,7 @@ class GroupNormSuite extends munit.FunSuite {
     val m12 = nn.GroupNorm(num_groups = 3, num_channels = 6)
     val input1 = torch.randn(Seq(20, 6, 10, 10))
     //    val input2 = torch.randn(Seq(16, 5, 7, 7, 7, 7))
-    assertEquals(m12(input1).shape, Seq(20, 6, 10, 10)) //torch.Size([20, 6, 10, 10])
+    assertEquals(m12(input1).shape, Seq(20, 6, 10, 10)) // torch.Size([20, 6, 10, 10])
     //    println(m12(input))
   }
 }

@@ -96,35 +96,33 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
   private val options = new EmbeddingBagOptions(numEmbeddings.toLong, embeddingDim.toLong)
 
   maxNorm match {
-    case m: Float => options.max_norm().put(m.toDouble)
+    case m: Float         => options.max_norm().put(m.toDouble)
     case m: Option[Float] => if m.isDefined then options.max_norm().put(m.get.toDouble)
   }
 
   normType match {
-    case n: Float => options.norm_type().put(n.toDouble)
+    case n: Float         => options.norm_type().put(n.toDouble)
     case n: Option[Float] => if n.isDefined then options.norm_type().put(n.get.toDouble)
   }
   scaleGradByFreq match {
-    case s : Boolean => options.scale_grad_by_freq().put(s)
-    case s : Option[Boolean] => if s.isDefined then options.scale_grad_by_freq().put(s.get)
+    case s: Boolean         => options.scale_grad_by_freq().put(s)
+    case s: Option[Boolean] => if s.isDefined then options.scale_grad_by_freq().put(s.get)
   }
   sparse match {
-    case s : Boolean => options.sparse().put(s)
-    case s : Option[Boolean] => if s.isDefined then options.sparse().put(s.get)
+    case s: Boolean         => options.sparse().put(s)
+    case s: Option[Boolean] => if s.isDefined then options.sparse().put(s.get)
   }
   includeLastOffset match {
-    case i : Boolean => options.include_last_offset().put(i)
-    case i : Option[Boolean] => if i.isDefined then options.include_last_offset().put(i.get)
+    case i: Boolean         => options.include_last_offset().put(i)
+    case i: Option[Boolean] => if i.isDefined then options.include_last_offset().put(i.get)
   }
 
   paddingIdx match {
-    case p : Int => options.padding_idx().put(p)
-    case p : Option[Int] =>if p.isDefined then options.padding_idx().put(p.get)
+    case p: Int         => options.padding_idx().put(p)
+    case p: Option[Int] => if p.isDefined then options.padding_idx().put(p.get)
   }
 
-
   if needWeight.isDefined then options._weight().put(needWeight.get.native)
-
 
   mode match
     case EmbeddingBagMode.kMean | "mean" | "Mean" => options.mode().put(new kMean)
@@ -147,15 +145,20 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.forward(input.native.to(ScalarType.Long))
   )
 
-  def apply(indices: Tensor[Int64]|Tensor[Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
+  def apply(
+      indices: Tensor[Int64] | Tensor[Int32],
+      weight: Option[Tensor[ParamType]] = None
+  ): Tensor[ParamType] = {
     indices.dtype match
       case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
       case torch.int32 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
   }
 
-
-
-  def apply(input: Tensor[ParamType], offsets: Tensor[Int64]|Tensor[Int32], size: Seq[Int]): Tensor[ParamType] = {
+  def apply(
+      input: Tensor[ParamType],
+      offsets: Tensor[Int64] | Tensor[Int32],
+      size: Seq[Int]
+  ): Tensor[ParamType] = {
     fromNative(
       nativeModule.forward(
         input.native.to(ScalarType.Long),
@@ -181,7 +184,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(
       input: Tensor[ParamType],
-      offsets: Tensor[Int64]|Tensor[Int32],
+      offsets: Tensor[Int64] | Tensor[Int32],
       per_sample_weights: Tensor[ParamType]
   ): Tensor[ParamType] = {
     fromNative(
@@ -230,19 +233,6 @@ object EmbeddingBag:
   enum EmbeddingBagMode:
     case kSum, kMean, kMax
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //    case input : Tensor[Int64] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
 //    case input : Tensor[Int32] => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
 
@@ -250,25 +240,10 @@ object EmbeddingBag:
 //    nativeModule.forward(indices.native.to(ScalarType.Long))
 //  )
 
-
-
-
-
-
-
-
-
-
 //  paddingIdx.foreach(p => options.padding_idx().put(toNative(p)))
 //  maxNorm.foreach(m => options.max_norm().put(m))
 //  normType.foreach(n => options.norm_type().put(n))
 //  options.mode().put(modeNative)
-
-
-
-
-
-
 
 //if maxNorm.isDefined then options.max_norm().put(maxNorm.get.toDouble)
 //if normType.isDefined then options.norm_type().put(normType.get.toDouble)

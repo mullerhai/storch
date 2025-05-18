@@ -55,7 +55,8 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new ConvTranspose3dOptions(inChannels.toLong, outChannels.toLong, toNative(kernelSize))
+  private val options =
+    new ConvTranspose3dOptions(inChannels.toLong, outChannels.toLong, toNative(kernelSize))
   stride match {
     case s: Int             => options.stride().put(Array(s.toLong, s.toLong, s.toLong)*)
     case s: (Int, Int)      => options.stride().put(Array(s._1.toLong, s._2.toLong, s._2.toLong)*)
@@ -126,8 +127,9 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
       options.padding_mode().put(new kZeros)
     case PaddingMode.Reflect | "reflect" | "Reflect" | Some("reflect") | Some("Reflect") =>
       options.padding_mode().put(new kReflect)
-    case PaddingMode.Replicate | "replicate" | "Replicate" | Some("replicate") |
-        Some("Replicate") =>
+    case PaddingMode.Replicate | "replicate" | "Replicate" | Some("replicate") | Some(
+          "Replicate"
+        ) =>
       options.padding_mode().put(new kReplicate)
     case PaddingMode.Circular | "circular" | "Circular" | Some("cirular") | Some("Cirular") =>
       options.padding_mode().put(new kCircular)
@@ -146,7 +148,7 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
 
   def bias_(): Tensor[ParamType] = fromNative(nativeModule.bias)
-  
+
   def reset(): Unit = nativeModule.reset()
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()

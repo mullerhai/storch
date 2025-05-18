@@ -34,18 +34,11 @@ class ChunkMapBatchDataset(chunkMapDataset: ChunkMapDataset)
     extends CMBD(chunkMapDataset)
     with Dataset {
 
-
-
   override def get_batch(request: SizeTArrayRef): ExampleVector = super.get_batch(request)
 
   override def get_batch(request: Long*): ExampleVector = super.get_batch(request: _*)
 
   override def size(): SizeTOptional = super.size()
 }
-
-
-
-
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)

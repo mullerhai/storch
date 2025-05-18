@@ -33,7 +33,7 @@ import org.bytedeco.pytorch.{CELUImpl, CELUOptions}
   */
 final class CELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
     extends TensorModule[D]:
-  
+
   val options = CELUOptions(size)
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)
@@ -42,12 +42,13 @@ final class CELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString =
     getClass().getSimpleName() + "(size=" + size + ",alpha=" + alpha + ",inplace=" + inplace + ")"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
 object CELU {
-  
-  def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean):CELU[D] = new CELU(size, alpha, inplace)
+
+  def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): CELU[D] =
+    new CELU(size, alpha, inplace)
 }

@@ -766,22 +766,21 @@ private[torch] trait ReductionOps {
     )
 
   def sum_keep_dim[D <: FloatNN](
-                                  input: Tensor[D],
-                                  dim: Int | Seq[Int] = Seq.empty,
-                                  keepdim: Boolean = false
-                                ): Tensor[D] ={
-      // TODO factor out
-      val derivedDType = input.dtype
-      fromNative(
-        torchNative.sum(
-          input.native,
-          dim.toArray,
-          keepdim,
-          new ScalarTypeOptional(derivedDType.toScalarType)
-        )
+      input: Tensor[D],
+      dim: Int | Seq[Int] = Seq.empty,
+      keepdim: Boolean = false
+  ): Tensor[D] = {
+    // TODO factor out
+    val derivedDType = input.dtype
+    fromNative(
+      torchNative.sum(
+        input.native,
+        dim.toArray,
+        keepdim,
+        new ScalarTypeOptional(derivedDType.toScalarType)
       )
-    }
-
+    )
+  }
 
   /** Returns the sum of each row of the `input` tensor in the given dimension `dim`.
     *
@@ -965,25 +964,25 @@ private[torch] trait ReductionOps {
 //    public static native T_TensorTensor_T topk(
 //    @Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1);
 
-  def topk[D <: DType](input: Tensor[D],
-                                     k: Int):TensorTuple[D] ={
+  def topk[D <: DType](input: Tensor[D], k: Int): TensorTuple[D] = {
 
-    val valueIndices = torchNative.topk(input.native,k.toLong)
+    val valueIndices = torchNative.topk(input.native, k.toLong)
     val values = fromNative[D](valueIndices.get0())
     val indices = new Int64Tensor(valueIndices.get1())
-    TensorTuple(values,indices)
+    TensorTuple(values, indices)
   }
 
-  def topk[D <: DType](input: Tensor[D],
-                                     k: Int,
-                                     dim: Int,
-                                     largest: Boolean,
-                                     sorted: Boolean,
-                                    ):TensorTuple[D] ={
+  def topk[D <: DType](
+      input: Tensor[D],
+      k: Int,
+      dim: Int,
+      largest: Boolean,
+      sorted: Boolean
+  ): TensorTuple[D] = {
 
-    val valueIndices = torchNative.topk(input.native,k.toLong,dim.toLong,largest,sorted)
+    val valueIndices = torchNative.topk(input.native, k.toLong, dim.toLong, largest, sorted)
     val values = fromNative[D](valueIndices.get0())
     val indices = new Int64Tensor(valueIndices.get1())
-    TensorTuple(values,indices)
+    TensorTuple(values, indices)
   }
 }

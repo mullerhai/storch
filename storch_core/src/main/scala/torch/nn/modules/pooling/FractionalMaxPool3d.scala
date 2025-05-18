@@ -41,7 +41,6 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: FractionalMaxPool3dOptions = FractionalMaxPool3dOptions(toNative(kernelSize))
 
-
   if outputSize.isDefined then
     outputSize.get match {
       case t: Int =>
@@ -92,7 +91,6 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
       .get()
       .get(1)}  ratio3 ${options.output_ratio().get().get(2)}")
 
-
   override private[torch] val nativeModule: FractionalMaxPool3dImpl = FractionalMaxPool3dImpl(
     options
   )
@@ -111,7 +109,7 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize,outputSize ${outputSize} outputRatio ${outputRatio} returnIndices ${returnIndices} randomSamples ${randomSamples} )"
 
@@ -137,24 +135,6 @@ object FractionalMaxPool3d:
       random_samples
     )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")
 //
 //  println(s"longArrayOptionalOutputSize set after has_value ${longArrayOptionalOutputSize.has_value()}")
@@ -167,7 +147,6 @@ object FractionalMaxPool3d:
 //  options.output_size().put(longArrayOptionalOutputSize)
 
 //  options.output_ratio().put(doubleArrayOptionalOutputRatio)
-
 
 //  val longArrayOptionalOutputSize: LongExpandingArrayOptional = new LongExpandingArrayOptional()
 //  val doubleArrayOptionalOutputRatio: DoubleExpandingArrayOptional = new DoubleExpandingArrayOptional()

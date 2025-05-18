@@ -38,7 +38,7 @@ final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int, l: Int) =>
-     new LongOptionalVector(new LongOptional(h), new LongOptional(w), new LongOptional(l))
+      new LongOptionalVector(new LongOptional(h), new LongOptional(w), new LongOptional(l))
     case x: Int =>
       new LongOptionalVector(new LongOptional(x), new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
@@ -46,13 +46,14 @@ final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
       new LongOptionalVector(h.toOptional, w.toOptional, l.toOptional)
     case x: Option[Int] =>
       new LongOptionalVector(x.toOptional, x.toOptional, x.toOptional)
-  override protected[torch] val nativeModule: AdaptiveAvgPool3dImpl = AdaptiveAvgPool3dImpl(nativeOutputSize.get(0))
-  
+  override protected[torch] val nativeModule: AdaptiveAvgPool3dImpl = AdaptiveAvgPool3dImpl(
+    nativeOutputSize.get(0)
+  )
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
@@ -67,25 +68,9 @@ object AdaptiveAvgPool3d:
   ): AdaptiveAvgPool3d[ParamType] =
     new AdaptiveAvgPool3d(output_size)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //private def nativeOutputSize = outputSize match
 //  case (h: Int, w: Int, l: Int) =>
-//    //      toNative((h, w, l)) 
+//    //      toNative((h, w, l))
 //    new LongOptionalVector(new LongOptional(h), new LongOptional(w), new LongOptional(l))
 //  case x: Int =>
 //    //      toNative((x, x, x))

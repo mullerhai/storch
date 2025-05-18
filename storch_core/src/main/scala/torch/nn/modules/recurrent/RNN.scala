@@ -20,7 +20,7 @@ package modules
 package recurrent
 
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
-import org.bytedeco.pytorch.{PackedSequence }
+import org.bytedeco.pytorch.{PackedSequence}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{RNNImpl, RNNOptions, TensorVector, kTanh, kReLU}
 import torch.internal.NativeConverters.{fromNative, toNative}
@@ -41,7 +41,7 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
-  type PackedSequenceTensor = (PackedSequence,Tensor[ParamType])
+  type PackedSequenceTensor = (PackedSequence, Tensor[ParamType])
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new RNNOptions(inputSize.toLong, hiddenSize.toLong)
   options.bias().put(bias)
@@ -62,18 +62,20 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
   nativeModule.to(paramType.toScalarType, false)
 
   def apply(
-             input: Tensor[ParamType],
-             hx: Tensor[ParamType]
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      input: Tensor[ParamType],
+      hx: Tensor[ParamType]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val fore = nativeModule.forward(input.native, hx.native)
     Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
   }
-  
+
   def apply(
       input: Tensor[ParamType],
       hx: Option[Tensor[ParamType]] = None
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
-    val fore = if hx.isDefined then nativeModule.forward(input.native, hx.get.native) else nativeModule.forward(input.native)
+    val fore =
+      if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
+      else nativeModule.forward(input.native)
     Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
@@ -92,13 +94,16 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensor = {
 
     val output = nativeModule.forward_with_packed_input(packed_input)
-    (output.get0(),fromNative(output.get1()))
+    (output.get0(), fromNative(output.get1()))
   }
 
-  def forward_with_packed_input(packed_input: PackedSequence, hx: Tensor[ParamType]): PackedSequenceTensor = {
+  def forward_with_packed_input(
+      packed_input: PackedSequence,
+      hx: Tensor[ParamType]
+  ): PackedSequenceTensor = {
 
     val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
-    (output.get0(),fromNative(output.get1()))
+    (output.get0(), fromNative(output.get1()))
   }
 
   def reset(): Unit = nativeModule.reset()
@@ -110,8 +115,7 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     torch.tensorVectorToSeqTensor(vec)
   }
 
-    
-  def weights = all_weights() //: TensorVector = nativeModule.all_weights()
+  def weights = all_weights() // : TensorVector = nativeModule.all_weights()
 
   override def hasBias(): Boolean = options.bias().get()
 
@@ -142,6 +146,3 @@ object RNN:
   )
   enum RNNNonlinearity:
     case kTanh, kReLU
-
-
-

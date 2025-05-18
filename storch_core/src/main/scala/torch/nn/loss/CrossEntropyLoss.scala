@@ -43,5 +43,5 @@ final class CrossEntropyLoss extends LossFunc {
 }
 
 object CrossEntropyLoss {
-  def apply() : CrossEntropyLoss = new CrossEntropyLoss()
+  def apply(): CrossEntropyLoss = new CrossEntropyLoss()
 }

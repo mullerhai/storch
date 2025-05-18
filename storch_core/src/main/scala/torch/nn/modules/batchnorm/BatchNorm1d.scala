@@ -102,14 +102,14 @@ final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BatchNormOptions(toNative(numFeatures)) 
+  private val options = new BatchNormOptions(toNative(numFeatures))
 
   eps match {
     case e: Double => options.eps().put(e)
     case e: Float  => options.eps().put(e.toDouble)
   }
   momentum match {
-    case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
+    case m: Float  => options.momentum().put(DoublePointer(1).put(m.toDouble))
     case m: Double => options.momentum().put(DoublePointer(1).put(m))
     case m: Option[Float] =>
       if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
@@ -121,24 +121,22 @@ final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: BatchNorm1dImpl = BatchNorm1dImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
-  
   val weight: Tensor[ParamType] = fromNative[ParamType](nativeModule.weight)
   val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
 
   override def hasBias(): Boolean = true
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def reset_parameters(): Unit = nativeModule.reset_parameters()
-  
+
   def reset_running_stats(): Unit = nativeModule.reset_running_stats()
-  
+
   def running_mean(): Tensor[ParamType] = fromNative(nativeModule.running_mean())
-  
+
   def running_var(): Tensor[ParamType] = fromNative(nativeModule.running_var())
-  
+
   def num_batches_tracked(): Tensor[ParamType] = fromNative(nativeModule.num_batches_tracked())
-  
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
@@ -155,11 +153,6 @@ object BatchNorm1d:
       track_running_stats: Boolean = true
   ): BatchNorm1d[ParamType] =
     new BatchNorm1d[ParamType](num_features, eps, momentum, affine, track_running_stats)
-
-
-
-
-
 
 ////  options.eps().put(DoublePointer(1).put(eps.toDouble))
 

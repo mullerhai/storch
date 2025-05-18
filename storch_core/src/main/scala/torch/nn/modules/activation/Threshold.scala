@@ -36,12 +36,12 @@ final class Threshold[D <: DType: Default](threshold: Float, value: Float, inpla
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
     getClass().getSimpleName() + s"(threshold=$threshold, value=$value, inplace=$inplace)"
-    
-    
+
 object Threshold:
-  def apply[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean):Threshold[D] = new Threshold(threshold, value, inplace)
+  def apply[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean): Threshold[D] =
+    new Threshold(threshold, value, inplace)

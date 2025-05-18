@@ -34,11 +34,11 @@ import org.bytedeco.pytorch.LongOptional
 final class AdaptiveAvgPool1d[ParamType <: BFloat16 | Float32 | Float64: Default](
     outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
 ) extends HasParams[ParamType]
-  with TensorModule[ParamType] {
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
-      toNative(h, w) 
+      toNative(h, w)
     case x: Int => toNative(x)
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
       new LongOptionalVector(h.toOptional, w.toOptional)
@@ -52,7 +52,7 @@ final class AdaptiveAvgPool1d[ParamType <: BFloat16 | Float32 | Float64: Default
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
@@ -67,23 +67,6 @@ object AdaptiveAvgPool1d:
       output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
   ): AdaptiveAvgPool1d[ParamType] =
     new AdaptiveAvgPool1d(output_size)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //private def nativeOutputSize = outputSize match
 //  case (h: Int, w: Int) =>

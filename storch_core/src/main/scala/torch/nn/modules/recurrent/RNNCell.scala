@@ -59,7 +59,7 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
 
   override private[torch] val nativeModule: RNNCellImpl = RNNCellImpl(options)
   nativeModule.to(paramType.toScalarType, false)
-  
+
   def weight_ih(weight: Tensor[ParamType]) = nativeModule.weight_ih(weight.native)
 
   def weight_hh(weight: Tensor[ParamType]) = nativeModule.weight_hh(weight.native)
@@ -67,25 +67,25 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
   def bias_ih(bias: Tensor[ParamType]) = nativeModule.bias_ih(bias.native)
 
   def bias_hh(bias: Tensor[ParamType]) = nativeModule.bias_hh(bias.native)
-  
+
   def weight_ih(): Tensor[ParamType] = fromNative(nativeModule.weight_ih())
-  
+
   def weight_hh(): Tensor[ParamType] = fromNative(nativeModule.weight_hh())
-  
+
   def bias_ih(): Tensor[ParamType] = fromNative(nativeModule.bias_ih())
-  
+
   def bias_hh(): Tensor[ParamType] = fromNative(nativeModule.bias_hh())
-  
-  
+
   def apply(input: Tensor[ParamType], hx: Tensor[ParamType]): Tensor[ParamType] = {
     val fore = nativeModule.forward(input.native, hx.native)
     fromNative(fore)
-  }  
+  }
   def apply(input: Tensor[ParamType], hx: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
-    val fore = if hx.isDefined then nativeModule.forward(input.native, hx.get.native) else nativeModule.forward(input.native)
+    val fore =
+      if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
+      else nativeModule.forward(input.native)
     fromNative(fore)
   }
-
 
   def weight: TensorVector =
     TensorVector(nativeModule.weight_hh(), nativeModule.weight_ih()) // all_weights()

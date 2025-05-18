@@ -52,7 +52,9 @@ import torch.internal.NativeConverters.fromNative
   *   last dim to flatten
   */
 // format: on
-final class Flatten[D <: DType: Default](startDim: Int = 1, endDim: Int = -1)
+final class Flatten[D <: DType: Default](
+                                          startDim: Int = 1,
+                                          endDim: Int = -1)
     extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = FlattenOptions()

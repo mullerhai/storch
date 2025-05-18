@@ -52,7 +52,7 @@ final class ConstantPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
   private val options: ConstantPad2dOptions = ConstantPad2dOptions(paddingNative)
   options.padding().put(paddingNative)
   value match {
-    case x: Float => options.value().put(x.toDouble)
+    case x: Float  => options.value().put(x.toDouble)
     case x: Double => options.value().put(x)
   }
 

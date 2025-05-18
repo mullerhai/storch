@@ -29,7 +29,7 @@ import torch.internal.NativeConverters.fromNative
   */
 final class PReLU[D <: DType: Default](init: Float, numParameters: Int, optionSize: Int)
     extends TensorModule[D]:
-  
+
   private val options = new PReLUOptions(optionSize.toLong)
   options.init.put(init.toDouble)
   options.num_parameters().put(numParameters.toLong)
@@ -39,7 +39,7 @@ final class PReLU[D <: DType: Default](init: Float, numParameters: Int, optionSi
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
@@ -48,9 +48,6 @@ final class PReLU[D <: DType: Default](init: Float, numParameters: Int, optionSi
 object PReLU:
   def apply[D <: DType: Default](init: Float, num_parameters: Int, option_size: Int): PReLU[D] =
     new PReLU[D](init, num_parameters, option_size)
-
-
-
 
 //  def apply[D <: DType: Default](init: Double,numParameters: Long): PReLU[D] = new PReLU[D](init,numParameters,numParameters)
 //  def apply[D <: DType: Default](init: Double): PReLU[D] = new PReLU[D](init,1,1)

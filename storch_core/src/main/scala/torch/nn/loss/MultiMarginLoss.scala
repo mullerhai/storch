@@ -13,7 +13,7 @@ final class MultiMarginLoss extends LossFunc {
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native)
   )
@@ -27,6 +27,6 @@ final class MultiMarginLoss extends LossFunc {
 
 }
 object MultiMarginLoss {
-  
-  def apply() : MultiMarginLoss = new MultiMarginLoss()
+
+  def apply(): MultiMarginLoss = new MultiMarginLoss()
 }

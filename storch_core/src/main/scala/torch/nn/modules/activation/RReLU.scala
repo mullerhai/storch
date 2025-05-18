@@ -29,7 +29,7 @@ import torch.internal.NativeConverters.fromNative
   */
 final class RReLU[D <: DType: Default](lower: Float, upper: Float, inplace: Boolean = false)
     extends TensorModule[D]:
-  
+
   private val options = new RReLUOptions()
   options.inplace().put(inplace)
   options.lower().put(lower.toDouble)
@@ -40,11 +40,12 @@ final class RReLU[D <: DType: Default](lower: Float, upper: Float, inplace: Bool
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
     getClass().getSimpleName() + s"(lower=$lower,upper=$upper,inplace=$inplace)"
 
 object RReLU:
-  def apply[D <: DType: Default](lower: Float, upper: Float, inplace: Boolean = false): RReLU[D] = new RReLU(lower, upper, inplace)
+  def apply[D <: DType: Default](lower: Float, upper: Float, inplace: Boolean = false): RReLU[D] =
+    new RReLU(lower, upper, inplace)

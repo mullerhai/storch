@@ -42,8 +42,7 @@ final class AvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default](
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  val options = new AvgPool2dOptions(toNative(kernelSize)) 
-
+  val options = new AvgPool2dOptions(toNative(kernelSize))
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
@@ -69,7 +68,7 @@ final class AvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
@@ -96,19 +95,6 @@ object AvgPool2d:
       count_include_pad,
       divisor_override
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  kernelSize match {
 //    case k: Int        => new AvgPool2dOptions(toNative((k, k)))

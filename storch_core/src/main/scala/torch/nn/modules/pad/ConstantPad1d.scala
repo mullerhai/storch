@@ -45,7 +45,7 @@ final class ConstantPad1d[ParamType <: BFloat16 | Float32 | Float64: Default](
   options.padding().put(toNative(padding))
 
   value match {
-    case v: Float => options.value().put(v.toDouble)
+    case v: Float  => options.value().put(v.toDouble)
     case v: Double => options.value().put(v)
   }
   override protected[torch] val nativeModule: ConstantPad1dImpl = ConstantPad1dImpl(
@@ -69,10 +69,5 @@ object ConstantPad1d:
       value: Float | Double
   ): ConstantPad1d[ParamType] =
     new ConstantPad1d[ParamType](padding, value)
-
-
-
-
-
 
 //  options.value().put(DoublePointer(1).put(value.toDouble))

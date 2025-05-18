@@ -14,7 +14,7 @@ final class TripletMarginWithDistanceLoss extends LossFunc {
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply[D <: DType](anchor: Tensor[D], positive: Tensor[?], negative: Tensor[?]): Tensor[D] =
     fromNative(
       nativeModule.forward(anchor.native, positive.native, negative.native)
@@ -31,5 +31,5 @@ final class TripletMarginWithDistanceLoss extends LossFunc {
 }
 
 object TripletMarginWithDistanceLoss {
-  def apply() : TripletMarginWithDistanceLoss = new TripletMarginWithDistanceLoss()
+  def apply(): TripletMarginWithDistanceLoss = new TripletMarginWithDistanceLoss()
 }

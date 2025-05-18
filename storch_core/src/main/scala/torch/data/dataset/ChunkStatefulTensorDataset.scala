@@ -33,7 +33,6 @@ class ChunkStatefulTensorDataset(chunkReader: ChunkTensorDataReader)
     extends CSTD(chunkReader)
     with Dataset {
 
-
   override def reset(): Unit = super.reset()
 
   override def save(archive: OutputArchive): Unit = super.save(archive)
@@ -44,17 +43,5 @@ class ChunkStatefulTensorDataset(chunkReader: ChunkTensorDataReader)
 
   override def size(): SizeTOptional = super.size()
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)

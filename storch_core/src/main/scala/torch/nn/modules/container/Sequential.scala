@@ -35,9 +35,8 @@ final class Sequential[D <: DType](override val modules: TensorModule[D]*)
     modules.foldLeft(input)((i, module) => module(i))
 
   override def toString = getClass().getSimpleName()
-  
-  
+
 object Sequential {
-  
+
   def apply[D <: DType](modules: TensorModule[D]*): Sequential[D] = new Sequential(modules*)
 }

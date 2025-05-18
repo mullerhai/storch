@@ -51,17 +51,6 @@ class RandomDataLoader(dataset: JavaDataset, sampler: RandomSampler, option: Dat
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
 //  val exampleVectorIterator =ExampleVectorIterator(dataset.exampleVector) //.iterator()
 //  val exampleVectorIterator =ExampleVectorIterator(dataset.get_batch()) //
 

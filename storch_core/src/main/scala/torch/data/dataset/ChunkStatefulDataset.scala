@@ -29,7 +29,7 @@ import torch.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkStatefulDataset(chunkReader: ChunkDataReader) extends CSD(chunkReader) with Dataset {
-  
+
   override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 
   override def size(): SizeTOptional = super.size()

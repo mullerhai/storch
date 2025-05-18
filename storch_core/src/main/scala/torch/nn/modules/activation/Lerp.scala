@@ -6,7 +6,7 @@ package activation
 import org.bytedeco.pytorch
 import torch.internal.NativeConverters.fromNative
 //https://pytorch.org/docs/stable/generated/torch.lerp.html
-final class Lerp[D <: DType: Default](end:Tensor[D] , weight: Float = 0.5) extends TensorModule[D]:
+final class Lerp[D <: DType: Default](end: Tensor[D], weight: Float = 0.5) extends TensorModule[D]:
 
   override def hasBias(): Boolean = false
 
@@ -15,19 +15,9 @@ final class Lerp[D <: DType: Default](end:Tensor[D] , weight: Float = 0.5) exten
     torch.lerp(input, end, weight)
   }
 
-
 object Lerp:
-  def apply[D <: DType: Default](end:Tensor[D] , weight: Float = 0.5): Lerp[D] = new Lerp(end, weight)
-
-
-
-
-
-
-
-
-
-
+  def apply[D <: DType: Default](end: Tensor[D], weight: Float = 0.5): Lerp[D] =
+    new Lerp(end, weight)
 
 //start = torch.arange(1., 5.)
 //end = torch.empty(4).fill_(10)

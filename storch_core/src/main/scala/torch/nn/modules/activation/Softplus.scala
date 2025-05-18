@@ -35,11 +35,12 @@ final class Softplus[D <: DType: Default](size: Int, threshold: Float, beta: Flo
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
     getClass().getSimpleName() + s"(size=$size,threshold=$threshold,beta=$beta)"
 
 object Softplus:
-  def apply[D <: DType: Default](size: Int, threshold: Float, beta: Float): Softplus[D] = new Softplus(size, threshold, beta)
+  def apply[D <: DType: Default](size: Int, threshold: Float, beta: Float): Softplus[D] =
+    new Softplus(size, threshold, beta)

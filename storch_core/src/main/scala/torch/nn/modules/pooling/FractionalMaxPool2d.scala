@@ -103,7 +103,7 @@ final class FractionalMaxPool2d[D <: BFloat16 | Float32 | Float64: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize,outputSize ${outputSize} outputRatio ${outputRatio} returnIndices ${returnIndices} randomSamples ${randomSamples} )"
 
@@ -127,22 +127,6 @@ object FractionalMaxPool2d:
       return_indices,
       random_samples
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  options.output_ratio().put(doubleArrayOptionalOutputRatio)
 //  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")

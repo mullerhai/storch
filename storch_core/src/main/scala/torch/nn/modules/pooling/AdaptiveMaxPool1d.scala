@@ -39,8 +39,8 @@ final class AdaptiveMaxPool1d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
-      toNative((h, w)) 
-    case x: Int => toNative((x)) 
+      toNative((h, w))
+    case x: Int => toNative((x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
       new LongOptionalVector(h.toOptional, w.toOptional)
@@ -54,7 +54,7 @@ final class AdaptiveMaxPool1d[ParamType <: BFloat16 | Float32 | Float64: Default
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )

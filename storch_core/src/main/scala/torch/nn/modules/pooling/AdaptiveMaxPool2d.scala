@@ -40,7 +40,7 @@ final class AdaptiveMaxPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
-      new LongOptionalVector(new LongOptional(h), new LongOptional(w)) //failed
+      new LongOptionalVector(new LongOptional(h), new LongOptional(w)) // failed
     case x: Int =>
       new LongOptionalVector(new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
@@ -52,13 +52,14 @@ final class AdaptiveMaxPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
       new LongOptionalVector(new LongOptional(h), w.toOptional)
     case x: Option[Int] =>
       new LongOptionalVector(x.toOptional, x.toOptional)
-  override protected[torch] val nativeModule: AdaptiveMaxPool2dImpl = AdaptiveMaxPool2dImpl(nativeOutputSize.get(0))
-  
+  override protected[torch] val nativeModule: AdaptiveMaxPool2dImpl = AdaptiveMaxPool2dImpl(
+    nativeOutputSize.get(0)
+  )
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
@@ -76,17 +77,6 @@ object AdaptiveMaxPool2d:
       return_indices: Boolean = false
   ): AdaptiveMaxPool2d[ParamType] =
     new AdaptiveMaxPool2d(output_size, return_indices)
-
-
-
-
-
-
-
-
-
-
-
 
 //  val options: AdaptiveMaxPool2dOptions = AdaptiveMaxPool2dOptions(nativeOutputSize)
 //  options.output_size().put(nativeOutputSize)

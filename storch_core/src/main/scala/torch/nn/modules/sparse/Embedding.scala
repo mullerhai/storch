@@ -66,7 +66,7 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     embeddingDim: Int,
     paddingIdx: Option[Int] | Int = None,
     maxNorm: Option[Float] | Float = None,
-    normType: Option[Float] | Float  = Some(2.0f),
+    normType: Option[Float] | Float = Some(2.0f),
     scaleGradByFreq: Boolean | Option[Boolean] = false,
     sparse: Boolean | Option[Boolean] = false
 ) extends HasParams[ParamType]
@@ -76,28 +76,27 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
   private val options = new EmbeddingOptions(numEmbeddings.toLong, embeddingDim.toLong)
 
   maxNorm match {
-    case m: Float => options.max_norm().put(m.toDouble)
+    case m: Float         => options.max_norm().put(m.toDouble)
     case m: Option[Float] => if m.isDefined then options.max_norm().put(m.get.toDouble)
   }
 
   normType match {
-    case n: Float => options.norm_type().put(n.toDouble)
+    case n: Float         => options.norm_type().put(n.toDouble)
     case n: Option[Float] => if n.isDefined then options.norm_type().put(n.get.toDouble)
   }
   scaleGradByFreq match {
-    case s: Boolean => options.scale_grad_by_freq().put(s)
-    case s: Option[Boolean] => if s.isDefined then options.scale_grad_by_freq ().put (s.get)
+    case s: Boolean         => options.scale_grad_by_freq().put(s)
+    case s: Option[Boolean] => if s.isDefined then options.scale_grad_by_freq().put(s.get)
   }
   sparse match {
-    case s: Boolean => options.sparse().put(s)
+    case s: Boolean         => options.sparse().put(s)
     case s: Option[Boolean] => if s.isDefined then options.sparse().put(s.get)
   }
 
   paddingIdx match {
-    case p: Int => options.padding_idx().put(p)
+    case p: Int         => options.padding_idx().put(p)
     case p: Option[Int] => if p.isDefined then options.padding_idx().put(p.get)
   }
-
 
   override val nativeModule: EmbeddingImpl = EmbeddingImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -106,7 +105,6 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()
 
-  
   override def hasBias(): Boolean = false
 
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
@@ -118,14 +116,14 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.forward(indices.to(torch.int64).native)
   )
 
-
-
-  def apply(indices: Tensor[Int64] | Tensor[Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
+  def apply(
+      indices: Tensor[Int64] | Tensor[Int32],
+      weight: Option[Tensor[ParamType]] = None
+  ): Tensor[ParamType] = {
     indices.dtype match
       case torch.int64 => fromNative(nativeModule.forward(indices.native))
       case torch.int32 => fromNative(nativeModule.forward(indices.to(torch.int64).native))
   }
-
 
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"
@@ -155,19 +153,6 @@ object Embedding:
     scale_grad_by_freq,
     sparse
   )
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  def apply(indices: Tensor[Int64],weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = fromNative(
 //    nativeModule.forward(indices.native)

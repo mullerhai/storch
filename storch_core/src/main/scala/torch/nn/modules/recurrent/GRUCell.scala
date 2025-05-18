@@ -60,8 +60,7 @@ final class GRUCell[ParamType <: FloatNN | ComplexNN: Default](
   def bias_ih(bias: Tensor[ParamType]) = nativeModule.bias_ih(bias.native)
 
   def bias_hh(bias: Tensor[ParamType]) = nativeModule.bias_hh(bias.native)
-  
-  
+
   def weight_ih(): Tensor[ParamType] = fromNative(nativeModule.weight_ih())
 
   def weight_hh(): Tensor[ParamType] = fromNative(nativeModule.weight_hh())
@@ -79,13 +78,15 @@ final class GRUCell[ParamType <: FloatNN | ComplexNN: Default](
     fromNative(fore)
   }
   def apply(input: Tensor[ParamType], hx: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
-    val fore = if hx.isDefined then  nativeModule.forward(input.native, hx.get.native) else nativeModule.forward(input.native)
+    val fore =
+      if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
+      else nativeModule.forward(input.native)
     fromNative(fore)
   }
 
   def weight: TensorVector = TensorVector(
     nativeModule.weight_hh(),
-    nativeModule.weight_ih() //.all_weights()
+    nativeModule.weight_ih() // .all_weights()
   ) // .weight_hh()
 
   override def hasBias(): Boolean = options.bias().get()
@@ -101,17 +102,5 @@ object GRUCell:
       hidden_size: Int,
       bias: Boolean = true
   ): GRUCell[ParamType] = new GRUCell(input_size, hidden_size, bias)
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  def weight: TensorVector = fromNative(nativeModule.all_weights())

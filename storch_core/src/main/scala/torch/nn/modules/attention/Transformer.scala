@@ -86,11 +86,13 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()
-  
-  def generate_square_subsequent_mask(sz: Int): Tensor[ParamType] = fromNative(TransformerImpl.generate_square_subsequent_mask(sz.toLong)) //generate_square_subsequent_mask
-  
+
+  def generate_square_subsequent_mask(sz: Int): Tensor[ParamType] = fromNative(
+    TransformerImpl.generate_square_subsequent_mask(sz.toLong)
+  ) // generate_square_subsequent_mask
+
   def encoder(encoderModule: AnyModule) = nativeModule.encoder(encoderModule)
-  
+
   def decoder(decoderModule: AnyModule) = nativeModule.decoder(decoderModule)
 
   def apply(

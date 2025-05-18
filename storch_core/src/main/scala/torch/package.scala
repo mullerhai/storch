@@ -34,7 +34,7 @@ package object torch
     with ops.IndexingSlicingJoiningOps
     with ops.PointwiseOps
     with ops.RandomSamplingOps
-    with ops.ReductionOps 
+    with ops.ReductionOps
     with ops.SparseOps
     with ops.JitOps
     with ops.OtherOps {
@@ -68,7 +68,7 @@ package object torch
 
   def with_grad[A](op: => A): A = {
     import org.bytedeco.pytorch.GradMode
-    Using.resource(GradMode()){ _ =>
+    Using.resource(GradMode()) { _ =>
       GradMode.set_enabled(true)
       op
     }

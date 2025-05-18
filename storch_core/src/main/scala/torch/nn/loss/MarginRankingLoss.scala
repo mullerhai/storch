@@ -13,7 +13,7 @@ final class MarginRankingLoss extends LossFunc {
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply[D <: DType](input1: Tensor[D], input2: Tensor[D], target: Tensor[?]): Tensor[D] =
     fromNative(
       nativeModule.forward(input1.native, input2.native, target.native)
@@ -30,6 +30,6 @@ final class MarginRankingLoss extends LossFunc {
 }
 
 object MarginRankingLoss {
-  
-  def apply() : MarginRankingLoss = new MarginRankingLoss()
+
+  def apply(): MarginRankingLoss = new MarginRankingLoss()
 }

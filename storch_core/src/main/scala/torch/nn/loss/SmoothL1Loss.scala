@@ -13,7 +13,7 @@ final class SmoothL1Loss extends LossFunc {
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native)
   )
@@ -28,6 +28,6 @@ final class SmoothL1Loss extends LossFunc {
 }
 
 object SmoothL1Loss {
-  
-  def apply() : SmoothL1Loss = new SmoothL1Loss()
+
+  def apply(): SmoothL1Loss = new SmoothL1Loss()
 }

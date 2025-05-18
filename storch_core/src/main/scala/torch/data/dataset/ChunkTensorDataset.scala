@@ -38,7 +38,6 @@ class ChunkTensorDataset(
 ) extends CTD(chunkReader, sampler, sampler, datasetOptions)
     with Dataset {
 
-
   override def get_batch(batch_size: Long): TensorExampleVectorOptional =
     super.get_batch(batch_size)
 
@@ -55,23 +54,4 @@ class ChunkTensorDataset(
   override def load(archive: InputArchive): Unit = super.load(archive)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
-

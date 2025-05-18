@@ -3,61 +3,79 @@ package nn
 package modules
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{CompilationUnit, ExtraFilesMap, IValue, IValueVector, InputArchive, JitModule, OutputArchive, QualifiedName, StringIValueMap, named_buffer_iterator, named_attribute_iterator, named_parameter_iterator}
+import org.bytedeco.pytorch.{
+  CompilationUnit,
+  ExtraFilesMap,
+  IValue,
+  IValueVector,
+  InputArchive,
+  JitModule,
+  OutputArchive,
+  QualifiedName,
+  StringIValueMap,
+  named_buffer_iterator,
+  named_attribute_iterator,
+  named_parameter_iterator
+}
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.{BytePointer, Pointer}
 
 import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}
 import scala.collection.mutable.{ListBuffer, HashMap as MutaHashMap}
-import java.io.{InputStream,OutputStream,ByteArrayOutputStream}
+import java.io.{InputStream, OutputStream, ByteArrayOutputStream}
 import java.nio.ByteBuffer
 
-class JITModule(qualifiedName: String,
-                compilationUnit: CompilationUnit,
-                shouldMangle: Boolean = false) {
+class JITModule(
+    qualifiedName: String,
+    compilationUnit: CompilationUnit,
+    shouldMangle: Boolean = false
+) {
 
-  protected[torch] var _nativeModule = new JitModule(new QualifiedName(qualifiedName),compilationUnit,shouldMangle)
+  protected[torch] var _nativeModule =
+    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
 
   private[torch] def nativeModule: JitModule = _nativeModule
 
   private var childModules: TreeSeqMap[String, JitModule] = TreeSeqMap.empty
 
-  private var nativeJitModule: JitModule = new JitModule(new QualifiedName(qualifiedName),compilationUnit,shouldMangle)
-  def apply(predictTensor: Tensor[?]):Tensor[?] = {
+  private var nativeJitModule: JitModule =
+    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+  def apply(predictTensor: Tensor[?]): Tensor[?] = {
     val vector = new IValueVector(predictTensor.native)
     val pred = fromNative(nativeJitModule.forward(vector).toTensor)
     pred
   }
 
-
-  def apply(predictSeq: Seq[Int]): Tensor[?] ={
+  def apply(predictSeq: Seq[Int]): Tensor[?] = {
 
     val vector = new IValueVector(torch.ones(predictSeq).native)
-    val pred =  fromNative(nativeJitModule.forward(vector).toTensor())
+    val pred = fromNative(nativeJitModule.forward(vector).toTensor())
     pred
   }
 
-  def apply(predictTensor: Tensor[?],parameter:MutaHashMap[String,Tensor[?]]): Tensor[?]={
-    
+  def apply(predictTensor: Tensor[?], parameter: MutaHashMap[String, Tensor[?]]): Tensor[?] = {
+
     val vector = new IValueVector(predictTensor.native)
-    val  kwargs: StringIValueMap = new StringIValueMap()
-    for((k,v) <- parameter.toList){
-      kwargs.put(new BytePointer(k),new IValue(v.native))
+    val kwargs: StringIValueMap = new StringIValueMap()
+    for ((k, v) <- parameter.toList) {
+      kwargs.put(new BytePointer(k), new IValue(v.native))
     }
-    val pred = fromNative(nativeJitModule.forward(vector,kwargs).toTensor)
+    val pred = fromNative(nativeJitModule.forward(vector, kwargs).toTensor)
     pred
   }
 
-  def register_buffer(name: String, tensor: Tensor[?] ):Unit = nativeJitModule.register_buffer(name, tensor.native)
-  
-  def register_parameter(name: String, tensor: Tensor[?],is_buffer: Boolean):Unit = {}
+  def register_buffer(name: String, tensor: Tensor[?]): Unit =
+    nativeJitModule.register_buffer(name, tensor.native)
 
-  def register_attribute(name: String,typez: String, value: IValue):Unit ={}
+  def register_parameter(name: String, tensor: Tensor[?], is_buffer: Boolean): Unit = {}
 
-  def register_module(name: String, module: JitModule)= nativeJitModule.register_module(name,module)
-  def save(fileName: String)= nativeJitModule.save(fileName)
+  def register_attribute(name: String, typez: String, value: IValue): Unit = {}
 
-  def save(fileName: String, extraFiles: ExtraFilesMap)= nativeJitModule.save(fileName,extraFiles)
+  def register_module(name: String, module: JitModule) =
+    nativeJitModule.register_module(name, module)
+  def save(fileName: String) = nativeJitModule.save(fileName)
+
+  def save(fileName: String, extraFiles: ExtraFilesMap) = nativeJitModule.save(fileName, extraFiles)
 //https://pytorch.org/docs/stable/generated/torch.jit.save.html
   def save(outputStream: ByteArrayOutputStream) = {
     val byteArray: Array[Byte] = outputStream.toByteArray()
@@ -65,11 +83,11 @@ class JITModule(qualifiedName: String,
     nativeJitModule.save(bytePointer)
   }
 
-  def save(outputStream: ByteArrayOutputStream, extraFiles:ExtraFilesMap) = {
+  def save(outputStream: ByteArrayOutputStream, extraFiles: ExtraFilesMap) = {
 
     val byteArray: Array[Byte] = outputStream.toByteArray()
-    val bytePointer: BytePointer = new BytePointer(byteArray *)
-    nativeJitModule.save(bytePointer,extraFiles)
+    val bytePointer: BytePointer = new BytePointer(byteArray*)
+    nativeJitModule.save(bytePointer, extraFiles)
   }
 
   def save_for_mobile(fileName: String) = nativeJitModule._save_for_mobile(fileName)
@@ -78,12 +96,12 @@ class JITModule(qualifiedName: String,
 
   def cloneNative() = nativeJitModule.clone()
 
-  def store_traced_inputs(funcName: String,inputs: Tensor[?])={
+  def store_traced_inputs(funcName: String, inputs: Tensor[?]) = {
     val vector = new IValueVector(inputs.native)
-    nativeJitModule.store_traced_inputs(funcName,vector)
+    nativeJitModule.store_traced_inputs(funcName, vector)
   }
 
-  def set_delete_memory(delete_mem:ByteBuffer)= nativeJitModule.set_delete_memory(delete_mem)
+  def set_delete_memory(delete_mem: ByteBuffer) = nativeJitModule.set_delete_memory(delete_mem)
 
   def retrieve_traced_inputs = nativeJitModule.retrieve_traced_inputs()
 
@@ -116,7 +134,7 @@ class JITModule(qualifiedName: String,
     val params = nativeJitModule.named_parameters(recurse)
     var ele = params.begin()
     val buffer = new ListBuffer[named_parameter_iterator]()
-    while(ele != params.end()){
+    while (ele != params.end()) {
       buffer.append(ele)
       ele.increment()
     }
@@ -124,7 +142,6 @@ class JITModule(qualifiedName: String,
       val item = buffer(i).access()
       (item.name().getString(), fromNative[DType](item.value()))
     })
-
 
   def loadStateDict(stateDict: Map[String, Tensor[DType]]): Unit =
     val tensorsToLoad = namedParameters() ++ namedBuffers()
@@ -136,9 +153,9 @@ class JITModule(qualifiedName: String,
 
   def set_optimized(optimized: Boolean) = nativeJitModule.set_optimized(optimized)
 
-  def is_optimized() :Boolean = nativeJitModule.is_optimized()
+  def is_optimized(): Boolean = nativeJitModule.is_optimized()
 
-  def dump(pmb: Boolean, pav: Boolean, ppv: Boolean) = nativeJitModule.dump(pmb,pav,ppv)
+  def dump(pmb: Boolean, pav: Boolean, ppv: Boolean) = nativeJitModule.dump(pmb, pav, ppv)
 
   def attributes(recurse: Boolean = true) = {
 
@@ -152,7 +169,7 @@ class JITModule(qualifiedName: String,
     ArraySeq.unsafeWrapArray(buffer.toArray)
   }
 
-  def named_attributes(recurse: Boolean =true) = {
+  def named_attributes(recurse: Boolean = true) = {
 
     val nameAttr = nativeJitModule.named_attributes(recurse)
     var ele = nameAttr.begin()
@@ -167,8 +184,7 @@ class JITModule(qualifiedName: String,
     })
   }
 
-
-  def named_parameters(recurse: Boolean= true)= nativeJitModule.named_parameters(recurse)
+  def named_parameters(recurse: Boolean = true) = nativeJitModule.named_parameters(recurse)
 
   def parameters: Seq[Tensor[?]] = parameters(recurse = true)
 
@@ -180,7 +196,7 @@ class JITModule(qualifiedName: String,
       buffer.append(fromNative[DType](ele.access()))
       ele.increment()
     }
-    ArraySeq.unsafeWrapArray(buffer.toArray)//.map(fromNative[DType])
+    ArraySeq.unsafeWrapArray(buffer.toArray) // .map(fromNative[DType])
   }
 
   def buffers(recurse: Boolean = true) = nativeJitModule.buffers(recurse)
@@ -189,27 +205,13 @@ class JITModule(qualifiedName: String,
 
   def children() = nativeJitModule.children()
 
-  def named_children()= nativeJitModule.named_children()
+  def named_children() = nativeJitModule.named_children()
 
   def modules() = nativeJitModule.modules()
 
   def named_modules() = nativeJitModule.named_modules()
 
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
 
 //      // Create a vector of inputs.
 //        IValueVector inputs = new IValueVector();
@@ -219,4 +221,3 @@ class JITModule(qualifiedName: String,
 //        print(output.slice(/*dim=*/1, /*start=*/new LongOptional(0), /*end=*/new LongOptional(5), /*step=*/1));
 
 //  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
-

@@ -26,5 +26,5 @@ final class KLDivLoss extends LossFunc {
 
 }
 object KLDivLoss {
-  def apply() : KLDivLoss = new KLDivLoss()
+  def apply(): KLDivLoss = new KLDivLoss()
 }

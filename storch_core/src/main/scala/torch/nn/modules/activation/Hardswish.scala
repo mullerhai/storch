@@ -15,4 +15,4 @@ final class Hardswish[D <: DType: Default] extends TensorModule[D]:
   def apply(t: Tensor[D]): Tensor[D] = torch.hardswish(t)
 
 object Hardswish:
-  def apply[D <: DType: Default]() : Hardswish[D] = new Hardswish()
+  def apply[D <: DType: Default](): Hardswish[D] = new Hardswish()

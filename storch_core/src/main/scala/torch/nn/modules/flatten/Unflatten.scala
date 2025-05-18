@@ -89,7 +89,10 @@ final class Unflatten[D <: DType: Default](
 
   namedShape match {
     case d: Option[Map[String, Int]] =>
-      if d.isDefined then options.namedshape().put(StringLongVector(d.get.keys.toArray, d.get.values.map(_.toLong).toArray))
+      if d.isDefined then
+        options
+          .namedshape()
+          .put(StringLongVector(d.get.keys.toArray, d.get.values.map(_.toLong).toArray))
 
   }
 
@@ -98,7 +101,7 @@ final class Unflatten[D <: DType: Default](
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   override def toString =
@@ -114,31 +117,6 @@ object Unflatten:
       dim_name: Option[String] = None,
       named_shape: Option[Map[String, Int]] = None
   ): Unflatten[D] = new Unflatten[D](dim, unflattened_size, dim_name, named_shape)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  if dimName.isDefined then
 //     if options.isDefined then

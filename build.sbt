@@ -6,10 +6,9 @@ import LaikaPlugin.autoImport.*
 import sbt.Def.settings
 import sbtassembly.AssemblyPlugin.assemblySettings
 
-
 ThisBuild / tlBaseVersion := "0.0" // your current series x.y
 
-ThisBuild / organization :=  "io.github.mullerhai"//"dev.storch"
+ThisBuild / organization := "io.github.mullerhai" //"dev.storch"
 ThisBuild / organizationName := "storch.dev"
 ThisBuild / startYear := Some(2022)
 ThisBuild / licenses := Seq(License.Apache2)
@@ -98,7 +97,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("sonatypeBundleRelease"),
   setNextVersion,
   commitNextVersion,
-  pushChanges,
+  pushChanges
 )
 
 lazy val storch_core = project
@@ -132,7 +131,8 @@ lazy val storch_vision = project
     libraryDependencies ++= Seq(
       "com.sksamuel.scrimage" % "scrimage-core" % scrImageVersion,
       "com.sksamuel.scrimage" % "scrimage-webp" % scrImageVersion,
-      ("com.sksamuel.scrimage" %% "scrimage-scala" % scrImageVersion).cross(CrossVersion.for3Use2_13),
+      ("com.sksamuel.scrimage" %% "scrimage-scala" % scrImageVersion)
+        .cross(CrossVersion.for3Use2_13),
       "org.scalameta" %% "munit" % "0.7.29" % Test
     )
   )
@@ -183,21 +183,21 @@ lazy val storch_root = project
     javaCppVersion := (ThisBuild / javaCppVersion).value
   )
 
-ThisBuild  / assemblyMergeStrategy := {
-  case v if v.contains("module-info.class")   => MergeStrategy.discard
-  case v if v.contains("UnusedStub")          => MergeStrategy.first
-  case v if v.contains("aopalliance")         => MergeStrategy.first
-  case v if v.contains("inject")              => MergeStrategy.first
-  case v if v.contains("jline")               => MergeStrategy.discard
-  case v if v.contains("scala-asm")           => MergeStrategy.discard
-  case v if v.contains("asm")                 => MergeStrategy.discard
-  case v if v.contains("scala-compiler")      => MergeStrategy.deduplicate
-  case v if v.contains("reflect-config.json") => MergeStrategy.discard
-  case v if v.contains("jni-config.json")     => MergeStrategy.discard
-  case v if v.contains("git.properties")      => MergeStrategy.discard
-  case v if v.contains("reflect.properties")      => MergeStrategy.discard
-  case v if v.contains("compiler.properties")      => MergeStrategy.discard
-  case v if v.contains("scala-collection-compat.properties")      => MergeStrategy.discard
+ThisBuild / assemblyMergeStrategy := {
+  case v if v.contains("module-info.class")                  => MergeStrategy.discard
+  case v if v.contains("UnusedStub")                         => MergeStrategy.first
+  case v if v.contains("aopalliance")                        => MergeStrategy.first
+  case v if v.contains("inject")                             => MergeStrategy.first
+  case v if v.contains("jline")                              => MergeStrategy.discard
+  case v if v.contains("scala-asm")                          => MergeStrategy.discard
+  case v if v.contains("asm")                                => MergeStrategy.discard
+  case v if v.contains("scala-compiler")                     => MergeStrategy.deduplicate
+  case v if v.contains("reflect-config.json")                => MergeStrategy.discard
+  case v if v.contains("jni-config.json")                    => MergeStrategy.discard
+  case v if v.contains("git.properties")                     => MergeStrategy.discard
+  case v if v.contains("reflect.properties")                 => MergeStrategy.discard
+  case v if v.contains("compiler.properties")                => MergeStrategy.discard
+  case v if v.contains("scala-collection-compat.properties") => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)

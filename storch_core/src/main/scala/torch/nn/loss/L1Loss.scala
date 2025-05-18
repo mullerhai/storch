@@ -26,6 +26,6 @@ final class L1Loss extends LossFunc {
 }
 
 object L1Loss {
-  
-  def apply() : L1Loss = new L1Loss()
+
+  def apply(): L1Loss = new L1Loss()
 }

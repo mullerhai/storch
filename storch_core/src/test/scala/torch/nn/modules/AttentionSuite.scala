@@ -8,22 +8,19 @@ import torch.nn
 
 class AttentionSuite
 
-
 //https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html#torch.nn.Transformer
 //
 // scala.NotImplementedError: an implementation is missing
 class transformerSuite extends munit.FunSuite {
   test("transformerSuite output shapes") {
-    val transformer = nn.Transformer(nhead = 16,num_encoder_layers = 12)
-    val src = torch.rand(Seq(10,32,512))
-    val tgt = torch.rand(Seq(20,32,512))
-    val out = transformer(src,tgt)
+    val transformer = nn.Transformer(nhead = 16, num_encoder_layers = 12)
+    val src = torch.rand(Seq(10, 32, 512))
+    val tgt = torch.rand(Seq(20, 32, 512))
+    val out = transformer(src, tgt)
     println(s"transformer out shape ${out.shape}")
-    val input = torch.randn(Seq(1, 64, 8, 9)) //transformer out shape ArraySeq(20, 32, 512)
+    val input = torch.randn(Seq(1, 64, 8, 9)) // transformer out shape ArraySeq(20, 32, 512)
   }
 }
-
-
 
 //java.lang.RuntimeException: Passing an empty index list to Tensor::index() is not valid syntax
 //multihead_attn = nn.MultiheadAttention(embed_dim, num_heads)
@@ -32,23 +29,32 @@ class transformerSuite extends munit.FunSuite {
 class multiHeadCoderSuite extends munit.FunSuite {
   test("multiHeadCoderSuite output shapes") {
     //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
-    val batchSize =2
+    val batchSize = 2
     val seqLength = 10
     val embedDim = 64
     val numHeads = 8
-    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1f)//,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
-    val input = torch.randn(Seq(batchSize,seqLength,embedDim))
-    val out = multiheadAttention(input,input,input)
+    val multiheadAttention = nn.MultiheadAttention(
+      embed_dim = 64,
+      num_heads = 8,
+      dropout = 0.1f
+    ) // ,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
+    val input = torch.randn(Seq(batchSize, seqLength, embedDim))
+    val out = multiheadAttention(input, input, input)
     println(s"multiheadAttention attn_output ${out._1.shape} attn_weight ${out._2.shape}")
   }
 }
-
 
 class TransformerEncoderLayerSuite extends munit.FunSuite {
   test("TransformerEncoderLayer output shapes") {
     val input = torch.randn(Seq(10, 32, 512))
     //    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
-    val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8,dim_feedforward = 2048,dropout =0.1f,activation = "relu")
+    val layer = nn.TransformerEncoderLayer(
+      d_model = 512,
+      n_head = 8,
+      dim_feedforward = 2048,
+      dropout = 0.1f,
+      activation = "relu"
+    )
     //    val encoder = nn.TransformerEncoder(encoder_layer = layer, num_layers = 6)
     val out = layer(input)
     println(s"out .shape ${out.shape}")
@@ -58,9 +64,9 @@ class TransformerEncoderLayerSuite extends munit.FunSuite {
 
 class TransformerEncoderLayerSuite2 extends munit.FunSuite {
   test("TransformerEncoderLayer output shapes") {
-    val input = torch.randn(Seq(32,10, 512))
+    val input = torch.randn(Seq(32, 10, 512))
     //    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
-    val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8,batch_first = true)
+    val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8, batch_first = true)
     //    val encoder = nn.TransformerEncoder(encoder_layer = layer, num_layers = 6)
     val out = layer(input)
     println(s"out .shape ${out.shape}")
@@ -86,10 +92,10 @@ class TransformerDecoderLayerSuite extends munit.FunSuite {
 class TransformerDecoderLayerSuite2 extends munit.FunSuite {
   test("TransformerDecoderLayerSuite2 output shapes") {
 
-    val layer = nn.TransformerDecoderLayer(d_model = 512, n_head = 8,batch_first = true)
+    val layer = nn.TransformerDecoderLayer(d_model = 512, n_head = 8, batch_first = true)
     //    val decoder = nn.TransformerDecoder(decoder_layer = layer, num_layers = 6)
-    val memory = torch.randn(Seq( 32,10, 512))
-    val tgt = torch.randn(Seq(32,20, 512))
+    val memory = torch.randn(Seq(32, 10, 512))
+    val tgt = torch.randn(Seq(32, 20, 512))
     val out = layer(tgt, memory)
     println(s"out.shape ${out.shape}")
 
@@ -100,7 +106,7 @@ class TransformerEncoderSuite extends munit.FunSuite {
     val input = torch.randn(Seq(10, 32, 512))
     //    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
     val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8)
-    val encoder = nn.TransformerEncoder(encoder_layer = layer,num_layers = 6)
+    val encoder = nn.TransformerEncoder(encoder_layer = layer, num_layers = 6)
     val out = encoder(input)
     println(s"out .shape ${out.shape}")
 
@@ -117,7 +123,7 @@ class TransformerDecoderSuite extends munit.FunSuite {
     val tgt = torch.randn(Seq(20, 32, 512))
     val out = decoder(tgt, memory)
     println(s"out.shape ${out.shape}")
-    assertEquals(out.shape, Seq(20,32,512))
+    assertEquals(out.shape, Seq(20, 32, 512))
 
   }
 }
@@ -164,7 +170,9 @@ class MultiHeadRawSuite extends munit.FunSuite {
     //    options.vdim().put(LongPointer(1).put(vDim.toLong))
     val model = MultiheadAttentionImpl(options)
     val output = model.forward(input.native, input.native, input.native)
-    println(s"multiheadAttention attn_output ${fromNative(output.get0()).shape} attn_weight ${fromNative(output.get1()).shape}")
+    println(
+      s"multiheadAttention attn_output ${fromNative(output.get0()).shape} attn_weight ${fromNative(output.get1()).shape}"
+    )
     //    val multiheadAttention = nn.MultiheadAttention(embed_dim = 8,num_heads = 8,dropout = 0.1,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
     ////          val input = torch.randn(Seq(batchSize,seqLength,embedDim))
     //    val out = multiheadAttention(input,input,input)
@@ -203,10 +211,9 @@ class transformerEnCoderLayerRawSuite extends munit.FunSuite {
     val encoderModel = TransformerEncoderImpl(encoderOptions)
     val output = fromNative(encoderModel.forward(input.native))
     println(s"out .shape ${out.shape} output shape ${output.shape}")
-    
+
   }
 }
-
 
 //https://pytorch.org/docs/2.3/generated/torch.nn.TransformerDecoderLayer.html
 //https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoderLayer.html
@@ -219,32 +226,26 @@ class transformerCoderSuite extends munit.FunSuite {
     val m12 = nn.TransformerEncoder(encoder_layer = m1, num_layers = 4)
     val input = torch.randn(Seq(1, 64, 8, 9))
     val output = m12(input)
-    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
+    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) // lack of  paramter
     val m2 = nn.TransformerDecoderLayer(d_model = 8, n_head = 4)
     val m22 = nn.TransformerDecoder(decoder_layer = m2, num_layers = 4)
     assertEquals(m22(output).shape, Seq(1, 64, 1, 1))
   }
 }
 
-
-
-
-
 //https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html#torch.nn.Transformer
 //
 // scala.NotImplementedError: an implementation is missing
 class transformerOldSuite extends munit.FunSuite {
   test("transformerOldSuite output shapes") {
-    val transformer = nn.Transformer(nhead = 16,num_encoder_layers = 12,activation = "gelu")
-    val src = torch.rand(Seq(10,32,512))
-    val tgt = torch.rand(Seq(20,32,512))
-    val out = transformer(src,tgt)
+    val transformer = nn.Transformer(nhead = 16, num_encoder_layers = 12, activation = "gelu")
+    val src = torch.rand(Seq(10, 32, 512))
+    val tgt = torch.rand(Seq(20, 32, 512))
+    val out = transformer(src, tgt)
     println(s"transformer out shape ${out.shape}")
     val input = torch.randn(Seq(1, 64, 8, 9))
   }
 }
-
-
 
 //java.lang.RuntimeException: Passing an empty index list to Tensor::index() is not valid syntax
 //multihead_attn = nn.MultiheadAttention(embed_dim, num_heads)
@@ -253,17 +254,23 @@ class transformerOldSuite extends munit.FunSuite {
 class multiHeadCoderOldSuite extends munit.FunSuite {
   test("multiHeadCoderSuite output shapes") {
     //    val m1 = nn.TransformerEncoderLayer(d_model = 8,n_head = 4)
-    val batchSize =2
+    val batchSize = 2
     val seqLength = 10
     val embedDim = 64
     val numHeads = 8
-    val multiheadAttention = nn.MultiheadAttention(embed_dim = 64,num_heads = 8,dropout = 0.1,kdim = 8,bias = true,vdim = 8) //java.lang.RuntimeException: from is out of bounds for float
-    val input = torch.randn(Seq(batchSize,seqLength,embedDim))
-    val out = multiheadAttention(input,input,input)
+    val multiheadAttention = nn.MultiheadAttention(
+      embed_dim = 64,
+      num_heads = 8,
+      dropout = 0.1,
+      kdim = 8,
+      bias = true,
+      vdim = 8
+    ) // java.lang.RuntimeException: from is out of bounds for float
+    val input = torch.randn(Seq(batchSize, seqLength, embedDim))
+    val out = multiheadAttention(input, input, input)
     println(s"multiheadAttention attn_output ${out._1.shape} attn_weight ${out._2.shape}")
   }
 }
-
 
 class TransformerEncoderLayerOldSuite extends munit.FunSuite {
   test("TransformerEncoderLayer output shapes") {
@@ -279,9 +286,9 @@ class TransformerEncoderLayerOldSuite extends munit.FunSuite {
 
 class TransformerEncoderLayerOldSuite2 extends munit.FunSuite {
   test("TransformerEncoderLayer output shapes") {
-    val input = torch.randn(Seq(32,10, 512))
+    val input = torch.randn(Seq(32, 10, 512))
     //    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
-    val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8,batch_first = true)
+    val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8, batch_first = true)
     //    val encoder = nn.TransformerEncoder(encoder_layer = layer, num_layers = 6)
     val out = layer(input)
     println(s"out .shape ${out.shape}")
@@ -307,10 +314,10 @@ class TransformerDecoderLayerOldSuite extends munit.FunSuite {
 class TransformerDecoderLayerOldSuite2 extends munit.FunSuite {
   test("TransformerDecoderLayerOldSuite2 output shapes") {
 
-    val layer = nn.TransformerDecoderLayer(d_model = 512, n_head = 8,batch_first = true)
+    val layer = nn.TransformerDecoderLayer(d_model = 512, n_head = 8, batch_first = true)
     //    val decoder = nn.TransformerDecoder(decoder_layer = layer, num_layers = 6)
-    val memory = torch.randn(Seq( 32,10, 512))
-    val tgt = torch.randn(Seq(32,20, 512))
+    val memory = torch.randn(Seq(32, 10, 512))
+    val tgt = torch.randn(Seq(32, 20, 512))
     val out = layer(tgt, memory)
     println(s"out.shape ${out.shape}")
 
@@ -321,7 +328,7 @@ class TransformerEncoderOldSuite extends munit.FunSuite {
     val input = torch.randn(Seq(10, 32, 512))
     //    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
     val layer = nn.TransformerEncoderLayer(d_model = 512, n_head = 8)
-    val encoder = nn.TransformerEncoder(encoder_layer = layer,num_layers = 6)
+    val encoder = nn.TransformerEncoder(encoder_layer = layer, num_layers = 6)
     val out = encoder(input)
     println(s"out .shape ${out.shape}")
 
@@ -342,8 +349,6 @@ class TransformerDecoderOldSuite extends munit.FunSuite {
   }
 }
 
-
-
 //https://pytorch.org/docs/2.3/generated/torch.nn.TransformerDecoderLayer.html
 //https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoderLayer.html
 //https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoder.html
@@ -354,7 +359,7 @@ class transformerCoderOldSuite extends munit.FunSuite {
     val m1 = nn.TransformerEncoderLayer(d_model = 8, n_head = 4)
     val m12 = nn.TransformerEncoder(encoder_layer = m1, num_layers = 4)
     val input = torch.randn(Seq(1, 64, 8, 9))
-    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) //lack of  paramter
+    assertEquals(m12(input).shape, Seq(1, 64, 5, 7)) // lack of  paramter
     val m2 = nn.TransformerDecoderLayer(d_model = 8, n_head = 4)
     val m22 = nn.TransformerDecoder(decoder_layer = m2, num_layers = 4)
     assertEquals(m22(input).shape, Seq(1, 64, 1, 1))

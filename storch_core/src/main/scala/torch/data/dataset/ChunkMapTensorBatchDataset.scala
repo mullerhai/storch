@@ -34,26 +34,12 @@ class ChunkMapTensorBatchDataset(chunkMapTensorDataset: ChunkMapTensorDataset)
     extends CMTBD(chunkMapTensorDataset)
     with Dataset {
 
-
   override def get_batch(request: SizeTArrayRef): TensorExampleVector = super.get_batch(request)
 
   override def get_batch(request: Long*): TensorExampleVector = super.get_batch(request: _*)
 
   override def size(): SizeTOptional = super.size()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 //

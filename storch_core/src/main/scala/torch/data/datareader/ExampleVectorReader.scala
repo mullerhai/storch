@@ -46,26 +46,6 @@ final class ExampleVectorReader(batch: Int = 32) extends Pointer with DataReader
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //    val dataTensor = exampleVector.begin().get().data()
 //    val targetTensor = exampleVector.begin().get().target()
 //    val dataTensorVector = dataTensor.chunk(batch)

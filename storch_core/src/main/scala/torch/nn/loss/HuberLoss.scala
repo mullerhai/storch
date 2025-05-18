@@ -27,5 +27,5 @@ final class HuberLoss extends LossFunc {
 }
 
 object HuberLoss {
-  def apply() : HuberLoss = new HuberLoss()
+  def apply(): HuberLoss = new HuberLoss()
 }

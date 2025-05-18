@@ -45,8 +45,8 @@ import sourcecode.Name
   *   [[container ModuleList https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html#ModuleList]]
   */
 object ModuleList {
-  
-  def apply[D <: DType](modules: TensorModule[D]*) : ModuleList[D] = new ModuleList(modules*)
+
+  def apply[D <: DType](modules: TensorModule[D]*): ModuleList[D] = new ModuleList(modules*)
 }
 final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     extends Module

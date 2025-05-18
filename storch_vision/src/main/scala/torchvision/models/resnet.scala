@@ -191,11 +191,14 @@ object resnet:
   )(using Default[D])(
       normLayer: (Int => HasWeight[D] & TensorModule[D]) =
         (numFeatures => BatchNorm2d[D](numFeatures))
-  ) extends HasParams[D] with TensorModule[D] {
+  ) extends HasParams[D]
+      with TensorModule[D] {
     var inplanes = 64
     var dilation = 1
     val baseWidth = widthPerGroup
-    val conv1 = register(Conv2d(3, inplanes, kernel_size = 7, stride = 2, padding = 3, bias = false))
+    val conv1 = register(
+      Conv2d(3, inplanes, kernel_size = 7, stride = 2, padding = 3, bias = false)
+    )
     val bn1 = register(normLayer(inplanes))
     val relu = register(ReLU(inplace = true))
     val maxpool = register(MaxPool2d(kernel_size = 3, stride = 2, padding = 1))

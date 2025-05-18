@@ -29,7 +29,7 @@ import torch.internal.NativeConverters.fromNative
   */
 final class LeakyReLU[D <: DType: Default](negativeSlope: Float, inplace: Boolean = false)
     extends TensorModule[D]:
-  
+
   private val options = new LeakyReLUOptions()
   options.inplace().put(inplace)
   options.negative_slope().put(negativeSlope.toDouble)

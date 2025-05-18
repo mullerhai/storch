@@ -33,6 +33,6 @@ final class CTCLoss extends LossFunc {
 }
 
 object CTCLoss {
-  def apply() : CTCLoss = new CTCLoss()
+  def apply(): CTCLoss = new CTCLoss()
 
 }

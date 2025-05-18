@@ -22,6 +22,7 @@ import torch.internal.NativeConverters.*
 import org.bytedeco.pytorch.global.torch as torchNative
 import scala.annotation.implicitNotFound
 import torch.Int32Tensor
+
 /** Pointwise Ops
   *
   * https://pytorch.org/docs/stable/torch.html#pointwise-ops

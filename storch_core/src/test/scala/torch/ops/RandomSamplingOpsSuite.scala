@@ -43,7 +43,7 @@ class RandomSamplingOpsSuite extends TensorCheckSuite {
 
     val g2 = torch.Generator()
     g2.manualSeed(0)
-    val t3 = torch.randint(high = 100, size =  Seq(2, 2), generator = g2)
+    val t3 = torch.randint(high = 100, size = Seq(2, 2), generator = g2)
     assertEquals(t1, t3)
 
   }

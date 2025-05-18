@@ -116,8 +116,5 @@ object TransformerEncoderLayer:
     bias
   )
 
-
-
-
 //  options.d_model().put(LongPointer(1).put(dModel.toLong))
 //  options.nhead().put(LongPointer(1).put(nHead.toLong))

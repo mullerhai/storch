@@ -85,8 +85,7 @@ package object special:
 
   def multigammaln[D <: NumericRealNN](input: Tensor[D], p: Int): Tensor[FloatPromoted[D]] =
     fromNative(torchNative.multigammaln(input.native, p.toLong))
-    
-    
+
   /** Computes the nth derivative of the digamma function on `input`. n≥0 is called the order of the
     * polygamma function.
     */

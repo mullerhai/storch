@@ -99,11 +99,11 @@ final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BatchNormOptions(toNative(numFeatures)) 
+  private val options = new BatchNormOptions(toNative(numFeatures))
 
   eps match {
     case e: Double => options.eps().put(e)
-    case e: Float => options.eps().put(e.toDouble)
+    case e: Float  => options.eps().put(e.toDouble)
   }
   momentum match {
     case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
@@ -152,21 +152,5 @@ object BatchNorm2d:
   ): BatchNorm2d[ParamType] =
     new BatchNorm2d[ParamType](num_features, eps, momentum, affine, track_running_stats)
 
-
-
-
-
-
-
-
-
-
 //new BatchNormOptions(toNative(numFeatures)) //LongPointer(1).put(numFeatures.toLong))
 //  options.eps().put(DoublePointer(1).put(eps.toDouble))
-
-
-
-
-
-
-

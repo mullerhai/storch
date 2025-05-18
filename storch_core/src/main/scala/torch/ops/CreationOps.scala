@@ -23,7 +23,17 @@ import Layout.Strided
 import Device.CPU
 import MemoryFormat.Contiguous
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{BoolOptional, ByteVector, GenericDict, IValue, LongOptional, MemoryFormatOptional, OutputArchive, Scalar, ScalarTypeOptional}
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  ByteVector,
+  GenericDict,
+  IValue,
+  LongOptional,
+  MemoryFormatOptional,
+  OutputArchive,
+  Scalar,
+  ScalarTypeOptional
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch.ScalarType
 import torch.nn.modules.Module as ModelModule
@@ -44,43 +54,60 @@ private[torch] trait CreationOps {
 // TODO as_tensor
 // TODO as_strided
 // TODO frombuffer
-  def tensor[U <: ScalaType : ClassTag](
-                                      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                      layout: Layout = Strided,
-                                      device: Device = CPU,
-                                      requires_grad: Boolean = false
-                                    ): Tensor[ScalaToDType[U]] = Tensor.apply(data,layout,device,requires_grad)
-  def tensor[U <: ScalaType : ClassTag](
-                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                        requires_grad: Boolean
-                                      ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
+  
+  def as_tensor[U <: ScalaType : ClassTag](
+                                       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+                                       requires_grad: Boolean = false
+                                     ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
 
-  def tensor[U <: ScalaType : ClassTag](
-                                        data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                        requires_grad: Boolean,
-                                        device: Device
-                                      ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad,device)
+  def tensor[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false
+  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, layout, device, requires_grad)
+  def tensor[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      requires_grad: Boolean
+  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
 
-  //    @Namespace("at")
-  //    @ByVal
-  //    public static native Tensor as_strided(@Const @ByRef 
-  //    Tensor var0, 
-  //    @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") 
-  //    long[] var1, 
-  //    @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") 
-  //    long... var2);
-  def as_strided[D <: DType](input: Tensor[D],
-                             size: Seq[Int],
-                             stride: Seq[Int],
-                             storageOffset: Option[Int] = None): Tensor[D] ={
-   if storageOffset.isDefined then fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong).toArray,new LongOptional(storageOffset.get.toLong)))
-   else fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong).toArray,new LongOptional()))
+  def tensor[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      requires_grad: Boolean,
+      device: Device
+  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad, device)
+
+
+  def as_strided[D <: DType](
+      input: Tensor[D],
+      size: Seq[Int],
+      stride: Seq[Int],
+      storageOffset: Option[Int] = None
+  ): Tensor[D] = {
+    if storageOffset.isDefined then
+      fromNative[D](
+        torchNative.as_strided(
+          input.native,
+          size.map(_.toLong).toArray,
+          stride.map(_.toLong).toArray,
+          new LongOptional(storageOffset.get.toLong)
+        )
+      )
+    else
+      fromNative[D](
+        torchNative.as_strided(
+          input.native,
+          size.map(_.toLong).toArray,
+          stride.map(_.toLong).toArray,
+          new LongOptional()
+        )
+      )
   }
 
-  def as_strided[D <: DType](input: Tensor[D],
-                             size: Seq[Int],
-                             stride: Seq[Int]): Tensor[D] = {
-    fromNative[D](torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong)*))
+  def as_strided[D <: DType](input: Tensor[D], size: Seq[Int], stride: Seq[Int]): Tensor[D] = {
+    fromNative[D](
+      torchNative.as_strided(input.native, size.map(_.toLong).toArray, stride.map(_.toLong)*)
+    )
   }
 // def zeros[D <: DType](size: Int*): Tensor[Float32] =
 //   zeros[D](size.toSeq)
@@ -100,17 +127,16 @@ private[torch] trait CreationOps {
     * @group creation_ops
     */
   def zeros[D <: DType](
-                         size: Seq[Int] | Int,
-                         dtype: D,
-                         requires_grad: Boolean
-                       ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
-
+      size: Seq[Int] | Int,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
   def ones[D <: DType](
-                         size: Seq[Int] | Int,
-                         dtype: D,
-                         requires_grad: Boolean
-                       ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
+      size: Seq[Int] | Int,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
 
 //  def ones[D <: DType](
 //                         size: Seq[Int] | Int,
@@ -135,13 +161,13 @@ private[torch] trait CreationOps {
     )
 
   def zeros_like[D <: DType, D2 <: DType | Derive](
-                                                   input: Tensor[D],
-                                                   dtype: D2 = derive,
-                                                   layout: Layout | Derive = derive,
-                                                   device: Device | Derive = derive,
-                                                   requires_grad: Boolean = false,
-                                                   memoryFormat: MemoryFormat = MemoryFormat.Preserve
-                                                 ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+      input: Tensor[D],
+      dtype: D2 = derive,
+      layout: Layout | Derive = derive,
+      device: Device | Derive = derive,
+      requires_grad: Boolean = false,
+      memoryFormat: MemoryFormat = MemoryFormat.Preserve
+  ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_zeros_like)
 
   /** @group creation_ops
@@ -181,13 +207,13 @@ private[torch] trait CreationOps {
     )
 
   def ones_like[D <: DType, D2 <: DType | Derive](
-                                                  input: Tensor[D],
-                                                  dtype: D2 = derive,
-                                                  layout: Layout | Derive = derive,
-                                                  device: Device | Derive = derive,
-                                                  requires_grad: Boolean = false,
-                                                  memoryFormat: MemoryFormat = MemoryFormat.Preserve
-                                                ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+      input: Tensor[D],
+      dtype: D2 = derive,
+      layout: Layout | Derive = derive,
+      device: Device | Derive = derive,
+      requires_grad: Boolean = false,
+      memoryFormat: MemoryFormat = MemoryFormat.Preserve
+  ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_ones_like)
 
   /** @group creation_ops */
@@ -222,7 +248,6 @@ private[torch] trait CreationOps {
   * @group creation_ops
   */
 // format: on
-
 
   def arange[D <: DType | Derive, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
       start: Start = 0,
@@ -318,10 +343,10 @@ private[torch] trait CreationOps {
     * @group creation_ops
     */
   def empty[D <: DType](
-                         size: Seq[Int],
-                         dtype: D ,
-                         requires_grad: Boolean
-                       ):Tensor[D] = this.empty(size,dtype,Strided,CPU,requires_grad,false,Contiguous)
+      size: Seq[Int],
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
 
 //  def empty[D <: DType](
 //                         size: Seq[Int],
@@ -365,13 +390,13 @@ private[torch] trait CreationOps {
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_empty_like)
 
   def empty_like[D <: DType, D2 <: DType | Derive](
-                                                   input: Tensor[D],
-                                                   dtype: D2 = derive,
-                                                   layout: Layout | Derive = derive,
-                                                   device: Device | Derive = derive,
-                                                   requires_grad: Boolean = false,
-                                                   memoryFormat: MemoryFormat = MemoryFormat.Preserve
-                                                 ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+      input: Tensor[D],
+      dtype: D2 = derive,
+      layout: Layout | Derive = derive,
+      device: Device | Derive = derive,
+      requires_grad: Boolean = false,
+      memoryFormat: MemoryFormat = MemoryFormat.Preserve
+  ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_empty_like)
 
   // // TODO emptyStrided
@@ -420,23 +445,33 @@ private[torch] trait CreationOps {
       )
     )
 
-    //input (Tensor) – float tensor to quantize
-    //scales (Tensor) – float 1D tensor of scales to use, size should match input.size(axis)
-    //zero_points (int) – integer 1D tensor of offset to use, size should match input.size(axis)
-    //axis (int) – dimension on which apply per-channel quantization
-    //dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
-  //torch.quantize_per_channel(input, scales, zero_points, axis, dtype) → Tensor
+    // input (Tensor) – float tensor to quantize
+    // scales (Tensor) – float 1D tensor of scales to use, size should match input.size(axis)
+    // zero_points (int) – integer 1D tensor of offset to use, size should match input.size(axis)
+    // axis (int) – dimension on which apply per-channel quantization
+    // dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
+  // torch.quantize_per_channel(input, scales, zero_points, axis, dtype) → Tensor
 ///  public static native Tensor quantize_per_channel(
-    // @Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
-    // @Const @ByRef Tensor var2, @Cast({"int64_t"}) long var3, ScalarType var5);
-    //dtypes: torch.quint8, torch.qint8, torch.qint32
-  def quantize_per_channel[D <: DType, U <: ScalaType](input: Tensor[D],
-                           scales: Tensor[Float32],
-                           zero_points:Tensor[Int64],
-                           axis:Int,
-                           dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+  // @Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
+  // @Const @ByRef Tensor var2, @Cast({"int64_t"}) long var3, ScalarType var5);
+  // dtypes: torch.quint8, torch.qint8, torch.qint32
+  def quantize_per_channel[D <: DType, U <: ScalaType](
+      input: Tensor[D],
+      scales: Tensor[Float32],
+      zero_points: Tensor[Int64],
+      axis: Int,
+      dtype: ScalarType = ScalarType.QUInt8
+  ): Tensor[?] = {
 
-    fromNative(torchNative.quantize_per_channel(input.native,scales.native, zero_points.native,axis.toLong,dtype))
+    fromNative(
+      torchNative.quantize_per_channel(
+        input.native,
+        scales.native,
+        zero_points.native,
+        axis.toLong,
+        dtype
+      )
+    )
   }
 //  torch.quantize_per_tensor(input, scale, zero_point, dtype) → Tensor
   //    public static native Tensor quantize_per_tensor(@Const @ByRef Tensor var0, double var1, @Cast({"int64_t"}) long var3, ScalarType var5);
@@ -449,22 +484,28 @@ private[torch] trait CreationOps {
 //dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
 //    public static native Tensor quantize_per_tensor(@Const @ByRef Tensor var0,
 //    @Const @ByRef Tensor var1, @Const @ByRef Tensor var2, ScalarType var3);
-    ////dtypes: torch.quint8, torch.qint8, torch.qint32
-  def quantize_per_tensor[D <: DType, U <: ScalaType](input: Tensor[D],
-                          scales: Tensor[Float32],
-                          zero_points:Tensor[Int64],
-                          dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+  //// dtypes: torch.quint8, torch.qint8, torch.qint32
+  def quantize_per_tensor[D <: DType, U <: ScalaType](
+      input: Tensor[D],
+      scales: Tensor[Float32],
+      zero_points: Tensor[Int64],
+      dtype: ScalarType = ScalarType.QUInt8
+  ): Tensor[?] = {
 
-    fromNative(torchNative.quantize_per_tensor(input.native, scales.native, zero_points.native,dtype))
+    fromNative(
+      torchNative.quantize_per_tensor(input.native, scales.native, zero_points.native, dtype)
+    )
   }
 
 // //dtypes: torch.quint8, torch.qint8, torch.qint32
-  def quantize_per_tensor_single[D <: DType, U <: ScalaType](input: Tensor[D],
-                          scale: Double,
-                          axis: Int,
-                          dtype:ScalarType = ScalarType.QUInt8):Tensor[?]={
+  def quantize_per_tensor_single[D <: DType, U <: ScalaType](
+      input: Tensor[D],
+      scale: Double,
+      axis: Int,
+      dtype: ScalarType = ScalarType.QUInt8
+  ): Tensor[?] = {
 
-    fromNative(torchNative.quantize_per_tensor(input.native, scale, axis.toLong,dtype))
+    fromNative(torchNative.quantize_per_tensor(input.native, scale, axis.toLong, dtype))
   }
 
   //  public static native Tensor full_like(
@@ -489,14 +530,14 @@ private[torch] trait CreationOps {
   // @ByVal(TensorOptions var2,
   // " MemoryFormatOptional var3);
   def full_like[D <: DType, D1 <: Derive, U <: ScalaType](
-                                                 input: Tensor[D],
-                                                 fillValue: U,
-                                                 dtype: D1 = derive,
-                                                 layout: Layout = Strided,
-                                                 device: Device = CPU,
-                                                 requires_grad: Boolean = false,
-                                                 memoryFormat: MemoryFormat = MemoryFormat.Preserve
-                                               ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
+      input: Tensor[D],
+      fillValue: U,
+      dtype: D1 = derive,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false,
+      memoryFormat: MemoryFormat = MemoryFormat.Preserve
+  ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
     val derivedDType = dtype match
       case _: Derive => scalaToDType(fillValue)
 //      case t: DType => t
@@ -508,8 +549,6 @@ private[torch] trait CreationOps {
         memoryFormat.toNativeOptional
       )
     )
-
-
 
 // TODO fullLike
 // TODO quantize_per_tensor
@@ -538,13 +577,13 @@ private[torch] trait CreationOps {
     val data: ByteVector = Files.readAllBytes(path).asInstanceOf[ByteVector]
     pickleLoad(data)
 
-  def save(model: ModelModule , filePath: String):Unit ={
+  def save(model: ModelModule, filePath: String): Unit = {
     val archive = new OutputArchive
     model.save(archive)
-    archive.save_to(filePath) //"net.pt"
+    archive.save_to(filePath) // "net.pt"
   }
 
-  //torch.save(model.state_dict(), 'resnet.ckpt')
+  // torch.save(model.state_dict(), 'resnet.ckpt')
   def save(state_dict: Map[String, Tensor[?]], checkpoint_filePath: String): Unit = {
 //    val archive = new OutputArchive
 //    archive.save_to(filePath) //"net.pt"

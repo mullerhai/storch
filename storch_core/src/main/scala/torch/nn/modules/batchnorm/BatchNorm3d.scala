@@ -99,11 +99,11 @@ final class BatchNorm3d[ParamType <: FloatNN | ComplexNN: Default](
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BatchNormOptions(toNative(numFeatures))  
+  private val options = new BatchNormOptions(toNative(numFeatures))
 
   eps match {
     case e: Double => options.eps().put(e)
-    case e: Float => options.eps().put(e.toDouble)
+    case e: Float  => options.eps().put(e.toDouble)
   }
   momentum match {
     case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
@@ -116,11 +116,11 @@ final class BatchNorm3d[ParamType <: FloatNN | ComplexNN: Default](
 
   override private[torch] val nativeModule: BatchNorm3dImpl = BatchNorm3dImpl(options)
   nativeModule.to(paramType.toScalarType, false)
-  
+
   val weight: Tensor[ParamType] = fromNative[ParamType](nativeModule.weight)
-  
+
   val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
-  
+
   override def hasBias(): Boolean = true
 
   def reset(): Unit = nativeModule.reset()

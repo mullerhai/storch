@@ -33,7 +33,7 @@ import org.bytedeco.pytorch.{ELUImpl, ELUOptions}
   */
 final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
     extends TensorModule[D]:
- 
+
   val options = ELUOptions(size)
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)
@@ -42,11 +42,12 @@ final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def toString = getClass().getSimpleName() + s"(size=$size,alpha=$alpha,inplace=$inplace)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
 object ELU {
 
-  def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): ELU[D] = new ELU(size, alpha, inplace)
+  def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): ELU[D] =
+    new ELU(size, alpha, inplace)
 }

@@ -1,4 +1,3 @@
-
 package torch
 package nn
 package modules
@@ -12,43 +11,32 @@ import torch.nn.modules.{HasParams, TensorModule}
 import torch.nn.modules.container.{ModuleDict, ModuleList, Sequential}
 import scala.collection.mutable.ListBuffer
 
-
 /** Applies the Softmax function to an n-dimensional input Tensor rescaling them so that the
- * elements of the n-dimensional output Tensor lie in the range [0,1] and sum to 1.
- *
- * Softmax is defined as: $$\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
- *
- * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
- */
-final class GEGLU[D <: FloatNN: Default](dim: Int)
-  extends TensorModule[D]:
+  * elements of the n-dimensional output Tensor lie in the range [0,1] and sum to 1.
+  *
+  * Softmax is defined as: $$\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
+  *
+  * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
+  */
+final class GEGLU[D <: FloatNN: Default](dim: Int) extends TensorModule[D]:
 
-  val linearLayer = register(nn.Linear(dim, dim*2))
+  val linearLayer = register(nn.Linear(dim, dim * 2))
 
   override def hasBias(): Boolean = false
-  
+
   override def toString =
     getClass().getSimpleName() + s"(dim=$dim)"
 
   def apply(input: Tensor[D]): Tensor[D] = {
     val xProj = linearLayer(input)
-    val xPartGate = torch.chunk(xProj,2,dim = -1)
+    val xPartGate = torch.chunk(xProj, 2, dim = -1)
     xPartGate(0) * torch.gelu(xPartGate(1))
   }
 
 object GEGLU {
-  
-  def apply[D <: FloatNN: Default](dim: Int):GEGLU[D] = new GEGLU(dim)
+
+  def apply[D <: FloatNN: Default](dim: Int): GEGLU[D] = new GEGLU(dim)
 }
-
-
-
-
-
-
-
-
-
 
 //import torch
 //import torch.nn as nn

@@ -39,22 +39,27 @@ final class AdaptiveMaxPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int, l: Int) =>
-      new LongOptionalVector(new LongOptional(h), new LongOptional(w),new LongOptional(l)) //failed
+      new LongOptionalVector(
+        new LongOptional(h),
+        new LongOptional(w),
+        new LongOptional(l)
+      ) // failed
     case x: Int =>
-      new LongOptionalVector(new LongOptional(x), new LongOptional(x),new LongOptional(x))
+      new LongOptionalVector(new LongOptional(x), new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked], l: Option[Int @unchecked]) =>
       new LongOptionalVector(h.toOptional, w.toOptional, l.toOptional)
     case x: Option[Int] =>
       new LongOptionalVector(x.toOptional, x.toOptional, x.toOptional)
 
-  override protected[torch] val nativeModule: AdaptiveMaxPool3dImpl = AdaptiveMaxPool3dImpl(nativeOutputSize.get(0))
-
+  override protected[torch] val nativeModule: AdaptiveMaxPool3dImpl = AdaptiveMaxPool3dImpl(
+    nativeOutputSize.get(0)
+  )
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
@@ -73,26 +78,12 @@ object AdaptiveMaxPool3d:
   ): AdaptiveMaxPool3d[ParamType] =
     new AdaptiveMaxPool3d(output_size, return_indices)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  private def nativeOutputSize = outputSize match
 //    case (h: Int, w: Int, l: Int) =>
 ////      toNative((h, w, l)) //
 //      new LongOptionalVector(new LongOptional(h), new LongOptional(w),new LongOptional(l)) //failed
 //    case x: Int =>
-////      toNative((x, x, x)) 
+////      toNative((x, x, x))
 //      new LongOptionalVector(new LongOptional(x), new LongOptional(x),new LongOptional(x))
 
 //  val options: AdaptiveMaxPool3dOptions = AdaptiveMaxPool3dOptions(nativeOutputSize)

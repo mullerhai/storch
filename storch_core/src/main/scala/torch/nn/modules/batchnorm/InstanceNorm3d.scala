@@ -23,6 +23,7 @@ import torch.internal.NativeConverters.fromNative
 import torch.{ComplexNN, Default, FloatNN, Tensor}
 import torch.nn.modules.{HasWeight, TensorModule}
 import torch.internal.NativeConverters.{fromNative, toNative}
+
 /** Applies Group Normalization over a mini-batch of inputs
   *
   * @param numGroups
@@ -44,12 +45,12 @@ final class InstanceNorm3d[ParamType <: FloatNN | ComplexNN: Default](
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: InstanceNormOptions = InstanceNormOptions(toNative(numFeatures)) 
-  
+  private val options: InstanceNormOptions = InstanceNormOptions(toNative(numFeatures))
+
   options.affine().put(affine)
   eps match {
     case e: Double => options.eps().put(e)
-    case e: Float => options.eps().put(e.toDouble)
+    case e: Float  => options.eps().put(e.toDouble)
   }
   momentum match {
     case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))

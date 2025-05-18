@@ -30,12 +30,6 @@ import torch.Float32
   */
 private[torch] trait RandomSamplingOps {
 
-// TODO seed Sets the seed for generating random numbers to a non-deterministic random number.
-// TODO manual_seed Sets the seed for generating random numbers.
-// TODO initial_seed Returns the initial seed for generating random numbers as a Python long.
-// TODO get_rng_state Returns the random number generator state as a torch.ByteTensor.
-// TODO set_rng_state Sets the random number generator state.
-// TODO bernoulli Draws binary random numbers (0 or 1) from a Bernoulli distribution.
 
   /* Returns a tensor where each row contains `numSamples` indices sampled from the multinomial probability distribution located in the corresponding row of tensor `input`. */
   def multinomial[D <: FloatNN](
@@ -67,7 +61,7 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
-  def rand[D <: FloatNN | ComplexNN](size: Int*)(requires_grad:Boolean,dtype: D): Tensor[D] ={
+  def rand[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D): Tensor[D] = {
     rand(size.toSeq, dtype, Strided, CPU, requires_grad)
   }
   def rand[D <: FloatNN | ComplexNN](
@@ -114,13 +108,13 @@ private[torch] trait RandomSamplingOps {
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_rand_like)
 
   def rand_like[D <: DType, D2 <: DType | Derive](
-                                                  input: Tensor[D],
-                                                  dtype: D2 = derive,
-                                                  layout: Layout | Derive = derive,
-                                                  device: Device | Derive = derive,
-                                                  requires_grad: Boolean = false,
-                                                  memoryFormat: MemoryFormat = MemoryFormat.Preserve
-                                                ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
+      input: Tensor[D],
+      dtype: D2 = derive,
+      layout: Layout | Derive = derive,
+      device: Device | Derive = derive,
+      requires_grad: Boolean = false,
+      memoryFormat: MemoryFormat = MemoryFormat.Preserve
+  ): Tensor[DTypeOrDeriveFromTensor[D, D2]] =
     xLike(input, dtype, layout, device, requires_grad, memoryFormat, torchNative.torch_rand_like)
 
   /** Returns a tensor filled with random integers generated uniformly between `low` (inclusive) and
@@ -147,11 +141,20 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
-  def randint[D <: DType](
-                           low: Long,
-                           high: Long,
-                           size: Int*)(requires_grad: Boolean, dtype: D):Tensor[D] ={
-    randint(low = low, high = high, size = size.toSeq, generator = None, dtype = dtype, layout = Strided, device = CPU, requires_grad = requires_grad)
+  def randint[D <: DType](low: Long, high: Long, size: Int*)(
+      requires_grad: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+    randint(
+      low = low,
+      high = high,
+      size = size.toSeq,
+      generator = None,
+      dtype = dtype,
+      layout = Strided,
+      device = CPU,
+      requires_grad = requires_grad
+    )
   }
 
   def randint[D <: DType](
@@ -178,8 +181,14 @@ private[torch] trait RandomSamplingOps {
 
 // TODO Randnd acepts Seq[Int] | Int
 
-  def randn[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D):Tensor[D] ={
-    randn(size = size.toSeq, dtype = dtype, layout = Strided, device = CPU, requires_grad = requires_grad)
+  def randn[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D): Tensor[D] = {
+    randn(
+      size = size.toSeq,
+      dtype = dtype,
+      layout = Strided,
+      device = CPU,
+      requires_grad = requires_grad
+    )
   }
   def randn[D <: FloatNN | ComplexNN](
       size: Seq[Int],
@@ -224,3 +233,11 @@ private[torch] trait RandomSamplingOps {
 
   def set_num_threads(threads: Int): Unit = torchNative.set_num_threads(threads)
 }
+
+
+// TODO seed Sets the seed for generating random numbers to a non-deterministic random number.
+// TODO manual_seed Sets the seed for generating random numbers.
+// TODO initial_seed Returns the initial seed for generating random numbers as a Python long.
+// TODO get_rng_state Returns the random number generator state as a torch.ByteTensor.
+// TODO set_rng_state Sets the random number generator state.
+// TODO bernoulli Draws binary random numbers (0 or 1) from a Bernoulli distribution.

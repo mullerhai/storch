@@ -25,5 +25,5 @@ final class BCELoss extends LossFunc {
   }
 }
 object BCELoss {
-  def apply() : BCELoss = new BCELoss()
+  def apply(): BCELoss = new BCELoss()
 }

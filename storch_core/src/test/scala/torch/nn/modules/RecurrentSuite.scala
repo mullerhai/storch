@@ -4,7 +4,6 @@ import torch.nn
 
 class RecurrentSuite
 
-
 //rnn = nn.LSTM(10, 20, 2)
 //input = torch.randn(5, 3, 10)
 //h0 = torch.randn(2, 3, 20)
@@ -12,12 +11,12 @@ class RecurrentSuite
 //output, (hn, cn) = rnn(input, (h0, c0))
 class LstmSuite extends munit.FunSuite {
   test("LstmSuite output shapes") {
-    val m12 = nn.LSTM(10,20,2)
-    val input1 = torch.randn(Seq(5,3,10))
+    val m12 = nn.LSTM(10, 20, 2)
+    val input1 = torch.randn(Seq(5, 3, 10))
     val h0 = torch.randn(Seq(2, 3, 20))
     val c0 = torch.randn(Seq(2, 3, 20))
     val out = m12(input1, Some(h0), Some(c0))
-    assertEquals(out._1.shape, Seq(5,3,20))
+    assertEquals(out._1.shape, Seq(5, 3, 20))
     println(out._1)
   }
 }
@@ -32,7 +31,7 @@ class GruSuite extends munit.FunSuite {
     val input1 = torch.randn(Seq(5, 3, 10))
     val h0 = torch.randn(Seq(2, 3, 20))
     val (output, hn) = m12(input1, Some(h0))
-    assertEquals(output.shape, Seq(5,3,20)) 
+    assertEquals(output.shape, Seq(5, 3, 20))
     println(output)
   }
 }
@@ -46,7 +45,7 @@ class RnnSuite extends munit.FunSuite {
     val input1 = torch.randn(Seq(5, 3, 10))
     val h0 = torch.randn(Seq(2, 3, 20))
     val (output, hn) = m12(input1, Some(h0))
-    assertEquals(output.shape, Seq(5,3,20)) 
+    assertEquals(output.shape, Seq(5, 3, 20))
     println(output)
   }
 }

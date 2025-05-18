@@ -48,7 +48,6 @@ class ChunkDataReader(batch: Int = 32) extends CDR with DataReader {
   override def chunk_count: Long = 1
 
   override def reset(): Unit = {}
-  
 
   def apply(exampleVector: ExampleVector): ExampleVector = {
     this.exampleVec = exampleVector
@@ -62,26 +61,6 @@ class ChunkDataReader(batch: Int = 32) extends CDR with DataReader {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  def batchSplit(exampleVector: ExampleVector): ExampleVector = {
 //    val batch = exampleVector.begin()
