@@ -26,7 +26,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class LPPool2d[D <: BFloat16 | Float32 | Float64: Default](
+final class LPPool2d[D <: FloatNN | ComplexNN: Default](
     normType: Float,
     kernelSize: Int | (Int, Int),
     stride: Int | (Int, Int),
@@ -59,7 +59,7 @@ final class LPPool2d[D <: BFloat16 | Float32 | Float64: Default](
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
 object LPPool2d:
-  def apply[D <: BFloat16 | Float32 | Float64: Default](
+  def apply[D <: FloatNN | ComplexNN: Default](
       norm_type: Float,
       kernel_size: Int | (Int, Int),
       stride: Int | (Int, Int),

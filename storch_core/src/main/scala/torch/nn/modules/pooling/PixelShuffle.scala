@@ -25,7 +25,7 @@ import org.bytedeco.pytorch.{MaxUnpool3dOptions, PixelShuffleImpl, PixelShuffleO
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class PixelShuffle[D <: BFloat16 | Float32 | Float64: Default](upscaleFactor: Int)
+final class PixelShuffle[D <: FloatNN | ComplexNN: Default](upscaleFactor: Int)
     extends TensorModule[D]:
 
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
@@ -44,7 +44,7 @@ final class PixelShuffle[D <: BFloat16 | Float32 | Float64: Default](upscaleFact
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
 object PixelShuffle:
-  def apply[D <: BFloat16 | Float32 | Float64: Default](upscale_factor: Int): PixelShuffle[D] =
+  def apply[D <: FloatNN | ComplexNN: Default](upscale_factor: Int): PixelShuffle[D] =
     new PixelShuffle[D](upscale_factor)
 
 //  private val options: PixelShuffleOptions = PixelShuffleOptions(toNative(upscaleFactor))

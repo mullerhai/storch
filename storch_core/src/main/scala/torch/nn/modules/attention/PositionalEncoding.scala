@@ -7,7 +7,7 @@ import torch.nn.modules.{HasParams, Module}
 import torch.{BFloat16, Default, Float32, Tensor}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class PositionalEncoding[ParamType <: BFloat16 | Float32: Default](
+class PositionalEncoding[ParamType <: FloatNN | ComplexNN : Default](
     dModel: Long,
     maxLen: Long = 28 * 28
 ) extends HasParams[ParamType]
@@ -37,7 +37,7 @@ class PositionalEncoding[ParamType <: BFloat16 | Float32: Default](
 }
 
 object PositionalEncoding {
-  def apply[ParamType <: BFloat16 | Float32: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       d_model: Long,
       max_len: Long = 28 * 28
   ): PositionalEncoding[ParamType] = {

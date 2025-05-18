@@ -35,7 +35,7 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ReflectionPad3d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class ReflectionPad3d[ParamType <: FloatNN | ComplexNN: Default](
     padding: Int | (Int, Int, Int, Int, Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -65,7 +65,7 @@ final class ReflectionPad3d[ParamType <: BFloat16 | Float32 | Float64: Default](
 }
 
 object ReflectionPad3d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       padding: Int | (Int, Int, Int, Int, Int, Int)
   ): ReflectionPad3d[ParamType] =
     new ReflectionPad3d(padding)

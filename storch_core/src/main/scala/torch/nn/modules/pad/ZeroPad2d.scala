@@ -30,7 +30,7 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ZeroPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class ZeroPad2d[ParamType <: FloatNN | ComplexNN: Default](
     padding: Int | (Int, Int, Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -60,7 +60,7 @@ final class ZeroPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
 }
 
 object ZeroPad2d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       padding: Int | (Int) | (Int, Int, Int, Int)
   ): ZeroPad2d[ParamType] =
     new ZeroPad2d[ParamType](padding)

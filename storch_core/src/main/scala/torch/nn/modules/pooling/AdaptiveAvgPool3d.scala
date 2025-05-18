@@ -31,7 +31,7 @@ import org.bytedeco.pytorch.LongOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class AdaptiveAvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
     outputSize: Int | Option[Int] | (Option[Int], Option[Int], Option[Int]) | (Int, Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -63,7 +63,7 @@ final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
 }
 
 object AdaptiveAvgPool3d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       output_size: Int | Option[Int] | (Option[Int], Option[Int], Option[Int]) | (Int, Int, Int)
   ): AdaptiveAvgPool3d[ParamType] =
     new AdaptiveAvgPool3d(output_size)

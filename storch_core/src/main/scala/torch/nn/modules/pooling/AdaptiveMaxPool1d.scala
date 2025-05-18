@@ -31,7 +31,7 @@ import org.bytedeco.pytorch.LongOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AdaptiveMaxPool1d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class AdaptiveMaxPool1d[ParamType <: FloatNN | ComplexNN: Default](
     outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int),
     returnIndices: Boolean = false
 ) extends HasParams[ParamType]
@@ -66,7 +66,7 @@ final class AdaptiveMaxPool1d[ParamType <: BFloat16 | Float32 | Float64: Default
 }
 
 object AdaptiveMaxPool1d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int),
       return_indices: Boolean = false
   ): AdaptiveMaxPool1d[ParamType] =

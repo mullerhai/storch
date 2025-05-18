@@ -25,7 +25,7 @@ import org.bytedeco.pytorch.{MaxPool2dImpl, MaxPool2dOptions, T_TensorTensor_T}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class MaxPool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+final class MaxPool2d[D <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int),
     stride: Int | (Int, Int),
     padding: Int | (Int, Int) = 0,
@@ -72,7 +72,7 @@ final class MaxPool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
 
 object MaxPool2d:
-  def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+  def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int),
       stride: Int | (Int, Int),
       padding: Int | (Int, Int) = 0,

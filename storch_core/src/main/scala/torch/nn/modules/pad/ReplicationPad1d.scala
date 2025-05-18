@@ -34,7 +34,7 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ReplicationPad1d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class ReplicationPad1d[ParamType <: FloatNN | ComplexNN: Default](
     padding: Int | (Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -58,7 +58,7 @@ final class ReplicationPad1d[ParamType <: BFloat16 | Float32 | Float64: Default]
 }
 
 object ReplicationPad1d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       padding: Int | (Int, Int)
   ): ReplicationPad1d[ParamType] =
     new ReplicationPad1d(padding)

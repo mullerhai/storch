@@ -32,7 +32,7 @@ import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class AvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class AvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int) | (Int, Int, Int),
     stride: Int | (Int, Int) | (Int, Int, Int),
     padding: Int | (Int, Int, Int) = 0,
@@ -83,7 +83,7 @@ final class AvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default](
 }
 
 object AvgPool3d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int) | (Int, Int, Int),
       stride: Int | (Int, Int) | (Int, Int, Int),
       padding: Int | (Int, Int, Int) = 0,

@@ -47,16 +47,16 @@ import internal.NativeConverters.fromNative
   *   // dtype: ParamType = defaultDType[ParamType] If set to ``false``, the layer will not learn an
   *   additive bias. Default: ``true``
   */
-final class Bilinear[ParamType <: FloatNN: Default](
-    inFeatures1: Long,
-    inFeatures2: Long,
-    outFeatures: Long,
+final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
+    inFeatures1: Int,
+    inFeatures2: Int,
+    outFeatures: Int,
     addBias: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BilinearOptions(inFeatures1, inFeatures2, outFeatures)
+  private val options = new BilinearOptions(inFeatures1.toLong, inFeatures2.toLong, outFeatures.toLong)
   options.bias().put(addBias)
 
   override private[torch] val nativeModule: BilinearImpl = new BilinearImpl(options)
@@ -89,9 +89,9 @@ final class Bilinear[ParamType <: FloatNN: Default](
 
 object Bilinear:
 
-  def apply[ParamType <: FloatNN: Default](
-      in_features1: Long,
-      in_features2: Long,
-      out_features: Long,
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      in_features1: Int,
+      in_features2: Int,
+      out_features: Int,
       bias: Boolean = true
   ): Bilinear[ParamType] = new Bilinear(in_features1, in_features2, out_features, bias)

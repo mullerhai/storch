@@ -28,7 +28,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * torch.nn.MaxPool1d(kernel_size, stride=None, padding=0, dilation=1, return_indices=False,
   * ceil_mode=False)
   */
-final class MaxPool1d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+final class MaxPool1d[D <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int),
     stride: Int | (Int, Int),
     padding: Int | (Int, Int) = 0,
@@ -71,7 +71,7 @@ final class MaxPool1d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
     val outputWithIndices = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
 object MaxPool1d:
-  def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+  def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int),
       stride: Int | (Int, Int),
       padding: Int | (Int, Int) = 0,

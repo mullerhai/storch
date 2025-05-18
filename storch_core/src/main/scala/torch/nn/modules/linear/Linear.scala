@@ -46,7 +46,7 @@ import internal.NativeConverters.fromNative
   * @param bias
   *   If set to ``false``, the layer will not learn an additive bias. Default: ``true``
   */
-final class Linear[ParamType <: FloatNN: Default](
+final class Linear[ParamType <: FloatNN | ComplexNN: Default](
     inFeatures: Long,
     outFeatures: Long,
     addBias: Boolean = true
@@ -84,7 +84,7 @@ final class Linear[ParamType <: FloatNN: Default](
     s"${getClass.getSimpleName}(inFeatures=$inFeatures, outFeatures=$outFeatures, bias=$addBias)"
 
 object Linear:
-  def apply[ParamType <: FloatNN: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       in_features: Long,
       out_features: Long,
       add_bias: Boolean = true

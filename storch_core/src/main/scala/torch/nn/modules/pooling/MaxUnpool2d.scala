@@ -24,7 +24,7 @@ import org.bytedeco.pytorch.{MaxUnpool2dImpl, MaxUnpool2dOptions, LongVectorOpti
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class MaxUnpool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int),
     stride: Int | (Int, Int),
     padding: Int | (Int, Int) = 0
@@ -70,7 +70,7 @@ final class MaxUnpool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
   override def apply(v1: Tensor[D]): Tensor[D] = ???
 
 object MaxUnpool2d:
-  def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
+  def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int),
       stride: Int | (Int, Int),
       padding: Int | (Int, Int) = 0

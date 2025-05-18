@@ -68,7 +68,7 @@ final class CrossMapLRN2d[ParamType <: FloatNN | ComplexNN: Default](
     size: Int,
     alpha: Float,
     beta: Float,
-    k: Long
+    k: Int
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModuleBase[Int64, ParamType]:
@@ -76,7 +76,7 @@ final class CrossMapLRN2d[ParamType <: FloatNN | ComplexNN: Default](
   private val options = new CrossMapLRN2dOptions(size.toLong)
   options.alpha().put(DoublePointer(1).put(alpha.toDouble))
   options.beta().put(DoublePointer(1).put(beta.toDouble))
-  options.k().put(LongPointer(1).put(k))
+  options.k().put(LongPointer(1).put(k.toLong))
   override val nativeModule: CrossMapLRN2dImpl = CrossMapLRN2dImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
@@ -95,5 +95,5 @@ object CrossMapLRN2d:
       size: Int,
       alpha: Float,
       beta: Float,
-      k: Long
+      k: Int
   ): CrossMapLRN2d[ParamType] = new CrossMapLRN2d(size, alpha, beta, k)

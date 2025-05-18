@@ -31,7 +31,7 @@ import org.bytedeco.pytorch.{
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
+final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int, Int),
     outputSize: Option[Int] | Option[(Int, Int, Int)],
     outputRatio: Option[Float] | Option[(Float, Float, Float)],
@@ -120,7 +120,7 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
 
 object FractionalMaxPool3d:
-  def apply[D <: BFloat16 | Float32 | Float64: Default](
+  def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int, Int),
       output_size: Option[Int] | Option[(Int, Int, Int)],
       output_ratio: Option[Float] | Option[(Float, Float, Float)],

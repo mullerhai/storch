@@ -35,7 +35,7 @@ import torch.internal.NativeConverters.toOptional
   * The output is of size H x W, for any input size. The number of output features is equal to the
   * number of input planes.
   */
-final class ConstantPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
+final class ConstantPad2d[ParamType <: FloatNN | ComplexNN: Default](
     padding: Int | (Int, Int) | (Int, Int, Int, Int),
     value: Float | Double
 ) extends HasParams[ParamType]
@@ -73,7 +73,7 @@ final class ConstantPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
 }
 
 object ConstantPad2d:
-  def apply[ParamType <: BFloat16 | Float32 | Float64: Default](
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
       padding: Int | (Int, Int) | (Int, Int, Int, Int),
       value: Float | Double
   ): ConstantPad2d[ParamType] =
