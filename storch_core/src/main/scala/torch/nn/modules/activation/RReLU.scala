@@ -29,6 +29,7 @@ import torch.internal.NativeConverters.fromNative
   */
 final class RReLU[D <: DType: Default](lower: Float, upper: Float, inplace: Boolean = false)
     extends TensorModule[D]:
+  
   private val options = new RReLUOptions()
   options.inplace().put(inplace)
   options.lower().put(lower.toDouble)

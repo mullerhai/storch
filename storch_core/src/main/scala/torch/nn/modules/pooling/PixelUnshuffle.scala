@@ -33,7 +33,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class PixelUnshuffle[D <: BFloat16 | Float32 | Float64: Default](
     downscaleFactor: Int
 ) extends TensorModule[D]:
-//  private val options: PixelUnshuffleOptions = PixelUnshuffleOptions(toNative(downscaleFactor))
+
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: PixelUnshuffleOptions = PixelUnshuffleOptions(
     LongPointer(downscaleFactor.toLong)
@@ -54,3 +54,15 @@ final class PixelUnshuffle[D <: BFloat16 | Float32 | Float64: Default](
 object PixelUnshuffle:
   def apply[D <: BFloat16 | Float32 | Float64: Default](downscale_factor: Int): PixelUnshuffle[D] =
     new PixelUnshuffle[D](downscale_factor)
+
+
+
+
+
+
+
+
+
+
+
+//  private val options: PixelUnshuffleOptions = PixelUnshuffleOptions(toNative(downscaleFactor))

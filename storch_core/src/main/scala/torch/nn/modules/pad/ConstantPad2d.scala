@@ -55,7 +55,6 @@ final class ConstantPad2d[ParamType <: BFloat16 | Float32 | Float64: Default](
     case x: Float => options.value().put(x.toDouble)
     case x: Double => options.value().put(x)
   }
-//  options.value().put(DoublePointer(1).put(value.toDouble))
 
   override protected[torch] val nativeModule: ConstantPad2dImpl = ConstantPad2dImpl(
     options

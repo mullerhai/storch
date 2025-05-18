@@ -72,9 +72,7 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()
-
-  // T_TensorTensor_TOptional
-
+  
   def apply(
              t: Tensor[ParamType],
              h0: Tensor[ParamType],
@@ -106,8 +104,6 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
       val fore = nativeModule.forward(input.native, hx_opt)
       return (fromNative(fore.get0()), fromNative(fore.get1()))
     } else {
-      //      val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
-      //      val hx_opt = new T_TensorTensor_TOptional(hx)
       val fore = nativeModule.forward(input.native)
       return (fromNative(fore.get0()), fromNative(fore.get1()))
     }
@@ -124,8 +120,7 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
       val fore = nativeModule.forward(t.native, hx_opt)
       return  (fromNative(fore.get0()), fromNative(fore.get1()))
     }else {
-//      val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
-//      val hx_opt = new T_TensorTensor_TOptional(hx)
+
       val fore = nativeModule.forward(t.native)
       return  (fromNative(fore.get0()), fromNative(fore.get1()))
     }
@@ -148,20 +143,27 @@ object LSTMCell:
       hidden_size: Int,
       bias: Boolean = true
   ): LSTMCell[ParamType] = new LSTMCell(input_size, hidden_size, bias)
- 
- 
 
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//      val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
+//      val hx_opt = new T_TensorTensor_TOptional(hx)
+
+//    //      val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
+//      //      val hx_opt = new T_TensorTensor_TOptional(hx)
 
 //  def apply(t: Tensor[ParamType],h0: Tensor[ParamType],c0: Tensor[ParamType]): (Tensor[ParamType],Tensor[ParamType],Tensor[ParamType]) = {
 //    val fore = nativeModule.forward(t.native,h0.native,c0.native)

@@ -121,10 +121,3 @@ object LocalResponseNorm:
 
 
 
-
-
-
-// TODO weight, bias etc. are undefined if affine = false. We need to take that into account
-//  val weight: Tensor[ParamType] = fromNative[ParamType](nativeModule.weight)
-//  val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
-// TODO running_mean, running_var, num_batches_tracked

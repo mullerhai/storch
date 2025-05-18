@@ -74,7 +74,7 @@ import torch.nn.modules.regularization.Upsample.UpsampleMode
  * @see See [[https://pytorch.org/docs/master/nn.html#torch.nn.Dropout3d]]
  * @see See [[https://pytorch.org/docs/stable/generated/torch.nn.functional.dropout.html#torch-nn-functional-dropout]]
  *
- * TODO: https://pytorch.org/docs/master/nn.html#torch.nn.Dropout
+ * https://pytorch.org/docs/master/nn.html#torch.nn.Dropout
  * Add 2D, 3D, Alpha and feature alpha versions
  */
 // format: on
@@ -163,6 +163,16 @@ object Upsample:
     new Upsample(size, scale_factor, mode, align_corners, recompute_scale_factor)
   enum UpsampleMode:
     case kNearest, kLinear, kBilinear, kBicubic, kTrilinear
+
+
+
+
+
+
+
+
+
+
 
 //  options.mode().put(upsampleModeNative)
 //  if scaleFactor != None then options.scale_factor().put(scaleFactorVec)

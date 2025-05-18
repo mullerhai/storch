@@ -43,10 +43,7 @@ final class AvgPool2d[ParamType <: BFloat16 | Float32 | Float64: Default](
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val options = new AvgPool2dOptions(toNative(kernelSize)) 
-//  kernelSize match {
-//    case k: Int        => new AvgPool2dOptions(toNative((k, k)))
-//    case k: (Int, Int) => new AvgPool2dOptions(toNative(k))
-//  }
+
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
@@ -99,3 +96,21 @@ object AvgPool2d:
       count_include_pad,
       divisor_override
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  kernelSize match {
+//    case k: Int        => new AvgPool2dOptions(toNative((k, k)))
+//    case k: (Int, Int) => new AvgPool2dOptions(toNative(k))
+//  }

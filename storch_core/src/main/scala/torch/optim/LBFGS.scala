@@ -47,7 +47,7 @@ final class LBFGS(
   if (maxEval.isDefined) {
     val nativeMaxEval = new LongOptional(maxEval.get)
     options.max_eval().put(nativeMaxEval)
-  } // LongOptional
+  } 
   options.tolerance_grad().put(toleranceGrad)
   options.tolerance_change().put(toleranceChange)
   options.history_size().put(historySize)

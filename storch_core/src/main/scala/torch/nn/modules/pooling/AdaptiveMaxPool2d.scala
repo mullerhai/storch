@@ -40,10 +40,8 @@ final class AdaptiveMaxPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
-//      toNative((h, w))
       new LongOptionalVector(new LongOptional(h), new LongOptional(w)) //failed
     case x: Int =>
-//      toNative((x, x)) //
       new LongOptionalVector(new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
@@ -56,15 +54,7 @@ final class AdaptiveMaxPool2d[ParamType <: BFloat16 | Float32 | Float64: Default
       new LongOptionalVector(x.toOptional, x.toOptional)
   override protected[torch] val nativeModule: AdaptiveMaxPool2dImpl = AdaptiveMaxPool2dImpl(nativeOutputSize.get(0))
   
-//  val options: AdaptiveMaxPool2dOptions = AdaptiveMaxPool2dOptions(nativeOutputSize)
-//  options.output_size().put(nativeOutputSize)
-//  println(
-//    s"AdaptiveMaxPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
-//  )
-//  override protected[torch] val nativeModule: AdaptiveMaxPool2dImpl = AdaptiveMaxPool2dImpl(options)
-//  println(
-//    s"AdaptiveMaxPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
-//  )
+
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
@@ -86,3 +76,24 @@ object AdaptiveMaxPool2d:
       return_indices: Boolean = false
   ): AdaptiveMaxPool2d[ParamType] =
     new AdaptiveMaxPool2d(output_size, return_indices)
+
+
+
+
+
+
+
+
+
+
+
+
+//  val options: AdaptiveMaxPool2dOptions = AdaptiveMaxPool2dOptions(nativeOutputSize)
+//  options.output_size().put(nativeOutputSize)
+//  println(
+//    s"AdaptiveMaxPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )
+//  override protected[torch] val nativeModule: AdaptiveMaxPool2dImpl = AdaptiveMaxPool2dImpl(options)
+//  println(
+//    s"AdaptiveMaxPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )

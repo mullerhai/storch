@@ -26,6 +26,7 @@ import org.bytedeco.pytorch.TanhImpl
   * ```
   */
 final class Hardshrink[D <: DType: Default](lambda: Float) extends TensorModule[D]:
+  
   val options = HardshrinkOptions(lambda.toDouble)
   override protected[torch] val nativeModule: HardshrinkImpl = new HardshrinkImpl(options)
 

@@ -75,6 +75,22 @@ object MaxUnpool1d:
       padding: Int | (Int, Int) = 0
   ): MaxUnpool1d[D] = new MaxUnpool1d(kernel_size, stride, padding)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //  options.padding().put(toNative(padding))
 //  options.kernel_size().put(toNative(kernelSize))
 //  options.stride().put(toNative(stride))

@@ -34,10 +34,7 @@ final class LPPool2d[D <: BFloat16 | Float32 | Float64: Default](
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: LPPool2dOptions = LPPool2dOptions(toNative(kernelSize))
-//  kernelSize match {
-//    case k: Int        => LPPool2dOptions(toNative((k, k)))
-//    case k: (Int, Int) => LPPool2dOptions(toNative(k))
-//  }
+
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
@@ -70,3 +67,15 @@ object LPPool2d:
       ceil_mode: Boolean = false
   ): LPPool2d[D] =
     new LPPool2d[D](norm_type, kernel_size, stride, ceil_mode)
+
+
+
+
+
+
+
+
+//  kernelSize match {
+//    case k: Int        => LPPool2dOptions(toNative((k, k)))
+//    case k: (Int, Int) => LPPool2dOptions(toNative(k))
+//  }

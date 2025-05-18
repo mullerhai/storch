@@ -32,12 +32,15 @@ import org.bytedeco.pytorch.{GELUImpl, GELUOptions}
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class GELU[D <: DType: Default](size: Int, approximate: Float, inplace: Boolean)
+final class GELU[D <: DType: Default](size: Int, approximate: Float | Double, inplace: Boolean)
     extends TensorModule[D]:
-  //  private val options = new SoftmaxOptions(dim)
+
   val options = GELUOptions(size)
-  options.approximate().put(approximate.toByte)
-//  options.alpha().put(alpha)
+  approximate match
+    case a : Float => options.approximate().put(a.toByte)
+    case a : Double => options.approximate().put(a.toByte)
+  
+
   override val nativeModule: GELUImpl = GELUImpl(options)
 
   override def hasBias(): Boolean = false

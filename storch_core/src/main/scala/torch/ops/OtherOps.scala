@@ -130,4 +130,7 @@ private[torch] trait OtherOps {
 
   /** Returns the sum of the elements of the diagonal of the input 2-D matrix. */
   def trace[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.trace(input.native))
+  
+  def from_native[D <: DType](rawTensor: org.bytedeco.pytorch.Tensor): Tensor[D] = fromNative(rawTensor)
+  
 }

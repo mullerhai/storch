@@ -60,7 +60,7 @@ final class MaxUnpool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
   def apply(input: Tensor[D], indices: Tensor[Int64]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, indices.native)
   )
-  // outputSize: Array[Int]  =4
+
   def apply(input: Tensor[D], indices: Tensor[Int64], outputSize: Array[Int]): Tensor[D] =
     val out = outputSize.map(_.toLong)
     fromNative(
@@ -68,7 +68,6 @@ final class MaxUnpool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
     )
 
   override def apply(v1: Tensor[D]): Tensor[D] = ???
-//  def apply(t: Tensor[D]): Tensor[D] = // fromNative(nativeModule.forward(t.native))
 
 object MaxUnpool2d:
   def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
@@ -77,3 +76,14 @@ object MaxUnpool2d:
       padding: Int | (Int, Int) = 0
   ): MaxUnpool2d[D] =
     new MaxUnpool2d(kernel_size, stride, padding)
+
+
+
+
+
+
+
+
+
+// outputSize: Array[Int]  =4
+//  def apply(t: Tensor[D]): Tensor[D] = // fromNative(nativeModule.forward(t.native))

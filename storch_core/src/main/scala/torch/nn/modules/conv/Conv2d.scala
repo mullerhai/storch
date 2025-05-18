@@ -81,8 +81,7 @@ final class Conv2d[ParamType <: FloatNN | ComplexNN: Default](
     case b: Boolean         => options.bias().put(b)
     case b: Option[Boolean] => if b.isDefined then options.bias().put(b.get)
   }
-
-  //  private val paddingModeNative =
+  
   paddingMode match
     case PaddingMode.Zeros | "zeros" | "Zeros" | Some("zeros") | Some("Zeros") =>
       options.padding_mode().put(new kZeros)

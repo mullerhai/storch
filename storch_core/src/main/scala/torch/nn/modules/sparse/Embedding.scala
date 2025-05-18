@@ -118,9 +118,7 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.forward(indices.to(torch.int64).native)
   )
 
-//  def apply(indices: Tensor[Int64],weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = fromNative(
-//    nativeModule.forward(indices.native)
-//  )
+
 
   def apply(indices: Tensor[Int64] | Tensor[Int32], weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
     indices.dtype match
@@ -128,8 +126,6 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
       case torch.int32 => fromNative(nativeModule.forward(indices.to(torch.int64).native))
   }
 
-  //case input: Tensor[Int32]
-//  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"
@@ -168,6 +164,17 @@ object Embedding:
 
 
 
+
+
+
+
+
+//  def apply(indices: Tensor[Int64],weight: Option[Tensor[ParamType]] = None): Tensor[ParamType] = fromNative(
+//    nativeModule.forward(indices.native)
+//  )
+
+//case input: Tensor[Int32]
+//  def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
 //if paddingIdx.isDefined then options.padding_idx().put(toNative(paddingIdx.get))
 //if maxNorm.isDefined then options.max_norm().put(maxNorm.get.toDouble)

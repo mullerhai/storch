@@ -59,11 +59,7 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
 
   override private[torch] val nativeModule: RNNCellImpl = RNNCellImpl(options)
   nativeModule.to(paramType.toScalarType, false)
-
-  //  public native @ByRef Tensor weight_ih(); public native RNNCellImplBase weight_ih(Tensor setter);
-  //  public native @ByRef Tensor weight_hh(); public native RNNCellImplBase weight_hh(Tensor setter);
-  //  public native @ByRef Tensor bias_ih(); public native RNNCellImplBase bias_ih(Tensor setter);
-  //  public native @ByRef Tensor bias_hh(); public native RNNCellImplBase bias_hh(Tensor setter);
+  
   def weight_ih(weight: Tensor[ParamType]) = nativeModule.weight_ih(weight.native)
 
   def weight_hh(weight: Tensor[ParamType]) = nativeModule.weight_hh(weight.native)
@@ -90,7 +86,7 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
     fromNative(fore)
   }
 
-//todo forward_with_packed_input   
+
   def weight: TensorVector =
     TensorVector(nativeModule.weight_hh(), nativeModule.weight_ih()) // all_weights()
 

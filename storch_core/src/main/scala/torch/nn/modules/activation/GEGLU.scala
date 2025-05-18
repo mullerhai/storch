@@ -41,6 +41,15 @@ object GEGLU {
   def apply[D <: FloatNN: Default](dim: Int):GEGLU[D] = new GEGLU(dim)
 }
 
+
+
+
+
+
+
+
+
+
 //import torch
 //import torch.nn as nn
 //

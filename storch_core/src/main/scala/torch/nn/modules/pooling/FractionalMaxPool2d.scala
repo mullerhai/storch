@@ -40,11 +40,7 @@ final class FractionalMaxPool2d[D <: BFloat16 | Float32 | Float64: Default](
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: FractionalMaxPool2dOptions = FractionalMaxPool2dOptions(toNative(kernelSize))
-//  val longArrayOptionalOutputSize: LongExpandingArrayOptional = new LongExpandingArrayOptional()
-//  val doubleArrayOptionalOutputRatio: DoubleExpandingArrayOptional = new DoubleExpandingArrayOptional()
-//  println(s"doubleArrayOptionalOutputRatio init has_value ${doubleArrayOptionalOutputRatio.has_value()}")
-//
-//  println(s"longArrayOptionalOutputSize init has_value ${longArrayOptionalOutputSize.has_value()}")
+
   options.kernel_size().put(toNative(kernelSize))
   if outputSize.isDefined then
     outputSize.get match {
@@ -80,11 +76,7 @@ final class FractionalMaxPool2d[D <: BFloat16 | Float32 | Float64: Default](
     case None =>
       println(s"randomSamples is None, outputSize: ${outputSize} outputRatio ${outputRatio}")
   }
-//  options.output_ratio().put(doubleArrayOptionalOutputRatio)
-//  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")
-//  options.output_size().put(longArrayOptionalOutputSize)
-//  println(s"longArrayOptionalOutputSize set after has_value ${longArrayOptionalOutputSize.has_value()}")
-//
+
   println(s"FractionalMaxPool2d raw  options kernel ${options.kernel_size().get(0)} k2 ${options.kernel_size().get(1)} outsize ${options
       .output_size()
       .has_value()}  ${options.output_size().get().get(0)} out2 ${options.output_size().get().get(1)} outRatio ${options
@@ -135,3 +127,31 @@ object FractionalMaxPool2d:
       return_indices,
       random_samples
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  options.output_ratio().put(doubleArrayOptionalOutputRatio)
+//  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")
+//  options.output_size().put(longArrayOptionalOutputSize)
+//  println(s"longArrayOptionalOutputSize set after has_value ${longArrayOptionalOutputSize.has_value()}")
+//
+
+//  val longArrayOptionalOutputSize: LongExpandingArrayOptional = new LongExpandingArrayOptional()
+//  val doubleArrayOptionalOutputRatio: DoubleExpandingArrayOptional = new DoubleExpandingArrayOptional()
+//  println(s"doubleArrayOptionalOutputRatio init has_value ${doubleArrayOptionalOutputRatio.has_value()}")
+//
+//  println(s"longArrayOptionalOutputSize init has_value ${longArrayOptionalOutputSize.has_value()}")

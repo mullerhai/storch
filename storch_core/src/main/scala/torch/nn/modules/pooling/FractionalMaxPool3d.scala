@@ -40,26 +40,7 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: FractionalMaxPool3dOptions = FractionalMaxPool3dOptions(toNative(kernelSize))
-//  val longArrayOptionalOutputSize: LongExpandingArrayOptional = new LongExpandingArrayOptional()
-//  val doubleArrayOptionalOutputRatio: DoubleExpandingArrayOptional = new DoubleExpandingArrayOptional()
-//  println(s"doubleArrayOptionalOutputRatio init has_value ${doubleArrayOptionalOutputRatio.has_value()}")
-//
-//  println(s"longArrayOptionalOutputSize init has_value ${longArrayOptionalOutputSize.has_value()}")
-//  if outputSize.isDefined then outputSize.get match {
-//    case t: Int => longArrayOptionalOutputSize.put(toNative(t))
-//    case t: (Int,Int,Int) => longArrayOptionalOutputSize.put(toNative(t))
-//
-//  }
-//  if outputRatio.isDefined then  outputRatio.get  match {
-//    case t: Float => doubleArrayOptionalOutputRatio.put(DoublePointer(t.toDouble))
-//    case t: (Float, Float, Float) => doubleArrayOptionalOutputRatio.put(DoublePointer(Array(t._1.toDouble, t._2.toDouble, t._3.toDouble)*))
-//
-//  }
 
-//  if outputSize.isDefined then outputSize.get match {
-//    case t: Int => options.output_size().put(LongPointer(Array(t.toLong,t.toLong,t.toLong)*))
-//    case t: (Int, Int,Int) => options.output_size().put(toNative(t))
-//  }
 
   if outputSize.isDefined then
     outputSize.get match {
@@ -91,14 +72,7 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
         println(s"output ratio three  elements full")
       //      options.output_ratio().put(DoublePointer(Array(t._1.toDouble, t._2.toDouble)*))
     }
-//  if outputRatio.isDefined then outputRatio.get match {
-//    case t: Float => options.output_ratio().put(DoublePointer(Array(t.toDouble,t.toDouble,t.toDouble)*))
-//    case t: (Float, Float,Float) => options.output_ratio().put(DoublePointer(Array(t._1.toDouble, t._2.toDouble) *))
-//  }
 
-//  options.output_size().put(longArrayOptionalOutputSize)
-
-//  options.output_ratio().put(doubleArrayOptionalOutputRatio)
   options.kernel_size().put(toNative(kernelSize))
   randomSamples match {
     case Some(t: Seq[Float]) => options._random_samples().put(torch.Tensor(t).native)
@@ -118,9 +92,7 @@ final class FractionalMaxPool3d[D <: BFloat16 | Float32 | Float64: Default](
       .get()
       .get(1)}  ratio3 ${options.output_ratio().get().get(2)}")
 
-  //  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")
-//
-//  println(s"longArrayOptionalOutputSize set after has_value ${longArrayOptionalOutputSize.has_value()}")
+
   override private[torch] val nativeModule: FractionalMaxPool3dImpl = FractionalMaxPool3dImpl(
     options
   )
@@ -164,3 +136,56 @@ object FractionalMaxPool3d:
       return_indices,
       random_samples
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  println(s"doubleArrayOptionalOutputRatio set after has_value ${doubleArrayOptionalOutputRatio.has_value()}")
+//
+//  println(s"longArrayOptionalOutputSize set after has_value ${longArrayOptionalOutputSize.has_value()}")
+
+//  if outputRatio.isDefined then outputRatio.get match {
+//    case t: Float => options.output_ratio().put(DoublePointer(Array(t.toDouble,t.toDouble,t.toDouble)*))
+//    case t: (Float, Float,Float) => options.output_ratio().put(DoublePointer(Array(t._1.toDouble, t._2.toDouble) *))
+//  }
+
+//  options.output_size().put(longArrayOptionalOutputSize)
+
+//  options.output_ratio().put(doubleArrayOptionalOutputRatio)
+
+
+//  val longArrayOptionalOutputSize: LongExpandingArrayOptional = new LongExpandingArrayOptional()
+//  val doubleArrayOptionalOutputRatio: DoubleExpandingArrayOptional = new DoubleExpandingArrayOptional()
+//  println(s"doubleArrayOptionalOutputRatio init has_value ${doubleArrayOptionalOutputRatio.has_value()}")
+//
+//  println(s"longArrayOptionalOutputSize init has_value ${longArrayOptionalOutputSize.has_value()}")
+//  if outputSize.isDefined then outputSize.get match {
+//    case t: Int => longArrayOptionalOutputSize.put(toNative(t))
+//    case t: (Int,Int,Int) => longArrayOptionalOutputSize.put(toNative(t))
+//
+//  }
+//  if outputRatio.isDefined then  outputRatio.get  match {
+//    case t: Float => doubleArrayOptionalOutputRatio.put(DoublePointer(t.toDouble))
+//    case t: (Float, Float, Float) => doubleArrayOptionalOutputRatio.put(DoublePointer(Array(t._1.toDouble, t._2.toDouble, t._3.toDouble)*))
+//
+//  }
+
+//  if outputSize.isDefined then outputSize.get match {
+//    case t: Int => options.output_size().put(LongPointer(Array(t.toLong,t.toLong,t.toLong)*))
+//    case t: (Int, Int,Int) => options.output_size().put(toNative(t))
+//  }

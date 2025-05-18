@@ -38,9 +38,8 @@ final class AdaptiveAvgPool1d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int) =>
-      toNative(h, w) // new LongOptionalVector(new LongOptional(h), new LongOptional(w))
-    case x: Int => toNative(x) // new LongOptionalVector(new LongOptional(x), new LongOptional(x))
-    // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
+      toNative(h, w) 
+    case x: Int => toNative(x)
     case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
       new LongOptionalVector(h.toOptional, w.toOptional)
     case x: Option[Int] =>
@@ -68,3 +67,30 @@ object AdaptiveAvgPool1d:
       output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
   ): AdaptiveAvgPool1d[ParamType] =
     new AdaptiveAvgPool1d(output_size)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//private def nativeOutputSize = outputSize match
+//  case (h: Int, w: Int) =>
+//    toNative(h, w) // new LongOptionalVector(new LongOptional(h), new LongOptional(w))
+//  case x: Int => toNative(x) // new LongOptionalVector(new LongOptional(x), new LongOptional(x))
+//  // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
+//  case (h: Option[Int @unchecked], w: Option[Int @unchecked]) =>
+//    new LongOptionalVector(h.toOptional, w.toOptional)
+//  case x: Option[Int] =>
+//    new LongOptionalVector(x.toOptional, x.toOptional)

@@ -92,21 +92,6 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
   def encoder(encoderModule: AnyModule) = nativeModule.encoder(encoderModule)
   
   def decoder(decoderModule: AnyModule) = nativeModule.decoder(decoderModule)
-  
-  //  public native void reset();
-  //
-  //  public native void reset_parameters();
-  //
-
-  //  public static native @ByVal Tensor generate_square_subsequent_mask(@Cast("int64_t") long sz);
-  //  /** options with which this {@code Transformer} was constructed */
-  //  public native @ByRef TransformerOptions options(); public native TransformerImpl options(TransformerOptions setter);
-  //
-  //  /** encoder module */
-  //  public native @ByRef AnyModule encoder(); public native TransformerImpl encoder(AnyModule setter);
-  //
-  //  /** decoder module */
-  //  public native @ByRef AnyModule decoder(); public native TransformerImpl decoder(AnyModule setter);
 
   def apply(
       src: Tensor[ParamType],

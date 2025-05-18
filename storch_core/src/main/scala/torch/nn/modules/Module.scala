@@ -66,9 +66,13 @@ abstract class Module {
 
   def modules(recurse: Boolean): Seq[Module] =
     childModules.values.flatMap(child => child +: child.modules).toSeq.distinct
+    
   def modules: Seq[Module] = modules(recurse = true)
 
   def namedChildren: SeqMap[String, Module] = childModules
+  
+  def children(): Seq[Module] = modules(true)
+  
   def namedModules: SeqMap[String, Module] =
     namedChildren.flatMap((_, module) => module.namedModules)
 

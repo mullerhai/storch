@@ -43,6 +43,24 @@ case class TensorTuple[D <: DType](
     indices: Tensor[Int64]
 )
 
+trait TensorCreator[A, T <: DType] {
+  def create(data: Seq[A]): Tensor[T]
+}
+
+
+object TensorCreator:
+  given longCreator: TensorCreator[Long, Int64] with
+    def create(data: Seq[Long]): Tensor[Int64] = torch.Tensor(data)
+
+  given intCreator: TensorCreator[Int, Int32] with
+    def create(data: Seq[Int]): Tensor[Int32] = torch.Tensor(data)
+
+  given doubleCreator: TensorCreator[Double, Float64] with
+    def create(data: Seq[Double]): Tensor[Float64] = torch.Tensor(data)
+
+  given floatCreator: TensorCreator[Float, Float32] with
+    def create(data: Seq[Float]): Tensor[Float32] = torch.Tensor(data)
+
 /** A [[torch.Tensor]] is a multi-dimensional matrix containing elements of a single data type. */
 sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pytorch.Tensor) {
   require(
@@ -50,12 +68,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     s"Storch only supports tensors with up to ${Int.MaxValue} elements"
   )
 
-  def new_tensor(data: Seq[Long]): Tensor[torch.Int64] = {
-    torch.Tensor(data)
+  def new_tensor[A, T <: DType](data: Seq[A])(using creator: TensorCreator[A, T]): Tensor[T] = {
+    creator.create(data)
   }
-//  fromNative(
-//    native.new_tensor(data)
-//  )
+
   def ==(other: ScalaType): Tensor[Bool] = eq(other)
 
   def add[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
@@ -3484,3 +3500,21 @@ extension [S <: ScalaType](s: S)
   ): Tensor[Promoted[D, ScalaToDType[S]]] = t.pow(s)
   def **[S2 <: ScalaType](other: S2): DTypeToScala[Promoted[ScalaToDType[S], ScalaToDType[S2]]] =
     Tensor.fromScalar(s).pow(other).item
+
+
+
+
+
+
+
+
+
+
+
+//  def new_tensor(data: Seq[Long]): Tensor[torch.Int64] = {
+//    torch.Tensor(data)
+//  }
+
+//  fromNative(
+//    native.new_tensor(data)
+//  )

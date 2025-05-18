@@ -95,21 +95,22 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
     numFeatures: Int,
     eps: Float | Double = 1e-05f,
-    momentum: Float | Option[Float] = 0.1f,
+    momentum: Float | Option[Float] | Double = 0.1f,
     affine: Boolean = true,
     trackRunningStats: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BatchNormOptions(toNative(numFeatures)) //LongPointer(1).put(numFeatures.toLong))
-//  options.eps().put(DoublePointer(1).put(eps.toDouble))
+  private val options = new BatchNormOptions(toNative(numFeatures)) 
+
   eps match {
     case e: Double => options.eps().put(e)
     case e: Float  => options.eps().put(e.toDouble)
   }
   momentum match {
     case m: Float => options.momentum().put(DoublePointer(1).put(m.toDouble))
+    case m: Double => options.momentum().put(DoublePointer(1).put(m))
     case m: Option[Float] =>
       if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
   }
@@ -120,10 +121,9 @@ final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: BatchNorm1dImpl = BatchNorm1dImpl(options)
   nativeModule.to(paramType.toScalarType, false)
 
-  // TODO weight, bias etc. are undefined if affine = false. We need to take that into account
+  
   val weight: Tensor[ParamType] = fromNative[ParamType](nativeModule.weight)
   val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
-  // TODO running_mean, running_var, num_batches_tracked
 
   override def hasBias(): Boolean = true
 
@@ -133,37 +133,13 @@ final class BatchNorm1d[ParamType <: FloatNN | ComplexNN: Default](
   
   def reset_running_stats(): Unit = nativeModule.reset_running_stats()
   
-//  def weight(): Tensor[ParamType] = fromNative(nativeModule.weight())
-//  
-//  def bias(): Tensor[ParamType] = fromNative(nativeModule.bias())
-  
   def running_mean(): Tensor[ParamType] = fromNative(nativeModule.running_mean())
   
   def running_var(): Tensor[ParamType] = fromNative(nativeModule.running_var())
   
   def num_batches_tracked(): Tensor[ParamType] = fromNative(nativeModule.num_batches_tracked())
   
-  //  public native @ByRef Tensor weight(); public native InstanceNorm1dImplBaseBase weight(Tensor setter);
-  //
-  //  /** The learned bias.
-  //   *  Only defined if the {@code affine} option was {@code true} upon construction. */
-  //  public native @ByRef Tensor bias(); public native InstanceNorm1dImplBaseBase bias(Tensor setter);
-  //
-  //  /** The running mean.
-  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
-  //   *  construction. */
-  //  public native @ByRef Tensor running_mean(); public native InstanceNorm1dImplBaseBase running_mean(Tensor setter);
-  //
-  //  /** The running variance.
-  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
-  //   *  construction. */
-  //  public native @ByRef Tensor running_var(); public native InstanceNorm1dImplBaseBase running_var(Tensor setter);
-  //
-  //  /** The number of the forward call.
-  //   *  Only defined if the {@code track_running_stats} option was {@code true} upon
-  //   *  construction. */
-  //  public native @ByRef Tensor num_batches_tracked(); public native InstanceNorm1dImplBaseBase num_batches_tracked(Tensor setter);
-  
+
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
   override def toString(): String =
@@ -174,8 +150,37 @@ object BatchNorm1d:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       num_features: Int,
       eps: Float | Double = 1e-05f,
-      momentum: Float | Option[Float] = 0.1f,
+      momentum: Float | Option[Float] | Double = 0.1f,
       affine: Boolean = true,
       track_running_stats: Boolean = true
   ): BatchNorm1d[ParamType] =
     new BatchNorm1d[ParamType](num_features, eps, momentum, affine, track_running_stats)
+
+
+
+
+
+
+////  options.eps().put(DoublePointer(1).put(eps.toDouble))
+
+// TODO weight, bias etc. are undefined if affine = false. We need to take that into account
+//  public native @ByRef Tensor weight(); public native InstanceNorm1dImplBaseBase weight(Tensor setter);
+//
+//  /** The learned bias.
+//   *  Only defined if the {@code affine} option was {@code true} upon construction. */
+//  public native @ByRef Tensor bias(); public native InstanceNorm1dImplBaseBase bias(Tensor setter);
+//
+//  /** The running mean.
+//   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+//   *  construction. */
+//  public native @ByRef Tensor running_mean(); public native InstanceNorm1dImplBaseBase running_mean(Tensor setter);
+//
+//  /** The running variance.
+//   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+//   *  construction. */
+//  public native @ByRef Tensor running_var(); public native InstanceNorm1dImplBaseBase running_var(Tensor setter);
+//
+//  /** The number of the forward call.
+//   *  Only defined if the {@code track_running_stats} option was {@code true} upon
+//   *  construction. */
+//  public native @ByRef Tensor num_batches_tracked(); public native InstanceNorm1dImplBaseBase num_batches_tracked(Tensor setter);

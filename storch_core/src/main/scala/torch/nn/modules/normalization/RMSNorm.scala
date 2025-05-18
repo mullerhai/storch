@@ -18,9 +18,8 @@ final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
 
 
   var weight: Tensor[ParamType] =  registerParameter(torch.empty(normalizedShape,dtype= this.paramType),true,"weight")
-//  val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
 
-  override def hasBias(): Boolean = true
+  override def hasBias(): Boolean = false
 
   override def toString =
     s"${getClass.getSimpleName}(normalizedShape = ${normalizedShape.mkString(" ")}, elementWiseAffine = ${elementWiseAffine},eps=$eps )"

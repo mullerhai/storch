@@ -33,7 +33,7 @@ import org.bytedeco.pytorch.{ELUImpl, ELUOptions}
   */
 final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
     extends TensorModule[D]:
-  //  private val options = new SoftmaxOptions(dim)
+ 
   val options = ELUOptions(size)
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)

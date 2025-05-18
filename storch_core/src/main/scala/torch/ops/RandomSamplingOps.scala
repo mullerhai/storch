@@ -218,5 +218,9 @@ private[torch] trait RandomSamplingOps {
 
   def manualSeed(seed: Long) = torchNative.manual_seed(seed)
 
+  def manual_seed(seed: Long) = torchNative.manual_seed(seed)
+
   def setNumThreads(threads: Int): Unit = torchNative.set_num_threads(threads)
+
+  def set_num_threads(threads: Int): Unit = torchNative.set_num_threads(threads)
 }

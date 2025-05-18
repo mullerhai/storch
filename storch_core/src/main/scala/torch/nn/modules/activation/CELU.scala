@@ -33,7 +33,7 @@ import org.bytedeco.pytorch.{CELUImpl, CELUOptions}
   */
 final class CELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
     extends TensorModule[D]:
-  //  private val options = new SoftmaxOptions(dim)
+  
   val options = CELUOptions(size)
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)

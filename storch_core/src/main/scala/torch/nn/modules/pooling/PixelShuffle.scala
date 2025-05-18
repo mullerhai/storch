@@ -28,7 +28,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class PixelShuffle[D <: BFloat16 | Float32 | Float64: Default](upscaleFactor: Int)
     extends TensorModule[D]:
 
-//  private val options: PixelShuffleOptions = PixelShuffleOptions(toNative(upscaleFactor))
+
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: PixelShuffleOptions = PixelShuffleOptions(LongPointer(upscaleFactor.toLong))
   options.upscale_factor.put(LongPointer(upscaleFactor))
@@ -47,3 +47,14 @@ final class PixelShuffle[D <: BFloat16 | Float32 | Float64: Default](upscaleFact
 object PixelShuffle:
   def apply[D <: BFloat16 | Float32 | Float64: Default](upscale_factor: Int): PixelShuffle[D] =
     new PixelShuffle[D](upscale_factor)
+
+
+
+
+
+
+
+
+
+
+//  private val options: PixelShuffleOptions = PixelShuffleOptions(toNative(upscaleFactor))

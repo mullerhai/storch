@@ -44,6 +44,7 @@ import internal.NativeConverters.fromNative
   * @param outFeatures
   *   size of each output sample
   * @param bias
+  *     // dtype: ParamType = defaultDType[ParamType]
   *   If set to ``false``, the layer will not learn an additive bias. Default: ``true``
   */
 final class Bilinear[ParamType <: FloatNN: Default](
@@ -51,7 +52,6 @@ final class Bilinear[ParamType <: FloatNN: Default](
     inFeatures2: Long,
     outFeatures: Long,
     addBias: Boolean = true
-    // dtype: ParamType = defaultDType[ParamType]
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

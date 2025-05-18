@@ -31,7 +31,7 @@ import torch.internal.NativeConverters.fromNative
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
 final class GLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
-  //  private val options = new SoftmaxOptions(dim)
+
   val options = GLUOptions(dim)
 
   override val nativeModule: GLUImpl = GLUImpl(options)

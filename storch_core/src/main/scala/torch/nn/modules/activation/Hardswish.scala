@@ -6,7 +6,7 @@ package activation
 
 import org.bytedeco.pytorch
 import torch.internal.NativeConverters.fromNative
-//import org.bytedeco.pytorch.{HardswishImpl, ELUOptions}
+
 final class Hardswish[D <: DType: Default] extends TensorModule[D]:
 
   override def hasBias(): Boolean = false

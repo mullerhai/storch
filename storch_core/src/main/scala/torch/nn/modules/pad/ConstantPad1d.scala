@@ -43,7 +43,7 @@ final class ConstantPad1d[ParamType <: BFloat16 | Float32 | Float64: Default](
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: ConstantPad1dOptions = ConstantPad1dOptions(toNative(padding))
   options.padding().put(toNative(padding))
-//  options.value().put(DoublePointer(1).put(value.toDouble))
+
   value match {
     case v: Float => options.value().put(v.toDouble)
     case v: Double => options.value().put(v)
@@ -69,3 +69,10 @@ object ConstantPad1d:
       value: Float | Double
   ): ConstantPad1d[ParamType] =
     new ConstantPad1d[ParamType](padding, value)
+
+
+
+
+
+
+//  options.value().put(DoublePointer(1).put(value.toDouble))

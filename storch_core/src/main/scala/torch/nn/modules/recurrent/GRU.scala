@@ -111,7 +111,7 @@ final class GRU[ParamType <: FloatNN | ComplexNN: Default](
   }
     
     
-  def weight: TensorVector = nativeModule.all_weights()
+  def weights = all_weights() 
 
   override def hasBias(): Boolean = options.bias().get()
 
@@ -135,6 +135,13 @@ object GRU:
       bidirectional: Boolean = false
   ): GRU[ParamType] =
     new GRU(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)
+
+
+
+
+
+
+
 
 
 

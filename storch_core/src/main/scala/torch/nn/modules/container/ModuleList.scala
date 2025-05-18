@@ -50,8 +50,6 @@ object ModuleList {
 }
 final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     extends Module
-    // with TensorModule[D]:
-    // TODO
     with TensorModule[D]
     with scala.collection.immutable.Iterable[TensorModule[D]]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

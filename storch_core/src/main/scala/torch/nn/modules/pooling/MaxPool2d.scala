@@ -70,6 +70,7 @@ final class MaxPool2d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
   def forward_with_indices(t: Tensor[D]): (Tensor[D], Tensor[D]) =
     val outputWithIndices = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
+    
 object MaxPool2d:
   def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
       kernel_size: Int | (Int, Int),

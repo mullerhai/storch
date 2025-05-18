@@ -38,7 +38,7 @@ import internal.NativeConverters.fromNative
   * ```
   *
   * @group nn_linear
-  *
+  *     // dtype: ParamType = defaultDType[ParamType]
   * @param inFeatures
   *   size of each input sample
   * @param outFeatures
@@ -50,7 +50,6 @@ final class Linear[ParamType <: FloatNN: Default](
     inFeatures: Long,
     outFeatures: Long,
     addBias: Boolean = true
-    // dtype: ParamType = defaultDType[ParamType]
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

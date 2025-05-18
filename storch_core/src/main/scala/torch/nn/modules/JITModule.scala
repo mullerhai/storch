@@ -29,12 +29,7 @@ class JITModule(qualifiedName: String,
     pred
   }
 
-  //      // Create a vector of inputs.
-  //        IValueVector inputs = new IValueVector();
-  //        inputs.push_back(new IValue(ones(1, 3, 224, 224)));
-  //        // Execute the model and turn its output into a tensor.
-  //        Tensor output = module.forward(inputs).toTensor();
-  //        print(output.slice(/*dim=*/1, /*start=*/new LongOptional(0), /*end=*/new LongOptional(5), /*step=*/1));
+
   def apply(predictSeq: Seq[Int]): Tensor[?] ={
 
     val vector = new IValueVector(torch.ones(predictSeq).native)
@@ -172,7 +167,6 @@ class JITModule(qualifiedName: String,
     })
   }
 
-//  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
 
   def named_parameters(recurse: Boolean= true)= nativeJitModule.named_parameters(recurse)
 
@@ -205,3 +199,24 @@ class JITModule(qualifiedName: String,
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//      // Create a vector of inputs.
+//        IValueVector inputs = new IValueVector();
+//        inputs.push_back(new IValue(ones(1, 3, 224, 224)));
+//        // Execute the model and turn its output into a tensor.
+//        Tensor output = module.forward(inputs).toTensor();
+//        print(output.slice(/*dim=*/1, /*start=*/new LongOptional(0), /*end=*/new LongOptional(5), /*step=*/1));
+
+//  def parameters(recurse: Boolean =true) = nativeJitModule.parameters(recurse)
+

@@ -64,8 +64,6 @@ object ModuleDict {
 }
 final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
     extends Module
-    // with TensorModule[D]:
-    // TODO
     with TensorModule[D]
     with scala.collection.immutable.Iterable[(String, TensorModule[D])]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
@@ -134,6 +132,14 @@ final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
   def apply(name: String): torch.nn.modules.TensorModule[D] = moduleWithNameMap.get(name).get
 
   def length: Int = modules.length
+
+
+
+
+
+
+
+
 
 //    val all = modules.appended(module)
 // TODO: make modules list mutable?

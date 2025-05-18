@@ -10,7 +10,6 @@ import torch.internal.NativeConverters.fromNative
 final class Hardsigmoid[D <: DType: Default] extends TensorModule[D]:
  
   override def hasBias(): Boolean = false
-
  
   override def toString = getClass().getSimpleName()
   def apply(t: Tensor[D]): Tensor[D] = torch.hardsigmoid(t)

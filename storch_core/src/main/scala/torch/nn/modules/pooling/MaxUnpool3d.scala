@@ -73,7 +73,6 @@ final class MaxUnpool3d[D <: BFloat16 | Float32 | Float64 | Int64: Default](
       nativeModule.forward(input.native, indices.native, LongVectorOptional(LongVector(out*)))
     )
   override def apply(v1: Tensor[D]): Tensor[D] = ???
-//  def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
 object MaxUnpool3d:
   def apply[D <: BFloat16 | Float32 | Float64 | Int64: Default](
@@ -82,3 +81,18 @@ object MaxUnpool3d:
       padding: Int | (Int, Int) | (Int, Int, Int) = 0
   ): MaxUnpool3d[D] =
     new MaxUnpool3d(kernel_size, stride, padding)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))

@@ -59,4 +59,25 @@ package object torch
     }
   }
 
+  def no_grad[A](op: => A): A = {
+    import org.bytedeco.pytorch.NoGradGuard
+    Using.resource(NoGradGuard()) { _ =>
+      op
+    }
+  }
+
+  def with_grad[A](op: => A): A = {
+    import org.bytedeco.pytorch.GradMode
+    Using.resource(GradMode()){ _ =>
+      GradMode.set_enabled(true)
+      op
+    }
+  }
+  def no_names_grad[A](op: => A): A = {
+    import org.bytedeco.pytorch.NoNamesGuard
+    Using.resource(NoNamesGuard()) { _ =>
+      op
+    }
+  }
+
 }

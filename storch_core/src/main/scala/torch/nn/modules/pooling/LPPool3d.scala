@@ -81,6 +81,8 @@ object LPPool3d:
 
 
 
+
+
 //  private val options: LPPool3dOptions = kernelSize match {
 //    case k: Int             => LPPool3dOptions(toNative((k, k, k)))
 //    case k: (Int, Int, Int) => LPPool3dOptions(toNative(k))

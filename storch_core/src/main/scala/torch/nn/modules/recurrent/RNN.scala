@@ -111,7 +111,7 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
   }
 
     
-  def weight: TensorVector = nativeModule.all_weights()
+  def weights = all_weights() //: TensorVector = nativeModule.all_weights()
 
   override def hasBias(): Boolean = options.bias().get()
 

@@ -81,6 +81,23 @@ object MaxPool1d:
   ): MaxPool1d[D] =
     new MaxPool1d(kernel_size, stride, padding, dilation, return_indices, ceil_mode)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //  options.stride().put(toNative(stride))
 //  options.padding().put(toNative(padding))
 //  options.dilation().put(toNative(dilation))

@@ -7,8 +7,9 @@ import torch.nn.modules.{HasParams, Module}
 import torch.{BFloat16, Default, Float32, Tensor}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-//BFloat16 | Float32 : Default
-class PositionalEncoding[ParamType <: BFloat16 | Float32: Default](dModel: Long, maxLen: Long = 28 * 28)
+
+class PositionalEncoding[ParamType <: BFloat16 | Float32: Default](dModel: Long, 
+                                                                   maxLen: Long = 28 * 28)
   extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

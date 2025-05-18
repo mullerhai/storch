@@ -24,12 +24,11 @@ import org.bytedeco.pytorch.{LogSigmoidImpl}
 import torch.internal.NativeConverters.fromNative
 
 /** Applies the rectified linear unit function element-wise:
-  *
+  * //  private val options = new LogSigmoidOptions()
+ * //  options.inplace().put(inplace) 
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class LogSigmoid[D <: DType: Default](inplace: Boolean = false) extends TensorModule[D]:
-//  private val options = new LogSigmoidOptions()
-//  options.inplace().put(inplace)
 
   override protected[torch] val nativeModule: LogSigmoidImpl = LogSigmoidImpl()
 

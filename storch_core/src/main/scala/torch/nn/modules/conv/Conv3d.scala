@@ -159,6 +159,34 @@ object Conv3d:
   enum PaddingMode:
     case Zeros, Reflect, Replicate, Circular
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //  stride match {
 //    case s: Int => options.stride().put(toNative((s,s,s)))
 //    case s: (Int, Int) => options.stride().put(toNative(s))

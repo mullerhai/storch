@@ -44,8 +44,8 @@ final class InstanceNorm2d[ParamType <: FloatNN | ComplexNN: Default](
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: InstanceNormOptions = InstanceNormOptions(toNative(numFeatures)) //LongPointer(1).put(numFeatures.toLong))
-//  options.eps().put(DoublePointer(1).put(eps.toDouble))
+  private val options: InstanceNormOptions = InstanceNormOptions(toNative(numFeatures)) 
+
   eps match {
     case e: Double => options.eps().put(e)
     case e: Float => options.eps().put(e.toDouble)

@@ -38,10 +38,8 @@ final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private def nativeOutputSize = outputSize match
     case (h: Int, w: Int, l: Int) =>
-//      toNative((h, w, l)) 
      new LongOptionalVector(new LongOptional(h), new LongOptional(w), new LongOptional(l))
     case x: Int =>
-//      toNative((x, x, x))
       new LongOptionalVector(new LongOptional(x), new LongOptional(x), new LongOptional(x))
     // We know this can only be int so we can suppress the type test for Option[Int] cannot be checked at runtime warning
     case (h: Option[Int @unchecked], w: Option[Int @unchecked], l: Option[Int @unchecked]) =>
@@ -50,16 +48,7 @@ final class AdaptiveAvgPool3d[ParamType <: BFloat16 | Float32 | Float64: Default
       new LongOptionalVector(x.toOptional, x.toOptional, x.toOptional)
   override protected[torch] val nativeModule: AdaptiveAvgPool3dImpl = AdaptiveAvgPool3dImpl(nativeOutputSize.get(0))
   
-//  val options: AdaptiveAvgPool3dOptions = AdaptiveAvgPool3dOptions(nativeOutputSize)
-//  options.output_size().put(nativeOutputSize)
-//  println(
-//    s"AdaptiveAvgPool3d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
-//  )
-//  override protected[torch] val nativeModule: AdaptiveAvgPool3dImpl = AdaptiveAvgPool3dImpl(options)
 
-//  println(
-//    s"AdaptiveAvgPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
-//  )
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
@@ -77,3 +66,37 @@ object AdaptiveAvgPool3d:
       output_size: Int | Option[Int] | (Option[Int], Option[Int], Option[Int]) | (Int, Int, Int)
   ): AdaptiveAvgPool3d[ParamType] =
     new AdaptiveAvgPool3d(output_size)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//private def nativeOutputSize = outputSize match
+//  case (h: Int, w: Int, l: Int) =>
+//    //      toNative((h, w, l)) 
+//    new LongOptionalVector(new LongOptional(h), new LongOptional(w), new LongOptional(l))
+//  case x: Int =>
+//    //      toNative((x, x, x))
+//    new LongOptionalVector(new LongOptional(x), new LongOptional(x), new LongOptional(x))
+//  val options: AdaptiveAvgPool3dOptions = AdaptiveAvgPool3dOptions(nativeOutputSize)
+//  options.output_size().put(nativeOutputSize)
+//  println(
+//    s"AdaptiveAvgPool3d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )
+//  override protected[torch] val nativeModule: AdaptiveAvgPool3dImpl = AdaptiveAvgPool3dImpl(options)
+
+//  println(
+//    s"AdaptiveAvgPool2d raw options 1: ${options.output_size().get} options 2: ${options.output_size().get} "
+//  )

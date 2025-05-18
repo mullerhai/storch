@@ -63,9 +63,7 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
 
   override private[torch] val nativeModule: LSTMImpl = LSTMImpl(options)
   nativeModule.to(paramType.toScalarType, false)
-
-//T_TensorTensor_TOptional
-
+  
   def apply(
              t: Tensor[ParamType],
              h0: Tensor[ParamType],
@@ -144,7 +142,7 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     val vec = nativeModule.all_weights()
     torch.tensorVectorToSeqTensor(vec)
   }
-  def weight: TensorVector = nativeModule.all_weights()
+  def weights = all_weights()
 
   def reset(): Unit = nativeModule.reset()
 
