@@ -8,8 +8,9 @@ import torch.{BFloat16, Default, Float32, Tensor}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 //BFloat16 | Float32 : Default
-class PositionalEncoding[D <: BFloat16 | Float32: Default](dModel: Long, maxLen: Long = 28 * 28)
-    extends HasParams[D] {
+class PositionalEncoding[ParamType <: BFloat16 | Float32: Default](dModel: Long, maxLen: Long = 28 * 28)
+  extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val arr = Seq(maxLen, dModel)
   var encoding = torch.zeros(size = arr.map(_.toInt), dtype = this.paramType)
@@ -27,7 +28,7 @@ class PositionalEncoding[D <: BFloat16 | Float32: Default](dModel: Long, maxLen:
   override def toString =
     s"${getClass.getSimpleName}(d_model=$dModel max_len=$maxLen)"
 
-  def apply(x: Tensor[D]): Tensor[D] = {
+  def apply(x: Tensor[ParamType]): Tensor[ParamType] = {
 
     x.add(encoding.index(::, 0.&&(x.size(1))).to(x.device))
   }
@@ -35,10 +36,10 @@ class PositionalEncoding[D <: BFloat16 | Float32: Default](dModel: Long, maxLen:
 }
 
 object PositionalEncoding {
-  def apply[D <: BFloat16 | Float32: Default](
+  def apply[ParamType <: BFloat16 | Float32: Default](
       d_model: Long,
       max_len: Long = 28 * 28
-  ): PositionalEncoding[D] = {
-    new PositionalEncoding[D](d_model, max_len)
+  ): PositionalEncoding[ParamType] = {
+    new PositionalEncoding[ParamType](d_model, max_len)
   }
 }

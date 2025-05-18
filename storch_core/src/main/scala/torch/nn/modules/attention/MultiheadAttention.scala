@@ -111,6 +111,8 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
   //  public native @ByRef Tensor v_proj_weight(); public native MultiheadAttentionImpl v_proj_weight(Tensor setter);
   //  public native @Cast("int64_t") long head_dim(); public native MultiheadAttentionImpl head_dim(long setter);
 
+  def qkv_same_embed_dim(): Boolean = nativeModule._qkv_same_embed_dim()
+  
   def in_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl= nativeModule.in_proj_weight(weight.native)
 
   def in_proj_bias(bias: Tensor[ParamType]): MultiheadAttentionImpl = nativeModule.in_proj_bias(bias.native)

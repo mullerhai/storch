@@ -19,7 +19,6 @@ package models
 
 import torch.{BFloat16, DType, Default, Float32, Float64, FloatNN, Tensor, nn}
 import torch.nn.init.{Mode, NonLinearity, constant_, kaimingNormal_}
-
 import torch.nn.modules.batchnorm.BatchNorm2d
 import torch.nn.modules.container.Sequential
 import torch.nn.modules.linear.Linear
@@ -27,10 +26,8 @@ import sourcecode.Name
 import torch.nn.modules.activation.ReLU
 import torch.nn.modules.conv.Conv2d
 import torch.nn.modules.pooling.{AdaptiveAvgPool2d, MaxPool2d}
-import torch.nn.modules.{HasWeight, Module}
+import torch.nn.modules.{HasParams, HasWeight, Module, TensorModule}
 import torchvision.transforms.*
-
-import torch.nn.modules.TensorModule
 
 /** ResNet architecture implementations
   *
@@ -194,8 +191,7 @@ object resnet:
   )(using Default[D])(
       normLayer: (Int => HasWeight[D] & TensorModule[D]) =
         (numFeatures => BatchNorm2d[D](numFeatures))
-  ) extends HasParams[ParamType]
-    with TensorModule[ParamType] {
+  ) extends HasParams[D] with TensorModule[D] {
     var inplanes = 64
     var dilation = 1
     val baseWidth = widthPerGroup
