@@ -1,11 +1,12 @@
 # STorch - GPU Accelerated Deep Learning for Scala 3
 
-STorch is a Scala library for fast tensor computations and deep learning, based on PyTorch.
-Base On Cpp LibTorch, STorch has equal position with Pytorch  
+STorch is a Scala library for fast tensor computations and deep learning, same as PyTorch.
+ 
 Like PyTorch, STorch provides
-* A NumPy like API for working with tensors
+* Both Compile from Cpp LibTorch, STorch has Same Equal Position with Pytorch
+* A NumPy like API for working with tensors 
 * GPU support [Future will support HuaWei CANN NPU]
-* Automatic differentiation
+* Automatic differentiation on Linux | Mac | Windows | IOS | Andriod
 * A neural network API for building and training neural networks.
 * What All you need Pytorch features could find in STorch !!!
 * Minimal time and learning cost migrate from python pytorch developer
@@ -19,6 +20,14 @@ Like PyTorch, STorch provides
 STorch aims to close to the Python API to make porting existing models and the life of people already familiar with PyTorch easier.
 
 STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
+
+How to fetch STorch Library
+```scala 3
+
+libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.3.5-1.15.1"
+
+```
+
 
 ![storch-1](./docs/images/storch-1.png)
 ![storch-2](./docs/images/storch-2.png)
