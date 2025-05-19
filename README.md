@@ -13,8 +13,10 @@ Like PyTorch, STorch provides
 * Support LLM | Recommend System | Compute Vision | NLP | Financial Tech | RL |Big Data | Data Science Research
 * Big Deep Learning Environment Chains boost you concentrate on  development
 * Support Java SMID Vector API, Please use JDK Version >= 17
+* Could Use NCCL | GLOO | RAY | SPARK | FLINK for DISTRIBUTE TRAINING and inference [Future will support UCC | MPI] 
+* Best Data Driven Process and Monad Feature Engineer Model Pipeline Partner for Apache Spark | Flink  | Polar
 
-Storch aims to close to the Python API to make porting existing models and the life of people already familiar with PyTorch easier.
+STorch aims to close to the Python API to make porting existing models and the life of people already familiar with PyTorch easier.
 
 STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
 
