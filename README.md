@@ -1,15 +1,27 @@
-# Storch - GPU Accelerated Deep Learning for Scala 3
+# STorch - GPU Accelerated Deep Learning for Scala 3
 
 Storch is a Scala library for fast tensor computations and deep learning, based on PyTorch.
 
 Like PyTorch, Storch provides
 * A NumPy like API for working with tensors
-* GPU support
+* GPU support [Future will support HuaWei CANN NPU]
 * Automatic differentiation
 * A neural network API for building and training neural networks.
+* What All you need pytorch futures could find in STorch !!!
+* Minimal time and learning cost migrate from python pytorch developer
+* Maximal ROI for Big Data developer and data scientist
+* Support LLM | Recommend System | Compute Vision | NLP | Financial Tech | RL |Big Data | Data Science Research
+* Big Deep Learning Environment Chains boost your develop
 
 Storch aims to close to the Python API to make porting existing models and the life of people already familiar with PyTorch easier.
 
+![storch-1](./docs/images/storch-1.png)
+![storch-2](./docs/images/storch-2.png)
+![storch-3](./docs/images/storch-3.png)
+![storch-4](./docs/images/storch-4.png)
+![storch-5](./docs/images/storch-5.png)
+![storch-6](./docs/images/storch-6.png)
+![storch-7](./docs/images/storch-7.png)
 For documentation, see https://storch.dev
 
 ## Example:
