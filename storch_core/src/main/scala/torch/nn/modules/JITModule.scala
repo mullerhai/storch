@@ -19,27 +19,71 @@ import org.bytedeco.pytorch.{
 }
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.{BytePointer, Pointer}
-
+import org.bytedeco.pytorch.global.torch as torchNative
 import scala.collection.immutable.{ArraySeq, SeqMap, TreeSeqMap}
 import scala.collection.mutable.{ListBuffer, HashMap as MutaHashMap}
 import java.io.{InputStream, OutputStream, ByteArrayOutputStream}
 import java.nio.ByteBuffer
+object JITModule {
 
-class JITModule(
-    qualifiedName: String,
-    compilationUnit: CompilationUnit,
-    shouldMangle: Boolean = false
-) {
+//  def load(fileName: String): JitModule = {
+//    val jitModule = new JitModule(new QualifiedName(fileName))
+//    jitModule.load(fileName)
+//    jitModule
+//  }
 
-  protected[torch] var _nativeModule =
-    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+  def load(fileName: String): JitModule = torchNative.load(fileName)
 
-  private[torch] def nativeModule: JitModule = _nativeModule
+  def apply(qualifiedName: String,
+           compilationUnit: CompilationUnit,
+           shouldMangle: Boolean = false): JITModule = {
+    val nativeJitModule = new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+    new JITModule(nativeJitModule)
+  }
+}
+class JITModule(nativeModule: JitModule)  {
+
+  protected[torch] var nativeJitModule: JitModule = nativeModule
+
+//  def this(qualifiedName: String,
+//           compilationUnit: CompilationUnit,
+//           shouldMangle: Boolean = false) = {
+//    this.nativeJitModule =  new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+//  }
+
+
+//  def this(nativeModule: JitModule) ={
+//    this.nativeJitModule = nativeModule
+//  }
+
+//  public native
+//  @ByVal IValue forward(
+//  @ByVal IValueVector inputs
+//  , @Cast("const torch::jit::Kwargs*") @ByRef(nullValue = "torch::jit::Kwargs()") StringIValueMap kwargs
+//  );
+//  public native
+//  @ByVal IValue forward(
+//  @ByVal IValueVector inputs
+//  );
+  
+  def forward(input: IValueVector):IValue = nativeJitModule.forward(input)
+
+  def forward(input: IValueVector, map:Map[String,IValue]):IValue = {
+    val kwargs: StringIValueMap = new StringIValueMap()
+    for ((k, v) <- map.toList) {
+      kwargs.put(new BytePointer(k),v)
+    }
+//    val pred = fromNative(nativeJitModule.forward(input, kwargs).toTensor)
+    nativeJitModule.forward(input, kwargs)
+  }
+
+  private[torch] def nativeModules(): JitModule = nativeJitModule
 
   private var childModules: TreeSeqMap[String, JitModule] = TreeSeqMap.empty
 
-  private var nativeJitModule: JitModule =
-    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+//  private var nativeJitModule: JitModule =
+//    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+//  
   def apply(predictTensor: Tensor[?]): Tensor[?] = {
     val vector = new IValueVector(predictTensor.native)
     val pred = fromNative(nativeJitModule.forward(vector).toTensor)

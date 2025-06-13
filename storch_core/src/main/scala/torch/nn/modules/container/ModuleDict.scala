@@ -23,7 +23,7 @@ import sourcecode.Name
 
 import scala.collection.SortedSet
 import scala.collection.immutable.TreeSeqMap
-import scala.collection.mutable.LinkedHashMap
+import scala.collection.mutable.{LinkedHashMap}
 import scala.reflect.ClassTag.Any
 
 /** Holds submodules in a list.
@@ -64,7 +64,7 @@ object ModuleDict {
     nameModules*
   )
 }
-final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
+final class ModuleDict[D <: DType](var nameModules: (String, TensorModule[D])*)
     extends Module
     with TensorModule[D]
     with scala.collection.immutable.Iterable[(String, TensorModule[D])]:
@@ -108,6 +108,7 @@ final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
     // self.add_module(str(len(self)), module)
     // TODO: not in Python code
     val index = modules.length
+    println("ModuleDict append: module index: " + index.toString() +s"module name ${name}"+ " modules map size: " + moduleWithNameMap.size.toString())
     this.register(module)(using Name(name))
     moduleWithNameMap.put(name, module)
     val all = moduleWithNameMap.toIndexedSeq
@@ -133,7 +134,7 @@ final class ModuleDict[D <: DType](val nameModules: (String, TensorModule[D])*)
 
   def apply(name: String): torch.nn.modules.TensorModule[D] = moduleWithNameMap.get(name).get
 
-  def length: Int = modules.length
+  def length: Int = moduleWithNameMap.size
 
 //    val all = modules.appended(module)
 // TODO: make modules list mutable?

@@ -2026,6 +2026,9 @@ private[torch] trait BLASOps {
   def view_as_real[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.view_as_real(t1.native))
 
+  def view_as_complex[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.view_as_complex(t1.native))
+
   def avg_pool3d[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.avg_pool3d(t1.native, sliceSeq*))
 

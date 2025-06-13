@@ -502,6 +502,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def float: Tensor[Float32] = to(dtype = float32)
 
+  def toBool: Tensor[Bool] = to(dtype = bool)
+
   /** Divides each element of this tensor by `s` and floors the result. */
   def floorDivide[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
     native.floor_divide(toScalar(s))

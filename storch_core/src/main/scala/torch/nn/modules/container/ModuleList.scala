@@ -20,7 +20,7 @@ package modules
 package container
 
 import sourcecode.Name
-
+import scala.collection.mutable.ListBuffer
 /** Holds submodules in a list.
   *
   * It can be indexed like a regular Python list, but the modules it contains are properly
@@ -51,11 +51,13 @@ object ModuleList {
 final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     extends Module
     with TensorModule[D]
-    with scala.collection.immutable.Iterable[TensorModule[D]]:
+    with scala.collection.mutable.Iterable[TensorModule[D]]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  modules.zipWithIndex.foreach((module, index) =>
-    this.register(module)(using Name(index.toString()))
-  )
+  if modules.isEmpty then modules.asInstanceOf[ListBuffer[TensorModule[D]]]
+  else 
+    modules.zipWithIndex.foreach((module, index) =>
+      this.register(module)(using Name(index.toString()))
+    )
 
   override def iterator: Iterator[TensorModule[D]] = modules.iterator
 
@@ -93,6 +95,7 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     // self.add_module(str(len(self)), module)
     // TODO: not in Python code
     val index = modules.length
+    println("ModuleList append: module index: " + index.toString() + " modules length: " + modules.length.toString())
     this.register(module)(using Name(index.toString()))
     val all = modules.appended(module)
     // TODO: make modules list mutable?

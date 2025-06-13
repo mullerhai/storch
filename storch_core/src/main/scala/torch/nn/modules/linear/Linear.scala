@@ -87,6 +87,6 @@ object Linear:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       in_features: Long,
       out_features: Long,
-      add_bias: Boolean = true
+      bias: Boolean = true
       // dtype: ParamType = defaultDType[ParamType]
-  ): Linear[ParamType] = new Linear(in_features, out_features, add_bias)
+  ): Linear[ParamType] = new Linear(in_features, out_features, bias)

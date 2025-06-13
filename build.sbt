@@ -31,7 +31,7 @@ val pytorchVersion = "2.5.1"
 val cudaVersion = "12.6-9.5"
 val openblasVersion = "0.3.28"
 val mklVersion = "2025.0"
-ThisBuild / scalaVersion := "3.6.2"
+ThisBuild / scalaVersion := "3.6.4"
 ThisBuild / javaCppVersion := "1.5.11"
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
