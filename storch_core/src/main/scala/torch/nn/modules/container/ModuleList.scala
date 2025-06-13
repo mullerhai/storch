@@ -53,13 +53,18 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     with TensorModule[D]
     with scala.collection.mutable.Iterable[TensorModule[D]]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  if modules.isEmpty then modules.asInstanceOf[ListBuffer[TensorModule[D]]]
+  val moduleList: ListBuffer[TensorModule[D]] = ListBuffer[TensorModule[D]]()
+  var useInner = false
+  if modules.isEmpty then useInner = true
   else 
     modules.zipWithIndex.foreach((module, index) =>
       this.register(module)(using Name(index.toString()))
     )
+    moduleList.appendAll(modules)
 
-  override def iterator: Iterator[TensorModule[D]] = modules.iterator
+  override def iterator: Iterator[TensorModule[D]] = if !modules.isEmpty then modules.iterator else moduleList.iterator
+
+  override def size(): Int = moduleList.length
 
   override def apply(input: Tensor[D]): Tensor[D] =
     modules.foldLeft(input)((i, module) => module(i))
@@ -81,6 +86,7 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     // TODO: not in Python code. Note other modules retain index, so we have repeats
     this.register(module)(using Name(index.toString()))
     // TODO: make modules list mutable?
+    moduleList.insert(index, module)
     ModuleList(all: _*)
 
   /** Appends a given module to the end of the list.
@@ -94,12 +100,15 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     // TODO: not in Module
     // self.add_module(str(len(self)), module)
     // TODO: not in Python code
-    val index = modules.length
-    println("ModuleList append: module index: " + index.toString() + " modules length: " + modules.length.toString())
+    val index = moduleList.length
+    println("ModuleList append: module index: " + index.toString() + " modules length: " + moduleList.length.toString())
     this.register(module)(using Name(index.toString()))
     val all = modules.appended(module)
     // TODO: make modules list mutable?
-    ModuleList(all: _*)
+    moduleList.append(module)
+    new ModuleList(all: _*)
+//    this = new ModuleList(all: _*)
+
 
   /** Appends modules from a Python iterable to the end of the list.
     *
@@ -119,6 +128,7 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     newModules.zipWithIndex.foreach((module, index) =>
       this.register(module)(using Name(index.toString()))
     )
+    moduleList.appendAll(newModules)
     // TODO: make modules list mutable?
     ModuleList(all: _*)
 
@@ -126,4 +136,8 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
 
   def apply(i: Int): torch.nn.modules.TensorModule[D] = modules(i)
 
-  def length: Int = modules.length
+  def length: Int = {
+   val len = if modules.length == 0 then moduleList.length else modules.length
+   len
+  }
+

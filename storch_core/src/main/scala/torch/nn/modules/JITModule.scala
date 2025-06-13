@@ -55,16 +55,6 @@ class JITModule(nativeModule: JitModule)  {
 //  def this(nativeModule: JitModule) ={
 //    this.nativeJitModule = nativeModule
 //  }
-
-//  public native
-//  @ByVal IValue forward(
-//  @ByVal IValueVector inputs
-//  , @Cast("const torch::jit::Kwargs*") @ByRef(nullValue = "torch::jit::Kwargs()") StringIValueMap kwargs
-//  );
-//  public native
-//  @ByVal IValue forward(
-//  @ByVal IValueVector inputs
-//  );
   
   def forward(input: IValueVector):IValue = nativeJitModule.forward(input)
 

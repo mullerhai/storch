@@ -67,7 +67,7 @@ object ModuleDict {
 final class ModuleDict[D <: DType](var nameModules: (String, TensorModule[D])*)
     extends Module
     with TensorModule[D]
-    with scala.collection.immutable.Iterable[(String, TensorModule[D])]:
+    with scala.collection.mutable.Iterable[(String, TensorModule[D])]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val moduleWithNameMap = new LinkedHashMap[String, TensorModule[D]]()
   nameModules.zipWithIndex.foreach((moduleNames, index) => {

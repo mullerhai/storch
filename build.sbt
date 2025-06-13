@@ -119,6 +119,8 @@ lazy val storch_core = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
+      "io.github.mullerhai" % "storch-numpy_3" % "0.1.0",
+      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
     ),
