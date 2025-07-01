@@ -72,8 +72,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       c0: Tensor[ParamType]
   ): Tuple3[Tensor[ParamType], Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(h0.native, c0.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(t.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(t.native, hx)
     val fore2 = fore.get1()
     (fromNative(fore.get0()), fromNative(fore2.get0()), fromNative(fore2.get1()))
   }
@@ -83,8 +83,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
   ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
     val hx = new T_TensorTensor_T(hidden_state._1.native, hidden_state._2.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(input.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(input.native, hx)
     val fore2 = fore.get1()
     (fromNative(fore.get0()), (fromNative(fore2.get0()), fromNative(fore2.get1())))
   }
@@ -95,8 +95,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       c0: Option[Tensor[ParamType]] = None
   ): Tuple3[Tensor[ParamType], Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(t.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(t.native, hx)
     val fore2 = fore.get1()
     (fromNative(fore.get0()), fromNative(fore2.get0()), fromNative(fore2.get1()))
   }
@@ -106,8 +106,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       hidden_state: Option[Tuple2[Tensor[ParamType], Tensor[ParamType]]]
   ): Tuple2[Tensor[ParamType], Tuple2[Tensor[ParamType], Tensor[ParamType]]] = {
     val hx = new T_TensorTensor_T(hidden_state.get._1.native, hidden_state.get._2.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(input.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(input.native, hx)
     val fore2 = fore.get1()
     (fromNative(fore.get0()), (fromNative(fore2.get0()), fromNative(fore2.get1())))
   }
@@ -125,8 +125,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       cx: Tensor[ParamType]
   ): PackedSequenceTensorTensor = {
     val hxx = new T_TensorTensor_T(hx.native, cx.native)
-    val hxx_opt = new T_TensorTensor_TOptional(hxx)
-    val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
+//    val hxx_opt = new T_TensorTensor_TOptional(hxx)
+    val output = nativeModule.forward_with_packed_input(packed_input, hxx)
     (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
   }
 
@@ -143,8 +143,8 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
       cx: Tensor[ParamType]
   ): PackedSequenceTensorTensor = {
     val hxx = new T_TensorTensor_T(hx.native, cx.native)
-    val hxx_opt = new T_TensorTensor_TOptional(hxx)
-    val output = nativeModule.forward_with_packed_input(packed_input, hxx_opt)
+//    val hxx_opt = new T_TensorTensor_TOptional(hxx)
+    val output = nativeModule.forward_with_packed_input(packed_input, hxx)
     (output.get0(), fromNative(output.get1().get0()), fromNative(output.get1().get1()))
   }
 

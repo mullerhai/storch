@@ -27,12 +27,12 @@ ThisBuild / tlSitePublishBranch := Some("main")
 ThisBuild / apiURL := Some(new URL("https://storch.dev/api/"))
 
 val scrImageVersion = "4.3.0"
-val pytorchVersion = "2.5.1"
-val cudaVersion = "12.6-9.5"
-val openblasVersion = "0.3.28"
+val pytorchVersion = "2.7.1" // "2.5.1"
+val cudaVersion =  "12.9-9.10" //"12.6-9.5"
+val openblasVersion ="0.3.30" //"0.3.28"
 val mklVersion = "2025.0"
 ThisBuild / scalaVersion := "3.6.4"
-ThisBuild / javaCppVersion := "1.5.11"
+ThisBuild / javaCppVersion := "1.5.12"  //"1.5.11"
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("11"))
@@ -42,10 +42,11 @@ val enableGPU = settingKey[Boolean]("enable or disable GPU support")
 
 ThisBuild / enableGPU := false
 
-val hasMKL = {
-  val firstPlatform = org.bytedeco.sbt.javacpp.Platform.current.head
-  firstPlatform == "linux-x86_64" || firstPlatform == "windows-x86_64"
-}
+val hasMKL = false
+//val hasMKL = {
+//  val firstPlatform = org.bytedeco.sbt.javacpp.Platform.current.head
+//  firstPlatform == "linux-x86_64" || firstPlatform == "windows-x86_64"
+//}
 
 lazy val commonSettings = Seq(
   Compile / doc / scalacOptions ++= Seq("-groups", "-snippet-compiler:compile"),
@@ -120,7 +121,7 @@ lazy val storch_core = project
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
       "io.github.mullerhai" % "storch-numpy_3" % "0.1.0",
-      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
+//      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
     ),
@@ -206,6 +207,7 @@ lazy val storch_root = project
   )
 
 ThisBuild / assemblyMergeStrategy := {
+  case v if v.contains("main.class")                         => MergeStrategy.discard
   case v if v.contains("module-info.class")                  => MergeStrategy.discard
   case v if v.contains("UnusedStub")                         => MergeStrategy.first
   case v if v.contains("aopalliance")                        => MergeStrategy.first

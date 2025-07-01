@@ -54,14 +54,14 @@ private[torch] trait linalg {
   }
 
   def eig[D <: DType](input: Tensor[D], some: Boolean = false): Tuple2[Tensor[D], Tensor[D]] = {
-    val result = torchNative.eig(input.native)
+    val result = torchNative.linalg_eig(input.native)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     (t1, t2)
   }
 
   def eigvals[D <: DType](input: Tensor[D], some: Boolean = false): Tensor[D] = {
-    val result = torchNative.eigvals(input.native)
+    val result = torchNative.linalg_eigvals(input.native)
     fromNative(result)
   }
 
@@ -70,7 +70,7 @@ private[torch] trait linalg {
       some: Boolean = false,
       upper: Boolean = false
   ): Tuple2[Tensor[D], Tensor[D]] = {
-    val result = torchNative.eigh(input.native, upper.toString)
+    val result = torchNative.linalg_eigh(input.native, upper.toString)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     (t1, t2)
@@ -86,7 +86,7 @@ private[torch] trait linalg {
       some: Boolean = false,
       upper: Boolean = false
   ): Tensor[D] = {
-    val result = torchNative.eigvalsh(input.native, upper.toString)
+    val result = torchNative.linalg_eigvalsh(input.native, upper.toString)
     fromNative(result)
   }
 
@@ -95,7 +95,7 @@ private[torch] trait linalg {
       some: Boolean = false
   ): Tuple3[Tensor[D], Tensor[D], Tensor[D]] = {
 
-    val result = torchNative.lu(input.native, some)
+    val result = torchNative.linalg_lu(input.native, some)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     val t3 = fromNative[D](result.get2())
@@ -150,12 +150,12 @@ private[torch] trait linalg {
       hermitian: Boolean
   ): Tensor[D] = {
     val result =
-      torchNative.matrix_rank(input.native, DoubleOptional(tol), DoubleOptional(asum), hermitian)
+      torchNative.linalg_matrix_rank(input.native, DoubleOptional(tol), DoubleOptional(asum), hermitian)
     fromNative(result)
   }
 
   def lu_factor[D <: DType](input: Tensor[D]): Tuple2[Tensor[D], Tensor[D]] = {
-    val result = torchNative.lu_factor(input.native)
+    val result = torchNative.linalg_lu_factor(input.native)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     (t1, t2)
@@ -167,13 +167,13 @@ private[torch] trait linalg {
   }
 
   def tensorinv[D <: DType](input: Tensor[D], ind: Int): Tensor[D] = {
-    val result = torchNative.tensorinv(input.native, ind)
+    val result = torchNative.linalg_tensorinv(input.native, ind)
     fromNative(result)
   }
 
   def tensorsolve[D <: DType](input: Tensor[D], input2: Tensor[D], var2: Seq[Long]): Tensor[D] = {
     val ref = LongArrayRefOptional(var2: _*)
-    val result = torchNative.tensorsolve(input.native, input2.native, ref)
+    val result = torchNative.linalg_tensorsolve(input.native, input2.native, ref)
     fromNative(result)
   }
 
@@ -201,7 +201,7 @@ private[torch] trait linalg {
       upper: Boolean = false,
       var3: Boolean = false
   ): Tuple2[Tensor[D], Tensor[D]] = {
-    val result = torchNative.solve_ex(input.native, input2.native, upper, var3)
+    val result = torchNative.linalg_solve_ex(input.native, input2.native, upper, var3)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     (t1, t2)
@@ -233,7 +233,7 @@ private[torch] trait linalg {
       var1: Boolean,
       var2: Boolean
   ): Tuple2[Tensor[D], Tensor[D]] = {
-    val result = torchNative.ldl_factor_ex(input.native, var1, var2)
+    val result = torchNative.linalg_ldl_factor_ex(input.native, var1, var2)
     val t1 = fromNative[D](result.get0())
     val t2 = fromNative[D](result.get1())
     (t1, t2)
@@ -245,7 +245,7 @@ private[torch] trait linalg {
       input3: Tensor[D],
       var3: Boolean
   ): Tensor[D] = {
-    val result = torchNative.ldl_solve(input.native, input2.native, input3.native, var3)
+    val result = torchNative.linalg_ldl_solve(input.native, input2.native, input3.native, var3)
     fromNative(result)
   }
 

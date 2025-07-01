@@ -2111,14 +2111,14 @@ private[torch] trait BLASOps {
     fromNative(torchNative.ifftshift(t1.native))
 
   def eigvals[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.eigvals(t1.native))
+    fromNative(torchNative.linalg_eigvals(t1.native))
 
   def multi_dot[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
-    fromNative(torchNative.multi_dot(tensorVector))
+    fromNative(torchNative.linalg_multi_dot(tensorVector))
 
   def pinv[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.pinv(t1.native))
+    fromNative(torchNative.linalg_pinv(t1.native))
 
   def dropout[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.dropout(t1.native))
@@ -2453,18 +2453,18 @@ private[torch] trait BLASOps {
     fromNative(torchNative.ctc_loss(t1.native, t2.native, t3.native, t4.native))
 
   def lu_factor[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
-    val tup = torchNative.lu_factor(t1.native)
+    val tup = torchNative.linalg_lu_factor(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
 
   def sparse_[D1 <: DType](t1: Tensor[D1], dou: Double): Tensor[D1] =
     fromNative(torchNative.sparse_(t1.native, dou))
 
   def eig[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
-    val tup = torchNative.eig(t1.native)
+    val tup = torchNative.linalg_eig(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
 
   def eigh[D1 <: DType](t1: Tensor[D1], str: String): (Tensor[D1], Tensor[D1]) =
-    val tup = torchNative.eigh(t1.native, str)
+    val tup = torchNative.linalg_eigh(t1.native, str)
     (fromNative(tup.get0), fromNative(tup.get1))
 
   def sspaddmm[D1 <: DType, D2 <: DType](
@@ -2486,7 +2486,7 @@ private[torch] trait BLASOps {
     (fromNative(triple.get0), fromNative(triple.get1), fromNative(triple.get2))
 
   def lu[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1], Tensor[D1]) =
-    val tup = torchNative.lu(t1.native)
+    val tup = torchNative.linalg_lu(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1), fromNative(tup.get2))
 
   def aminmax[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =

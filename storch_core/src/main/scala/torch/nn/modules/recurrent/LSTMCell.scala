@@ -79,8 +79,8 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
       c0: Tensor[ParamType]
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(h0.native, c0.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(t.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(t.native, hx)
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
@@ -89,8 +89,8 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
       hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(hidden_state._1.native, hidden_state._2.native)
-    val hx_opt = new T_TensorTensor_TOptional(hx)
-    val fore = nativeModule.forward(input.native, hx_opt)
+//    val hx_opt = new T_TensorTensor_TOptional(hx)
+    val fore = nativeModule.forward(input.native, hx)
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
@@ -100,8 +100,8 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     if (hidden_state.isDefined) {
       val hx = new T_TensorTensor_T(hidden_state.get._1.native, hidden_state.get._2.native)
-      val hx_opt = new T_TensorTensor_TOptional(hx)
-      val fore = nativeModule.forward(input.native, hx_opt)
+//      val hx_opt = new T_TensorTensor_TOptional(hx)
+      val fore = nativeModule.forward(input.native, hx)
       return (fromNative(fore.get0()), fromNative(fore.get1()))
     } else {
       val fore = nativeModule.forward(input.native)
@@ -116,8 +116,8 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     if (h0.isDefined && c0.isDefined) {
       val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
-      val hx_opt = new T_TensorTensor_TOptional(hx)
-      val fore = nativeModule.forward(t.native, hx_opt)
+//      val hx_opt = new T_TensorTensor_TOptional(hx)
+      val fore = nativeModule.forward(t.native, hx)
       return (fromNative(fore.get0()), fromNative(fore.get1()))
     } else {
 

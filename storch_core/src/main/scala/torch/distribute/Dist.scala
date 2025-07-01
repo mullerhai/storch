@@ -391,7 +391,7 @@ class ProcessGroupSTorch[D <: DType](po: BytePointer) extends ProcessGroup(po) {
 
   override def barrier(): pytorch.Work = super.barrier()
 
-  override def getOptions: ProcessGroup.Options = super.getOptions
+//  override def getOptions: ProcessGroup.Options = super.getOptions
 
   override def hasBackends: Boolean = super.hasBackends
 
