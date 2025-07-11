@@ -425,7 +425,7 @@ private[torch] trait BLASOps {
     fromNative(torchNative.concatenate(tensorVector))
 
   // convolution //concat
-  def copysign[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def copysign_native[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.copysign(t1.native, t2.native))
 
   def corrcoef[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1847,7 +1847,7 @@ private[torch] trait BLASOps {
   def special_spherical_bessel_j0[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.special_spherical_bessel_j0(t1.native))
 
-  def xlogy[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def xlogy_native[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.xlogy(t1.native, t2.native))
 
   def embedding_renorm[D1 <: DType, D2 <: DType](

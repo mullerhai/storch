@@ -28,8 +28,8 @@ class TraininSuite extends munit.FunSuite {
 
     torch.manualSeed(1)
 
-    val weight = torch.randn(Seq(1), requiresGrad = true)
-    val bias = torch.zeros(Seq(1), requiresGrad = true)
+    val weight = torch.randn(Seq(1), requires_grad = true)
+    val bias = torch.zeros(Seq(1), requires_grad = true)
 
     def model(xb: Tensor[Float32]): Tensor[Float32] = (xb matmul weight) + bias
 

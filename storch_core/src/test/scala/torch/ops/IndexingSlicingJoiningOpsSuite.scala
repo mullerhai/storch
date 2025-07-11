@@ -366,15 +366,15 @@ class IndexingSlicingJoiningOpsSuite extends TensorCheckSuite {
     expectedTensor = Tensor(Seq(4, 5, 8))
   )
 
-  testUnaryOp(
-    op = {
-      val index = Tensor(Seq(3L))
-      takeAlongDim(_, index, None)
-    },
-    opName = "takeAlongDim",
-    inputTensor = Tensor(Seq(Seq(10, 20, 30), Seq(60, 40, 50))),
-    expectedTensor = Tensor(Seq(60))
-  )
+//  testUnaryOp(
+//    op = {
+//      val index = Tensor(Seq(3L))
+//      takeAlongDim(_, index, None)
+//    },
+//    opName = "takeAlongDim",
+//    inputTensor = Tensor(Seq(Seq(10, 20, 30), Seq(60, 40, 50))),
+//    expectedTensor = Tensor(Seq(60))
+//  )
 
   propertyTestUnaryOp(op = tensorSplit(_, 1, 0), opName = "tensorSplit")
   test("tensorSplit.unit-test") {

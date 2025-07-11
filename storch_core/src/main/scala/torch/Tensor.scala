@@ -15,7 +15,7 @@
  */
 
 package torch
-
+import torch.numpy.matrix.NDArray
 import org.bytedeco.javacpp.{
   BoolPointer,
   BytePointer,
@@ -3842,6 +3842,37 @@ object Tensor:
       requires_grad: Boolean,
       device: Device
   ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, device, requires_grad)
+
+  def apply[U <: ScalaType : ClassTag](
+                                        data: NDArray[U],
+                                        requires_grad: Boolean,
+                                        device: Device
+                                      ): Tensor[ScalaToDType[U]] = {
+    require(data.getNdim <= 3, "Only 1D, 2D, and 3D arrays are supported")
+    val ndArray = data.reshape(data.getShape*).getArray
+    val tensor : Tensor[ScalaToDType[U]] =  ndArray match {
+      case singleDim: Array[U] =>
+        val dataSeq = singleDim.toSeq
+        this.apply(dataSeq, Strided, device, requires_grad)
+      case twoDim: Array[Array[U]] =>
+        val dataSeq = twoDim.map((arr:Array[U]) => arr.toSeq).toSeq
+        this.apply(dataSeq, Strided, device, requires_grad)
+      case threeDim: Array[Array[Array[U]]] =>
+        val dataSeq = threeDim.map((arr:Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
+        this.apply(dataSeq, Strided, device, requires_grad)
+      case _ => throw new IllegalArgumentException("Unsupported array dimension")
+    }
+    tensor
+  }
+
+  def arrayToSeq[U <: ScalaType : ClassTag](arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]]): U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] = {
+    arr match {
+      case singleDim: Array[U] => singleDim.toSeq
+      case twoDim: Array[Array[U]] => twoDim.map(_.toSeq).toSeq
+      case threeDim: Array[Array[Array[U]]] => threeDim.map(_.map(_.toSeq).toSeq).toSeq
+      case _ => throw new IllegalArgumentException("Unsupported array dimension")
+    }
+  }
 
   def apply[U <: ScalaType: ClassTag](
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
