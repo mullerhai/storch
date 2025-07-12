@@ -15,7 +15,7 @@
  */
 
 package torch
-import torch.data.*
+import torch.utils.data.*
 
 class TraininSuite extends munit.FunSuite {
   test("training") {

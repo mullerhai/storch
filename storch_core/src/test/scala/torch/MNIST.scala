@@ -18,7 +18,7 @@ package torch
 
 import torch.*
 import org.bytedeco.pytorch
-import torch.data.TensorDataset
+import torch.utils.data.TensorDataset
 import java.nio.file.Path
 import scala.util.Using
 import java.net.URL

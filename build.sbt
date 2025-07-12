@@ -100,8 +100,12 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion,
   pushChanges
 )
-
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.1"
+libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"
+excludeDependencies ++= Seq(
+  "com.thesamet.scalapb" % "lenses_2.13" ,
+  "com.thesamet.scalapb" % "scalapb-runtime_2.13"
+)
 lazy val storch_core = project
   .in(file("storch_core"))
   .settings(commonSettings)
@@ -122,9 +126,14 @@ lazy val storch_core = project
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
       "io.github.mullerhai" % "storch-pickle_3" % "0.1.1",
+      "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",
 //      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
+    ),
+    excludeDependencies ++= Seq(
+      "com.thesamet.scalapb" % "lenses_2.13" ,
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
     ),
     javaOptions ++= Seq(
       "-XX:+IgnoreUnrecognizedVMOptions",
@@ -158,6 +167,10 @@ lazy val storch_vision = project
       ("com.sksamuel.scrimage" %% "scrimage-scala" % scrImageVersion)
         .cross(CrossVersion.for3Use2_13),
       "org.scalameta" %% "munit" % "0.7.29" % Test
+    ),
+    excludeDependencies ++= Seq(
+      "com.thesamet.scalapb" % "lenses_2.13",
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
     )
   )
   .dependsOn(storch_core)
@@ -176,6 +189,10 @@ lazy val storch_examples = project
       "me.tongfei" % "progressbar" % "0.9.5",
       "com.github.alexarchambault" %% "case-app" % "2.1.0-M24",
       "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4"
+    ),
+    excludeDependencies ++= Seq(
+      "com.thesamet.scalapb" % "lenses_2.13",
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
     )
   )
   .dependsOn(storch_vision)
@@ -192,6 +209,10 @@ lazy val docs = project
       "MKL_VERSION" -> mklVersion,
       "CUDA_VERSION" -> cudaVersion
     ),
+    excludeDependencies ++= Seq(
+      "com.thesamet.scalapb" % "lenses_2.13",
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
+    ),
     ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(storch_examples),
     Laika / sourceDirectories ++= Seq(sourceDirectory.value),
     laikaIncludeAPI := true,
@@ -204,10 +225,19 @@ lazy val storch_root = project
   .in(file("."))
   .aggregate(storch_core, storch_vision, storch_examples, docs)
   .settings(
-    javaCppVersion := (ThisBuild / javaCppVersion).value
+    javaCppVersion := (ThisBuild / javaCppVersion).value,
+    excludeDependencies ++= Seq(
+      "com.thesamet.scalapb" % "lenses_2.13",
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
+    )
   )
 
 ThisBuild / assemblyMergeStrategy := {
+  case v if v.contains("main$package$.class")                => MergeStrategy.first
+  case v if v.contains("main.class")                         => MergeStrategy.first
+  case v if v.contains("main$package.class")                 => MergeStrategy.first
+  case v if v.contains("main$package.tasty")                 => MergeStrategy.first
+  case v if v.contains("main.tasty")                         => MergeStrategy.first
   case v if v.contains("main.class")                         => MergeStrategy.discard
   case v if v.contains("module-info.class")                  => MergeStrategy.discard
   case v if v.contains("UnusedStub")                         => MergeStrategy.first

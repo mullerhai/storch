@@ -32,7 +32,7 @@ import org.bytedeco.javacpp.{FloatPointer, PointerScope}
 import org.bytedeco.pytorch.{OutputArchive, TensorExampleVectorIterator}
 import torch.{Float32, *}
 import torch.Device.{CPU, CUDA}
-import torch.data.dataset.ChunkSharedBatchDataset
+import torch.utils.data.dataset.ChunkSharedBatchDataset
 import torch.nn.functional as F
 import torch.nn.modules.HasParams
 import torch.optim.Adam
@@ -180,21 +180,21 @@ object LstmNetApp extends App {
     TensorExampleVector,
     AbstractTensor as Tensor
   }
-  import torch.data.datareader.{
+  import torch.utils.data.datareader.{
     ChunkDataReader,
     ChunkTensorDataReader,
     ExampleVectorReader,
     TensorExampleVectorReader
   }
-  import torch.data.DataLoaderOptions
-  import torch.data.sampler.{
+  import torch.utils.data.DataLoaderOptions
+  import torch.utils.data.sampler.{
     DistributedRandomSampler,
     DistributedSequentialSampler,
     StreamSampler,
     RandomSampler as RS,
     SequentialSampler as SS
   }
-  import torch.data.dataloader.{
+  import torch.utils.data.dataloader.{
     ChunkRandomDataLoader,
     ChunkRandomTensorDataLoader,
     DistributedRandomDataLoader,
@@ -210,14 +210,14 @@ object LstmNetApp extends App {
     StreamDataLoader,
     StreamTensorDataLoader
   }
-  import torch.data.dataset.{
+  import torch.utils.data.dataset.{
     ChunkDataset,
     ChunkSharedBatchDataset,
     ChunkSharedTensorBatchDataset,
     ChunkStatefulDataset,
     ChunkTensorDataset
   }
-  import torch.data.dataset.java.{
+  import torch.utils.data.dataset.java.{
     JavaDataset as JD,
     StatefulDataset,
     StatefulTensorDataset,
