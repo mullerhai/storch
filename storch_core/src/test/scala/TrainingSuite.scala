@@ -17,6 +17,7 @@
 package torch
 import torch.utils.data.*
 
+import Device.CPU
 class TraininSuite extends munit.FunSuite {
   test("training") {
 
@@ -30,6 +31,16 @@ class TraininSuite extends munit.FunSuite {
 
     val weight = torch.randn(Seq(1), requires_grad = true)
     val bias = torch.zeros(Seq(1), requires_grad = true)
+//    weight.as
+//    torch.NdArrayToTensor(
+//      new NDArray[Float32](Seq(1, 1), new Float32(1)),
+//      requires_grad = true,
+//      device = cpu
+//    )
+
+    val npArr = torch.toNDArray(weight)
+    println(npArr.printArray())
+    val ten = Tensor(npArr, requires_grad = true, device = CPU)
 
     def model(xb: Tensor[Float32]): Tensor[Float32] = (xb matmul weight) + bias
 

@@ -100,7 +100,8 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion,
   pushChanges
 )
-libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.1"
+libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.3"
+libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.2"
 libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"
 excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
@@ -125,7 +126,8 @@ lazy val storch_core = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
-      "io.github.mullerhai" % "storch-pickle_3" % "0.1.1",
+      "io.github.mullerhai" % "storch-numpy_3" % "0.1.3",
+      "io.github.mullerhai" % "storch-pickle_3" % "0.1.2",
       "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",
 //      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,

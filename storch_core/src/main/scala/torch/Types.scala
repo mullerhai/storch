@@ -40,7 +40,9 @@ val complexFloatArray = TypeCase[Array[Complex[Float]]]
 val singleSeq = TypeCase[Seq[?]]
 val doubleSeq = TypeCase[Seq[Seq[?]]]
 val tripleSeq = TypeCase[Seq[Seq[Seq[?]]]]
-
+val quadSeq = TypeCase[Seq[Seq[Seq[Seq[?]]]]]
+val quintSeq = TypeCase[Seq[Seq[Seq[Seq[Seq[?]]]]]]
+val sextSeq = TypeCase[Seq[Seq[Seq[Seq[Seq[Seq[?]]]]]]]
 /* Type helper to describe inputs that accept Tensor or Real scalars */
 type TensorOrReal[D <: RealNN] = Tensor[D] | Real
 

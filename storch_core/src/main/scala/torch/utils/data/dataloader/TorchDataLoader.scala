@@ -13,7 +13,7 @@ import torch.utils.data.datareader.ChunkDataReader
 //import torch.utils.data.dataloader.ChunkRandomDataLoader
 
 // 定义一个可迭代的类，用于遍历用户自定义数据集
-class TorchDataLoader[ParamType <: DType : Default](dataset: Dataset[ParamType], options: DataLoaderOptions) extends Iterable[Example] {
+class TorchDataLoader[ParamType <: DType : Default](dataset: Dataset[ParamType], options: TorchDataLoaderOptions) extends Iterable[Example] {
   // 转换用户自定义数据集为 Example 序列
   private def convertDatasetToExamples(): Seq[Example] = {
     val examples = new ArrayBuffer[Example]()
@@ -39,7 +39,7 @@ class TorchDataLoader[ParamType <: DType : Default](dataset: Dataset[ParamType],
   }
 
   // 创建 ChunkDataset
-  private def createChunkDataset(reader: ChunkDataReader, examples: Seq[Example], options: DataLoaderOptions): ChunkDataset = {
+  private def createChunkDataset(reader: ChunkDataReader, examples: Seq[Example], options: TorchDataLoaderOptions): ChunkDataset = {
  
     val prefetch_count = 1
     new ChunkDataset(
@@ -56,7 +56,7 @@ class TorchDataLoader[ParamType <: DType : Default](dataset: Dataset[ParamType],
   }
 
   // 创建 ChunkRandomDataLoader
-  private def createChunkRandomDataLoader(ds: ChunkMapDataset, options: DataLoaderOptions): ChunkRandomDataLoader = {
+  private def createChunkRandomDataLoader(ds: ChunkMapDataset, options: TorchDataLoaderOptions): ChunkRandomDataLoader = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(options.batch_size)
     loaderOpts.batch_size.put(options.batch_size)
     //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong))

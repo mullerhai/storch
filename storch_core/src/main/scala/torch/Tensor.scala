@@ -3838,44 +3838,79 @@ object Tensor:
     ).asInstanceOf[Tensor[D]]
 
   def apply[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] | Seq[Seq[Seq[Seq[Seq[U]]]]],
       requires_grad: Boolean,
       device: Device
   ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, device, requires_grad)
 
-  def apply[U <: ScalaType : ClassTag](
+  def createFromNDArray[U <: ScalaType : ClassTag](
                                         data: NDArray[U],
                                         requires_grad: Boolean,
                                         device: Device
                                       ): Tensor[ScalaToDType[U]] = {
-    require(data.getNdim <= 3, "Only 1D, 2D, and 3D arrays are supported")
-    val ndArray = data.reshape(data.getShape*).getArray
-    val tensor : Tensor[ScalaToDType[U]] =  ndArray match {
-      case singleDim: Array[U] =>
-        val dataSeq = singleDim.toSeq
+    require(data.getNdim <= 5, "Only 1D, 2D, and 3D, 4D, 5D arrays are supported")
+    val shapeSize = data.getShape.size
+    val ndArray = data.getArray
+    val tensor: Tensor[ScalaToDType[U]] = (data.getArray, shapeSize) match {
+      case (singleDim: Array[U], 1) =>
+        val dataSeq = singleDim.toSeq.asInstanceOf[Seq[U]]
+        Tensor(dataSeq, Strided, device, requires_grad)
+      case (twoDim: Array[Array[U]], 2) =>
+        val dataSeq = twoDim.map((arr: Array[U]) => arr.toSeq).toSeq
         this.apply(dataSeq, Strided, device, requires_grad)
-      case twoDim: Array[Array[U]] =>
-        val dataSeq = twoDim.map((arr:Array[U]) => arr.toSeq).toSeq
+      case (threeDim: Array[Array[Array[U]]], 3) =>
+        val dataSeq = threeDim.map((arr: Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
         this.apply(dataSeq, Strided, device, requires_grad)
-      case threeDim: Array[Array[Array[U]]] =>
-        val dataSeq = threeDim.map((arr:Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
+      case (fourDim: Array[Array[Array[Array[U]]]], 4) =>
+        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+        this.apply(dataSeq, Strided, device, requires_grad)
+      case (fiveDim: Array[Array[Array[Array[Array[U]]]]], 5) =>
+        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
         this.apply(dataSeq, Strided, device, requires_grad)
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
     tensor
+//    val tensor2 : Tensor[ScalaToDType[U]] =  ndArray match {
+//      case singleDim: Array[U] =>
+//        val dataSeq = singleDim.toSeq
+//        this.apply(dataSeq, Strided, device, requires_grad)
+//      case twoDim: Array[Array[U]] =>
+//        val dataSeq = twoDim.map((arr:Array[U]) => arr.toSeq).toSeq
+//        this.apply(dataSeq, Strided, device, requires_grad)
+//      case threeDim: Array[Array[Array[U]]] =>
+//        val dataSeq = threeDim.map((arr:Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
+//        this.apply(dataSeq, Strided, device, requires_grad)
+//      case fourDim: Array[Array[Array[Array[U]]]] =>
+//        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+//        Tensor(dataSeq, Strided, device, requires_grad)
+//      case fiveDim: Array[Array[Array[Array[Array[U]]]]] =>
+//        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
+//        Tensor(dataSeq, Strided, device, requires_grad)
+//      case _ => throw new IllegalArgumentException("Unsupported array dimension")
+//    }
+//    tensor
   }
 
-  def arrayToSeq[U <: ScalaType : ClassTag](arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]]): U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] = {
+  def arrayToSeq[U <: ScalaType : ClassTag](arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]] | Array[Array[Array[Array[U]]]] |Array[Array[Array[Array[Array[U]]]]]): U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] | Seq[Seq[Seq[Seq[Seq[U]]]]] = {
     arr match {
       case singleDim: Array[U] => singleDim.toSeq
       case twoDim: Array[Array[U]] => twoDim.map(_.toSeq).toSeq
       case threeDim: Array[Array[Array[U]]] => threeDim.map(_.map(_.toSeq).toSeq).toSeq
+      case fourDim: Array[Array[Array[Array[U]]]] => 
+        val seq = fourDim.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+        seq
+      case fiveDim: Array[Array[Array[Array[Array[U]]]]] => 
+        val seq = fiveDim.map(_.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
+        seq
+//      case sixDim: Array[Array[Array[Array[Array[Array[U]]]]]] =>
+//        val seq = sixDim.map(_.map(_.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq).toSeq
+//        seq
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
   }
 
   def apply[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] | Seq[Seq[Seq[Seq[Seq[U]]]]],
       requires_grad: Boolean
   ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
 
@@ -3884,12 +3919,22 @@ object Tensor:
   // TODO support arbitrary multidimensional arrays as input
   // TODO support explicit dtype
   def apply[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] | Seq[Seq[Seq[Seq[Seq[U]]]]],
       layout: Layout = Strided,
       device: Device = CPU,
       requiresGrad: Boolean = false
   ): Tensor[ScalaToDType[U]] =
     data match
+      case quintSeq(data) =>
+        val tensor = apply(data.flatten.flatten.flatten.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
+          .view(data.length, data.head.length, data.head.head.length, data.head.head.head.length, data.head.head.head.head.length)
+        tensor.set_requires_grad(requiresGrad)
+        tensor
+      case quadSeq(data) =>
+        val tensor = apply(data.flatten.flatten.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
+            .view(data.length, data.head.length, data.head.head.length, data.head.head.head.length)
+        tensor.set_requires_grad(requiresGrad)
+        tensor
       case tripleSeq(data) =>
         val tensor = apply(data.flatten.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
           .view(data.length, data.head.length, data.head.head.length)
