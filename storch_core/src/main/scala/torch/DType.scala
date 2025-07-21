@@ -22,6 +22,7 @@ import java.nio.{Buffer, ByteBuffer, DoubleBuffer, FloatBuffer, IntBuffer, LongB
 import spire.math.{Complex, UByte}
 
 import scala.compiletime.{erasedValue, summonFrom}
+import scala.reflect.ClassTag
 
 // format: off
 /** A [[torch.DType]] is an object that represents the data type of a [[torch.Tensor]]. PyTorch has twelve different
@@ -291,7 +292,7 @@ type Numeric = NumericReal | ComplexScala
 
 type ScalaType = Real | ComplexScala
 
-type DTypeToScala[T <: DType] <: ScalaType = T match
+type DTypeToScala[T <: DType ] <: ScalaType = T match
   case UInt8      => UByte
   case Int8       => Byte
   case Int16      => Short

@@ -97,7 +97,7 @@ private[torch] trait NumpyOps:
    * @tparam D
    * @return
    */
-  def toNDArray[D <: DType](tensor: Tensor[D]): NDArray[DTypeToScala[D]] = {
+  def toNDArray[D <: DType](tensor: Tensor[D])(using ct: ClassTag[DTypeToScala[D]]): NDArray[DTypeToScala[D]] = {
     require(tensor.ndimension().toInt <= 5, "Only 1D, 2D, and 3D, 4D, 5D tensors are supported")
     val shape = tensor.sizes().map(_.toLong).toArray
     var npDtype: NumpyDType = null
