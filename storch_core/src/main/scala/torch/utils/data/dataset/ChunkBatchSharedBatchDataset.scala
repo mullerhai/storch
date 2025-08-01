@@ -25,8 +25,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.Dataset
 
 //ChunkMapDataset
-class ChunkBatchSharedBatchDataset(chunkReader: ChunkDataReader)
-    extends CBSBD(chunkReader) {
+class ChunkBatchSharedBatchDataset(chunkReader: ChunkDataReader) extends CBSBD(chunkReader) {
 
   override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
 

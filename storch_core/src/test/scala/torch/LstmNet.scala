@@ -107,7 +107,6 @@ class GruNet[D <: BFloat16 | Float32: Default](
 
 }
 
-
 /** Shows how to train a simple LstmNet on the MNIST dataset */
 object LstmNetApp extends App {
 
@@ -354,10 +353,9 @@ object LstmNetApp extends App {
     println(s"model parameters dict ${model.namedParameters()}")
   }
 
-
-  //a.index(indexArrayRefA).add_(torch.mul(x.index(indexArrayRefX), a_prev.index(indexArrayRefA_prev)))
-  class PositionalEncoding[D <: BFloat16 | Float32 : Default](d_model: Long, max_len: Long = 28 * 28)
-    extends HasParams[D] {
+  // a.index(indexArrayRefA).add_(torch.mul(x.index(indexArrayRefX), a_prev.index(indexArrayRefA_prev)))
+  class PositionalEncoding[D <: BFloat16 | Float32: Default](d_model: Long, max_len: Long = 28 * 28)
+      extends HasParams[D] {
 
     import torch.{---, Slice}
 
@@ -396,8 +394,6 @@ object LstmNetApp extends App {
     def apply(x: torch.Tensor[D]): torch.Tensor[D] =
       x.add(encoding).to(x.device)
   }
-
-
 
   // run training
 //  for (epoch <- 1 to 50) do

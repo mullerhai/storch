@@ -54,11 +54,11 @@ private[torch] trait CreationOps {
 // TODO as_tensor
 // TODO as_strided
 // TODO frombuffer
-  
-  def as_tensor[U <: ScalaType : ClassTag](
-                                       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
-                                       requires_grad: Boolean = false
-                                     ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
+
+  def as_tensor[U <: ScalaType: ClassTag](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      requires_grad: Boolean = false
+  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
 
   def tensor[U <: ScalaType: ClassTag](
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
@@ -76,7 +76,6 @@ private[torch] trait CreationOps {
       requires_grad: Boolean,
       device: Device
   ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad, device)
-
 
   def as_strided[D <: DType](
       input: Tensor[D],

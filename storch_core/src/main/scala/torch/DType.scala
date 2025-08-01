@@ -292,7 +292,7 @@ type Numeric = NumericReal | ComplexScala
 
 type ScalaType = Real | ComplexScala
 
-type DTypeToScala[T <: DType ] <: ScalaType = T match
+type DTypeToScala[T <: DType] <: ScalaType = T match
   case UInt8      => UByte
   case Int8       => Byte
   case Int16      => Short

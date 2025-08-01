@@ -47,7 +47,7 @@ private[torch] trait BLASOps {
   // src (Tensor) – the source elements to scatter and reduce
   // reduce (str) – the reduction operation to apply for non-unique indices ("sum", "prod", "mean", "amax", "amin")
   // include_self (bool) – whether elements from the self tensor are included in the reduction
-  */
+   */
   def scatter_reduce[D <: DType](
       input: Tensor[D],
       dim: Int,
@@ -106,7 +106,7 @@ private[torch] trait BLASOps {
   // torch.scatter(input, dim, index, src) → Tensor
   //  def scatter[D <: DType](input: Tensor[D], dim: Int, index: Tensor[Int64], src: Tensor[D]) : Tensor[D]= {
   //    fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src.native))
-  */
+   */
   def scatter[D <: DType](
       input: Tensor[D],
       dim: Int,
@@ -155,7 +155,7 @@ private[torch] trait BLASOps {
   // src (Tensor) – the source elements to scatter and add
   ///Tensor index_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4, @StringView String var5
   // torch.index_reduce(input: Tensor, dim: int, index: Tensor, source: Tensor, reduce: str, *, include_self: bool = True, out: Optional[Tensor]) → Tensor
-  */
+   */
   def index_reduce[D <: DType](
       input: Tensor[D],
       dim: Int,
@@ -242,7 +242,6 @@ private[torch] trait BLASOps {
         )
   }
 
-
   /*
   // dim (int) – dimension along which to index
   //
@@ -251,7 +250,7 @@ private[torch] trait BLASOps {
   // tensor (Tensor) – the tensor containing values to copy
   // Tensor.index_copy_(dim, index, tensor) → Tensor
   // index_copy(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
-  */
+   */
   def index_copy[D1 <: DType, D2 <: DType](
       input: Tensor[D1],
       dim: Int,
@@ -281,7 +280,7 @@ private[torch] trait BLASOps {
   // values (Tensor) – tensor of same dtype as self.
   // accumulate (bool) – whether to accumulate into self
   // Tensor.index_put_(indices, values, accumulate=False) → Tensor
-  */
+   */
   def index_put[D <: DType](
       input: Tensor[D],
       indices: Seq[Tensor[Int64]] | Seq[Tensor[Int32]],
@@ -302,7 +301,6 @@ private[torch] trait BLASOps {
 
   }
 
-
   def segment_reduce[D <: DType](input: Tensor[D], reduceMode: String): Tensor[D] = {
     fromNative(torchNative.segment_reduce(input.native, reduceMode))
 
@@ -314,7 +312,7 @@ private[torch] trait BLASOps {
     public static native Tensor scatter(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Scalar var4, @StringView BytePointer var5);
   //public static native Tensor scatter(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Scalar var4, @StringView String var5);
   // torch.scatter(input, dim, index, src) → Tensor
-  */
+   */
   def matmul[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     t1.matmul(t2)
 
@@ -338,7 +336,8 @@ private[torch] trait BLASOps {
       source: Tensor[D2],
       accumulate: Option[Boolean] = Some(true)
   ): Tensor[Promoted[D1, D2]] = {
-    if accumulate.isDefined then fromNative(torchNative.put(input.native, index.native, source.native, accumulate.get))
+    if accumulate.isDefined then
+      fromNative(torchNative.put(input.native, index.native, source.native, accumulate.get))
     else fromNative(torchNative.put(input.native, index.native, source.native))
   }
 
@@ -425,7 +424,10 @@ private[torch] trait BLASOps {
     fromNative(torchNative.concatenate(tensorVector))
 
   // convolution //concat
-  def copysign_native[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def copysign_native[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.copysign(t1.native, t2.native))
 
   def corrcoef[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1847,7 +1849,10 @@ private[torch] trait BLASOps {
   def special_spherical_bessel_j0[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.special_spherical_bessel_j0(t1.native))
 
-  def xlogy_native[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def xlogy_native[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.xlogy(t1.native, t2.native))
 
   def embedding_renorm[D1 <: DType, D2 <: DType](

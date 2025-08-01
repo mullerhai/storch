@@ -31,9 +31,8 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.internal.NativeConverters.toOptional
 
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.
-  * FloatNN | ComplexNN: Default
-  * The output is of size H x W, for any input size. The number of output features is equal to the
-  * number of input planes. FloatNN | ComplexNN: Default
+  * FloatNN | ComplexNN: Default The output is of size H x W, for any input size. The number of
+  * output features is equal to the number of input planes. FloatNN | ComplexNN: Default
   */
 final class ConstantPad1d[ParamType <: FloatNN | ComplexNN: Default](
     padding: Int | (Int, Int),
@@ -69,5 +68,3 @@ object ConstantPad1d:
       value: Float | Double
   ): ConstantPad1d[ParamType] =
     new ConstantPad1d[ParamType](padding, value)
-
-

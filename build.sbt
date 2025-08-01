@@ -102,7 +102,7 @@ releaseProcess := Seq[ReleaseStep](
 )
 libraryDependencies += "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.1" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13")
 
-libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.6"
+libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.7"
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.4"
 libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"
 excludeDependencies ++= Seq(
@@ -128,7 +128,7 @@ lazy val storch_core = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
-      "io.github.mullerhai" % "storch-numpy_3" % "0.1.6",
+      "io.github.mullerhai" % "storch-numpy_3" % "0.1.7",
       "io.github.mullerhai" % "storch-pandas_3" % "0.1.5",
       "io.github.mullerhai" % "storch-pickle_3" % "0.1.4",
       "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",

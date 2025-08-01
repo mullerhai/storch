@@ -150,7 +150,12 @@ private[torch] trait linalg {
       hermitian: Boolean
   ): Tensor[D] = {
     val result =
-      torchNative.linalg_matrix_rank(input.native, DoubleOptional(tol), DoubleOptional(asum), hermitian)
+      torchNative.linalg_matrix_rank(
+        input.native,
+        DoubleOptional(tol),
+        DoubleOptional(asum),
+        hermitian
+      )
     fromNative(result)
   }
 

@@ -30,8 +30,7 @@ import org.bytedeco.pytorch.{
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class ChunkMapBatchDataset(chunkMapDataset: ChunkMapDataset)
-    extends CMBD(chunkMapDataset) {
+class ChunkMapBatchDataset(chunkMapDataset: ChunkMapDataset) extends CMBD(chunkMapDataset) {
 
   override def get_batch(request: SizeTArrayRef): ExampleVector = super.get_batch(request)
 

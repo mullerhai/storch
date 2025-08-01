@@ -13,13 +13,12 @@ class ParameterDict[D <: DType] extends ParameterDictImpl {
 
   override def pretty_print(stream: _root_.org.bytedeco.javacpp.Pointer): Unit =
     super.pretty_print(stream)
-  
+
   def insert(key: String, param: Tensor[D]): Tensor[D] =
     fromNative[D](super.insert(key, param.native))
 
   def pop_native(key: String): Tensor[D] = fromNative[D](super.pop(key))
 
-  
   def keys_native(): Seq[String] = {
     val keyVector = super.keys()
     val buffer = new ListBuffer[String]()
@@ -30,7 +29,7 @@ class ParameterDict[D <: DType] extends ParameterDictImpl {
       it = it.increment()
     buffer.toSeq
   }
-  
+
   def values_native(): Seq[Tensor[D]] = {
     val tensorVector = super.values()
     val buffer = new ListBuffer[Tensor[D]]()
@@ -52,13 +51,11 @@ class ParameterDict[D <: DType] extends ParameterDictImpl {
   override def empty(): Boolean = super.empty()
 
   override def clear(): Unit = super.clear()
-  
+
   override def contains(key: String): Boolean = super.contains(key)
-  
+
   def get_native(key: String): Tensor[D] = fromNative(super.get(key))
 }
-
-
 
 //  override def insert(key: _root_.org.bytedeco.javacpp.BytePointer, param: _root_.org.bytedeco.pytorch.Tensor): _root_.org.bytedeco.pytorch.Tensor = super.insert(key, param)
 

@@ -30,7 +30,6 @@ import torch.Float32
   */
 private[torch] trait RandomSamplingOps {
 
-
   /* Returns a tensor where each row contains `numSamples` indices sampled from the multinomial probability distribution located in the corresponding row of tensor `input`. */
   def multinomial[D <: FloatNN](
       input: Tensor[D],
@@ -233,7 +232,6 @@ private[torch] trait RandomSamplingOps {
 
   def set_num_threads(threads: Int): Unit = torchNative.set_num_threads(threads)
 }
-
 
 // TODO seed Sets the seed for generating random numbers to a non-deterministic random number.
 // TODO manual_seed Sets the seed for generating random numbers.

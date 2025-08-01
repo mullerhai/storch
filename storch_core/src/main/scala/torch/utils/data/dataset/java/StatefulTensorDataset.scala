@@ -1,7 +1,31 @@
 package torch.utils.data.dataset.java
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{InputArchive, OutputArchive, SizeTOptional, SizeTVectorOptional, T_TensorT_TensorTensor_T_T, T_TensorTensor_T, T_TensorTensor_TOptional, TensorExample, TensorExampleVector, TensorExampleVectorOptional, TensorMapper, TensorVector, TransformerImpl, TransformerOptions, kCircular, kGELU, kReflect, kReplicate, kZeros, ChunkBatchDataset as CBD, JavaStatefulTensorDataset as STD, RandomSampler as RS, SequentialSampler as SS}
+import org.bytedeco.pytorch.{
+  InputArchive,
+  OutputArchive,
+  SizeTOptional,
+  SizeTVectorOptional,
+  T_TensorT_TensorTensor_T_T,
+  T_TensorTensor_T,
+  T_TensorTensor_TOptional,
+  TensorExample,
+  TensorExampleVector,
+  TensorExampleVectorOptional,
+  TensorMapper,
+  TensorVector,
+  TransformerImpl,
+  TransformerOptions,
+  kCircular,
+  kGELU,
+  kReflect,
+  kReplicate,
+  kZeros,
+  ChunkBatchDataset as CBD,
+  JavaStatefulTensorDataset as STD,
+  RandomSampler as RS,
+  SequentialSampler as SS
+}
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.TensorExampleVectorReader

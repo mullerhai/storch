@@ -154,34 +154,34 @@ object Embedding:
     sparse
   )
 
-  def from_pretrained[ParamType <: FloatNN | ComplexNN: Default](embeddings: Tensor[ParamType],
-                                 freeze: Boolean = true,
-                                 padding_idx: Option[Int] | Int = None,
-                                 max_norm: Option[Float] | Float = None,
-                                 norm_type: Option[Float] | Float = Some(2.0f),
-                                 scale_grad_by_freq: Boolean | Option[Boolean] = false,
-                                 sparse: Boolean | Option[Boolean] = false,
-                                 include_last_offset: Boolean | Option[Boolean] = false,
-                                ): Embedding[ParamType] = {
+  def from_pretrained[ParamType <: FloatNN | ComplexNN: Default](
+      embeddings: Tensor[ParamType],
+      freeze: Boolean = true,
+      padding_idx: Option[Int] | Int = None,
+      max_norm: Option[Float] | Float = None,
+      norm_type: Option[Float] | Float = Some(2.0f),
+      scale_grad_by_freq: Boolean | Option[Boolean] = false,
+      sparse: Boolean | Option[Boolean] = false,
+      include_last_offset: Boolean | Option[Boolean] = false
+  ): Embedding[ParamType] = {
     require(embeddings.shape.length >= 2, "embeddings weight shape must have 2 dimension")
     val shape = embeddings.shape
     val num_embeddings = shape(0)
     val embedding_dim = shape(1)
-    val embeddingModel: Embedding[ParamType] = new Embedding(num_embeddings, embedding_dim, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse)
+    val embeddingModel: Embedding[ParamType] = new Embedding(
+      num_embeddings,
+      embedding_dim,
+      padding_idx,
+      max_norm,
+      norm_type,
+      scale_grad_by_freq,
+      sparse
+    )
     embeddingModel.weight_=(embeddings)
-    if freeze then embeddingModel.weight.requires_grad = false else embeddingModel.weight.requires_grad = true
+    if freeze then embeddingModel.weight.requires_grad = false
+    else embeddingModel.weight.requires_grad = true
     embeddingModel
   }
-
-
-
-
-
-
-
-
-
-
 
 //embeddings (Tensor) – FloatTensor containing weights for the Embedding. First dimension is being passed to Embedding as num_embeddings, second as embedding_dim.
 //
@@ -196,7 +196,7 @@ object Embedding:
 //scale_grad_by_freq (bool, optional) – See module initialization documentation. Default False.
 //
 //sparse (bool, optional) – See module initialization documentation.
-//classmethod from_pretrained(embeddings, freeze=True, 
+//classmethod from_pretrained(embeddings, freeze=True,
 // padding_idx=None, max_norm=None, norm_type=2.0, scale_grad_by_freq=False, sparse=False)
 
 //    @classmethod

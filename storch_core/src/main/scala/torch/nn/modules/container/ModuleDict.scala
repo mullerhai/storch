@@ -108,7 +108,11 @@ final class ModuleDict[D <: DType](var nameModules: (String, TensorModule[D])*)
     // self.add_module(str(len(self)), module)
     // TODO: not in Python code
     val index = modules.length
-    println("ModuleDict append: module index: " + index.toString() +s"module name ${name}"+ " modules map size: " + moduleWithNameMap.size.toString())
+    println(
+      "ModuleDict append: module index: " + index
+        .toString() + s"module name ${name}" + " modules map size: " + moduleWithNameMap.size
+        .toString()
+    )
     this.register(module)(using Name(name))
     moduleWithNameMap.put(name, module)
     val all = moduleWithNameMap.toIndexedSeq

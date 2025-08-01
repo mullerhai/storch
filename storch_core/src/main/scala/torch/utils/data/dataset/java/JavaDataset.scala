@@ -1,13 +1,39 @@
 package torch.utils.data.dataset.java
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{ChunkMapDataset, Example, ExampleVector, InputArchive, OutputArchive, SizeTArrayRef, SizeTOptional, SizeTVectorOptional, T_TensorT_TensorTensor_T_T, T_TensorTensor_T, T_TensorTensor_TOptional, TensorMapper, TensorVector, TransformerImpl, TransformerOptions, kCircular, kGELU, kReflect, kReplicate, kZeros, ChunkBatchDataset as CBD, JavaBatchDataset as BD, JavaDataset as JD, RandomSampler as RS, SequentialSampler as SS}
+import org.bytedeco.pytorch.{
+  ChunkMapDataset,
+  Example,
+  ExampleVector,
+  InputArchive,
+  OutputArchive,
+  SizeTArrayRef,
+  SizeTOptional,
+  SizeTVectorOptional,
+  T_TensorT_TensorTensor_T_T,
+  T_TensorTensor_T,
+  T_TensorTensor_TOptional,
+  TensorMapper,
+  TensorVector,
+  TransformerImpl,
+  TransformerOptions,
+  kCircular,
+  kGELU,
+  kReflect,
+  kReplicate,
+  kZeros,
+  ChunkBatchDataset as CBD,
+  JavaBatchDataset as BD,
+  JavaDataset as JD,
+  RandomSampler as RS,
+  SequentialSampler as SS
+}
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.ExampleVectorReader
 import torch.utils.data.datareader
 
-class JavaDataset(exampleVectorReader: datareader.ExampleVectorReader) extends JD  {
+class JavaDataset(exampleVectorReader: datareader.ExampleVectorReader) extends JD {
 
   val exampleVector: ExampleVector = exampleVectorReader.exampleVec // .read_chunk(0)
 //    {

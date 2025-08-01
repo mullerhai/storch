@@ -8,13 +8,10 @@ import java.nio.{ByteBuffer, ByteOrder}
 class TFEventReader(private val input: DataInput, private val crcCheck: Boolean) {
   @throws[IOException]
   def read: Array[Byte] = {
-    /**
-     * TFEvent format:
-     * uint64 length
-     * uint32 masked_crc32_of_length
-     * byte   data[length]
-     * uint32 masked_crc32_of_data
-     */
+
+    /** TFEvent format: uint64 length uint32 masked_crc32_of_length byte data[length] uint32
+      * masked_crc32_of_data
+      */
     val lenBytes = new Array[Byte](8)
     try
       // Only catch EOF here, other case means corrupted file
@@ -30,9 +27,15 @@ class TFEventReader(private val input: DataInput, private val crcCheck: Boolean)
       val lenCrc32Bytes = new Array[Byte](4)
       input.readFully(lenCrc32Bytes)
       val lenCrc32 = fromInt32LE(lenCrc32Bytes)
-      if (lenCrc32 != Crc32C.maskedCrc32c(lenBytes)) throw new IOException("Length header crc32 checking failed: " + lenCrc32 + " != " + Crc32C.maskedCrc32c(lenBytes) + ", length = " + len)
+      if (lenCrc32 != Crc32C.maskedCrc32c(lenBytes))
+        throw new IOException(
+          "Length header crc32 checking failed: " + lenCrc32 + " != " + Crc32C.maskedCrc32c(
+            lenBytes
+          ) + ", length = " + len
+        )
     }
-    if (len > Integer.MAX_VALUE) throw new IOException("Record size exceeds max value of int32: " + len)
+    if (len > Integer.MAX_VALUE)
+      throw new IOException("Record size exceeds max value of int32: " + len)
     val data = new Array[Byte](len.intValue)
     input.readFully(data)
     // Verify data crc32
@@ -42,7 +45,10 @@ class TFEventReader(private val input: DataInput, private val crcCheck: Boolean)
       input.readFully(dataCrc32Bytes)
 //      val dataCrc32 = fromFloatLE(dataCrc32Bytes)
       val dataCrc32 = fromInt32LE(dataCrc32Bytes)
-      if (dataCrc32 != Crc32C.maskedCrc32c(data)) throw new IOException("Data crc32 checking failed: " + dataCrc32 + " != " + Crc32C.maskedCrc32c(data))
+      if (dataCrc32 != Crc32C.maskedCrc32c(data))
+        throw new IOException(
+          "Data crc32 checking failed: " + dataCrc32 + " != " + Crc32C.maskedCrc32c(data)
+        )
     }
     data
   }

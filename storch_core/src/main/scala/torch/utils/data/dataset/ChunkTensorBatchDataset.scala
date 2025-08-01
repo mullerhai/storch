@@ -21,8 +21,7 @@ import org.bytedeco.pytorch.{
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class ChunkTensorBatchDataset(chunkReader: ChunkTensorDataReader)
-    extends CTBD(chunkReader) {
+class ChunkTensorBatchDataset(chunkReader: ChunkTensorDataReader) extends CTBD(chunkReader) {
 
   override def get_batch(request: Long): TensorExampleVectorOptional = super.get_batch(request)
 

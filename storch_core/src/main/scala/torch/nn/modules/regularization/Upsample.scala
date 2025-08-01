@@ -164,10 +164,6 @@ object Upsample:
   enum UpsampleMode:
     case kNearest, kLinear, kBilinear, kBicubic, kTrilinear
 
-
-
-
-
 //  options.mode().put(upsampleModeNative)
 //  if scaleFactor != None then options.scale_factor().put(scaleFactorVec)
 //  options.recompute_scale_factor().put(recomputeScaleFactor)

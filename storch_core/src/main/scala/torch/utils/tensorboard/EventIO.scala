@@ -48,7 +48,11 @@ object EventIO {
     slurpEvents((bytes: Array[Byte]) => Event.parseFrom(bytes), compressed, filePath)
   }
 
-  def slurpEvents(loadFn: Array[Byte] => Event, compressed: Boolean, filePath: String): Seq[Event] = {
+  def slurpEvents(
+      loadFn: Array[Byte] => Event,
+      compressed: Boolean,
+      filePath: String
+  ): Seq[Event] = {
     val file = new File(filePath)
     val inputStream = new DataInputStream(fileInputStream(file))
     try {
@@ -107,9 +111,11 @@ object EventIO {
     val v1 = v match {
       case Double.PositiveInfinity => Float.MaxValue
       case Double.NegativeInfinity => Float.MinValue
-      case _ => v.toFloat
+      case _                       => v.toFloat
     }
-    val sum1 = Summary.defaultInstance.addValue(Summary.Value.defaultInstance.withTag(tag).withSimpleValue(v1))
+    val sum1 = Summary.defaultInstance.addValue(
+      Summary.Value.defaultInstance.withTag(tag).withSimpleValue(v1)
+    )
     summary(tag, sum1)
   }
 
@@ -123,11 +129,14 @@ object EventIO {
     val bucket = histData("bucket").asInstanceOf[Seq[Double]]
     val bucketLimit = histData("bucket-limit").asInstanceOf[Seq[Double]]
 
-    val hist = HistogramProto.defaultInstance.
-                              withMin(min).withMax(max).
-                              withNum(num).withSum(sum).
-                              withSumSquares(sumSquares).
-                              withBucket(bucket).withBucketLimit(bucketLimit)
+    val hist = HistogramProto.defaultInstance
+      .withMin(min)
+      .withMax(max)
+      .withNum(num)
+      .withSum(sum)
+      .withSumSquares(sumSquares)
+      .withBucket(bucket)
+      .withBucketLimit(bucketLimit)
     Summary.defaultInstance.addValue(Summary.Value.defaultInstance.withTag(tag).withHisto(hist))
 
   }
@@ -143,18 +152,6 @@ object EventIO {
     summary(tag, sum1)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 //    Event.newBuilder()
 //      .setSummary(summary)

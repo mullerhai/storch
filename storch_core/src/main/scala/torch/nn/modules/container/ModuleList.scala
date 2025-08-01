@@ -21,6 +21,7 @@ package container
 
 import sourcecode.Name
 import scala.collection.mutable.ListBuffer
+
 /** Holds submodules in a list.
   *
   * It can be indexed like a regular Python list, but the modules it contains are properly
@@ -56,13 +57,14 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
   val moduleList: ListBuffer[TensorModule[D]] = ListBuffer[TensorModule[D]]()
   var useInner = false
   if modules.isEmpty then useInner = true
-  else 
+  else
     modules.zipWithIndex.foreach((module, index) =>
       this.register(module)(using Name(index.toString()))
     )
     moduleList.appendAll(modules)
 
-  override def iterator: Iterator[TensorModule[D]] = if !modules.isEmpty then modules.iterator else moduleList.iterator
+  override def iterator: Iterator[TensorModule[D]] =
+    if !modules.isEmpty then modules.iterator else moduleList.iterator
 
   override def size(): Int = moduleList.length
 
@@ -101,14 +103,16 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
     // self.add_module(str(len(self)), module)
     // TODO: not in Python code
     val index = moduleList.length
-    println("ModuleList append: module index: " + index.toString() + " modules length: " + moduleList.length.toString())
+    println(
+      "ModuleList append: module index: " + index
+        .toString() + " modules length: " + moduleList.length.toString()
+    )
     this.register(module)(using Name(index.toString()))
     val all = modules.appended(module)
     // TODO: make modules list mutable?
     moduleList.append(module)
     new ModuleList(all: _*)
 //    this = new ModuleList(all: _*)
-
 
   /** Appends modules from a Python iterable to the end of the list.
     *
@@ -137,7 +141,6 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
   def apply(i: Int): torch.nn.modules.TensorModule[D] = modules(i)
 
   def length: Int = {
-   val len = if modules.length == 0 then moduleList.length else modules.length
-   len
+    val len = if modules.length == 0 then moduleList.length else modules.length
+    len
   }
-

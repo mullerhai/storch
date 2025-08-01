@@ -56,7 +56,8 @@ final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BilinearOptions(inFeatures1.toLong, inFeatures2.toLong, outFeatures.toLong)
+  private val options =
+    new BilinearOptions(inFeatures1.toLong, inFeatures2.toLong, outFeatures.toLong)
   options.bias().put(addBias)
 
   override private[torch] val nativeModule: BilinearImpl = new BilinearImpl(options)

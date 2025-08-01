@@ -227,9 +227,9 @@ object init:
     t
 
   def xavier_normal_[D <: DType](
-                                 t: Tensor[D],
-                                 gain: Double = 1.0
-                               ): t.type =
+      t: Tensor[D],
+      gain: Double = 1.0
+  ): t.type =
     torchNative.xavier_normal_(t.native, gain)
     t
 
@@ -254,9 +254,9 @@ object init:
     t
 
   def xavier_uniform_[D <: DType](
-                                  t: Tensor[D],
-                                  gain: Double = 1.0
-                                ): t.type =
+      t: Tensor[D],
+      gain: Double = 1.0
+  ): t.type =
     torchNative.xavier_uniform_(t.native, gain)
     t
 
@@ -293,11 +293,11 @@ object init:
     t
 
   def kaiming_uniform_[D <: DType](
-                                   t: Tensor[D],
-                                   a: Double = 0,
-                                   mode: Mode = Mode.FanIn,
-                                   nonlinearity: NonLinearity = NonLinearity.LeakyReLU
-                                 ): t.type =
+      t: Tensor[D],
+      a: Double = 0,
+      mode: Mode = Mode.FanIn,
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+  ): t.type =
     torchNative.kaiming_uniform_(t.native, a, mode.toNative, nonlinearity.toNative)
     t
 
@@ -334,11 +334,11 @@ object init:
     t
 
   def kaiming_normal_[D <: DType](
-                                  t: Tensor[D],
-                                  a: Double = 0,
-                                  mode: Mode = Mode.FanIn,
-                                  nonlinearity: NonLinearity = NonLinearity.LeakyReLU
-                                ): t.type =
+      t: Tensor[D],
+      a: Double = 0,
+      mode: Mode = Mode.FanIn,
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+  ): t.type =
     torchNative.kaiming_normal_(t.native, a, mode.toNative, nonlinearity.toNative)
     t
 

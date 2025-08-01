@@ -13,7 +13,6 @@ class ParameterList[D <: DType] extends ParameterListImpl {
   override def pretty_print(stream: _root_.org.bytedeco.javacpp.Pointer): Unit =
     super.pretty_print(stream)
 
-
   def append(param: Tensor[D]): Unit = super.append(param.native)
 
   override def append(pair: _root_.org.bytedeco.pytorch.StringTensorDictItem): Unit =

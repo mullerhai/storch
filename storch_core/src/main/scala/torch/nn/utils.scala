@@ -36,7 +36,6 @@ object utils:
       error_if_nonfinite
     )
 
-
   def clip_grad_norm_(
       parameters: Seq[Tensor[?]],
       max_norm: Double
@@ -79,7 +78,6 @@ object utils:
       norm_type,
       error_if_nonfinite
     )
-
 
   def clip_grad_value_(
       parameters: Seq[Tensor[?]],
@@ -128,11 +126,6 @@ object utils:
       vec.native,
       TensorVector(parameters.map(_.native).toArray*)
     )
-
-
-
-
-
 
 //    public static native void clip_grad_value_(@Const @ByRef TensorVector var0, double var1);
 //    public static native void clip_grad_value_(@ByVal Tensor var0, double var1);

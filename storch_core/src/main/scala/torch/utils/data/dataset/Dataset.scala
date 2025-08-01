@@ -7,7 +7,7 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 //  TargetType <: DType :Int64
 //trait DType
-trait Dataset[ParamType <: DType : Default ] {
+trait Dataset[ParamType <: DType: Default] {
   //  def init(data: AnyRef*): Unit
 
   def length: Long

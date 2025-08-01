@@ -8,13 +8,10 @@ import java.nio.{ByteBuffer, ByteOrder}
 class TFEventWriter(private val output: DataOutput) {
   @throws[IOException]
   def write(event: Array[Byte]): Unit = {
-    /**
-     * TFEvent format:
-     * uint64 length
-     * uint32 masked_crc32_of_length
-     * byte   data[length]
-     * uint32 masked_crc32_of_data
-     */
+
+    /** TFEvent format: uint64 length uint32 masked_crc32_of_length byte data[length] uint32
+      * masked_crc32_of_data
+      */
     val len = toInt64LE(event.length)
     output.write(len)
     output.write(toInt32LE(Crc32C.maskedCrc32c(len)))

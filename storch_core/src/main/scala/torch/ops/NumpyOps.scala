@@ -3,7 +3,7 @@ package ops
 
 import org.bytedeco.javacpp.*
 import spire.math.Complex
-import torch.{DType,ScalaType, DTypeToScala, Tensor}
+import torch.{DType, ScalaType, DTypeToScala, Tensor}
 import torch.numpy.enums.DType as NumpyDType
 import torch.numpy.matrix.NDArray
 
@@ -13,14 +13,14 @@ import Device.CPU
 
 private[torch] trait NumpyOps:
 
-  def NDArrayToTensor[U <: ScalaType : ClassTag](
-                                                  data: NDArray[?],
-                                                  requires_grad: Boolean = false,
-                                                  device: Device = CPU
-                                                ): Tensor[ScalaToDType[U]] = {
+  def NDArrayToTensor[U <: ScalaType: ClassTag](
+      data: NDArray[?],
+      requires_grad: Boolean = false,
+      device: Device = CPU
+  ): Tensor[ScalaToDType[U]] = {
     require(data.getNdim <= 5, "Only 1D, 2D, and 3D, 4D, 5D arrays are supported")
     val shapeSize = data.getShape.size
-    val tensor: Tensor[ScalaToDType[U]] = (data.getArray,shapeSize) match {
+    val tensor: Tensor[ScalaToDType[U]] = (data.getArray, shapeSize) match {
       case (singleDim: Array[U], 1) =>
         val dataSeq = singleDim.toSeq.asInstanceOf[Seq[U]]
         Tensor(dataSeq, Strided, device, requires_grad)
@@ -30,32 +30,44 @@ private[torch] trait NumpyOps:
       case (threeDim: Array[Array[Array[U]]], 3) =>
         val dataSeq = threeDim.map((arr: Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
-      case (fourDim: Array[Array[Array[Array[U]]]] , 4)=>
-        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+      case (fourDim: Array[Array[Array[Array[U]]]], 4) =>
+        val dataSeq =
+          fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
-      case (fiveDim: Array[Array[Array[Array[Array[U]]]]] , 5) =>
-        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
+      case (fiveDim: Array[Array[Array[Array[Array[U]]]]], 5) =>
+        val dataSeq = fiveDim
+          .map((arr: Array[Array[Array[Array[U]]]]) =>
+            arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+          )
+          .toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
     tensor
   }
 
-  def fromNDArray[U <: ScalaType : ClassTag](
+  def apply[U <: ScalaType : ClassTag](
                                               NdArray: NDArray[U],
                                               requires_grad: Boolean = false,
                                               device: Device = CPU
-                                            ): Tensor[ScalaToDType[U]] =  Tensor.createFromNDArray(data = NdArray,requires_grad = requires_grad,device= device)
+                                            ): Tensor[ScalaToDType[U]] =
+    Tensor.createFromNDArray(data = NdArray, requires_grad = requires_grad, device = device)
 
+  def fromNDArray[U <: ScalaType: ClassTag](
+      NdArray: NDArray[U],
+      requires_grad: Boolean = false,
+      device: Device = CPU
+  ): Tensor[ScalaToDType[U]] =
+    Tensor.createFromNDArray(data = NdArray, requires_grad = requires_grad, device = device)
 
-  def fromNDArrayWithArray[U <: ScalaType : ClassTag](
-                                                  data: NDArray[U],
-                                                  requires_grad: Boolean = false,
-                                                  device: Device = CPU
-                                                ): Tensor[ScalaToDType[U]] = {
+  def fromNDArrayWithArray[U <: ScalaType: ClassTag](
+      data: NDArray[U],
+      requires_grad: Boolean = false,
+      device: Device = CPU
+  ): Tensor[ScalaToDType[U]] = {
     require(data.getNdim <= 5, "Only 1D, 2D, and 3D, 4D, 5D arrays are supported")
     val shapeSize = data.getShape.size
-    val tensor: Tensor[ScalaToDType[U]] = (data.getArray,shapeSize) match {
+    val tensor: Tensor[ScalaToDType[U]] = (data.getArray, shapeSize) match {
       case (singleDim: Array[U], 1) =>
         val dataSeq = singleDim.toSeq.asInstanceOf[Seq[U]]
         Tensor(dataSeq, Strided, device, requires_grad)
@@ -65,39 +77,47 @@ private[torch] trait NumpyOps:
       case (threeDim: Array[Array[Array[U]]], 3) =>
         val dataSeq = threeDim.map((arr: Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
-      case (fourDim: Array[Array[Array[Array[U]]]] , 4)=>
-        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+      case (fourDim: Array[Array[Array[Array[U]]]], 4) =>
+        val dataSeq =
+          fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
-      case (fiveDim: Array[Array[Array[Array[Array[U]]]]] , 5) =>
-        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
+      case (fiveDim: Array[Array[Array[Array[Array[U]]]]], 5) =>
+        val dataSeq = fiveDim
+          .map((arr: Array[Array[Array[Array[U]]]]) =>
+            arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+          )
+          .toSeq
         Tensor(dataSeq, Strided, device, requires_grad)
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
     tensor
   }
 
-  /***
-   *
-   * @param arr
-   * @tparam U
-   * @return
-   */
-  def arrayToSeq[U <: ScalaType : ClassTag](arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]]): U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] = {
+  /** *
+    *
+    * @param arr
+    * @tparam U
+    * @return
+    */
+  def arrayToSeq[U <: ScalaType: ClassTag](
+      arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]]
+  ): U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] = {
     arr match {
-      case singleDim: Array[U] => singleDim.toSeq
-      case twoDim: Array[Array[U]] => twoDim.map(_.toSeq).toSeq
+      case singleDim: Array[U]              => singleDim.toSeq
+      case twoDim: Array[Array[U]]          => twoDim.map(_.toSeq).toSeq
       case threeDim: Array[Array[Array[U]]] => threeDim.map(_.map(_.toSeq).toSeq).toSeq
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
   }
 
-  /***
-   * Convert a torch.Tensor to a numpy.NDArray
-   * @param tensor
-   * @tparam D
-   * @return
-   */
-  def toNDArray[D <: DType](tensor: Tensor[D])(using ct: ClassTag[DTypeToScala[D]]): NDArray[DTypeToScala[D]] = {
+  /** * Convert a torch.Tensor to a numpy.NDArray
+    * @param tensor
+    * @tparam D
+    * @return
+    */
+  def toNDArray[D <: DType](
+      tensor: Tensor[D]
+  )(using ct: ClassTag[DTypeToScala[D]]): NDArray[DTypeToScala[D]] = {
     require(tensor.ndimension().toInt <= 5, "Only 1D, 2D, and 3D, 4D, 5D tensors are supported")
     val shape = tensor.sizes().map(_.toLong).toArray
     var npDtype: NumpyDType = null
@@ -211,12 +231,10 @@ private[torch] trait NumpyOps:
       data = data,
       shape = shape.map(_.toInt),
       ndim = shape.size,
-      dType = npDtype,
-    ).reshape(shape.map(_.toInt) *)
+      dType = npDtype
+    ).reshape(shape.map(_.toInt)*)
 
   }
-
-
 
 //val tensor2: Tensor[ScalaToDType[U]] = data.getArray match {
 //  case singleDim: Array[U] =>

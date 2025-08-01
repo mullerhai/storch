@@ -196,7 +196,6 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     )
   }
 
-
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"
     val dim = s"embeddingDim=$embeddingDim"
@@ -232,42 +231,43 @@ object EmbeddingBag:
     need_weight
   )
 
-  def from_pretrained[ParamType <: FloatNN | ComplexNN: Default](embeddings: Tensor[ParamType],
-                      freeze: Boolean = true,
-                      max_norm: Option[Float] | Float = None,
-                      norm_type: Option[Float] | Float = Some(2.0f),
-                      scale_grad_by_freq: Boolean | Option[Boolean] = false,
-                      mode: EmbeddingBagMode | String = EmbeddingBagMode.kMean,
-                      sparse: Boolean | Option[Boolean] = false,
-                      include_last_offset: Boolean | Option[Boolean] = false,
-                      padding_idx: Option[Int] | Int = None,
-                      need_weight: Option[Tensor[ParamType]] = None): EmbeddingBag[ParamType] = {
+  def from_pretrained[ParamType <: FloatNN | ComplexNN: Default](
+      embeddings: Tensor[ParamType],
+      freeze: Boolean = true,
+      max_norm: Option[Float] | Float = None,
+      norm_type: Option[Float] | Float = Some(2.0f),
+      scale_grad_by_freq: Boolean | Option[Boolean] = false,
+      mode: EmbeddingBagMode | String = EmbeddingBagMode.kMean,
+      sparse: Boolean | Option[Boolean] = false,
+      include_last_offset: Boolean | Option[Boolean] = false,
+      padding_idx: Option[Int] | Int = None,
+      need_weight: Option[Tensor[ParamType]] = None
+  ): EmbeddingBag[ParamType] = {
 
     require(embeddings.shape.length >= 2, "embeddings weight shape must have 2 dimension")
     val shape = embeddings.shape
     val num_embeddings = shape(0)
     val embedding_dim = shape(1)
-    val embeddingBagModel: EmbeddingBag[ParamType] = new EmbeddingBag(num_embeddings, embedding_dim, max_norm, norm_type, scale_grad_by_freq, mode, sparse, include_last_offset, padding_idx, need_weight)
+    val embeddingBagModel: EmbeddingBag[ParamType] = new EmbeddingBag(
+      num_embeddings,
+      embedding_dim,
+      max_norm,
+      norm_type,
+      scale_grad_by_freq,
+      mode,
+      sparse,
+      include_last_offset,
+      padding_idx,
+      need_weight
+    )
     embeddingBagModel.weight_=(embeddings)
-    if freeze then embeddingBagModel.weight.requires_grad = false else embeddingBagModel.weight.requires_grad = true
+    if freeze then embeddingBagModel.weight.requires_grad = false
+    else embeddingBagModel.weight.requires_grad = true
     embeddingBagModel
   }
 
   enum EmbeddingBagMode:
     case kSum, kMean, kMax
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //embeddings (Tensor) – FloatTensor containing weights for the EmbeddingBag. First dimension is being passed to EmbeddingBag as ‘num_embeddings’, second as ‘embedding_dim’.
 //

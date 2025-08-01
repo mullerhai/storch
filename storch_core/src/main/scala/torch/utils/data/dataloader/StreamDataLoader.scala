@@ -25,8 +25,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
-class StreamDataLoader(dataset: java.StreamDataset, sampler: StreamSampler, option: DataLoaderOptions)
-    extends SDL(dataset, sampler, option)
+class StreamDataLoader(
+    dataset: java.StreamDataset,
+    sampler: StreamSampler,
+    option: DataLoaderOptions
+) extends SDL(dataset, sampler, option)
     with DataLoader {
 
   override def begin(): ExampleVectorIterator = super.begin()

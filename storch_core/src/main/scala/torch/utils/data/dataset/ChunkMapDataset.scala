@@ -33,8 +33,7 @@ import org.bytedeco.pytorch.{
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset)
-    extends CMD(chunkDataset) {
+class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset) extends CMD(chunkDataset) {
 
   override def get_batch_example(indices: Long): ExampleOptional = super.get_batch_example(indices)
 

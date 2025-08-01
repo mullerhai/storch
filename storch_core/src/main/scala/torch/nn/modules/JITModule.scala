@@ -34,14 +34,17 @@ object JITModule {
 
   def load(fileName: String): JitModule = torchNative.load(fileName)
 
-  def apply(qualifiedName: String,
-           compilationUnit: CompilationUnit,
-           shouldMangle: Boolean = false): JITModule = {
-    val nativeJitModule = new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
+  def apply(
+      qualifiedName: String,
+      compilationUnit: CompilationUnit,
+      shouldMangle: Boolean = false
+  ): JITModule = {
+    val nativeJitModule =
+      new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
     new JITModule(nativeJitModule)
   }
 }
-class JITModule(nativeModule: JitModule)  {
+class JITModule(nativeModule: JitModule) {
 
   protected[torch] var nativeJitModule: JitModule = nativeModule
 
@@ -51,17 +54,16 @@ class JITModule(nativeModule: JitModule)  {
 //    this.nativeJitModule =  new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
 //  }
 
-
 //  def this(nativeModule: JitModule) ={
 //    this.nativeJitModule = nativeModule
 //  }
-  
-  def forward(input: IValueVector):IValue = nativeJitModule.forward(input)
 
-  def forward(input: IValueVector, map:Map[String,IValue]):IValue = {
+  def forward(input: IValueVector): IValue = nativeJitModule.forward(input)
+
+  def forward(input: IValueVector, map: Map[String, IValue]): IValue = {
     val kwargs: StringIValueMap = new StringIValueMap()
     for ((k, v) <- map.toList) {
-      kwargs.put(new BytePointer(k),v)
+      kwargs.put(new BytePointer(k), v)
     }
 //    val pred = fromNative(nativeJitModule.forward(input, kwargs).toTensor)
     nativeJitModule.forward(input, kwargs)
@@ -73,7 +75,7 @@ class JITModule(nativeModule: JitModule)  {
 
 //  private var nativeJitModule: JitModule =
 //    new JitModule(new QualifiedName(qualifiedName), compilationUnit, shouldMangle)
-//  
+//
   def apply(predictTensor: Tensor[?]): Tensor[?] = {
     val vector = new IValueVector(predictTensor.native)
     val pred = fromNative(nativeJitModule.forward(vector).toTensor)

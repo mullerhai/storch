@@ -1,7 +1,33 @@
 package torch.utils.data.dataloader
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{DataLoaderOptions, ExampleVectorIterator, ExampleVectorOptional, FullDataLoaderOptions, InputArchive, OutputArchive, SizeTOptional, SizeTVectorOptional, T_TensorT_TensorTensor_T_T, T_TensorTensor_T, T_TensorTensor_TOptional, TensorMapper, TensorVector, TransformerImpl, TransformerOptions, kCircular, kGELU, kReflect, kReplicate, kZeros, ChunkBatchDataset as CBD, ChunkRandomDataLoader as CRDL, JavaDistributedRandomDataLoader as DRDL, RandomSampler as RS, SequentialSampler as SS}
+import org.bytedeco.pytorch.{
+  DataLoaderOptions,
+  ExampleVectorIterator,
+  ExampleVectorOptional,
+  FullDataLoaderOptions,
+  InputArchive,
+  OutputArchive,
+  SizeTOptional,
+  SizeTVectorOptional,
+  T_TensorT_TensorTensor_T_T,
+  T_TensorTensor_T,
+  T_TensorTensor_TOptional,
+  TensorMapper,
+  TensorVector,
+  TransformerImpl,
+  TransformerOptions,
+  kCircular,
+  kGELU,
+  kReflect,
+  kReplicate,
+  kZeros,
+  ChunkBatchDataset as CBD,
+  ChunkRandomDataLoader as CRDL,
+  JavaDistributedRandomDataLoader as DRDL,
+  RandomSampler as RS,
+  SequentialSampler as SS
+}
 import torch.utils.data.dataset.java.JavaDataset
 import torch.utils.data.sampler.DistributedRandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
@@ -9,9 +35,9 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class DistributedRandomDataLoader(
-                                   dataset: java.JavaDataset,
-                                   sampler: DistributedRandomSampler,
-                                   option: DataLoaderOptions
+    dataset: java.JavaDataset,
+    sampler: DistributedRandomSampler,
+    option: DataLoaderOptions
 ) extends DRDL(dataset, sampler, option)
     with DataLoader {
 

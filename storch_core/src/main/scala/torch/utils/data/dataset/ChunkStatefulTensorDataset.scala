@@ -29,8 +29,7 @@ import org.bytedeco.pytorch.{
 import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class ChunkStatefulTensorDataset(chunkReader: ChunkTensorDataReader)
-    extends CSTD(chunkReader) {
+class ChunkStatefulTensorDataset(chunkReader: ChunkTensorDataReader) extends CSTD(chunkReader) {
 
   override def reset(): Unit = super.reset()
 

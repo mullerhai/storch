@@ -20,8 +20,7 @@ import java.nio.ByteBuffer
 import java.util.zip.CRC32
 import scala.collection.mutable.ListBuffer
 
-
-class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
+class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") {
   private val logFilePath = s"$logDir/${tfEventFilePath}"
   private val fileOutputStream = new FileOutputStream(logFilePath)
   private val dataOutputStream = new DataOutputStream(fileOutputStream)
@@ -29,7 +28,7 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
   writeFileVersionEvent("brain.Event:2")
 //  writeSessionLogEvent("brain.Event:2")
-  
+
   def addScalar(tag: String, scalarValue: Double, globalStep: Long): Unit = {
 //    val tensorProto = TensorProto(
 //      dtype = DataType.DT_FLOAT,
@@ -97,7 +96,11 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
   def addTensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit = {
     val tensorProto = TensorProto(
       dtype = DataType.DT_FLOAT,
-      tensorShape = Some(TensorShapeProto(dim = tensors.length :: Nil map (d => TensorShapeProto.Dim(size = d.toLong)))),
+      tensorShape = Some(
+        TensorShapeProto(dim =
+          tensors.length :: Nil map (d => TensorShapeProto.Dim(size = d.toLong))
+        )
+      ),
       floatVal = tensors.map(_.toFloat)
     )
 
@@ -134,7 +137,6 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
     val pluginData = PluginData(
       pluginName = "audio"
-
     )
 
     val metadata = SummaryMetadata(
@@ -155,7 +157,13 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
     writeEvent(summary, globalStep)
   }
 
-  def addImage(tag: String, imageData: Array[Byte], width: Int, height: Int, globalStep: Long): Unit = {
+  def addImage(
+      tag: String,
+      imageData: Array[Byte],
+      width: Int,
+      height: Int,
+      globalStep: Long
+  ): Unit = {
     val imageByteString = ByteString.copyFrom(imageData)
     val imageSummary = Image(
       colorspace = 3,
@@ -166,7 +174,6 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
     val pluginData = PluginData(
       pluginName = "images"
-
     )
 
     val metadata = SummaryMetadata(
@@ -229,7 +236,8 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
   def writeFileVersionEvent(tag: String, fileVersion: String = "brain.Event:2"): Unit = {
     val sourceMetadata = SourceMetadata(
-      writer = "tensorboard.summary.writer.event_file_writer" //"tensorflow.core.util.events_writer"
+      writer =
+        "tensorboard.summary.writer.event_file_writer" // "tensorflow.core.util.events_writer"
     )
     // 创建 Event 消息，添加 fileVersion 字段  Event.What.Summary(summary)
     val eventMeta = Event(
@@ -239,9 +247,13 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
     writer.write(eventMeta.toByteArray)
   }
 
-  def writeSessionLogEvent(tag: String, sessionStatus: SessionStatus = SessionStatus.START): Unit = {
+  def writeSessionLogEvent(
+      tag: String,
+      sessionStatus: SessionStatus = SessionStatus.START
+  ): Unit = {
     val sourceMetadata = SourceMetadata(
-      writer = "tensorboard.summary.writer.event_file_writer" //"tensorflow.core.util.events_writer"
+      writer =
+        "tensorboard.summary.writer.event_file_writer" // "tensorflow.core.util.events_writer"
     )
     // 创建 Event 消息，添加 fileVersion 字段  Event.What.Summary(summary)
     val eventSession = Event(
@@ -253,7 +265,8 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
   def writeLogMessageEvent(message: String, logLevel: Level = INFO): Unit = {
     val sourceMetadata = SourceMetadata(
-      writer = "tensorboard.summary.writer.event_file_writer" //"tensorflow.core.util.events_writer"
+      writer =
+        "tensorboard.summary.writer.event_file_writer" // "tensorflow.core.util.events_writer"
     )
     // 创建 Event 消息，添加 fileVersion 字段  Event.What.Summary(summary)
     val eventLogger = Event(
@@ -265,7 +278,8 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
 
   def writeTaggedRunMetadataEvent(tag: String, runMetadata: ByteString): Unit = {
     val sourceMetadata = SourceMetadata(
-      writer = "tensorboard.summary.writer.event_file_writer" //"tensorflow.core.util.events_writer"
+      writer =
+        "tensorboard.summary.writer.event_file_writer" // "tensorflow.core.util.events_writer"
     )
     // 创建 Event 消息，添加 fileVersion 字段  Event.What.Summary(summary)
     val eventLogger = Event(
@@ -279,7 +293,7 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
     val event = Event(
       wallTime = System.currentTimeMillis() / 1000.0,
       step = globalStep,
-      what = Event.What.Summary(summary),
+      what = Event.What.Summary(summary)
 //      fileVersion = Some("brain.Event:2")
     )
 
@@ -305,7 +319,7 @@ class SummaryWriter(logDir: String,tfEventFilePath:String = "train.tfevents") {
   private def calculateCrc(data: Array[Byte]): Int = {
     val crc32 = new CRC32()
     crc32.update(data)
-    (crc32.getValue & 0xFFFFFFFFL).toInt
+    (crc32.getValue & 0xffffffffL).toInt
   }
 
   def close(): Unit = {
