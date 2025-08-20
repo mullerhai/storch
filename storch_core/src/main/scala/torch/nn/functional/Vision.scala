@@ -92,19 +92,38 @@ private[torch] trait Vision {
     fromNative(result)
   }
 
-//  def upsample[D <: DType](x:Tensor[D],output_size:List[Int]):Tensor[D] = {
-//    val result = torchNative.upsample(x.native, output_size)
+//  def upsample_trilinear3d[D <: DType](x: Tensor[D], output_size: List[Long], align_corners: Boolean, ff: List[Double]): Tensor[D] = {
+//    val result = torchNative.upsample_trilinear3d(x.native, output_size.toArray, align_corners, ff *)
 //    fromNative(result)
 //  }
-
-//  def upsample_nearest[D <: DType](x:Tensor[D],output_size:List[Int]):Tensor[D] = {
-//    val result = torchNative.upsample_nearest(x.native, output_size)
+//
+//  def upsample_linear1d[D <: DType](x: Tensor[D], output_size: List[Long], align_corners: Boolean, ff: List[Double]): Tensor[D] = {
+//    val result = torchNative.upsample_linear1d(x.native, output_size.toArray, align_corners, ff *)
 //    fromNative(result)
 //
 //  }
 //
-//  def upsample_bilinear[D <: DType](x:Tensor[D],output_size:List[Int]):Tensor[D] = {
-//    val result = torchNative.upsample_bilinear(x.native, output_size)
+//  def upsample_bicubic2d[D <: DType](x:Tensor[D],output_size:List[Long],align_corners:Boolean,ff: List[Double]):Tensor[D] = {
+//    val result = torchNative.upsample_bicubic2d(x.native, output_size.toArray,align_corners,ff*)
+//    fromNative(result)
+//  }
+//
+//  def upsample_nearest1d[D <: DType](x:Tensor[D],output_size:List[Long],ff: List[Double]):Tensor[D] = {
+//    val result = torchNative.upsample_nearest1d(x.native, output_size.toArray,ff*)
+//    fromNative(result)
+//
+//  }
+//  def upsample_nearest2d[D <: DType](x:Tensor[D],output_size:List[Long],ff: List[Double]):Tensor[D] = {
+//    val result = torchNative.upsample_nearest2d(x.native, output_size.toArray,ff*)
+//    fromNative(result)
+//  }
+//  def upsample_nearest3d[D <: DType](x:Tensor[D],output_size:List[Long],ff: List[Double]):Tensor[D] = {
+//    val result = torchNative.upsample_nearest3d(x.native, output_size.toArray,ff*)
+//    fromNative(result)
+//  }
+////
+//  def upsample_bilinear2d[D <: DType](x:Tensor[D],output_size:List[Long],align_corners:Boolean,ff: List[Double]):Tensor[D] = {
+//    val result = torchNative.upsample_bilinear2d(x.native, output_size.toArray,align_corners,ff*)
 //    fromNative(result)
 //  }
   def grid_sample[D <: DType](

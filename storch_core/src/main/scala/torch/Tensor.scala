@@ -2422,7 +2422,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     fromNative(native.sspaddmm(mat1.native, mat2.native))
 
   def istft(n_fft: Long): Tensor[D] = fromNative(native.istft(n_fft))
-//  def sum(): Tensor[D] = fromNative(native.sum())
+
+//  def stft(n_fft: Long): Tensor[D] = fromNative(native.stft(n_fft))
+
+  //  def sum(): Tensor[D] = fromNative(native.sum())
   def sum(dim: Seq[Int]): Tensor[D] = fromNative(native.sum(dim.map(_.toLong)*))
 
   def sum(dim: Seq[Int], keepdim: Boolean, dtype: ScalarTypeOptional): Tensor[D] = fromNative(
@@ -3928,7 +3931,7 @@ object Tensor:
 
   def apply[U <: ScalaType: ClassTag](
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
-        Seq[Seq[Seq[Seq[Seq[U]]]]]| NDArray[U],
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean
   ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
 

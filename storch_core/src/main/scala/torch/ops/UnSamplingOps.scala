@@ -1,20 +1,12 @@
 package torch
-package nn
-package functional
+package ops
 
-import org.bytedeco.pytorch.{
-  StringViewOptional,
-  LongArrayRefOptional,
-  LongOptional,
-  BoolOptional,
-  SymInt,
-  SymIntOptional
-}
-import org.bytedeco.pytorch.global.torch as torchNative
-import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
+import org.bytedeco.pytorch.global.torch as torchNative
+//import org.bytedeco.pytorch.*
+import torch.internal.NativeConverters.fromNative
 
-trait UnSampling {
+trait UnSamplingOps {
 
   def upsample_trilinear3d[D <: DType](
       x: Tensor[D],

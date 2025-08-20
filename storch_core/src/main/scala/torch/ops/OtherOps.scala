@@ -20,6 +20,24 @@ package ops
 import internal.NativeConverters.*
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  LongArrayRefOptional,
+  LongOptional,
+  StringViewOptional,
+  SymInt,
+  SymIntOptional,
+  TensorOptional,
+  TensorOptions,
+  TensorVector
+}
+import org.bytedeco.pytorch.global.torch as torchNative
+import torch.internal.NativeConverters.fromNative
+import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
+import Device.CPU
+import torch.Layout.{Sparse, SparseBsc, SparseBsr, SparseCsc, SparseCsr, Strided}
+import torch.numpy.matrix.NDArray
+import scala.reflect.ClassTag
 
 /** Other Ops
   *
@@ -128,6 +146,47 @@ private[torch] trait OtherOps {
   def from_native[D <: DType](rawTensor: org.bytedeco.pytorch.Tensor): Tensor[D] = fromNative(
     rawTensor
   )
+
+  def block_diag[D <: DType](tensorList: Seq[Tensor[D]]): Tensor[D] =
+    fromNative(torchNative.block_diag(new TensorVector(tensorList.map(_.native)*)))
+
+  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
+    fromNative(torchNative.dist(tensor.native, tensor2.native))
+
+  def isclose[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
+    fromNative(torchNative.isclose(tensor.native, tensor2.native))
+
+  def linear[D <: DType](
+      input: Tensor[D],
+      weight: Tensor[D],
+      bias: Option[Tensor[D]] = None
+  ): Tensor[D] =
+    if bias.isDefined then
+      fromNative(
+        torchNative.linear(input.native, weight.native, new TensorOptional(bias.get.native))
+      )
+    else fromNative(torchNative.linear(input.native, weight.native))
+
+  def can_cast(dtype: DType, dtype2: DType): Boolean =
+    torchNative.can_cast(dtype.toScalarType, dtype2.toScalarType)
+
+  def from_numpy[U <: ScalaType: ClassTag](
+      data: NDArray[U],
+      requires_grad: Boolean = true
+  ): Tensor[ScalaToDType[U]] = Tensor.createFromNDArray[U](data, requires_grad, CPU)
+
+  def is_floating_point[D <: DType](tensor: Tensor[D]): Boolean =
+    torchNative.is_floating_point(tensor.native)
+
+  def is_distributed[D <: DType](tensor: Tensor[D]): Boolean =
+    torchNative.is_distributed(tensor.native)
+
+  def is_signed[D <: DType](tensor: Tensor[D]): Boolean = torchNative.is_signed(tensor.native)
+
+  def is_inference[D <: DType](tensor: Tensor[D]): Boolean = torchNative.is_inference(tensor.native)
+
+  // is_vulkan_available
+  def is_vulkan_available(): Boolean = torchNative.is_vulkan_available()
 
 }
 

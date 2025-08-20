@@ -2055,64 +2055,64 @@ private[torch] trait BLASOps {
 //  def conj[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.conj(t1.native))
 
-  def fft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def fft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.fft(t1.native))
 
-  def ifft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ifft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ifft(t1.native))
 
-  def fft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def fft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.fft2(t1.native))
 
-  def ifft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ifft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ifft2(t1.native))
 
-  def fftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def fftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.fftn(t1.native))
 
-  def ifftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ifftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ifftn(t1.native))
 
-  def rfft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def rfft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rfft(t1.native))
 
-  def irfft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def irfft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.irfft(t1.native))
 
-  def rfft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def rfft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rfft2(t1.native))
 
-  def irfft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def irfft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.irfft2(t1.native))
 
-  def rfftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def rfftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rfftn(t1.native))
 
-  def irfftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def irfftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.irfftn(t1.native))
 
-  def hfft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def hfft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.hfft(t1.native))
 
-  def ihfft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ihfft_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ihfft(t1.native))
 
-  def hfft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def hfft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.hfft2(t1.native))
 
-  def ihfft2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ihfft2_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ihfft2(t1.native))
 
-  def hfftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def hfftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.hfftn(t1.native))
 
-  def ihfftn[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ihfftn_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ihfftn(t1.native))
 
-  def fftshift[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def fftshift_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.fftshift(t1.native))
 
-  def ifftshift[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def ifftshift_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ifftshift(t1.native))
 
   def eigvals[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =

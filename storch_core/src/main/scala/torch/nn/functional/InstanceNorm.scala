@@ -1,3 +1,3 @@
-package torch.nn.functional
-
-trait InstanceNorm
+//package torch.nn.functional
+//
+//trait InstanceNorm

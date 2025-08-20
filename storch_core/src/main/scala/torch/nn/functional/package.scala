@@ -38,6 +38,9 @@ package object functional
     with Loss
     with Pooling
     with Sparse
+    with UnSampling
+    with Vision
+    with FFT
 
 //@native
 //@Namespace("at::native")

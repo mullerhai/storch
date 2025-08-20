@@ -46,11 +46,11 @@ private[torch] trait NumpyOps:
     tensor
   }
 
-  def apply[U <: ScalaType : ClassTag](
-                                              NdArray: NDArray[U],
-                                              requires_grad: Boolean = false,
-                                              device: Device = CPU
-                                            ): Tensor[ScalaToDType[U]] =
+  def apply[U <: ScalaType: ClassTag](
+      NdArray: NDArray[U],
+      requires_grad: Boolean = false,
+      device: Device = CPU
+  ): Tensor[ScalaToDType[U]] =
     Tensor.createFromNDArray(data = NdArray, requires_grad = requires_grad, device = device)
 
   def fromNDArray[U <: ScalaType: ClassTag](

@@ -38,6 +38,8 @@ package object torch
     with ops.SparseOps
     with ops.JitOps
     with ops.NumpyOps
+    with ops.FftOps
+    with ops.UnSamplingOps
     with ops.OtherOps {
 
   /** Disable gradient calculation for [[op]].

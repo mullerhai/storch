@@ -9,7 +9,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.12.2")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.9.3")
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.4.0")
-
+addSbtPlugin("org.scalameta" % "sbt-native-image" % "0.3.4")
 if (sys.env.isDefinedAt("GITHUB_ACTION")) {
   Def.settings(
     addSbtPlugin("net.virtual-void" % "sbt-hackers-digest" % "0.1.2")
