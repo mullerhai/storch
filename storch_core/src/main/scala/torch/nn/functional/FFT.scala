@@ -10,12 +10,20 @@ import org.bytedeco.pytorch.{
   LongOptional,
   BoolOptional,
   SymInt,
-  SymIntOptional
+  SymIntOptional,
+  LongVector
 }
+
+import org.bytedeco.javacpp.Pointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 trait FFT {
+
+  def _interp_output_size(dim: Long, closed_over_args: Pointer): LongVector = {
+    val seq = torchNative._interp_output_size(dim, closed_over_args)
+    seq
+  }
 
   def hamming_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
     torchNative.hamming_window(window_length)
