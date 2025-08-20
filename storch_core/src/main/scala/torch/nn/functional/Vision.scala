@@ -79,9 +79,9 @@ private[torch] trait Vision {
     }
     options.mode().put(InterpolateMode(nativeMode))
 
-    val lVec = new LongVector(output_size: _*)
+    val lVec = new LongVector(output_size*)
     options.size().put(LongVectorOptional(lVec))
-    val dVec = new DoubleVector(scale_factor: _*)
+    val dVec = new DoubleVector(scale_factor*)
 
     options.scale_factor().put(DoubleVectorOptional(dVec))
     options.align_corners().put(BoolOptional(align_corners))
@@ -156,13 +156,11 @@ private[torch] trait Vision {
       size: List[Long],
       align_corners: Option[Boolean]
   ): Tensor[D] = {
-
-//     val longVec= LongVector(size:_*)
+    
     val longVecRef = LongArrayRef(size.toArray, size.length)
     val result = align_corners match {
       case Some(s) => torchNative.affine_grid(theta.native, longVecRef, s)
       case None    => torchNative.affine_grid(theta.native, longVecRef)
-
     }
 
     // val result = torchNative.affine_grid(theta.native, longVecRef)
