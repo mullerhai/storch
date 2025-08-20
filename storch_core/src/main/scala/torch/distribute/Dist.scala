@@ -488,10 +488,10 @@ enum ReduceOpType:
 //  case UNUSED extends RedOpType.UNUSED //(9.toByte)
 
 //https://pytorch.ac.cn/docs/stable/distributed.html#torch.distributed.TCPStore
-class DistBackend[D <: DType](po: BytePointer) extends DistributedBackend(po) {
+class DistBackend[D <: DType](po: String) extends DistributedBackend(new BytePointer(po)) {
 
 //  val native :Backend
-  val native: DistributedBackend = new DistributedBackend(po)
+  val native: DistributedBackend = new DistributedBackend(new BytePointer(po))
 
   override def getRank: Int = native.getRank
 
