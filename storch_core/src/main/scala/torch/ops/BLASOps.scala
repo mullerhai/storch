@@ -852,6 +852,58 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.less_equal(t1.native, t2.native))
 
+  object linalg {
+    def cross[D1 <: DType, D2 <: DType](
+                                                t1: Tensor[D1],
+                                                t2: Tensor[D2]
+                                              ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_cross(t1.native, t2.native))
+
+    def householder_product[D1 <: DType, D2 <: DType](
+                                                              t1: Tensor[D1],
+                                                              t2: Tensor[D2]
+                                                            ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_householder_product(t1.native, t2.native))
+
+    def lstsq[D1 <: DType, D2 <: DType](
+                                                t1: Tensor[D1],
+                                                t2: Tensor[D2]
+                                              ): (Tensor[Promoted[D1, D2]], Tensor[Promoted[D1, D2]]) =
+      val tup = torchNative.linalg_lstsq(t1.native, t2.native)
+      (fromNative(tup.get0), fromNative(tup.get1))
+
+    def matmul[D1 <: DType, D2 <: DType](
+                                                 t1: Tensor[D1],
+                                                 t2: Tensor[D2]
+                                               ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_matmul(t1.native, t2.native))
+
+    def pinv[D1 <: DType, D2 <: DType](
+                                               t1: Tensor[D1],
+                                               t2: Tensor[D2]
+                                             ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_pinv(t1.native, t2.native))
+
+    def solve[D1 <: DType, D2 <: DType](
+                                                t1: Tensor[D1],
+                                                t2: Tensor[D2]
+                                              ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_solve(t1.native, t2.native))
+
+    def tensorsolve[D1 <: DType, D2 <: DType](
+                                                      t1: Tensor[D1],
+                                                      t2: Tensor[D2]
+                                                    ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_tensorsolve(t1.native, t2.native))
+
+    def vecdot[D1 <: DType, D2 <: DType](
+                                                 t1: Tensor[D1],
+                                                 t2: Tensor[D2]
+                                               ): Tensor[Promoted[D1, D2]] =
+      fromNative(torchNative.linalg_vecdot(t1.native, t2.native))
+
+
+  }
   def linalg_cross[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
@@ -1039,11 +1091,6 @@ private[torch] trait BLASOps {
   def lt[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.lt(t1.native, t2.native))
 
-  def masked_select[D1 <: DType, D2 <: DType](
-      t1: Tensor[D1],
-      t2: Tensor[D2]
-  ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.masked_select(t1.native, t2.native))
 
   def maximum[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.maximum(t1.native, t2.native))
@@ -1228,8 +1275,6 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.not_equal(t1.native, t2.native))
 
-  def normal[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.normal(t1.native, t2.native))
 
   def nll_loss_nd[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -1872,11 +1917,6 @@ private[torch] trait BLASOps {
   def arctan2[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.arctan2(t1.native, t2.native))
 
-  def bernoulli[D1 <: DType, D2 <: DType](
-      t1: Tensor[D1],
-      t2: Tensor[D2]
-  ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.bernoulli(t1.native, t2.native))
 
   def binary_cross_entropy[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -2016,8 +2056,7 @@ private[torch] trait BLASOps {
 //  def trunc[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trunc(t1.native))
 
-  def uniform[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.uniform(t1.native))
+
 
   def unsqueeze_raw[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
     fromNative(torchNative.unsqueeze(t1.native, dim))

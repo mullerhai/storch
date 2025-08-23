@@ -672,6 +672,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def `@`[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] = matmul(u)
 
+  def @@[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] = matmul(u)
+
   def norm(): Tensor[D] = fromNative(native.norm())
 
   def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(

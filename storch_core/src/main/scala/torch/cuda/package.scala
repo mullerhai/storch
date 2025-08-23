@@ -16,8 +16,10 @@
 
 package torch
 
+import org.bytedeco.pytorch.cuda.CUDAStream
+import torch.internal.NativeConverters.fromNative
 import org.bytedeco.pytorch.global.torch as torchNative
-
+import org.bytedeco.pytorch.global.torch_cuda as torchCuda
 /** This package adds support for CUDA tensor types, that implement the same function as CPU
   * tensors, but they utilize GPUs for computation.
   */
@@ -25,4 +27,55 @@ package object cuda {
 
   /** Returns a Boolean indicating if CUDA is currently available. */
   def isAvailable: Boolean = torchNative.cuda_is_available()
+
+  def device_count = torchNative.cuda_device_count()
+
+//  def cudnn_is_available :Boolean = torchNative.cudnn_is_available()
+
+  def cuda_manual_seed(seed: Long) = torchNative.cuda_manual_seed(seed)
+
+  def cuda_manual_seed_all(seed: Long) = torchNative.cuda_manual_seed_all(seed)
+
+  def cuda_synchronize = torchNative.cuda_synchronize()
+
+  def cuda_synchronize(sync: Long) = torchNative.cuda_synchronize(sync)
+
+  def CUDA_HELP = torchNative.CUDA_HELP()
+
+  def getCUDAHooks = torchNative.getCUDAHooks()
+
+  def set_device(device: Byte) = torchCuda.set_device(device)
+
+  def device_synchronize = torchCuda.device_synchronize()
+
+  def warn_or_error_on_sync = torchCuda.warn_or_error_on_sync()
+
+  def getNumGPUs = torchCuda.getNumGPUs()
+
+  def clearCublasWorkspaces = torchCuda.clearCublasWorkspaces()
+
+  def getCurrentCUDASolverDnHandle = torchCuda.getCurrentCUDASolverDnHandle()
+
+  def getDefaultCUDAStream = torchCuda.getDefaultCUDAStream()
+
+  def getCurrentCUDAStream = torchCuda.getCurrentCUDAStream()
+
+  def setCurrentCUDAStream(stream: CUDAStream) = torchCuda.setCurrentCUDAStream(stream)
+
+//  def getCudnnHandle = torchCuda.getCudnnHandle()
+
+
+  def dataSize(dtype: Int) = torchCuda.dataSize(dtype)
+
+  def getAllocator = torchCuda.getAllocator()
+
+  def getMemoryFraction(frac: Byte) = torchCuda.getMemoryFraction(frac)
+
+  def isEnabled: Boolean = torchCuda.isEnabled()
+
+  def enable(flag: Boolean) = torchCuda.enable(flag)
+
+  def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
+
+  def contiguousIfZeroInStrides[D <: DType](tensor: Tensor[D]) = fromNative(torchCuda.contiguousIfZeroInStrides(tensor.native))
 }

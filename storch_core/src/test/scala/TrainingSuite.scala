@@ -26,6 +26,7 @@ class TraininSuite extends munit.FunSuite {
     val xTrainNorm = ((xTrain - xTrain.mean) / xTrain.std)
 
     val ds = TensorSeq(xTrainNorm).zip(TensorSeq(yTrain))
+//    torch.nested.nested_tensor(Seq(xTrain))
 
     torch.manualSeed(1)
 

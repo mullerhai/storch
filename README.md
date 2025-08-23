@@ -24,7 +24,7 @@ STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
 How to fetch STorch Library
 ```scala 3
 
-libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.3.5-1.15.1"
+libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.4.2-1.15.2"
 
 ```
 

@@ -672,6 +672,12 @@ private[torch] trait IndexingSlicingJoiningOps {
   def maskedSelect[D <: DType](input: Tensor[D], mask: Tensor[Bool]): Tensor[D] =
     fromNative(torchNative.masked_select(input.native, mask.native))
 
+  def masked_select[D1 <: DType, D2 <: DType](
+                                               input: Tensor[D1],
+                                               mask: Tensor[D2]
+                                             ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.masked_select(input.native, mask.native))
+
   /** Moves the dimension(s) of `input` at the position(s) in `source` to the position(s) in
     * `destination`.
     *

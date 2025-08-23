@@ -30,7 +30,7 @@ object DeviceType:
     val index = deviceTypesLowerCase.indexOf(v)
     if index == -1 then DeviceType.valueOf(v)
     else DeviceType.fromOrdinal(index)
-
+//  private[torch] def toNative: pytorch.DeviceType = pytorch.DeviceType(device.ordinal.toByte, index)
 case class Device(device: DeviceType, index: Byte = -1):
   private[torch] def toNative: pytorch.Device = pytorch.Device(device.ordinal.toByte, index)
 object Device:
