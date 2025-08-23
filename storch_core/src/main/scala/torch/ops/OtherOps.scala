@@ -20,7 +20,46 @@ package ops
 import internal.NativeConverters.*
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{BoolOptional, DeviceOptional,Stream, DoubleVector, DoubleVectorOptional, FunctionSchema, GridSampleFuncOptions, GridSampleMode, GridSamplePaddingMode, InterpolateFuncOptions, InterpolateMode, LongArrayRef, LongArrayRefOptional, LongOptional, LongVector, LongVectorOptional, ProcessGroup, ScalarTypeOptional, Storage, StringViewOptional, SymInt, SymIntOptional, TensorOptional, TensorOptions, TensorVector, VariableHooksInterface, WarningHandler, Work, kArea, kBicubic, kBilinear, kBorder, kLinear, kNearest, kNearestExact, kReflection, kTrilinear, kZeros}
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  DeviceOptional,
+  Stream,
+  DoubleVector,
+  DoubleVectorOptional,
+  FunctionSchema,
+  GridSampleFuncOptions,
+  GridSampleMode,
+  GridSamplePaddingMode,
+  InterpolateFuncOptions,
+  InterpolateMode,
+  LongArrayRef,
+  LongArrayRefOptional,
+  LongOptional,
+  LongVector,
+  LongVectorOptional,
+  ProcessGroup,
+  ScalarTypeOptional,
+  Storage,
+  StringViewOptional,
+  SymInt,
+  SymIntOptional,
+  TensorOptional,
+  TensorOptions,
+  TensorVector,
+  VariableHooksInterface,
+  WarningHandler,
+  Work,
+  kArea,
+  kBicubic,
+  kBilinear,
+  kBorder,
+  kLinear,
+  kNearest,
+  kNearestExact,
+  kReflection,
+  kTrilinear,
+  kZeros
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
@@ -181,29 +220,29 @@ private[torch] trait OtherOps {
   def is_vulkan_available(): Boolean = torchNative.is_vulkan_available()
 
   def interpolate[D <: DType](
-                               x: Tensor[D],
-                               scale_factor: List[Double],
-                               mode: String,
-                               antialias: Boolean,
-                               align_corners: Boolean,
-                               recompute_scale_factor: Boolean,
-                               output_size: List[Long]
-                             ): Tensor[D] = {
+      x: Tensor[D],
+      scale_factor: List[Double],
+      mode: String,
+      antialias: Boolean,
+      align_corners: Boolean,
+      recompute_scale_factor: Boolean,
+      output_size: List[Long]
+  ): Tensor[D] = {
     val options = new InterpolateFuncOptions
     val nativeMode = mode match {
-      case "nearest" | "Nearest" => new kNearest
-      case "bilinear" | "Bilinear" => new kBilinear
-      case "bicubic" | "Bicubic" => new kBicubic
-      case "trilinear" | "Trilinear" => new kTrilinear
-      case "area" | "Area" | "kArea" | "KArea" => new kArea
+      case "nearest" | "Nearest"                                                => new kNearest
+      case "bilinear" | "Bilinear"                                              => new kBilinear
+      case "bicubic" | "Bicubic"                                                => new kBicubic
+      case "trilinear" | "Trilinear"                                            => new kTrilinear
+      case "area" | "Area" | "kArea" | "KArea"                                  => new kArea
       case "nearestexact" | "nearestExact" | "kNearestExact" | "KNearest|Exact" => new kNearest
-      case "linear" | "Linear" | "kLinear" | "KLinear" => new kLinear
+      case "linear" | "Linear" | "kLinear" | "KLinear"                          => new kLinear
     }
     options.mode().put(InterpolateMode(nativeMode))
 
-    val lVec = new LongVector(output_size *)
+    val lVec = new LongVector(output_size*)
     options.size().put(LongVectorOptional(lVec))
-    val dVec = new DoubleVector(scale_factor *)
+    val dVec = new DoubleVector(scale_factor*)
 
     options.scale_factor().put(DoubleVectorOptional(dVec))
     options.align_corners().put(BoolOptional(align_corners))
@@ -215,21 +254,21 @@ private[torch] trait OtherOps {
   }
 
   def grid_sample[D <: DType](
-                               x: Tensor[D],
-                               grid: Tensor[D],
-                               mode: String = "bilinear",
-                               padding_mode: String = "zeros",
-                               align_corners: Boolean = false
-                             ): Tensor[D] = {
+      x: Tensor[D],
+      grid: Tensor[D],
+      mode: String = "bilinear",
+      padding_mode: String = "zeros",
+      align_corners: Boolean = false
+  ): Tensor[D] = {
     val options = GridSampleFuncOptions()
     val nativeMode = mode match {
-      case "nearest" | "Nearest" => new kNearest
+      case "nearest" | "Nearest"   => new kNearest
       case "bilinear" | "Bilinear" => new kBilinear
     }
     options.mode().put(GridSampleMode(nativeMode))
     val nativePaddingMode = padding_mode match {
-      case "zeros" | "Zeros" => new kZeros
-      case "border" | "Border" => new kBorder
+      case "zeros" | "Zeros"           => new kZeros
+      case "border" | "Border"         => new kBorder
       case "reflection" | "Reflection" => new kReflection
 
     }
@@ -240,21 +279,20 @@ private[torch] trait OtherOps {
   }
 
   def affine_grid[D <: DType](
-                               theta: Tensor[D],
-                               size: List[Long],
-                               align_corners: Option[Boolean]
-                             ): Tensor[D] = {
+      theta: Tensor[D],
+      size: List[Long],
+      align_corners: Option[Boolean]
+  ): Tensor[D] = {
 
     val longVecRef = LongArrayRef(size.toArray, size.length)
     val result = align_corners match {
       case Some(s) => torchNative.affine_grid(theta.native, longVecRef, s)
-      case None => torchNative.affine_grid(theta.native, longVecRef)
+      case None    => torchNative.affine_grid(theta.native, longVecRef)
     }
 
     // val result = torchNative.affine_grid(theta.native, longVecRef)
     fromNative(result)
   }
-
 
   def is_tensor(obj: AnyRef): Boolean = obj.isInstanceOf[Tensor[?]]
 
@@ -266,12 +304,14 @@ private[torch] trait OtherOps {
 
   def get_thread_num = torchNative.get_thread_num()
 
-  def divup(v1: Long, v2: Long):Long = torchNative.divup(v1, v2)
+  def divup(v1: Long, v2: Long): Long = torchNative.divup(v1, v2)
 
-  def to_padded_tensor[D <: DType](input: Tensor[D], pad: Double):Tensor[D] = fromNative(torchNative.to_padded_tensor(input.native, pad))
+  def to_padded_tensor[D <: DType](input: Tensor[D], pad: Double): Tensor[D] = fromNative(
+    torchNative.to_padded_tensor(input.native, pad)
+  )
 
-  def to_padded_tensor[D <: DType](input: Tensor[D], pad: Double, padVec: Array[Long]): Tensor[D] = fromNative(torchNative.to_padded_tensor(input.native, pad, padVec*))
-
+  def to_padded_tensor[D <: DType](input: Tensor[D], pad: Double, padVec: Array[Long]): Tensor[D] =
+    fromNative(torchNative.to_padded_tensor(input.native, pad, padVec*))
 
   def synchronize = torchNative.synchronize()
 
@@ -281,28 +321,39 @@ private[torch] trait OtherOps {
 
   def get_dispatch_queue = torchNative.get_dispatch_queue()
 
-  //long numel(@Const @ByRef Tensor var0);
+  // long numel(@Const @ByRef Tensor var0);
 
-  def numel[D <: DType](tensor: Tensor[D]):Long = torchNative.numel(tensor.native)
+  def numel[D <: DType](tensor: Tensor[D]): Long = torchNative.numel(tensor.native)
 
   object nested {
 
-    def nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]]): Tensor[D] = fromNative(torchNative.nested_tensor(new TensorVector(tensorSeq.map(_.native) *)))
+    def nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]]): Tensor[D] = fromNative(
+      torchNative.nested_tensor(new TensorVector(tensorSeq.map(_.native)*))
+    )
 
-    def nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]],
-                                  layout: Layout = Strided,
-                                  device: Device = CPU,
-                                  requiresGrad: Boolean = false): Tensor[D] =
+    def nested_tensor[D <: DType](
+        tensorSeq: Seq[Tensor[D]],
+        layout: Layout = Strided,
+        device: Device = CPU,
+        requiresGrad: Boolean = false
+    ): Tensor[D] =
       val options = NativeConverters.tensorOptions(tensorSeq.head.dtype, layout, CPU, requiresGrad)
-      fromNative(torchNative.nested_tensor(new TensorVector(tensorSeq.map(_.native) *), options))
+      fromNative(torchNative.nested_tensor(new TensorVector(tensorSeq.map(_.native)*), options))
 
+    def as_nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]]): Tensor[D] = fromNative(
+      torchNative.as_nested_tensor(new TensorVector(tensorSeq.map(_.native)*))
+    )
 
-    def as_nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]]): Tensor[D] = fromNative(torchNative.as_nested_tensor(new TensorVector(tensorSeq.map(_.native) *)))
-
-    def as_nested_tensor[D <: DType](tensorSeq: Seq[Tensor[D]], dtype: DType, device: Device): Tensor[D] = {
+    def as_nested_tensor[D <: DType](
+        tensorSeq: Seq[Tensor[D]],
+        dtype: DType,
+        device: Device
+    ): Tensor[D] = {
       val scalar = new ScalarTypeOptional(dtype.toScalarType)
       val deviceOpt = new DeviceOptional(device.toNative)
-      fromNative(torchNative.as_nested_tensor(new TensorVector(tensorSeq.map(_.native) *), scalar, deviceOpt))
+      fromNative(
+        torchNative.as_nested_tensor(new TensorVector(tensorSeq.map(_.native)*), scalar, deviceOpt)
+      )
     }
   }
 //    public static native void broadcast_coalesced(@IntrusivePtr("c10d::ProcessGroup") @Cast({"", "c10::intrusive_ptr<c10d::ProcessGroup>&"}) ProcessGroup var0, @ByVal TensorVector var1, @Cast({"size_t"}) long var2, int var4);
@@ -310,12 +361,25 @@ private[torch] trait OtherOps {
   //    @Namespace("c10d")
   //    public static native void broadcast_coalesced(@IntrusivePtr("c10d::ProcessGroup") @Cast({"", "c10::intrusive_ptr<c10d::ProcessGroup>&"})
 //    ProcessGroup var0, @ByVal TensorVector var1, @Cast({"size_t"}) long var2);
-  def broadcast_coalesced[D <: DType](process: ProcessGroup, tensors: Seq[Tensor[D]], buffer_size: Long):Unit=
-    torchNative.broadcast_coalesced(process, new TensorVector(tensors.map(_.native)*),buffer_size)
+  def broadcast_coalesced[D <: DType](
+      process: ProcessGroup,
+      tensors: Seq[Tensor[D]],
+      buffer_size: Long
+  ): Unit =
+    torchNative.broadcast_coalesced(process, new TensorVector(tensors.map(_.native)*), buffer_size)
 
-  def broadcast_coalesced[D <: DType](process: ProcessGroup, tensors: Seq[Tensor[D]], buffer_size: Long, size: Int): Unit =
-    torchNative.broadcast_coalesced(process, new TensorVector(tensors.map(_.native) *), buffer_size, size)
-
+  def broadcast_coalesced[D <: DType](
+      process: ProcessGroup,
+      tensors: Seq[Tensor[D]],
+      buffer_size: Long,
+      size: Int
+  ): Unit =
+    torchNative.broadcast_coalesced(
+      process,
+      new TensorVector(tensors.map(_.native)*),
+      buffer_size,
+      size
+    )
 
   //    public static native void setDebugLevel(DebugLevel var0);
   //
@@ -360,24 +424,26 @@ private[torch] trait OtherOps {
 //  def unique_consecutive[D <: DType](tensor: Tensor[D]) = torchNative.unique_consecutive(tensor.native)
   def deviceCount = torchNative.deviceCount()
   def getDeviceIndex = torchNative.getDeviceIndex()
-  
-  def storage_copy(storage: Storage, storage2: Storage) = torchNative.storage_copy(storage, storage2)
+
+  def storage_copy(storage: Storage, storage2: Storage) =
+    torchNative.storage_copy(storage, storage2)
   def share_memory_[D <: DType](tensor: Tensor[D]) = torchNative.share_memory_(tensor.native)
-  
+
   def setCurrentStream(stream: Stream) = torchNative.setCurrentStream(stream)
-  
+
   def getCurrentStream(b: Byte): Stream = torchNative.getCurrentStream(b)
-  
+
 //  def isAccelerator(deviceType: torch.DeviceType):Boolean = torchNative.isAccelerator(deviceType.toNative)
 //  def isAcceleratorExcluded(deviceType: torch.DeviceType, deviceType2: torch.DeviceType):Boolean = torchNative.isAcceleratorExcluded(deviceType, deviceType2)
-//  
-  def getAccelerator(acc: Option[Boolean] = None) = if acc.isDefined then torchNative.getAccelerator(acc.get) else torchNative.getAccelerator()
-  
+//
+  def getAccelerator(acc: Option[Boolean] = None) =
+    if acc.isDefined then torchNative.getAccelerator(acc.get) else torchNative.getAccelerator()
+
   def register_privateuse1_backend(name: String) = torchNative.register_privateuse1_backend(name)
-  
+
   def ExcludeFileExtension(ext: String) = torchNative.ExcludeFileExtension(ext)
   def StripBasename(name: String) = torchNative.StripBasename(name)
-  def set_warning_handler(handler: WarningHandler )= torchNative.set_warning_handler(handler)
+  def set_warning_handler(handler: WarningHandler) = torchNative.set_warning_handler(handler)
   def get_warnAlways: Boolean = torchNative.get_warnAlways()
   def set_warnAlways(always: Boolean) = torchNative.set_warnAlways(always)
   def get_warning_handler = torchNative.get_warning_handler()
@@ -386,34 +452,43 @@ private[torch] trait OtherOps {
   def schema(schema: String) = torchNative.schema(schema)
   def setAutogradFallbackMode(mode: Int) = torchNative.setAutogradFallbackMode(mode)
   def autogradNotImplementedFallback = torchNative.autogradNotImplementedFallback()
-  
-  def autogradNotImplementedInplaceOrViewFallback = torchNative.autogradNotImplementedInplaceOrViewFallback()
+
+  def autogradNotImplementedInplaceOrViewFallback =
+    torchNative.autogradNotImplementedInplaceOrViewFallback()
   def basicAutogradNotImplementedFallback = torchNative.basicAutogradNotImplementedFallback()
   def getAutogradFallbackMode = torchNative.getAutogradFallbackMode()
   def getCopyOfFuncTorchTLS = torchNative.getCopyOfFuncTorchTLS()
   def functorchTLSAccessor = torchNative.functorchTLSAccessor()
   def torch_function_mode_enabled: Boolean = torchNative.torch_function_mode_enabled()
   def torch_function_all_disabled: Boolean = torchNative.torch_function_all_disabled()
-  def dispatch_mode_enabled :Boolean = torchNative.dispatch_mode_enabled()
+  def dispatch_mode_enabled: Boolean = torchNative.dispatch_mode_enabled()
   def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
   def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
   def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
   def enter_dual_level = torchNative.enter_dual_level()
   def exit_dual_level(level: Long) = torchNative.exit_dual_level(level)
-  def backward[D <: DType](tensors: Seq[Tensor[D]]) = torchNative.backward(new TensorVector(tensors.map(_.native)*))
-  def grad[D1 <: DType, D2 <: DType](tensors: Seq[Tensor[D1]], tensors2: Seq[Tensor[D2]]) = torchNative.grad(new TensorVector(tensors.map(_.native)*), new TensorVector(tensors2.map(_.native)*))
+  def backward[D <: DType](tensors: Seq[Tensor[D]]) =
+    torchNative.backward(new TensorVector(tensors.map(_.native)*))
+  def grad[D1 <: DType, D2 <: DType](tensors: Seq[Tensor[D1]], tensors2: Seq[Tensor[D2]]) =
+    torchNative.grad(
+      new TensorVector(tensors.map(_.native)*),
+      new TensorVector(tensors2.map(_.native)*)
+    )
   def SetVariableHooks(hooks: VariableHooksInterface) = torchNative.SetVariableHooks(hooks)
   def GetVariableHooks = torchNative.GetVariableHooks()
   def HasVariableHooks: Boolean = torchNative.HasVariableHooks()
   def setDebugLevel(level: Int) = torchNative.setDebugLevel(level)
-  
+
   def setDebugLevelFromEnvironment = torchNative.setDebugLevelFromEnvironment()
-  
+
   def debug_level = torchNative.debug_level()
-  def wait_tensor[D <:DType](tensor: Tensor[D]) = fromNative(torchNative.wait_tensor(tensor.native))
-  def register_work[D <: DType](tensor: Tensor[D], work: Work) = torchNative.register_work(tensor.native, work)
-  def unregister_work(work: Work):Unit = torchNative.unregister_work(work)
-  def get_work_registry_size():Long = torchNative.get_work_registry_size()
+  def wait_tensor[D <: DType](tensor: Tensor[D]) = fromNative(
+    torchNative.wait_tensor(tensor.native)
+  )
+  def register_work[D <: DType](tensor: Tensor[D], work: Work) =
+    torchNative.register_work(tensor.native, work)
+  def unregister_work(work: Work): Unit = torchNative.unregister_work(work)
+  def get_work_registry_size(): Long = torchNative.get_work_registry_size()
 }
 
 //    def einsum[D <:DType](

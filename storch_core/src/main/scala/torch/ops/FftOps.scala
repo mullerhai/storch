@@ -450,13 +450,13 @@ trait FftOps {
 
 //  def ihfftn[D <: DType](input: Tensor[D], s=None, dim=None, norm=None, *, out=None): Tensor[D]
 
-  object fft{
+  object fft {
     def fftshift[D <: DType](input: Tensor[D], dim: Seq[Long]): Tensor[D] = fromNative(
-      torchNative.fftshift(input.native, dim *)
+      torchNative.fftshift(input.native, dim*)
     )
 
     def ifftshift[D <: DType](input: Tensor[D], dim: Seq[Long]): Tensor[D] = fromNative(
-      torchNative.ifftshift(input.native, dim *)
+      torchNative.ifftshift(input.native, dim*)
     )
 
     def fft[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.fft(input.native))
@@ -477,11 +477,15 @@ trait FftOps {
 
     def rfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.rfft2(input.native))
 
-    def irfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.irfft2(input.native))
+    def irfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+      torchNative.irfft2(input.native)
+    )
 
     def rfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.rfftn(input.native))
 
-    def irfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.irfftn(input.native))
+    def irfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+      torchNative.irfftn(input.native)
+    )
 
     def hfft[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.hfft(input.native))
 
@@ -489,11 +493,15 @@ trait FftOps {
 
     def hfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.hfft2(input.native))
 
-    def ihfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.ihfft2(input.native))
+    def ihfft2[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+      torchNative.ihfft2(input.native)
+    )
 
     def hfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.hfftn(input.native))
 
-    def ihfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.ihfftn(input.native))
+    def ihfftn[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
+      torchNative.ihfftn(input.native)
+    )
 
     def fftshift[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(
       torchNative.fftshift(input.native)

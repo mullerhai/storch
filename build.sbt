@@ -101,7 +101,10 @@ releaseProcess := Seq[ReleaseStep](
   pushChanges
 )
 libraryDependencies += "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.1" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13")
-
+// https://mvnrepository.com/artifact/org.bytedeco/cuda
+libraryDependencies += "org.bytedeco" % "cuda" % "12.9-9.10-1.5.12"
+// https://mvnrepository.com/artifact/org.bytedeco/cuda-platform
+libraryDependencies += "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12"
 libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.7"
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.4"
 libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"

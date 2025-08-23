@@ -156,7 +156,7 @@ private[torch] trait Vision {
       size: List[Long],
       align_corners: Option[Boolean]
   ): Tensor[D] = {
-    
+
     val longVecRef = LongArrayRef(size.toArray, size.length)
     val result = align_corners match {
       case Some(s) => torchNative.affine_grid(theta.native, longVecRef, s)

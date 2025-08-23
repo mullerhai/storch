@@ -23,11 +23,12 @@ import org.bytedeco.pytorch.{
   LongOptional,
   PackedSequence,
   Scalar,
+  ScalarOptional,
   TensorOptional,
   TensorOptionalList,
   TensorVector
 }
-import torch.internal.NativeConverters.fromNative
+import torch.internal.NativeConverters.{fromNative, toScalar}
 
 import scala.collection.mutable.ListBuffer
 
@@ -402,6 +403,86 @@ private[torch] trait BLASOps {
 
   def clip[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.clip(t1.native))
+
+  def clip[D1 <: DType, S <: ScalaType](t1: Tensor[D1], min: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.clip(t1.native, new ScalarOptional(toScalar(min))))
+
+  def clip[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      min: S,
+      max: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(
+      torchNative.clip(
+        t1.native,
+        new ScalarOptional(toScalar(min)),
+        new ScalarOptional(toScalar(max))
+      )
+    )
+
+  def clamp[D1 <: DType, S <: ScalaType](t1: Tensor[D1], min: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.clamp(t1.native, new ScalarOptional(toScalar(min))))
+
+  def clamp[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      min: S,
+      max: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(
+      torchNative.clamp(
+        t1.native,
+        new ScalarOptional(toScalar(min)),
+        new ScalarOptional(toScalar(max))
+      )
+    )
+
+  // Tensor renorm(@Const @ByRef Tensor var0, @Const @ByRef Scalar var1, @Cast({"int64_t"}) long var2, @Const @ByRef Scalar var4);
+  def renorm[D1 <: DType](t1: Tensor[D1], p: Double, maxNorm: Double, dim: Long): Tensor[D1] =
+    fromNative(torchNative.renorm(t1.native, toScalar(p), dim, toScalar(maxNorm)))
+
+  def renorm[D1 <: DType](t1: Tensor[D1], p: Float, dim: Int, maxNorm: Float): Tensor[D1] =
+    fromNative(torchNative.renorm(t1.native, toScalar(p), dim.toLong, toScalar(maxNorm)))
+
+  def clamp_[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.clamp_(t1.native))
+
+  def clip_[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.clip_(t1.native))
+
+  def clip_[D1 <: DType, S <: ScalaType](t1: Tensor[D1], min: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.clip_(t1.native, new ScalarOptional(toScalar(min))))
+
+  def clip_[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      min: S,
+      max: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(
+      torchNative.clip_(
+        t1.native,
+        new ScalarOptional(toScalar(min)),
+        new ScalarOptional(toScalar(max))
+      )
+    )
+
+  def clamp_[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      min: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.clamp_(t1.native, new ScalarOptional(toScalar(min))))
+
+  def clamp_[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      min: S,
+      max: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(
+      torchNative.clamp_(
+        t1.native,
+        new ScalarOptional(toScalar(min)),
+        new ScalarOptional(toScalar(max))
+      )
+    )
 
   def clone[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.clone(t1.native))
@@ -854,54 +935,53 @@ private[torch] trait BLASOps {
 
   object linalg {
     def cross[D1 <: DType, D2 <: DType](
-                                                t1: Tensor[D1],
-                                                t2: Tensor[D2]
-                                              ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_cross(t1.native, t2.native))
 
     def householder_product[D1 <: DType, D2 <: DType](
-                                                              t1: Tensor[D1],
-                                                              t2: Tensor[D2]
-                                                            ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_householder_product(t1.native, t2.native))
 
     def lstsq[D1 <: DType, D2 <: DType](
-                                                t1: Tensor[D1],
-                                                t2: Tensor[D2]
-                                              ): (Tensor[Promoted[D1, D2]], Tensor[Promoted[D1, D2]]) =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): (Tensor[Promoted[D1, D2]], Tensor[Promoted[D1, D2]]) =
       val tup = torchNative.linalg_lstsq(t1.native, t2.native)
       (fromNative(tup.get0), fromNative(tup.get1))
 
     def matmul[D1 <: DType, D2 <: DType](
-                                                 t1: Tensor[D1],
-                                                 t2: Tensor[D2]
-                                               ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_matmul(t1.native, t2.native))
 
     def pinv[D1 <: DType, D2 <: DType](
-                                               t1: Tensor[D1],
-                                               t2: Tensor[D2]
-                                             ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_pinv(t1.native, t2.native))
 
     def solve[D1 <: DType, D2 <: DType](
-                                                t1: Tensor[D1],
-                                                t2: Tensor[D2]
-                                              ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_solve(t1.native, t2.native))
 
     def tensorsolve[D1 <: DType, D2 <: DType](
-                                                      t1: Tensor[D1],
-                                                      t2: Tensor[D2]
-                                                    ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_tensorsolve(t1.native, t2.native))
 
     def vecdot[D1 <: DType, D2 <: DType](
-                                                 t1: Tensor[D1],
-                                                 t2: Tensor[D2]
-                                               ): Tensor[Promoted[D1, D2]] =
+        t1: Tensor[D1],
+        t2: Tensor[D2]
+    ): Tensor[Promoted[D1, D2]] =
       fromNative(torchNative.linalg_vecdot(t1.native, t2.native))
-
 
   }
   def linalg_cross[D1 <: DType, D2 <: DType](
@@ -1091,7 +1171,6 @@ private[torch] trait BLASOps {
   def lt[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.lt(t1.native, t2.native))
 
-
   def maximum[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.maximum(t1.native, t2.native))
 
@@ -1274,7 +1353,6 @@ private[torch] trait BLASOps {
       t2: Tensor[D2]
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.not_equal(t1.native, t2.native))
-
 
   def nll_loss_nd[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -1917,7 +1995,6 @@ private[torch] trait BLASOps {
   def arctan2[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.arctan2(t1.native, t2.native))
 
-
   def binary_cross_entropy[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
@@ -2055,8 +2132,6 @@ private[torch] trait BLASOps {
 
 //  def trunc[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trunc(t1.native))
-
-
 
   def unsqueeze_raw[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
     fromNative(torchNative.unsqueeze(t1.native, dim))

@@ -663,8 +663,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.clip(new ScalarOptional(toScalar(min)))
   )
 
+  def clip[S <: ScalaType](min: S, max: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.clip(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
+  )
+
   def clamp[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
     native.clamp(new ScalarOptional(toScalar(min)))
+  )
+
+  def clamp[S <: ScalaType](min: S, max: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.clamp(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
   )
 
   def matmul[D2 <: DType](u: Tensor[D2]): Tensor[Promoted[D, D2]] =
@@ -1598,6 +1606,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def clamp_(min: Float, max: Float): this.type = {
+    native.clamp_(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
+    this
+  }
+
   def clamp_(): this.type = {
     native.clamp_()
     this
@@ -1620,6 +1633,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def clip_(min: Float): this.type = {
     native.clip_(new ScalarOptional(toScalar(min)))
+    this
+  }
+
+  def clip_(min: Float, max: Float): this.type = {
+    native.clip_(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
     this
   }
 

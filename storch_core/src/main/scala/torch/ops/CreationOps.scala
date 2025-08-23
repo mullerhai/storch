@@ -270,17 +270,17 @@ private[torch] trait CreationOps {
     )
 
   def range[D <: DType | Derive, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
-                                                                                            start: Start = 0,
-                                                                                            end: End,
-                                                                                            step: Step = 1,
-                                                                                            dtype: D = derive,
-                                                                                            layout: Layout = Strided,
-                                                                                            device: Device = CPU,
-                                                                                            requires_grad: Boolean = false
-                                                                                          ): Tensor[DTypeOrDeriveArange[D, Start, End, Step]] =
+      start: Start = 0,
+      end: End,
+      step: Step = 1,
+      dtype: D = derive,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false
+  ): Tensor[DTypeOrDeriveArange[D, Start, End, Step]] =
     val derivedDType = dtype match
       case _: Derive => derivedArangeType(start, end, step)
-      case t: DType => t
+      case t: DType  => t
     fromNative(
       torchNative.torch_range(
         toScalar(start),

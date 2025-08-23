@@ -31,7 +31,7 @@ import org.bytedeco.pytorch.{
 }
 import org.bytedeco.pytorch.global.torch.Backend
 
-class ProcessGroupGlooSTorch[D <: DType](po: BytePointer) extends ProcessGroupGloo(po) {
+class ProcessGroupGlooSTorch[D <: DType](po: String) extends ProcessGroupGloo(new BytePointer(po)) {
 
   override def getBackendName: BytePointer = super.getBackendName
 
@@ -200,7 +200,7 @@ class ProcessGroupGlooSTorch[D <: DType](po: BytePointer) extends ProcessGroupGl
 
   override def getNumThreads: Int = super.getNumThreads
 }
-class ProcessGroupSTorch[D <: DType](po: BytePointer) extends ProcessGroup(po) {
+class ProcessGroupSTorch[D <: DType](po: String) extends ProcessGroup(new BytePointer(po)) {
 
   override def getRank: Int = super.getRank
 

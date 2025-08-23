@@ -44,59 +44,75 @@ private[torch] trait RandomSamplingOps {
     fromNative(torchNative.uniform(t1.native))
   }
 
-  def uniform[D1 <: DType](low: Tensor[D1], mean: Double, std: Double,
-                           generator: Option[Generator]|Generator = None): Tensor[D1] = {
-    fromNative(torchNative.uniform(low.native, mean, std,generator.toOptional ))
+  def uniform[D1 <: DType](
+      low: Tensor[D1],
+      mean: Double,
+      std: Double,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] = {
+    fromNative(torchNative.uniform(low.native, mean, std, generator.toOptional))
   }
 
-  def poisson[D1 <: DType, D2 <: DType](lambda: Tensor[D1],
-                                       generator: Option[Generator]|Generator = None): Tensor[D1] =
+  def poisson[D1 <: DType, D2 <: DType](
+      lambda: Tensor[D1],
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] =
     fromNative(torchNative.poisson(lambda.native, generator.toOptional))
 
-  def normal[D1 <: DType, D2 <: DType](mean: Tensor[D1],
-                                       std: Tensor[D2],
-                                       generator: Option[Generator]|Generator): Tensor[Promoted[D1, D2]] =
+  def normal[D1 <: DType, D2 <: DType](
+      mean: Tensor[D1],
+      std: Tensor[D2],
+      generator: Option[Generator] | Generator
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.normal(mean.native, std.native, generator.toOptional))
 
-  def normal[D1 <: DType](mean: Double,
-                                       std: Double, size: Array[Long]): Tensor[D1] =
+  def normal[D1 <: DType](mean: Double, std: Double, size: Array[Long]): Tensor[D1] =
     fromNative(torchNative.normal(mean, std, size*))
 
-  def torch_normal[D1 <: DType](mean: Double,
-                          std: Double, size: Array[Long]): Tensor[D1] =
-    fromNative(torchNative.torch_normal(mean, std, size *))
+  def torch_normal[D1 <: DType](mean: Double, std: Double, size: Array[Long]): Tensor[D1] =
+    fromNative(torchNative.torch_normal(mean, std, size*))
 
-
-  def torch_normal[D1 <: DType](mean: Double,
-                          std: Double, size: Array[Long],
-                          generator: Option[Generator] | Generator,
-                          dtype: D1 = int64,
-                          layout: Layout = Strided,
-                          device: Device = CPU,
-                          requires_grad: Boolean = false): Tensor[D1] = {
+  def torch_normal[D1 <: DType](
+      mean: Double,
+      std: Double,
+      size: Array[Long],
+      generator: Option[Generator] | Generator,
+      dtype: D1 = int64,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false
+  ): Tensor[D1] = {
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
     fromNative(torchNative.torch_normal(mean, std, size, generator.toOptional, options))
   }
 
-
-  def log_normal[D1 <: DType](mean: Double,
-                          std: Double, size: Tensor[D1],
-                          generator: Option[Generator] | Generator): Tensor[D1] =
+  def log_normal[D1 <: DType](
+      mean: Double,
+      std: Double,
+      size: Tensor[D1],
+      generator: Option[Generator] | Generator
+  ): Tensor[D1] =
     fromNative(torchNative.log_normal(size.native, mean, std, generator.toOptional))
 
-  def normal[D1 <: DType](mean: Double,
-                                       std: Double, size: Array[Long],
-                                       generator: Option[Generator] | Generator,
-                                       options: TensorOptions): Tensor[D1] =
+  def normal[D1 <: DType](
+      mean: Double,
+      std: Double,
+      size: Array[Long],
+      generator: Option[Generator] | Generator,
+      options: TensorOptions
+  ): Tensor[D1] =
     fromNative(torchNative.normal(mean, std, size, generator.toOptional, options))
 
-  def normal[D1 <: DType](mean: Double,
-                          std: Double, size: Array[Long],
-                          generator: Option[Generator] | Generator,
-                          dtype: D1 = int64,
-                          layout: Layout = Strided,
-                          device: Device = CPU,
-                          requires_grad: Boolean = false): Tensor[D1] = {
+  def normal[D1 <: DType](
+      mean: Double,
+      std: Double,
+      size: Array[Long],
+      generator: Option[Generator] | Generator,
+      dtype: D1 = int64,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false
+  ): Tensor[D1] = {
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
     fromNative(torchNative.normal(mean, std, size, generator.toOptional, options))
   }
@@ -105,8 +121,6 @@ private[torch] trait RandomSamplingOps {
 //                                       std: Double, size: Array[Long],
 //                                       generator: Option[Generator] = None): Tensor[Promoted[D1, D2]] =
 //    if generator.isDefined then  fromNative(torchNative.normal(mean, std, size*))
-
-
 
   //    public static native Tensor normal(double var0, double var2,
   //     long[] var4,
@@ -119,7 +133,6 @@ private[torch] trait RandomSamplingOps {
   //    @ByVal GeneratorOptional var5,
   //    @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8,
   //    @ByVal BoolOptional var9);
-
 
   //    public static native Tensor torch_normal(double var0, double var2, @ByVal LongArrayRef var4, @ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var5, @ByVal(nullValue = "at::TensorOptions{}") TensorOptions var6);
 
@@ -330,25 +343,31 @@ private[torch] trait RandomSamplingOps {
     )
 
   def bernoulli[D1 <: DType, D2 <: DType](
-                                           t1: Tensor[D1],
-                                           t2: Tensor[D2] | Long,
-                                           generator: Option[Generator] = None
-                                         ): Tensor[Promoted[D1, D2]] = {
+      t1: Tensor[D1],
+      t2: Tensor[D2] | Long,
+      generator: Option[Generator] = None
+  ): Tensor[Promoted[D1, D2]] = {
     t2 match {
       case t: Tensor[D2] =>
-        if generator.isDefined  then fromNative(torchNative.bernoulli(t1.native, t.native, generator.get.toOptional)) else fromNative(torchNative.bernoulli(t1.native, t.native))
+        if generator.isDefined then
+          fromNative(torchNative.bernoulli(t1.native, t.native, generator.get.toOptional))
+        else fromNative(torchNative.bernoulli(t1.native, t.native))
       case l: Long =>
-        if generator.isDefined  then fromNative(torchNative.bernoulli(t1.native, l, generator.get.toOptional)) else fromNative(torchNative.bernoulli(t1.native, l))
+        if generator.isDefined then
+          fromNative(torchNative.bernoulli(t1.native, l, generator.get.toOptional))
+        else fromNative(torchNative.bernoulli(t1.native, l))
 
     }
 
   }
 
   def bernoulli[D1 <: DType](
-                              t1: Tensor[D1],
-                              generator: Option[Generator]
-                                         ): Tensor[D1] = {
-    if generator.isDefined then fromNative(torchNative.bernoulli(t1.native, generator.get.toOptional)) else fromNative(torchNative.bernoulli(t1.native))
+      t1: Tensor[D1],
+      generator: Option[Generator]
+  ): Tensor[D1] = {
+    if generator.isDefined then
+      fromNative(torchNative.bernoulli(t1.native, generator.get.toOptional))
+    else fromNative(torchNative.bernoulli(t1.native))
 
   }
 

@@ -728,11 +728,11 @@ private[torch] trait ReductionOps {
     (fromNative[D](nativeTuple.get0), fromNative[D](nativeTuple.get1))
 
   def std_mean[D <: FloatNN | ComplexNN](
-                                         input: Tensor[D],
-                                         dim: Int | Seq[Int] = Seq.empty,
-                                         keepdim: Boolean = false,
-                                         correction: Int = 1
-                                       ): (Tensor[D], Tensor[D]) =
+      input: Tensor[D],
+      dim: Int | Seq[Int] = Seq.empty,
+      keepdim: Boolean = false,
+      correction: Int = 1
+  ): (Tensor[D], Tensor[D]) =
     val nativeTuple =
       torchNative.std_mean(
         input.native,
@@ -951,11 +951,11 @@ private[torch] trait ReductionOps {
     (fromNative[D](nativeTuple.get0), fromNative[D](nativeTuple.get1))
 
   def var_mean[D <: FloatNN | ComplexNN](
-                                         input: Tensor[D],
-                                         dim: Int | Seq[Int] = Seq.empty,
-                                         keepdim: Boolean = false,
-                                         correction: Int = 1
-                                       ): (Tensor[D], Tensor[D]) =
+      input: Tensor[D],
+      dim: Int | Seq[Int] = Seq.empty,
+      keepdim: Boolean = false,
+      correction: Int = 1
+  ): (Tensor[D], Tensor[D]) =
     val nativeTuple =
       torchNative.var_mean(
         input.native,
@@ -964,6 +964,7 @@ private[torch] trait ReductionOps {
         keepdim
       )
     (fromNative[D](nativeTuple.get0), fromNative[D](nativeTuple.get1))
+
   /** Counts the number of non-zero values in the tensor `input` along the given `dim`. If no dim is
     * specified then all non-zeros in the tensor are counted.
     *

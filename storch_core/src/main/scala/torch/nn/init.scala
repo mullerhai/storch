@@ -83,10 +83,11 @@ object init:
     torchNative.calculate_gain(nonlinearity.toNative, param)
 
   def calculate_gain(
-                     nonlinearity: NonLinearity = NonLinearity.LeakyReLU,
-                     param: Double = 0.01
-                   ): Double =
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU,
+      param: Double = 0.01
+  ): Double =
     torchNative.calculate_gain(nonlinearity.toNative, param)
+
   /** Fills the given 2-dimensional input Tensor with values drawn from the uniform distribution
     * $U(a,b)$. No gradient will be recorded for this operation.
     *
