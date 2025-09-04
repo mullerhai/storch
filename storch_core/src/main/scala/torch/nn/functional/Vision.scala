@@ -51,12 +51,12 @@ private[torch] trait Vision {
     fromNative(result)
   }
 
-  def pad[D <: DType](x: Tensor[D], output_size: List[Long]): Tensor[D] = {
-
-    val outputRef = LongArrayRef(output_size.toArray, output_size.length)
-    val result = torchNative.pad(x.native, outputRef)
-    fromNative(result)
-  }
+//  def pad[D <: DType](x: Tensor[D], output_size: List[Long]): Tensor[D] = {
+//
+//    val outputRef = LongArrayRef(output_size.toArray, output_size.length)
+//    val result = torchNative.pad(x.native, outputRef)
+//    fromNative(result)
+//  }
 
   def interpolate[D <: DType](
       x: Tensor[D],

@@ -3,7 +3,7 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{AdagradOptions, TensorVector}
+import org.bytedeco.pytorch.{AdagradOptions,OptimizerParamState, AdagradParamState, TensorVector}
 import torch.Tensor
 
 import scala.collection.immutable.Iterable
@@ -33,6 +33,7 @@ final class Adagrad(
   options.weight_decay().put(weightDecay)
   options.initial_accumulator_value().put(initialAccumulatorValue)
 
+  override val optimizerParamState: OptimizerParamState = new AdagradParamState()
   override private[torch] val native: pytorch.Adagrad = pytorch.Adagrad(nativeParams, options)
 }
 

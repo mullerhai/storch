@@ -18,7 +18,7 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{AdamWOptions, TensorVector}
+import org.bytedeco.pytorch.{AdamWOptions, AdamWParamState, OptimizerParamState, TensorVector}
 
 import scala.collection.immutable.Iterable
 
@@ -42,6 +42,7 @@ final class AdamW(
   options.eps().put(eps)
   options.weight_decay().put(weightDecay)
   options.amsgrad().put(amsgrad)
+  override val optimizerParamState: OptimizerParamState = new AdamWParamState()
   override private[torch] val native: pytorch.AdamW = pytorch.AdamW(nativeParams, options)
 }
 

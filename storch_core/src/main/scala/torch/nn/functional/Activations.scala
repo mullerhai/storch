@@ -60,6 +60,11 @@ private[torch] trait Activations {
       else ScalarTypeOptional(derivedDType.toScalarType)
     fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
 
+  def log_softmax[In <: DType, Out <: FloatNN | Derive](
+                                                        input: Tensor[In],
+                                                        dim: Long,
+                                                        dtype: Out = derive
+                                                      ) = logSoftmax(input, dim, dtype)
   /** Applies the rectified linear unit function element-wise.
     *
     * See [[torch.nn.ReLU]] for more details.
@@ -102,6 +107,17 @@ private[torch] trait Activations {
       else ScalarTypeOptional(derivedDType.toScalarType)
     fromNative(torchNative.softmax(input.native, dim, nativeDType))
 
+  def scaled_dot_product_attention[D <: DType](
+                                             query: Tensor[D],
+                                             key: Tensor[D],
+                                             value: Tensor[D],
+                                             attn_mask: Tensor[D],
+                                             dropout_p: Double,
+                                             is_causal: Boolean,
+                                             scale: Double,
+                                             enable_gqa: Boolean
+                                           ): Tensor[D] = scaledDotProductAttention(query, key, value, attn_mask, dropout_p,
+      is_causal, scale, enable_gqa)
 //  scaled_dot_product_attention(query, key, value, attn_mask = None, dropout_p = 0.0,
 //    is_causal = False, scale = None, enable_gqa = False) -> Tensor:
   def scaledDotProductAttention[D <: DType](

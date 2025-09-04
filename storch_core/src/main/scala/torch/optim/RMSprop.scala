@@ -1,7 +1,7 @@
 package torch.optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{RMSpropOptions, TensorVector}
+import org.bytedeco.pytorch.{RMSpropOptions, OptimizerParamState, RMSpropParamState, TensorVector}
 import torch.Tensor
 
 import scala.collection.immutable.Iterable
@@ -30,6 +30,7 @@ final class RMSprop(
   options.weight_decay().put(weightDecay)
   options.momentum().put(momentum)
   options.centered().put(centered)
+  override val optimizerParamState: OptimizerParamState = new RMSpropParamState()
   override private[torch] val native: pytorch.RMSprop = pytorch.RMSprop(nativeParams, options)
 }
 

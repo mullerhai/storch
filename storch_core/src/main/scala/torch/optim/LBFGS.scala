@@ -18,7 +18,7 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{LBFGSOptions, LongOptional, StringOptional, TensorVector}
+import org.bytedeco.pytorch.{LBFGSOptions, LBFGSParamState, OptimizerParamState, LongOptional, StringOptional, TensorVector}
 
 import scala.collection.immutable.Iterable
 
@@ -56,6 +56,7 @@ final class LBFGS(
     val nativeLineSearchFn = new StringOptional(lineSearchFn.get)
     options.line_search_fn().put(nativeLineSearchFn) // StringOptional
   }
+  override val optimizerParamState: OptimizerParamState = new LBFGSParamState()
   override private[torch] val native: pytorch.LBFGS = pytorch.LBFGS(nativeParams, options)
 }
 

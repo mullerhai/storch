@@ -31,6 +31,7 @@ import org.bytedeco.pytorch.{
 }
 import org.bytedeco.pytorch.global.torch.Backend
 
+
 class ProcessGroupGlooSTorch[D <: DType](po: String) extends ProcessGroupGloo(new BytePointer(po)) {
 
   override def getBackendName: BytePointer = super.getBackendName

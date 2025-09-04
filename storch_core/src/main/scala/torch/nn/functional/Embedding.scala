@@ -1,3 +1,7 @@
-package torch.nn.functional
-
-class Embedding
+//package torch
+//package nn
+//package functional
+//
+//private [torch] trait Embedding {
+//  
+//}

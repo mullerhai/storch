@@ -105,6 +105,17 @@ private[torch] trait Convolution {
     *
     * @group nn_conv
     */
+  def conv_transpose1d[D <: FloatNN | ComplexNN](
+                                                 input: Tensor[D],
+                                                 weight: Tensor[D],
+                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
+                                                 stride: Int | (Int, Int) = 1,
+                                                 padding: Int | (Int, Int) = 0,
+                                                 output_padding: Int | (Int, Int) = 0,
+                                                 groups: Int = 1,
+                                                 dilation: Int | (Int, Int) = 1
+                                               ): Tensor[D] = convTranspose1d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+
   def convTranspose1d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
       weight: Tensor[D],
@@ -133,6 +144,17 @@ private[torch] trait Convolution {
     *
     * @group nn_conv
     */
+  def conv_transpose2d[D <: FloatNN | ComplexNN](
+                                                 input: Tensor[D],
+                                                 weight: Tensor[D],
+                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
+                                                 stride: Int | (Int, Int) = 1,
+                                                 padding: Int | (Int, Int) = 0,
+                                                 output_padding: Int | (Int, Int) = 0,
+                                                 groups: Int = 1,
+                                                 dilation: Int | (Int, Int) = 1
+                                               ): Tensor[D] = convTranspose2d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+
   def convTranspose2d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
       weight: Tensor[D],
@@ -161,6 +183,17 @@ private[torch] trait Convolution {
     *
     * @group nn_conv
     */
+  def conv_transpose3d[D <: FloatNN | ComplexNN](
+                                                 input: Tensor[D],
+                                                 weight: Tensor[D],
+                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
+                                                 stride: Int | (Int, Int, Int) = 1,
+                                                 padding: Int | (Int, Int, Int) = 0,
+                                                 output_padding: Int | (Int, Int, Int) = 0,
+                                                 groups: Int = 1,
+                                                 dilation: Int | (Int, Int) = 1
+                                               ): Tensor[D] = convTranspose3d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+
   def convTranspose3d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
       weight: Tensor[D],
@@ -184,47 +217,46 @@ private[torch] trait Convolution {
       )
     )
 
-  /// todo unfold fold
-  def unfold[D <: FloatNN | ComplexNN](
-      input: Tensor[D],
-      kernelSize: Int | (Int, Int) | (Int, Int, Int),
-      outputSize: Int | (Int, Int) | (Int, Int, Int),
-      dilation: Int | (Int, Int) | (Int, Int, Int),
-      padding: Int | (Int, Int) | (Int, Int, Int),
-      stride: Int | (Int, Int) | (Int, Int, Int)
-  ): Tensor[D] =
-    val options = new UnfoldOptions(toNative(kernelSize))
-//    options.kernel_size.put(toArray(kernelSize): _*)
-    options.dilation.put(toArray(dilation): _*)
-    options.padding.put(toArray(padding): _*)
-    options.stride.put(toArray(stride): _*)
-    fromNative(
-      torchNative.unfold(
-        input.native,
-        options
-      )
-    )
 
-  def fold[D <: FloatNN | ComplexNN](
-      input: Tensor[D],
-      outputSize: Int | (Int, Int) | (Int, Int, Int),
-      kernelSize: Int | (Int, Int) | (Int, Int, Int),
-      dilation: Int | (Int, Int) | (Int, Int, Int),
-      padding: Int | (Int, Int) | (Int, Int, Int),
-      stride: Int | (Int, Int) | (Int, Int, Int)
-  ): Tensor[D] =
-    val options = new FoldOptions(toNative(outputSize), toNative(kernelSize))
-    //    options.kernel_size.put(toArray(kernelSize):_*)
-    options.dilation.put(toArray(dilation): _*)
-    options.padding.put(toArray(padding): _*)
-    options.stride.put(toArray(stride): _*)
-    //    options.output_size.put(toArray(outputSize):_*)
-    fromNative(
-      torchNative.fold(
-        input.native,
-        options
-      )
-    )
-  // TODO unfold
-  // TODO fold
+//  def unfold[D <: FloatNN | ComplexNN](
+//      input: Tensor[D],
+//      kernel_size: Int | (Int, Int) | (Int, Int, Int),
+////      output_size: Int | (Int, Int) | (Int, Int, Int),
+//      dilation: Int | (Int, Int) | (Int, Int, Int),
+//      padding: Int | (Int, Int) | (Int, Int, Int),
+//      stride: Int | (Int, Int) | (Int, Int, Int)
+//  ): Tensor[D] =
+//    val options = new UnfoldOptions(toNative(kernel_size))
+////    options.kernel_size.put(toArray(kernelSize): _*)
+//    options.dilation.put(toArray(dilation): _*)
+//    options.padding.put(toArray(padding): _*)
+//    options.stride.put(toArray(stride): _*)
+//    fromNative(
+//      torchNative.unfold(
+//        input.native,
+//        options
+//      )
+//    )
+//
+//  def fold[D <: FloatNN | ComplexNN](
+//      input: Tensor[D],
+//      output_size: Int | (Int, Int) | (Int, Int, Int),
+//      kernel_size: Int | (Int, Int) | (Int, Int, Int),
+//      dilation: Int | (Int, Int) | (Int, Int, Int),
+//      padding: Int | (Int, Int) | (Int, Int, Int),
+//      stride: Int | (Int, Int) | (Int, Int, Int)
+//  ): Tensor[D] =
+//    val options = new FoldOptions(toNative(output_size), toNative(kernel_size))
+//    //    options.kernel_size.put(toArray(kernelSize):_*)
+//    options.dilation.put(toArray(dilation): _*)
+//    options.padding.put(toArray(padding): _*)
+//    options.stride.put(toArray(stride): _*)
+//    //    options.output_size.put(toArray(outputSize):_*)
+//    fromNative(
+//      torchNative.fold(
+//        input.native,
+//        options
+//      )
+//    )
+
 }

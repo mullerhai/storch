@@ -18,7 +18,7 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{SGDOptions, TensorVector}
+import org.bytedeco.pytorch.{SGDOptions, OptimizerParamState, SGDParamState, TensorVector}
 
 import scala.collection.immutable.Iterable
 
@@ -82,6 +82,7 @@ class SGD(
   options.dampening().put(dampening)
   options.weight_decay().put(weightDecay)
   options.nesterov().put(nesterov)
+  override val optimizerParamState: OptimizerParamState = new SGDParamState()
   override private[torch] val native: pytorch.SGD = pytorch.SGD(nativeParams, options)
 }
 

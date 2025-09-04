@@ -54,24 +54,8 @@ private[torch] trait Sparse {
   def oneHot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] =
     fromNative(torchNative.one_hot(input.native, numClasses))
 
-//  public native
-//  @ByRef @NoException(true) Tensor offsets();
-//  public native
-//  @ByRef @NoException(true) DoubleOptional max_norm();
-//  public native
-//  @ByRef @NoException(true) DoublePointer norm_type();
-//  public native
-//  @Cast("bool*") @ByRef @NoException(true) BoolPointer scale_grad_by_freq();
-//  public native
-//  @ByRef @NoException(true) EmbeddingBagMode mode();
-//  public native
-//  @Cast("bool*") @ByRef @NoException(true) BoolPointer sparse();
-//  public native
-//  @ByRef @NoException(true) Tensor per_sample_weights();
-//  public native
-//  @Cast("bool*") @ByRef @NoException(true) BoolPointer include_last_offset();
-//  public native
-//  @ByRef @NoException(true) LongOptional padding_idx();
+  def one_hot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] = oneHot(input, numClasses)
+
 
   def embedding_bag[D <: DType](
       input: Tensor[D],
@@ -105,16 +89,7 @@ private[torch] trait Sparse {
     fromNative(torchNative.embedding_bag(input.native, weight.native, options))
   }
 
-//  public native
-//  @ByRef @NoException(true) LongOptional padding_idx();
-//  public native
-//  @ByRef @NoException(true) DoubleOptional max_norm();
-//  public native
-//  @ByRef @NoException(true) DoublePointer norm_type();
-//  public native
-//  @Cast("bool*") @ByRef @NoException(true) BoolPointer scale_grad_by_freq();
-//  public native
-//  @Cast("bool*") @ByRef @NoException(true) BoolPointer sparse();
+
   def embedding[D <: DType](
       input: Tensor[D],
       weight: Tensor[D],
