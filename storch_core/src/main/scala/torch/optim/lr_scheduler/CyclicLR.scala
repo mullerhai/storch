@@ -52,6 +52,7 @@ class CyclicLR(
     // 设置初始学习率
     for ((lr, group) <- base_lrs.zip(optimizer.param_groups)) {
       group.paramGroupDict("lr") = lr
+      group.paramGroup.options().set_lr(lr)
     }
 
     // 设置初始动量

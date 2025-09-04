@@ -95,6 +95,7 @@ class ReduceLROnPlateau(
       val new_lr = max(old_lr * factor, min_lr)
       if (old_lr - new_lr > eps) {
         param_group.paramGroupDict("lr") = new_lr
+        param_group.paramGroup.options().set_lr(new_lr)
         if (verbose) {
           println(f"Epoch $epoch: reducing learning rate to $new_lr%.4e.")
         }

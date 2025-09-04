@@ -94,6 +94,7 @@ class CosineAnnealingWarmRestarts(
       for ((param_group, lr) <- optimizer.param_groups.zip(values)) {
 //        param_group("lr") = lr
         param_group.paramGroup.options().set_lr(lr)
+        param_group.paramGroupDict("lr") = lr
       }
 
       _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )

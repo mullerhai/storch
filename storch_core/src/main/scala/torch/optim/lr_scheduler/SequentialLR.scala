@@ -29,6 +29,7 @@ class SequentialLR(
   for (group <- optimizer.param_groups) {
     if (group.paramGroupDict.contains("initial_lr")) {
       group.paramGroupDict("lr") = group.paramGroupDict("initial_lr")
+      group.paramGroup.options().set_lr(group.paramGroupDict("initial_lr").asInstanceOf[Double])
     }
   }
 

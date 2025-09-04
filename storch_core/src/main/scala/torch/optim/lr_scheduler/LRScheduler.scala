@@ -66,6 +66,7 @@ abstract class LRScheduler {
       // 更新学习率
       for ((param_group, lr) <- optimizer.param_groups.zip(values)) {
         param_group.paramGroupDict("lr") = lr
+        param_group.paramGroup.options().set_lr(lr)
       }
 
       _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
