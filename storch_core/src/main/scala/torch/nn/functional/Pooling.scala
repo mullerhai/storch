@@ -364,17 +364,26 @@ private[torch] trait Pooling {
   // TODO adaptive_avg_pool3d Applies a 3D adaptive average pooling over an input signal composed of several input planes.
   // TODO fractional_max_pool2d Applies 2D fractional max pooling over an input signal composed of several input planes.
   // TODO fractional_max_pool3d Applies 3D fractional max pooling over an input signal composed of several input planes.
-  def adaptive_avg_pool1d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+  def adaptive_avg_pool1d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      output_size: Long
+  ): Tensor[D] =
     val options: AdaptiveAvgPool1dOptions = new AdaptiveAvgPool1dOptions(LongPointer(output_size))
     options.output_size().put(LongOptional(output_size))
     fromNative(torchNative.adaptive_avg_pool1d(input.native, options))
 
-  def adaptive_avg_pool2d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+  def adaptive_avg_pool2d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      output_size: Long
+  ): Tensor[D] =
     val options: AdaptiveAvgPool2dOptions = new AdaptiveAvgPool2dOptions(LongPointer(output_size))
     options.output_size().put(LongOptional(output_size))
     fromNative(torchNative.adaptive_avg_pool2d(input.native, options))
 
-  def adaptive_avg_pool3d[D <: FloatNN | Complex32](input: Tensor[D], output_size: Long): Tensor[D] =
+  def adaptive_avg_pool3d[D <: FloatNN | Complex32](
+      input: Tensor[D],
+      output_size: Long
+  ): Tensor[D] =
     val options: AdaptiveAvgPool3dOptions = new AdaptiveAvgPool3dOptions(LongPointer(output_size))
     options.output_size().put(LongOptional(output_size))
     fromNative(torchNative.adaptive_avg_pool3d(input.native, options))

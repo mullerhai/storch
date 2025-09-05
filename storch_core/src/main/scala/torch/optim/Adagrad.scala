@@ -3,7 +3,7 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{AdagradOptions,OptimizerParamState, AdagradParamState, TensorVector}
+import org.bytedeco.pytorch.{AdagradOptions, OptimizerParamState, AdagradParamState, TensorVector}
 import torch.Tensor
 
 import scala.collection.immutable.Iterable

@@ -4,11 +4,11 @@ package torch.utils.data
 //
 //package torch
 //
-////import com.microsoft.scalatorch.torch
-////import com.microsoft.scalatorch.torch._
-////import com.microsoft.scalatorch.torch.util.Implicits._
-////import com.microsoft.scalatorch.torch.internal.{ TensorIndex, TensorVector, TorchTensor, LongVector, torch_swig => swig }
-////import com.microsoft.scalatorch.torch.util.NoGrad
+////import org.bytedeco.pytorch.scalatorch.torch
+////import org.bytedeco.pytorch.scalatorch.torch._
+////import org.bytedeco.pytorch.scalatorch.torch.util.Implicits._
+////import org.bytedeco.pytorch.scalatorch.torch.internal.{ TensorIndex, TensorVector, TorchTensor, LongVector, torch_swig => swig }
+////import org.bytedeco.pytorch.scalatorch.torch.util.NoGrad
 //
 //import org.bytedeco.pytorch
 //import org.bytedeco.pytorch.global.torch as torchNative

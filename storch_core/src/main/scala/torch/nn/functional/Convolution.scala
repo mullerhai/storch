@@ -106,15 +106,16 @@ private[torch] trait Convolution {
     * @group nn_conv
     */
   def conv_transpose1d[D <: FloatNN | ComplexNN](
-                                                 input: Tensor[D],
-                                                 weight: Tensor[D],
-                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
-                                                 stride: Int | (Int, Int) = 1,
-                                                 padding: Int | (Int, Int) = 0,
-                                                 output_padding: Int | (Int, Int) = 0,
-                                                 groups: Int = 1,
-                                                 dilation: Int | (Int, Int) = 1
-                                               ): Tensor[D] = convTranspose1d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+      input: Tensor[D],
+      weight: Tensor[D],
+      bias: Tensor[D] | Option[Tensor[D]] = None,
+      stride: Int | (Int, Int) = 1,
+      padding: Int | (Int, Int) = 0,
+      output_padding: Int | (Int, Int) = 0,
+      groups: Int = 1,
+      dilation: Int | (Int, Int) = 1
+  ): Tensor[D] =
+    convTranspose1d(input, weight, bias, stride, padding, output_padding, groups, dilation)
 
   def convTranspose1d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
@@ -145,15 +146,16 @@ private[torch] trait Convolution {
     * @group nn_conv
     */
   def conv_transpose2d[D <: FloatNN | ComplexNN](
-                                                 input: Tensor[D],
-                                                 weight: Tensor[D],
-                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
-                                                 stride: Int | (Int, Int) = 1,
-                                                 padding: Int | (Int, Int) = 0,
-                                                 output_padding: Int | (Int, Int) = 0,
-                                                 groups: Int = 1,
-                                                 dilation: Int | (Int, Int) = 1
-                                               ): Tensor[D] = convTranspose2d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+      input: Tensor[D],
+      weight: Tensor[D],
+      bias: Tensor[D] | Option[Tensor[D]] = None,
+      stride: Int | (Int, Int) = 1,
+      padding: Int | (Int, Int) = 0,
+      output_padding: Int | (Int, Int) = 0,
+      groups: Int = 1,
+      dilation: Int | (Int, Int) = 1
+  ): Tensor[D] =
+    convTranspose2d(input, weight, bias, stride, padding, output_padding, groups, dilation)
 
   def convTranspose2d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
@@ -184,15 +186,16 @@ private[torch] trait Convolution {
     * @group nn_conv
     */
   def conv_transpose3d[D <: FloatNN | ComplexNN](
-                                                 input: Tensor[D],
-                                                 weight: Tensor[D],
-                                                 bias: Tensor[D] | Option[Tensor[D]] = None,
-                                                 stride: Int | (Int, Int, Int) = 1,
-                                                 padding: Int | (Int, Int, Int) = 0,
-                                                 output_padding: Int | (Int, Int, Int) = 0,
-                                                 groups: Int = 1,
-                                                 dilation: Int | (Int, Int) = 1
-                                               ): Tensor[D] = convTranspose3d(input, weight, bias, stride, padding, output_padding, groups, dilation)
+      input: Tensor[D],
+      weight: Tensor[D],
+      bias: Tensor[D] | Option[Tensor[D]] = None,
+      stride: Int | (Int, Int, Int) = 1,
+      padding: Int | (Int, Int, Int) = 0,
+      output_padding: Int | (Int, Int, Int) = 0,
+      groups: Int = 1,
+      dilation: Int | (Int, Int) = 1
+  ): Tensor[D] =
+    convTranspose3d(input, weight, bias, stride, padding, output_padding, groups, dilation)
 
   def convTranspose3d[D <: FloatNN | ComplexNN](
       input: Tensor[D],
@@ -216,7 +219,6 @@ private[torch] trait Convolution {
         toArray(dilation): _*
       )
     )
-
 
 //  def unfold[D <: FloatNN | ComplexNN](
 //      input: Tensor[D],

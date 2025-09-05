@@ -54,8 +54,8 @@ private[torch] trait Sparse {
   def oneHot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] =
     fromNative(torchNative.one_hot(input.native, numClasses))
 
-  def one_hot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] = oneHot(input, numClasses)
-
+  def one_hot(input: Tensor[Int64], numClasses: Long = -1): Tensor[Int64] =
+    oneHot(input, numClasses)
 
   def embedding_bag[D <: DType](
       input: Tensor[D],
@@ -88,7 +88,6 @@ private[torch] trait Sparse {
     options.padding_idx().put(LongOptional(padding_idx))
     fromNative(torchNative.embedding_bag(input.native, weight.native, options))
   }
-
 
   def embedding[D <: DType](
       input: Tensor[D],

@@ -3,17 +3,17 @@ package torch.optim.lr_scheduler
 import scala.math.{Pi, cos}
 //import torch.optim.Optimizer
 import torch.optim.Optimizer
-/**
- * 带热重启的余弦退火学习率调度器
- */
+
+/** 带热重启的余弦退火学习率调度器 optimizer, T_0, T_mult=1, eta_min=0, last_epoch=-1, verbose="deprecated"
+  */
 class CosineAnnealingWarmRestarts(
-                                   override val optimizer: Optimizer,
-                                   t_0: Int,
-                                   t_mult: Int = 1,
-                                   eta_min: Float = 0.0f,
-                                   last_epoch: Int = -1,
-                                   verbose: Boolean = false
-                                 ) extends LRScheduler {
+    override val optimizer: Optimizer,
+    t_0: Int,
+    t_mult: Int = 1,
+    eta_min: Float = 0.0f,
+    last_epoch: Int = -1,
+    verbose: Boolean = false
+) extends LRScheduler {
 //  override var verbose: Boolean = verbose
   require(t_0 > 0 && t_0.isInstanceOf[Int], s"Expected positive integer t_0, but got $t_0")
   require(t_mult >= 1 && t_mult.isInstanceOf[Int], s"Expected integer t_mult >= 1, but got $t_mult")
@@ -34,18 +34,21 @@ class CosineAnnealingWarmRestarts(
     }
   }
 
-  base_lrs = optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
+  base_lrs =
+    optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
   this.last_epoch = last_epoch
 
   _initial_step()
 
   override def get_lr(): Seq[Float] = {
     if (!_get_lr_called_within_step) {
-      println("Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. ")
+      println(
+        "Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. "
+      )
     }
 
-    base_lrs.map(base_lr => 
-      val lr = eta_min*1.0f  + (base_lr - eta_min) * (1 + cos(Pi * t_cur / t_i))*1.0f / 2.0f
+    base_lrs.map(base_lr =>
+      val lr = eta_min * 1.0f + (base_lr - eta_min) * (1 + cos(Pi * t_cur / t_i)) * 1.0f / 2.0f
       lr.toFloat
     )
   }
@@ -97,15 +100,14 @@ class CosineAnnealingWarmRestarts(
         param_group.paramGroupDict("lr") = lr
       }
 
-      _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
+      _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
     } finally {
       _get_lr_called_within_step = false
     }
   }
 
-  /**
-   * 计算对数，底数为base
-   */
+  /** 计算对数，底数为base
+    */
   private def log(value: Double, base: Double): Double = {
     math.log(value) / math.log(base)
   }

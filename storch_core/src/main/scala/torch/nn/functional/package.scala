@@ -40,7 +40,7 @@ package object functional
     with Sparse
     with UnSampling
     with Vision
-    with FFT 
+    with FFT
     with Fold
     with Padding
 

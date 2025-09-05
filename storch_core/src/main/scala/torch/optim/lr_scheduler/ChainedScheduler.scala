@@ -3,19 +3,23 @@ package optim
 package lr_scheduler
 
 import torch.optim.Optimizer
-/**
- * 链式调用多个学习率调度器
- */
+
+/** 链式调用多个学习率调度器
+  */
 class ChainedScheduler(
-                        schedulers: Seq[LRScheduler]
-                      ) extends LRScheduler {
+    schedulers: Seq[LRScheduler]
+) extends LRScheduler {
   require(schedulers.nonEmpty, "At least one scheduler must be provided")
-  require(schedulers.forall(_.optimizer == schedulers.head.optimizer),
-    "chained_scheduler expects all schedulers to belong to the same optimizer")
+  require(
+    schedulers.forall(_.optimizer == schedulers.head.optimizer),
+    "chained_scheduler expects all schedulers to belong to the same optimizer"
+  )
 
   val _schedulers: Seq[LRScheduler] = schedulers
   override val optimizer: Optimizer = schedulers.head.optimizer
-  _last_lr = _schedulers.last.optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
+  _last_lr = _schedulers.last.optimizer.param_groups.map(param =>
+    param.paramGroup.options().get_lr().toFloat
+  )
 //  _last_lr = _schedulers.last.optimizer.param_groups.map(_("lr").asInstanceOf[Float])
 
   override def get_lr(): Seq[Float] = {
@@ -28,7 +32,9 @@ class ChainedScheduler(
       scheduler.step(epoch)
     }
 //optimizer.param_groups.map(param => param.options().get_lr().toFloat)
-    _last_lr = _schedulers.last.optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
+    _last_lr = _schedulers.last.optimizer.param_groups.map(param =>
+      param.paramGroup.options().get_lr().toFloat
+    )
 //    _last_lr = _schedulers.last.optimizer.param_groups.map(_("lr").asInstanceOf[Float])
   }
 

@@ -23,7 +23,6 @@ import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.{
   BoolOptional,
   DeviceOptional,
-  Stream,
   DoubleVector,
   DoubleVectorOptional,
   FunctionSchema,
@@ -40,12 +39,14 @@ import org.bytedeco.pytorch.{
   ProcessGroup,
   ScalarTypeOptional,
   Storage,
+  Stream,
   StringViewOptional,
   SymInt,
   SymIntOptional,
   TensorOptional,
   TensorOptions,
   TensorVector,
+  TypeMeta,
   VariableHooksInterface,
   WarningHandler,
   Work,
@@ -177,6 +178,14 @@ private[torch] trait OtherOps {
   def from_native[D <: DType](rawTensor: org.bytedeco.pytorch.Tensor): Tensor[D] = fromNative(
     rawTensor
   )
+
+  def requires_grad(flag: Boolean) = torchNative.requires_grad(flag)
+
+  def get_default_dtype = torchNative.get_default_dtype()
+
+  def get_default_complex_dtype = torchNative.get_default_complex_dtype()
+
+  def set_default_dtype(dtype: TypeMeta) = torchNative.set_default_dtype(dtype)
 
   def block_diag[D <: DType](tensorList: Seq[Tensor[D]]): Tensor[D] =
     fromNative(torchNative.block_diag(new TensorVector(tensorList.map(_.native)*)))

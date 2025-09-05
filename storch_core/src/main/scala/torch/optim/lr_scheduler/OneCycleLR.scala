@@ -2,30 +2,32 @@ package torch
 package optim
 package lr_scheduler
 
-
-import scala.math.{Pi,cos }
+import scala.math.{Pi, cos}
 import torch.optim.Optimizer
-/**
- * 1cycle学习率策略
- */
+
+/** 1cycle学习率策略 optimizer, max_lr, total_steps=None, epochs=None, steps_per_epoch=None,
+  * pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85,
+  * max_momentum=0.95, div_factor=25., final_div_factor=1e4, three_phase=False, last_epoch=-1,
+  * verbose="deprecated"
+  */
 class OneCycleLR(
-                  override val optimizer: Optimizer,
-                  max_lr: Either[Float, Seq[Float]],
-                  total_step: Option[Int] = None,
-                  epochs: Option[Int] = None,
-                  steps_per_epoch: Option[Int] = None,
-                  pct_start: Float = 0.3f,
-                  anneal_strategy: String = "cos",
-                  cycle_momentum: Boolean = true,
-                  base_momentum: Either[Float, Seq[Float]] = Left(0.85f),
-                  max_momentum: Either[Float, Seq[Float]] = Left(0.95f),
-                  div_factor: Float = 25.0f,
-                  final_div_factor: Float = 1e4f,
-                  three_phase: Boolean = false,
-                  last_epoch: Int = -1,
-                  use_beta1: Boolean = false,
-                  verbose: Boolean = false
-                ) extends LRScheduler {
+    override val optimizer: Optimizer,
+    max_lr: Either[Float, Seq[Float]],
+    total_step: Option[Int] = None,
+    epochs: Option[Int] = None,
+    steps_per_epoch: Option[Int] = None,
+    pct_start: Float = 0.3f,
+    anneal_strategy: String = "cos",
+    cycle_momentum: Boolean = true,
+    base_momentum: Either[Float, Seq[Float]] = Left(0.85f),
+    max_momentum: Either[Float, Seq[Float]] = Left(0.95f),
+    div_factor: Float = 25.0f,
+    final_div_factor: Float = 1e4f,
+    three_phase: Boolean = false,
+    last_epoch: Int = -1,
+    use_beta1: Boolean = false,
+    verbose: Boolean = false
+) extends LRScheduler {
 //  override var verbose: Boolean = verbose
 
   // 验证参数
@@ -34,20 +36,30 @@ class OneCycleLR(
       require(ts > 0, s"Expected positive integer total_steps, but got $ts")
       ts
     case None =>
-      require(epochs.isDefined && steps_per_epoch.isDefined,
-        "You must define either total_steps OR (epochs AND steps_per_epoch)")
+      require(
+        epochs.isDefined && steps_per_epoch.isDefined,
+        "You must define either total_steps OR (epochs AND steps_per_epoch)"
+      )
       require(epochs.get > 0, s"Expected positive integer epochs, but got ${epochs.get}")
-      require(steps_per_epoch.get > 0, s"Expected positive integer steps_per_epoch, but got ${steps_per_epoch.get}")
+      require(
+        steps_per_epoch.get > 0,
+        s"Expected positive integer steps_per_epoch, but got ${steps_per_epoch.get}"
+      )
       epochs.get * steps_per_epoch.get
   }
 
-  require(pct_start >= 0 && pct_start <= 1, s"Expected float between 0 and 1 pct_start, but got $pct_start")
-  require(anneal_strategy == "cos" || anneal_strategy == "linear",
-    s"anneal_strategy must by one of 'cos' or 'linear', instead got $anneal_strategy")
+  require(
+    pct_start >= 0 && pct_start <= 1,
+    s"Expected float between 0 and 1 pct_start, but got $pct_start"
+  )
+  require(
+    anneal_strategy == "cos" || anneal_strategy == "linear",
+    s"anneal_strategy must by one of 'cos' or 'linear', instead got $anneal_strategy"
+  )
 
   // 定义退火函数
   val anneal_func: (Float, Float, Float) => Float = anneal_strategy match {
-    case "cos" => _annealing_cos
+    case "cos"    => _annealing_cos
     case "linear" => _annealing_linear
   }
 
@@ -117,7 +129,13 @@ class OneCycleLR(
     max_momentums = _format_param("max_momentum", optimizer, max_momentum)
 
     if (last_epoch == -1) {
-      for ( (m_momentum,b_momentum,group) <- (max_momentums,base_momentums,optimizer.param_groups).zipped) {
+      for (
+        (m_momentum, b_momentum, group) <- (
+          max_momentums,
+          base_momentums,
+          optimizer.param_groups
+        ).zipped
+      ) {
 //        val m_momentum = m_momentum_b_momentum_group._1
 //        val b_momentum = m_momentum_b_momentum_group._2
 //        val group = m_momentum_b_momentum_group._3
@@ -137,43 +155,50 @@ class OneCycleLR(
 
   _initial_step()
 
-  /**
-   * 格式化参数
-   */
-  private def _format_param(name: String, optimizer: Optimizer, param: Either[Float, Seq[Float]]): Seq[Float] = {
+  /** 格式化参数
+    */
+  private def _format_param(
+      name: String,
+      optimizer: Optimizer,
+      param: Either[Float, Seq[Float]]
+  ): Seq[Float] = {
     param match {
       case Left(value) => Seq.fill(optimizer.param_groups.length)(value)
       case Right(seq) =>
-        require(seq.length == optimizer.param_groups.length,
-          s"expected ${optimizer.param_groups.length} values for $name, got ${seq.length}")
+        require(
+          seq.length == optimizer.param_groups.length,
+          s"expected ${optimizer.param_groups.length} values for $name, got ${seq.length}"
+        )
         seq
     }
   }
 
-  /**
-   * 余弦退火函数
-   */
+  /** 余弦退火函数
+    */
   private def _annealing_cos(start: Float, end: Float, pct: Float): Float = {
     val cos_out = cos(Pi * pct) + 1.0f
     val cosOut = end * 1.0f + (start - end) / 2.0f * cos_out
     cosOut.toFloat
   }
 
-  /**
-   * 线性退火函数
-   */
+  /** 线性退火函数
+    */
   private def _annealing_linear(start: Float, end: Float, pct: Float): Float = {
     (end - start) * pct + start
   }
 
   override def get_lr(): Seq[Float] = {
     if (!_get_lr_called_within_step) {
-      println("Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. ")
+      println(
+        "Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. "
+      )
     }
 
     val step_num = last_epoch
     if (step_num > total_steps) {
-      throw new IllegalArgumentException(s"Tried to step $step_num times. The specified number of total steps is $total_steps")
+      throw new IllegalArgumentException(
+        s"Tried to step $step_num times. The specified number of total steps is $total_steps"
+      )
     }
 
     val lrs = optimizer.param_groups.map { group =>
@@ -219,14 +244,13 @@ class OneCycleLR(
     lrs
   }
 
-  /**
-   * 阶段配置内部类
-   */
+  /** 阶段配置内部类
+    */
   case class PhaseConfig(
-                          end_step: Float,
-                          start_lr: String,
-                          end_lr: String,
-                          start_momentum: String,
-                          end_momentum: String
-                        )
+      end_step: Float,
+      start_lr: String,
+      end_lr: String,
+      start_momentum: String,
+      end_momentum: String
+  )
 }

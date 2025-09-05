@@ -5,21 +5,22 @@ package lr_scheduler
 import torch.optim.Optimizer
 
 import scala.math.max
-/**
- * 当指标停止改善时降低学习率
- */
+
+/** 当指标停止改善时降低学习率 optimizer, mode='min', factor=0.1, patience=10, threshold=1e-4,
+  * threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-8, verbose="deprecated"
+  */
 class ReduceLROnPlateau(
-                         override val optimizer: Optimizer,
-                         mode: String = "min",
-                         factor: Float = 0.1f,
-                         patience: Int = 10,
-                         threshold: Float = 1e-4f,
-                         threshold_mode: String = "rel",
-                         cooldown: Int = 0,
-                         min_lr: Either[Float, Seq[Float]] = Left(0.0f),
-                         eps: Float = 1e-8f,
-                         verbose: Boolean = false
-                       ) extends LRScheduler {
+    override val optimizer: Optimizer,
+    mode: String = "min",
+    factor: Float = 0.1f,
+    patience: Int = 10,
+    threshold: Float = 1e-4f,
+    threshold_mode: String = "rel",
+    cooldown: Int = 0,
+    min_lr: Either[Float, Seq[Float]] = Left(0.0f),
+    eps: Float = 1e-8f,
+    verbose: Boolean = false
+) extends LRScheduler {
 //  override var verbose: Boolean = verbose
   require(factor < 1.0, "Factor should be < 1.0.")
 //
@@ -38,28 +39,28 @@ class ReduceLROnPlateau(
   val min_lrs: Seq[Float] = min_lr match {
     case Left(value) => Seq.fill(optimizer.param_groups.length)(value)
     case Right(seq) =>
-      require(seq.length == optimizer.param_groups.length,
-        s"expected ${optimizer.param_groups.length} min_lrs, got ${seq.length}")
+      require(
+        seq.length == optimizer.param_groups.length,
+        s"expected ${optimizer.param_groups.length} min_lrs, got ${seq.length}"
+      )
       seq
   }
 
   // 初始化
   _init_is_better(mode, threshold, threshold_mode)
   _reset()
-  _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
+  _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
 
-  /**
-   * 重置计数器
-   */
+  /** 重置计数器
+    */
   def _reset(): Unit = {
     best = mode_worse
     cooldown_counter = 0
     num_bad_epochs = 0
   }
 
-  /**
-   * 执行一步学习率更新
-   */
+  /** 执行一步学习率更新
+    */
   def step(metrics: Float, epoch: Option[Int]): Unit = {
     val current = metrics
     val current_epoch = epoch.getOrElse(last_epoch + 1)
@@ -83,12 +84,11 @@ class ReduceLROnPlateau(
       num_bad_epochs = 0
     }
 
-    _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
+    _last_lr = optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
   }
 
-  /**
-   * 降低学习率
-   */
+  /** 降低学习率
+    */
   private def _reduce_lr(epoch: Int): Unit = {
     for ((param_group, min_lr) <- optimizer.param_groups.zip(min_lrs)) {
       val old_lr = param_group.paramGroupDict("lr").asInstanceOf[Float]
@@ -103,16 +103,14 @@ class ReduceLROnPlateau(
     }
   }
 
-  /**
-   * 检查是否处于冷却期
-   */
+  /** 检查是否处于冷却期
+    */
   def in_cooldown: Boolean = {
     cooldown_counter > 0
   }
 
-  /**
-   * 判断当前指标是否更好
-   */
+  /** 判断当前指标是否更好
+    */
   def is_better(a: Float, best: Float): Boolean = {
     if (mode == "min" && threshold_mode == "rel") {
       val rel_epsilon = 1.0f - threshold
@@ -127,12 +125,14 @@ class ReduceLROnPlateau(
     }
   }
 
-  /**
-   * 初始化is_better函数的参数
-   */
+  /** 初始化is_better函数的参数
+    */
   private def _init_is_better(mode: String, threshold: Float, threshold_mode: String): Unit = {
     require(mode == "min" || mode == "max", s"mode $mode is unknown!")
-    require(threshold_mode == "rel" || threshold_mode == "abs", s"threshold mode $threshold_mode is unknown!")
+    require(
+      threshold_mode == "rel" || threshold_mode == "abs",
+      s"threshold mode $threshold_mode is unknown!"
+    )
 
     if (mode == "min") {
       mode_worse = Float.PositiveInfinity
@@ -158,6 +158,9 @@ class ReduceLROnPlateau(
     best = state_dict.get("best").map(_.asInstanceOf[Float]).getOrElse(mode_worse)
     num_bad_epochs = state_dict.get("num_bad_epochs").map(_.asInstanceOf[Int]).getOrElse(0)
     cooldown_counter = state_dict.get("cooldown_counter").map(_.asInstanceOf[Int]).getOrElse(0)
-    mode_worse = state_dict.get("mode_worse").map(_.asInstanceOf[Float]).getOrElse(if (mode == "min") Float.PositiveInfinity else Float.NegativeInfinity)
+    mode_worse = state_dict
+      .get("mode_worse")
+      .map(_.asInstanceOf[Float])
+      .getOrElse(if (mode == "min") Float.PositiveInfinity else Float.NegativeInfinity)
   }
 }

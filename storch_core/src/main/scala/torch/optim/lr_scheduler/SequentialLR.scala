@@ -3,23 +3,28 @@ package optim
 package lr_scheduler
 
 import torch.optim.Optimizer
-/**
- * 顺序调用一系列调度器
- */
+
+/** 顺序调用一系列调度器
+  */
 class SequentialLR(
-                    override val optimizer: Optimizer,
-                    schedulers: Seq[LRScheduler],
-                    milestones: Seq[Int],
-                    last_epoch: Int = -1,
-                    verbose: Boolean = false
-                  ) extends LRScheduler {
+    override val optimizer: Optimizer,
+    schedulers: Seq[LRScheduler],
+    milestones: Seq[Int],
+    last_epoch: Int = -1,
+    verbose: Boolean = false
+) extends LRScheduler {
 //  override var verbose: Boolean = verbose
 
   // 验证调度器和里程碑参数
   require(schedulers.nonEmpty, "At least one scheduler must be provided")
-  require(schedulers.forall(_.optimizer == optimizer), "All schedulers must belong to the same optimizer")
-  require(milestones.length == schedulers.length - 1,
-    s"Sequential Schedulers expects number of schedulers provided to be one more than the number of milestone points, but got number of schedulers ${schedulers.length} and the number of milestones to be equal to ${milestones.length}")
+  require(
+    schedulers.forall(_.optimizer == optimizer),
+    "All schedulers must belong to the same optimizer"
+  )
+  require(
+    milestones.length == schedulers.length - 1,
+    s"Sequential Schedulers expects number of schedulers provided to be one more than the number of milestone points, but got number of schedulers ${schedulers.length} and the number of milestones to be equal to ${milestones.length}"
+  )
 
   val _schedulers: Seq[LRScheduler] = schedulers
   val _milestones: Seq[Int] = milestones.sorted

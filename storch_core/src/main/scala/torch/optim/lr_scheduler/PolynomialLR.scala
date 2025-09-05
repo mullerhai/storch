@@ -4,16 +4,17 @@ package lr_scheduler
 
 import torch.optim.Optimizer
 import scala.math.min
-/**
- * 使用多项式函数衰减学习率
- */
+
+/** 使用多项式函数衰减学习率
+  */
 class PolynomialLR(
-                    override val optimizer: Optimizer,
-                    total_iters: Int = 5,
-                    power: Float = 1.0f,
-                    last_epoch: Int = -1,
-                    verbose: Boolean = false
-                  ) extends LRScheduler with ClosedFormLR {
+    override val optimizer: Optimizer,
+    total_iters: Int = 5,
+    power: Float = 1.0f,
+    last_epoch: Int = -1,
+    verbose: Boolean = false
+) extends LRScheduler
+    with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val total_iters: Int = total_iters
 //  val power: Float = power
@@ -23,29 +24,36 @@ class PolynomialLR(
     // 设置初始学习率
     for (group <- optimizer.param_groups) {
       if (!group.paramGroupDict.contains("initial_lr")) {
-        group.paramGroupDict("initial_lr") = group.paramGroup.options().get_lr() //("lr")
+        group.paramGroupDict("initial_lr") = group.paramGroup.options().get_lr() // ("lr")
       }
     }
   }
 
-  base_lrs = optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
+  base_lrs =
+    optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
   this.last_epoch = last_epoch
 
   _initial_step()
 
   override def get_lr(): Seq[Float] = {
     if (!_get_lr_called_within_step) {
-      println("Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. ")
+      println(
+        "Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. "
+      )
     }
 
     if (last_epoch == 0 || last_epoch > total_iters) {
-      optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
+      optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
     } else {
-      val decay_factor = math.pow(
-        (1.0f - last_epoch.toFloat / total_iters) / (1.0f - (last_epoch - 1).toFloat / total_iters),
-        power
-      ).toFloat
-      optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat  * decay_factor)
+      val decay_factor = math
+        .pow(
+          (1.0f - last_epoch.toFloat / total_iters) / (1.0f - (last_epoch - 1).toFloat / total_iters),
+          power
+        )
+        .toFloat
+      optimizer.param_groups.map(param =>
+        param.paramGroup.options().get_lr().toFloat * decay_factor
+      )
     }
   }
 

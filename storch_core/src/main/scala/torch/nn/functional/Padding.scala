@@ -8,7 +8,10 @@ import org.bytedeco.pytorch.{
   PadFuncOptions,
   LongVector,
 //  LongArrayRef,
-  kConstant, kReflect, kReplicate, kCircular,
+  kConstant,
+  kReflect,
+  kReplicate,
+  kCircular,
   DoubleVector,
   LongVectorOptional,
   DoubleVectorOptional,
@@ -31,23 +34,27 @@ private[torch] trait Padding {
     case Circular extends PaddingMode(2)
     case Constant extends PaddingMode(3)
 
-  //torch.nn.functional.pad(input, pad, mode='constant', value=None)
-  def pad[D <: DType](input: Tensor[D], pad: Seq[Long], mode: PaddingMode = PaddingMode.Constant, value: Option[Double] = None): Tensor[D] = {
+  // torch.nn.functional.pad(input, pad, mode='constant', value=None)
+  def pad[D <: DType](
+      input: Tensor[D],
+      pad: Seq[Long],
+      mode: PaddingMode = PaddingMode.Constant,
+      value: Option[Double] = None
+  ): Tensor[D] = {
 
     val padVector = new LongVector(pad*)
     val options = new PadFuncOptions(padVector)
     val nativeMode = mode match {
-      case PaddingMode.Reflect => new kReflect()
+      case PaddingMode.Reflect   => new kReflect()
       case PaddingMode.Replicate => new kReplicate()
-      case PaddingMode.Circular => new kCircular()
-      case PaddingMode.Constant => new kConstant()
+      case PaddingMode.Circular  => new kCircular()
+      case PaddingMode.Constant  => new kConstant()
     }
     options.mode.put(nativeMode)
     if value.isDefined then options.value.put(value.get) else options.value.put(0d)
     val result = torchNative.pad(input.native, options)
     fromNative(result)
   }
-
 
 //  def pad[D <: DType](x: Tensor[D], output_size: List[Long]): Tensor[D] = {
 //

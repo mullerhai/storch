@@ -61,12 +61,12 @@ private[torch] trait Loss {
     * @group nn_loss
     */
   def binary_cross_entropy_with_logits[
-    I <: BFloat16 | Float32 | Float64,
-    O <: BFloat16 | Float16 | Float32 | Float64
+      I <: BFloat16 | Float32 | Float64,
+      O <: BFloat16 | Float16 | Float32 | Float64
   ](
-     input: Tensor[I],
-     target: Tensor[O]
-   ): Tensor[O] = binaryCrossEntropyWithLogits(input, target)
+      input: Tensor[I],
+      target: Tensor[O]
+  ): Tensor[O] = binaryCrossEntropyWithLogits(input, target)
 
   def binaryCrossEntropyWithLogits[
       I <: BFloat16 | Float32 | Float64,
@@ -258,29 +258,43 @@ private[torch] trait Loss {
     fromNative(torchNative.binary_cross_entropy(input.native, target.native, options))
   }
 
-  //torch.nn.functional.ctc_loss(log_probs, targets, 
+  // torch.nn.functional.ctc_loss(log_probs, targets,
   // input_lengths, target_lengths, blank=0, reduction='mean', zero_infinity=False)[source]
-  //Tensor ctc_loss(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1, @Const @ByRef Tensor var2,
+  // Tensor ctc_loss(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1, @Const @ByRef Tensor var2,
   // @Const @ByRef Tensor var3, @Cast({"const torch::nn::functional::CTCLossFuncOptions*"})
   // @ByRef(nullValue = "torch::nn::functional::CTCLossFuncOptions{}") CTCLossOptions var4);
   def ctc_loss[
-    I <: BFloat16 | Float32 | Float64,
-    O <: BFloat16 | Float16 | Float32 | Float64
-  ](log_probs: Tensor[I], targets: Tensor[O],
-    input_lengths: Tensor[Int64], target_lengths: Tensor[Int64],
-    blank: Int = 0 , reduction: String = "mean", zero_infinity: Boolean = false):Tensor[O] = {
+      I <: BFloat16 | Float32 | Float64,
+      O <: BFloat16 | Float16 | Float32 | Float64
+  ](
+      log_probs: Tensor[I],
+      targets: Tensor[O],
+      input_lengths: Tensor[Int64],
+      target_lengths: Tensor[Int64],
+      blank: Int = 0,
+      reduction: String = "mean",
+      zero_infinity: Boolean = false
+  ): Tensor[O] = {
     val nativeReduction = reduction match {
       case "mean" | "Mean" => new kMean
-      case "sum" | "Sum" => new kSum
+      case "sum" | "Sum"   => new kSum
       case "none" | "None" => new kNone
     }
     val options = new CTCLossOptions()
     options.blank().put(blank.toLong)
     options.zero_infinity().put(zero_infinity)
     options.reduction().put(LossReduction(nativeReduction))
-    fromNative(torchNative.ctc_loss(log_probs.native, targets.native, input_lengths.native, target_lengths.native, options))
+    fromNative(
+      torchNative.ctc_loss(
+        log_probs.native,
+        targets.native,
+        input_lengths.native,
+        target_lengths.native,
+        options
+      )
+    )
   }
-  
+
   def poisson_nll_loss[
       I <: BFloat16 | Float32 | Float64,
       O <: BFloat16 | Float16 | Float32 | Float64
@@ -290,7 +304,7 @@ private[torch] trait Loss {
       log_input: Boolean,
       full: Boolean,
       eps: Float,
-      reduction: String  //mean
+      reduction: String // mean
   ): Tensor[O] = {
     val options = PoissonNLLLossOptions()
     options.log_input().put(log_input)
@@ -323,7 +337,7 @@ private[torch] trait Loss {
       reduction: String = "mean",
       size_average: Option[Boolean] = None,
       reduce: Option[Boolean] = None
-                              ): Tensor[O] = {
+  ): Tensor[O] = {
     val options = CosineEmbeddingLossOptions()
     options.margin().put(margin)
 
@@ -807,18 +821,30 @@ private[torch] trait Loss {
   }
 
   def tripletMarginWithDistanceLoss[D <: DType](
-                                                 input1: Tensor[D],
-                                                 input2: Tensor[D],
-                                                 input3: Tensor[D],
-                                                 margin: Double,
-                                                 p: Double,
-                                                 eps: Double,
-                                                 swap: Boolean,
-                                                 distanceFunction: String,
-                                                 reduction: String = "mean",
-                                                 size_average: Option[Boolean] = None,
-                                                 reduce: Option[Boolean] = None
-                                               ): Tensor[D] =  triplet_margin_with_distance_loss(input1, input2, input3, margin, p, eps, swap, distanceFunction, reduction, size_average, reduce )
+      input1: Tensor[D],
+      input2: Tensor[D],
+      input3: Tensor[D],
+      margin: Double,
+      p: Double,
+      eps: Double,
+      swap: Boolean,
+      distanceFunction: String,
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): Tensor[D] = triplet_margin_with_distance_loss(
+    input1,
+    input2,
+    input3,
+    margin,
+    p,
+    eps,
+    swap,
+    distanceFunction,
+    reduction,
+    size_average,
+    reduce
+  )
 
   def triplet_margin_with_distance_loss[D <: DType](
       input1: Tensor[D],

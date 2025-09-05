@@ -18,7 +18,14 @@ package torch
 package optim
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{LBFGSOptions, LBFGSParamState, OptimizerParamState, LongOptional, StringOptional, TensorVector}
+import org.bytedeco.pytorch.{
+  LBFGSOptions,
+  LBFGSParamState,
+  OptimizerParamState,
+  LongOptional,
+  StringOptional,
+  TensorVector
+}
 
 import scala.collection.immutable.Iterable
 

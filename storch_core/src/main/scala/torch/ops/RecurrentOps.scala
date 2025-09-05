@@ -1,28 +1,26 @@
 package torch
-package nn
-package functional
+package ops
 
-import Derive.derive
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  Tensor as TensorNative,
-  LongOptional,
-  PackedSequence,
-  MultiheadAttentionForwardFuncOptions,
-  TensorVector,
-  TensorOptional,
   DoubleOptional,
-  TensorArrayRef
+  LongOptional,
+  MultiheadAttentionForwardFuncOptions,
+  PackedSequence,
+  TensorArrayRef,
+  TensorOptional,
+  TensorVector,
+  Tensor as TensorNative
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.{fromNative, toArrayRef}
 import org.bytedeco.pytorch.ScalarTypeOptional
-import org.bytedeco.javacpp.{Pointer, CLongPointer}
-import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
+import org.bytedeco.javacpp.{CLongPointer, Pointer}
+import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 import torch.internal.NativeConverters.*
+import torch.nn.functional.{TensorTuple2, TensorTriple}
 
-//case class TensorTriple[T <: FloatNN | ComplexNN](
-private[torch] trait Recurrent {
+private[torch] trait RecurrentOps {
 
   def gru_cell[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
@@ -39,23 +37,16 @@ private[torch] trait Recurrent {
     val w_hhNative = w_hh.native
     val b_ihNative = TensorOptional(b_ih.native)
     val b_hhNative = TensorOptional(b_hh.native)
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native =
       torchNative.gru_cell(inputNative, hxNative, w_ihNative, w_hhNative, b_ihNative, b_hhNative)
-    //    TensorTuple2(output = fromNative[TT](native.get0()), hx = fromNative(native.get1))
-
-    //    val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
     fromNative(native)
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
 
   }
 
-  //  inline Tensor torch::nn::utils::rnn:
-  //  :invert_permutation(const Tensor &permutation)
-  def invert_permutation[D <: DType](permutation: Tensor[D]): Tensor[D] = {
-
-    fromNative(torchNative.invert_permutation(permutation.native))
-  }
+  //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
+  //    TensorTuple2(output = fromNative[TT](native.get0()), hx = fromNative(native.get1))
+  //    val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
+  //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
 
   def pad_sequence[T, TT <: FloatNN | ComplexNN](
       sequences: Seq[Tensor[TT]],
@@ -546,13 +537,13 @@ private[torch] trait Recurrent {
 
 }
 
-case class TensorTuple2[T <: FloatNN | ComplexNN](output: Tensor[T], hx: Tensor[T])
-
-case class TensorTriple[T <: FloatNN | ComplexNN](
-    output: Tensor[T],
-    indices: Tensor[T],
-    values: Tensor[T]
-)
+//case class TensorTuple2[T <: FloatNN | ComplexNN](output: Tensor[T], hx: Tensor[T])
+//
+//case class TensorTriple[T <: FloatNN | ComplexNN](
+//    output: Tensor[T],
+//    indices: Tensor[T],
+//    values: Tensor[T]
+//)
 
 // inline PackedSequence torch :: nn :: utils :: rnn :: pack_padded_sequence(
 //   Tensor input, Tensor lengths, bool batch_first = false, bool enforce_sorted = true)

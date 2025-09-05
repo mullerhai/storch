@@ -27,7 +27,6 @@ import torch.distribute.DistBackend
   * tensors, but they utilize GPUs for computation.
   */
 package object cuda {
-  
 
   /** Returns a Boolean indicating if CUDA is currently available. */
   def isAvailable: Boolean = torchNative.cuda_is_available()
@@ -35,13 +34,12 @@ package object cuda {
   def device_count = torchNative.cuda_device_count()
 
 //  def cudnn_is_available :Boolean = torchNative.cudnn_is_available()
-//  
+//
 //  def getCurrentCUDASolverDnHandle = torchCuda.getCurrentCUDASolverDnHandle()
 //
 //  def getCudnnHandle = torchCuda.getCudnnHandle()
 
   def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
-
 
   def cuda_manual_seed(seed: Long) = torchNative.cuda_manual_seed(seed)
 
@@ -65,14 +63,11 @@ package object cuda {
 
   def clearCublasWorkspaces = torchCuda.clearCublasWorkspaces()
 
-
   def getDefaultCUDAStream = torchCuda.getDefaultCUDAStream()
 
   def getCurrentCUDAStream = torchCuda.getCurrentCUDAStream()
 
   def setCurrentCUDAStream(stream: CUDAStream) = torchCuda.setCurrentCUDAStream(stream)
-
-
 
   def dataSize(dtype: Int) = torchCuda.dataSize(dtype)
 
@@ -83,7 +78,6 @@ package object cuda {
   def isEnabled: Boolean = torchCuda.isEnabled()
 
   def enable(flag: Boolean) = torchCuda.enable(flag)
-
 
   def contiguousIfZeroInStrides[D <: DType](tensor: Tensor[D]) = fromNative(
     torchCuda.contiguousIfZeroInStrides(tensor.native)

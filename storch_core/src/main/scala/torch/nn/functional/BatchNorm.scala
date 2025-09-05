@@ -13,7 +13,8 @@ import org.bytedeco.pytorch.{
   LocalResponseNormOptions,
   NormalizeFuncOptions,
   TensorVector,
-  ScalarTypeOptional
+  ScalarTypeOptional,
+  DoubleOptional
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
@@ -135,7 +136,25 @@ private[torch] trait BatchNorm {
     fromNative(result)
   }
 
+  def rms_norm[D1 <: DType](
+      input: Tensor[D1],
+      normalized_shape: Seq[Long],
+      weight: Option[Tensor[Float32]],
+      eps: Option[Double]
+  ): Tensor[D1] = {
+    val weightOpt =
+      if weight.isDefined then new TensorOptional(weight.get.native) else new TensorOptional()
+    val epsOpt = if eps.isDefined then new DoubleOptional(eps.get) else new DoubleOptional()
+    fromNative(torchNative.rms_norm(input.native, normalized_shape.toArray, weightOpt, epsOpt))
+  }
+
 }
+
+//torch.nn.functional.rms_norm(input, normalized_shape, weight=None, eps=None)
+//  public static native Tensor rms_norm(@Const @ByRef Tensor var0, @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t")
+//  long[] var1, @Const @ByRef(nullValue = "std::optional<at::Tensor>{}")
+//  TensorOptional var2, @ByVal(nullValue = "std::optional<double>(::std::nullopt)")
+//  DoubleOptional var3);
 
 //public native
 //@ByRef @NoException(true) Tensor weight();

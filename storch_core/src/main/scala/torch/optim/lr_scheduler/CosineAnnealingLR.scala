@@ -2,20 +2,19 @@ package torch
 package optim
 package lr_scheduler
 
-
 import torch.optim.Optimizer
-import scala.math.{Pi,cos}
+import scala.math.{Pi, cos}
 
-/**
- * 使用余弦退火策略调整学习率
- */
+/** 使用余弦退火策略调整学习率 optimizer, T_max, eta_min=0, last_epoch=-1, verbose="deprecated"
+  */
 class CosineAnnealingLR(
-                         override val optimizer: Optimizer,
-                         t_max: Int,
-                         eta_min: Float = 0.0f,
-                         last_epoch: Int = -1,
-                         verbose: Boolean = false
-                       ) extends LRScheduler with ClosedFormLR {
+    override val optimizer: Optimizer,
+    t_max: Int,
+    eta_min: Float = 0.0f,
+    last_epoch: Int = -1,
+    verbose: Boolean = false
+) extends LRScheduler
+    with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val t_max: Int = t_max
 //  val eta_min: Float = eta_min
@@ -30,18 +29,21 @@ class CosineAnnealingLR(
     }
   }
 
-  base_lrs = optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
+  base_lrs =
+    optimizer.param_groups.map(param => param.paramGroupDict("initial_lr").asInstanceOf[Float])
   this.last_epoch = last_epoch
 
   _initial_step()
 
   override def get_lr(): Seq[Float] = {
     if (!_get_lr_called_within_step) {
-      println("Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. ")
+      println(
+        "Warning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`. "
+      )
     }
 
     if (last_epoch == 0) {
-      optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat )
+      optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
     } else if (_step_count == 1 && last_epoch > 0) {
       base_lrs.zip(optimizer.param_groups).map { case (base_lr, group) =>
         val lr = eta_min + (base_lr - eta_min) * (1 + cos(last_epoch * Pi / t_max)) / 2.0f
@@ -49,8 +51,11 @@ class CosineAnnealingLR(
       }
     } else if ((last_epoch - 1 - t_max) % (2 * t_max) == 0) {
       base_lrs.zip(optimizer.param_groups).map { case (base_lr, group) =>
-       val lr = group.paramGroup.options().get_lr().asInstanceOf[Float] + (base_lr - eta_min) * (1 - cos(Pi / t_max)) / 2.0f
-       lr.toFloat
+        val lr =
+          group.paramGroup.options().get_lr().asInstanceOf[Float] + (base_lr - eta_min) * (1 - cos(
+            Pi / t_max
+          )) / 2.0f
+        lr.toFloat
       }
     } else {
       optimizer.param_groups.map(group =>
@@ -62,8 +67,9 @@ class CosineAnnealingLR(
   }
 
   override def get_closed_form_lr(): Seq[Float] = {
-    base_lrs.map(base_lr => {val bash_lr = eta_min + (base_lr - eta_min) * (1 + cos(Pi * last_epoch / t_max)) / 2.0f 
-    bash_lr.toFloat
+    base_lrs.map(base_lr => {
+      val bash_lr = eta_min + (base_lr - eta_min) * (1 + cos(Pi * last_epoch / t_max)) / 2.0f
+      bash_lr.toFloat
     })
   }
 }

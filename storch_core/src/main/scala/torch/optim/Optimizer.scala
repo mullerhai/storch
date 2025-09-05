@@ -20,7 +20,16 @@ package optim
 import torch.Tensor
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{InputArchive, LossClosure, OptimizerOptions, OptimizerParamGroup, OptimizerParamGroupVector, OptimizerParamState, OutputArchive, TensorVector}
+import org.bytedeco.pytorch.{
+  InputArchive,
+  LossClosure,
+  OptimizerOptions,
+  OptimizerParamGroup,
+  OptimizerParamGroupVector,
+  OptimizerParamState,
+  OutputArchive,
+  TensorVector
+}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -32,22 +41,24 @@ case class TorchOptimizerParamGroup(paramGroup: OptimizerParamGroup) {
   val paramGroupDict: mutable.HashMap[String, Any] = new mutable.HashMap()
   _initDict
   private def _initDict = {
-    if(paramGroup.has_options()){
+    if (paramGroup.has_options()) {
       paramGroupDict.put("lr", paramGroup.options().get_lr())
     }
   }
 }
+
 /** Base class for all optimizers. */
 abstract class Optimizer extends Pointer {
   private[torch] def native: pytorch.Optimizer
 
   val optimizerParamState: OptimizerParamState
+
   /** Performs a single optimization step (parameter update).
-   *
-   * @note
-   *   Unless otherwise specified, this function should not modify the ``.grad`` field of the
-   *   parameters.
-   */
+    *
+    * @note
+    *   Unless otherwise specified, this function should not modify the ``.grad`` field of the
+    *   parameters.
+    */
   def step(): Unit =
     native.step()
     // TODO check what tensor is returned by step
@@ -78,9 +89,9 @@ abstract class Optimizer extends Pointer {
 
   }
   def add_param_group[D <: DType](
-                                   parameters: SeqMap[String, Tensor[D]],
-                                   options: OptimizerOptions
-                                 ): Unit = {
+      parameters: SeqMap[String, Tensor[D]],
+      options: OptimizerOptions
+  ): Unit = {
     val tensorVector = new TensorVector()
     tensorVector.put(parameters.values.toArray.map(_.native)*)
     val paramGroup = new OptimizerParamGroup(tensorVector, options)
@@ -106,7 +117,7 @@ abstract class Optimizer extends Pointer {
     val buffer = new ListBuffer[Tensor[?]]()
     val tensorVector = native.parameters()
     var it = tensorVector.begin()
-    while(!it.equals(tensorVector.end())){
+    while (!it.equals(tensorVector.end())) {
       buffer.append(from_native(it.get()))
       it = it.increment()
     }
@@ -117,7 +128,7 @@ abstract class Optimizer extends Pointer {
   def size(): Long = native.size()
   //   self.state: DefaultDict[torch.Tensor, Any] = defaultdict(dict)
   //        self.param_groups: List[Dict[str, Any]] = []
-  //defaults: Dict[str, Any]
+  // defaults: Dict[str, Any]
   def defaults(): OptimizerOptions = native.defaults()
 
   def get_optimizer_param_groups_raw(optimizer: Optimizer): Seq[OptimizerParamGroup] = {
@@ -167,10 +178,7 @@ abstract class Optimizer extends Pointer {
 //  }
 //
 //  def paramDict: Map[String, Any] = getDict // 计算属性
-//  
-
-
-
+//
 
 ///*
 // * Copyright 2022 storch.dev

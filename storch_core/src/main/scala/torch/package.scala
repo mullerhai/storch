@@ -30,6 +30,7 @@ import scala.util.Using
 package object torch
     extends ops.BLASOps
     with ops.ComparisonOps
+    with ops.ContextOps
     with ops.CreationOps
     with ops.IndexingSlicingJoiningOps
     with ops.PointwiseOps
@@ -40,6 +41,7 @@ package object torch
     with ops.NumpyOps
     with ops.FftOps
     with ops.UnSamplingOps
+    with ops.RecurrentOps
     with ops.OtherOps {
 
   /** Disable gradient calculation for [[op]].
