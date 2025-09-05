@@ -1,5 +1,88 @@
-package torch.utils.data
+package torch
+package utils
+package data
 
+import org.bytedeco.pytorch.Generator
+package object data {
+
+
+}
+//  def random_split[T](dataset: Dataset[T],
+//                     lengths: Seq[Double | Int],
+//                     generator: Option[Generator] = None): Seq[Subset[T]] = {
+//
+//  // 处理长度参数，支持小数比例和整数长度
+//  val subsetLengths: Seq[Int] = {
+//    if (math.abs(lengths.sum - 1.0) < 1e-6 && lengths.sum <= 1.0) {
+//      // 如果是小数比例，计算实际长度
+//      val baseLengths = lengths.map {
+//        case frac: Double =>
+//          if (frac < 0 || frac > 1) {
+//            throw new IllegalArgumentException(s"Fraction is not between 0 and 1: $frac")
+//          }
+//          math.floor(dataset.size * frac).toInt
+//        case int: Int =>
+//          if (int < 0) {
+//            throw new IllegalArgumentException(s"Length cannot be negative: $int")
+//          }
+//          int
+//      }
+//
+//      // 处理余数，使用轮询方式分配剩余样本
+//      val remainder = dataset.size - baseLengths.sum
+//      val result = baseLengths.toBuffer
+//      for (i <- 0 until remainder) {
+//        val idx = i % result.length
+//        result(idx) = result(idx) + 1
+//      }
+//
+//      result.toSeq
+//    } else {
+//      // 否则直接使用整数长度
+//      lengths.map {
+//        case int: Int => int
+//        case frac: Double =>
+//          throw new IllegalArgumentException(s"Sum of lengths is not 1.0, but got fraction: $frac")
+//      }
+//    }
+//  }
+//
+//  // 检查长度总和是否等于数据集大小
+//  if (subsetLengths.sum != dataset.size) {
+//    throw new IllegalArgumentException(
+//      s"Sum of input lengths does not equal the length of the input dataset! " +
+//        s"Sum: ${subsetLengths.sum}, Dataset size: ${dataset.size}"
+//    )
+//  }
+//
+//  // 生成随机排列的索引
+//  val randPerm = {
+//    val perm = generator match {
+//      case Some(gen) =>
+//        torch.randperm(dataset.size, gen)
+//      case None =>
+//        torch.randperm(dataset.size)
+//    }
+//    // 转换为Scala的Int序列
+//    val indices = new Array[Int](dataset.size)
+//    for (i <- 0 until dataset.size) {
+//      indices(i) = perm.item(i).toInt
+//    }
+//    indices.toSeq
+//  }
+//
+//  // 创建子集
+//  val subsets = mutable.ListBuffer[Subset[T]]()
+//  var offset = 0
+//
+//  for (length <- subsetLengths) {
+//    val subsetIndices = randPerm.slice(offset, offset + length)
+//    subsets += Subset(dataset, subsetIndices)
+//    offset += length
+//  }
+//
+//  subsets.toSeq
+//}
 //// THIS FILE IS AUTO-GENERATED, DO NOT EDIT. Changes should be made to package.scala.in
 //
 //package torch

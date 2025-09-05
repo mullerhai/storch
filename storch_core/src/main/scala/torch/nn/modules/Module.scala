@@ -30,6 +30,19 @@ abstract class Module {
   private[torch] def nativeModule: pytorch.Module = _nativeModule // = pytorch.Module()
   private var childModules: TreeSeqMap[String, Module] = TreeSeqMap.empty
 
+  def named_buffers(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+    val buffers = nativeModule.named_buffers(recurse)
+    TreeSeqMap.from((0 until buffers.size().toInt).map { i =>
+      val item = buffers.get(i)
+      (item.key().getString(), fromNative[DType](item.access()))
+    })
+
+  def named_parameters(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+    val params = nativeModule.named_parameters(recurse)
+    TreeSeqMap.from((0 until params.size().toInt).map { i =>
+      val item = params.get(i)
+      (item.key().getString(), fromNative[DType](item.access()))
+    })
   def namedBuffers(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
     val buffers = nativeModule.named_buffers(recurse)
     TreeSeqMap.from((0 until buffers.size().toInt).map { i =>
@@ -56,8 +69,15 @@ abstract class Module {
   def state_dict() = stateDict()
   // TODO make strict a parameter
   // TODO improve error handling
+  def load_state_dict(stateDict: Map[String, Tensor[DType]]): Unit =
+    val tensorsToLoad = named_parameters() ++ named_buffers()
+    // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
+    for ((key, param) <- tensorsToLoad if stateDict.contains(key))
+      noGrad {
+        param.copy_(stateDict(key))
+      }
   def loadStateDict(stateDict: Map[String, Tensor[DType]]): Unit =
-    val tensorsToLoad = namedParameters() ++ namedBuffers()
+    val tensorsToLoad = named_parameters() ++ named_buffers()
     // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
     for ((key, param) <- tensorsToLoad if stateDict.contains(key))
       noGrad {
@@ -72,6 +92,9 @@ abstract class Module {
   def namedChildren: SeqMap[String, Module] = childModules
 
   def children(): Seq[Module] = modules(true)
+
+  def named_modules: SeqMap[String, Module] =
+    namedChildren.flatMap((_, module) => module.namedModules)
 
   def namedModules: SeqMap[String, Module] =
     namedChildren.flatMap((_, module) => module.namedModules)
@@ -135,10 +158,14 @@ abstract class Module {
 
   def hasBias(): Boolean = modules.exists(_.hasBias())
 
+  def has_bias(): Boolean = modules.exists(_.hasBias())
+
   def eval(): Unit = nativeModule.eval()
 
   def isTraining: Boolean = nativeModule.is_training
 
+  def is_training: Boolean = nativeModule.is_training
+  
   def train(on: Boolean = true): Unit = nativeModule.train(on)
 
   def to(device: Device): this.type =

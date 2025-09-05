@@ -7,6 +7,7 @@ import org.bytedeco.pytorch.{
   CompilationUnit,
   ExtraFilesMap,
   IValue,
+  Type,
   IValueVector,
   InputArchive,
   JitModule,
@@ -103,10 +104,19 @@ class JITModule(nativeModule: JitModule) {
   def register_buffer(name: String, tensor: Tensor[?]): Unit =
     nativeJitModule.register_buffer(name, tensor.native)
 
-  def register_parameter(name: String, tensor: Tensor[?], is_buffer: Boolean): Unit = {}
+  def register_parameter(name: String, tensor: Tensor[?], is_buffer: Boolean): Unit = {
+    nativeJitModule.register_parameter(name, tensor.native, is_buffer)
+  }
 
-  def register_attribute(name: String, typez: String, value: IValue): Unit = {}
+  def register_attribute(name: String, typez: Type.TypePtr, value: IValue): Unit = {
+    nativeJitModule.register_attribute(name, typez, value)
 
+  }
+
+  def register_attribute(name: String, typez: Type.TypePtr, value: IValue, is_buffer: Boolean, persistent: Boolean): Unit = {
+     nativeJitModule.register_attribute(name, typez, value, is_buffer, persistent)
+
+  }
   def register_module(name: String, module: JitModule) =
     nativeJitModule.register_module(name, module)
   def save(fileName: String) = nativeJitModule.save(fileName)
@@ -130,7 +140,7 @@ class JITModule(nativeModule: JitModule) {
 
   def deepcopy() = nativeJitModule.deepcopy()
 
-  def cloneNative() = nativeJitModule.clone()
+  def clone_native() = nativeJitModule.clone()
 
   def store_traced_inputs(funcName: String, inputs: Tensor[?]) = {
     val vector = new IValueVector(inputs.native)
@@ -153,7 +163,7 @@ class JITModule(nativeModule: JitModule) {
     nativeJitModule.to(device.toNative, false)
     this
 
-  def namedBuffers(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+  def named_buffers(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
     val buffers = nativeJitModule.named_buffers(recurse)
     var ele = buffers.begin()
     val buff = new ListBuffer[named_buffer_iterator]()
@@ -166,7 +176,7 @@ class JITModule(nativeModule: JitModule) {
       (item.name().getString(), fromNative[DType](item.value()))
     })
 
-  def namedParameters(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
+  def named_parameters(recurse: Boolean = true): SeqMap[String, Tensor[?]] =
     val params = nativeJitModule.named_parameters(recurse)
     var ele = params.begin()
     val buffer = new ListBuffer[named_parameter_iterator]()
@@ -179,8 +189,8 @@ class JITModule(nativeModule: JitModule) {
       (item.name().getString(), fromNative[DType](item.value()))
     })
 
-  def loadStateDict(stateDict: Map[String, Tensor[DType]]): Unit =
-    val tensorsToLoad = namedParameters() ++ namedBuffers()
+  def load_state_dict(stateDict: Map[String, Tensor[DType]]): Unit =
+    val tensorsToLoad = named_parameters() ++ named_buffers()
     // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
     for ((key, param) <- tensorsToLoad if stateDict.contains(key))
       noGrad {
@@ -220,7 +230,7 @@ class JITModule(nativeModule: JitModule) {
     })
   }
 
-  def named_parameters(recurse: Boolean = true) = nativeJitModule.named_parameters(recurse)
+  def namedParameters(recurse: Boolean = true) = nativeJitModule.named_parameters(recurse)
 
   def parameters: Seq[Tensor[?]] = parameters(recurse = true)
 
@@ -237,7 +247,7 @@ class JITModule(nativeModule: JitModule) {
 
   def buffers(recurse: Boolean = true) = nativeJitModule.buffers(recurse)
 
-  def named_buffers(recurse: Boolean = true) = nativeJitModule.named_buffers(recurse)
+  def namedBuffers(recurse: Boolean = true) = nativeJitModule.named_buffers(recurse)
 
   def children() = nativeJitModule.children()
 
