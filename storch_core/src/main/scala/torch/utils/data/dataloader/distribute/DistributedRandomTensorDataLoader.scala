@@ -2,7 +2,7 @@ package torch
 package utils
 package data
 package dataloader
-package stream
+package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -19,30 +19,20 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
-  ChunkBatchDataset as CBD,
-  ChunkRandomDataLoader as CRDL,
-  JavaStreamTensorDataLoader as STDL,
-  RandomSampler as RS,
+  JavaDistributedRandomTensorDataLoader as DRTDL,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.stream.StreamTensorDataset
-import torch.utils.data.sampler.stream.StreamSampler
+import torch.utils.data.dataset.java.TensorDataset
+import torch.utils.data.sampler.distribute.DistributedRandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
-class StreamTensorDataLoader(
-    dataset: StreamTensorDataset,
-    sampler: StreamSampler,
+class DistributedRandomTensorDataLoader(
+    dataset: TensorDataset,
+    sampler: DistributedRandomSampler,
     option: DataLoaderOptions
-) extends STDL(dataset, sampler, option)
+) extends DRTDL(dataset, sampler, option)
     with DataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()

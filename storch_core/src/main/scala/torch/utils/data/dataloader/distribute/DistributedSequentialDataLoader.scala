@@ -39,7 +39,7 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class DistributedSequentialDataLoader(
-    dataset: java.JavaDataset,
+    dataset: JavaDataset,
     sampler: DistributedSequentialSampler,
     option: DataLoaderOptions
 ) extends DSDL(dataset, sampler, option)

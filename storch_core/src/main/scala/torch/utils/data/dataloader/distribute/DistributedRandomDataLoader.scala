@@ -39,7 +39,7 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class DistributedRandomDataLoader(
-    dataset: java.JavaDataset,
+    dataset: JavaDataset,
     sampler: DistributedRandomSampler,
     option: DataLoaderOptions
 ) extends DRDL(dataset, sampler, option)

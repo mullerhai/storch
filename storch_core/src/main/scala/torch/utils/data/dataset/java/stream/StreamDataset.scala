@@ -1,4 +1,9 @@
-package torch.utils.data.dataset.java
+package torch
+package utils
+package data
+package dataset
+package java
+package stream
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{

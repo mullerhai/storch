@@ -23,14 +23,14 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.StreamDataset
+import torch.utils.data.dataset.java.stream.StreamDataset
 import torch.utils.data.sampler.stream.StreamSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class StreamDataLoader(
-    dataset: java.StreamDataset,
+    dataset: StreamDataset,
     sampler: StreamSampler,
     option: DataLoaderOptions
 ) extends SDL(dataset, sampler, option)
