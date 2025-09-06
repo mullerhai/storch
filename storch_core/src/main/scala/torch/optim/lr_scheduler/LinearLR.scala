@@ -14,7 +14,7 @@ class LinearLR(
     total_iters: Int = 5,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler
+) extends LRScheduler(optimizer)
     with ClosedFormLR {
 //  override var verbose: Boolean = verbose
   require(

@@ -13,7 +13,7 @@ class CosineAnnealingWarmRestarts(
     eta_min: Float = 0.0f,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler {
+) extends LRScheduler(optimizer) {
 //  override var verbose: Boolean = verbose
   require(t_0 > 0 && t_0.isInstanceOf[Int], s"Expected positive integer t_0, but got $t_0")
   require(t_mult >= 1 && t_mult.isInstanceOf[Int], s"Expected integer t_mult >= 1, but got $t_mult")

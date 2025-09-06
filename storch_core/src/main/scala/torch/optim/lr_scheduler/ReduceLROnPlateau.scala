@@ -20,7 +20,7 @@ class ReduceLROnPlateau(
     min_lr: Either[Float, Seq[Float]] = Left(0.0f),
     eps: Float = 1e-8f,
     verbose: Boolean = false
-) extends LRScheduler {
+) extends LRScheduler(optimizer) {
 //  override var verbose: Boolean = verbose
   require(factor < 1.0, "Factor should be < 1.0.")
 //

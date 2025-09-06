@@ -13,7 +13,7 @@ class PolynomialLR(
     power: Float = 1.0f,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler
+) extends LRScheduler(optimizer)
     with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val total_iters: Int = total_iters

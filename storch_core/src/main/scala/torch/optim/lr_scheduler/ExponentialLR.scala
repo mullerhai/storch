@@ -11,7 +11,7 @@ class ExponentialLR(
     gamma: Float,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler
+) extends LRScheduler(optimizer)
     with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val gamma: Float = gamma

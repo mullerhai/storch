@@ -11,14 +11,15 @@ import org.bytedeco.pytorch.{
   OptimizerOptions,
   OptimizerParamGroup,
   OptimizerParamGroupVector,
+  LRScheduler as LRSchedulerPtr,
   OutputArchive,
   TensorVector
 }
 
 import scala.collection.mutable.ListBuffer
 
-abstract class LRScheduler {
-  val optimizer: Optimizer
+abstract class LRScheduler(val optimizer: Optimizer) extends LRSchedulerPtr(optimizer.native) {
+//  val optimizer: Optimizer
   var last_epoch: Int = -1
   var base_lrs: Seq[Float] = Seq.empty
   var _last_lr: Seq[Float] = Seq.empty
@@ -41,6 +42,7 @@ abstract class LRScheduler {
     */
   def get_lr(): Seq[Float]
 
+  override def step() = super.step()
   /** 执行一步学习率更新
     */
   def step(epoch: Option[Int] = None): Unit = {

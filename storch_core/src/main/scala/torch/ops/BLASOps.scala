@@ -132,18 +132,18 @@ private[torch] trait BLASOps {
         )
   }
 
-  def scatter[D <: DType](
+  def scatter[D <: DType, S <: ScalaType](
       input: Tensor[D],
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
-      src: Scalar
+      src: S
   ): Tensor[D] = {
     index.dtype match
       case torch.int64 =>
-        fromNative(torchNative.scatter(input.native, dim.toLong, index.native, src))
+        fromNative(torchNative.scatter(input.native, dim.toLong, index.native, toScalar(src)))
       case torch.int32 =>
         fromNative(
-          torchNative.scatter(input.native, dim.toLong, index.to(dtype = torch.int64).native, src)
+          torchNative.scatter(input.native, dim.toLong, index.to(dtype = torch.int64).native, toScalar(src))
         )
   }
 

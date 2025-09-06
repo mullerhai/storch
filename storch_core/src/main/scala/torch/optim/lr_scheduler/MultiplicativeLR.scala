@@ -11,7 +11,7 @@ class MultiplicativeLR(
     lr_lambda: Either[Int => Float, Seq[Int => Float]],
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler {
+) extends LRScheduler(optimizer) {
 //  var verbose: Boolean = verbose
 
   // 处理lr_lambda参数

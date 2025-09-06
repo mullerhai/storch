@@ -12,7 +12,7 @@ class StepLR(
     gamma: Float = 0.1f,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler
+) extends LRScheduler(optimizer)
     with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val step_size: Int = step_size

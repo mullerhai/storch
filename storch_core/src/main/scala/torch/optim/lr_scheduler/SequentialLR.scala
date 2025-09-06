@@ -12,7 +12,7 @@ class SequentialLR(
     milestones: Seq[Int],
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler {
+) extends LRScheduler(optimizer) {
 //  override var verbose: Boolean = verbose
 
   // 验证调度器和里程碑参数

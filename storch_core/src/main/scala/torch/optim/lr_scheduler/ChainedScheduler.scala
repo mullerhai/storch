@@ -8,7 +8,7 @@ import torch.optim.Optimizer
   */
 class ChainedScheduler(
     schedulers: Seq[LRScheduler]
-) extends LRScheduler {
+) extends LRScheduler(schedulers.head.optimizer) {
   require(schedulers.nonEmpty, "At least one scheduler must be provided")
   require(
     schedulers.forall(_.optimizer == schedulers.head.optimizer),

@@ -25,7 +25,7 @@ class CyclicLR(
     last_epoch: Int = -1,
     use_beta1: Boolean = false,
     verbose: Boolean = false
-) extends LRScheduler {
+) extends LRScheduler(optimizer) {
 //  override var verbose: Boolean = verbose
 
   // 处理参数格式

@@ -13,7 +13,7 @@ class CosineAnnealingLR(
     eta_min: Float = 0.0f,
     last_epoch: Int = -1,
     verbose: Boolean = false
-) extends LRScheduler
+) extends LRScheduler(optimizer)
     with ClosedFormLR {
 //  override var verbose: Boolean = verbose
 //  val t_max: Int = t_max
