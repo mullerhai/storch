@@ -69,8 +69,7 @@ final class MaxUnpool1d[D <: FloatNN | ComplexNN: Default](
   def forward(input: Tensor[D], indices: Tensor[Int64]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, indices.native)
   )
-  
-  
+
   def forward(input: Tensor[D], indices: Tensor[Int64], outputSize: Array[Int]): Tensor[D] =
     val out = outputSize.map(_.toLong)
     fromNative(

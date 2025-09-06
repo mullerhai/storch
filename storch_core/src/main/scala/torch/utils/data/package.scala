@@ -3,10 +3,7 @@ package utils
 package data
 
 import org.bytedeco.pytorch.Generator
-package object data {
-
-
-}
+package object data {}
 //  def random_split[T](dataset: Dataset[T],
 //                     lengths: Seq[Double | Int],
 //                     generator: Option[Generator] = None): Seq[Subset[T]] = {

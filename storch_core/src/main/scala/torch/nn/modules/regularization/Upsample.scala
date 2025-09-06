@@ -142,7 +142,9 @@ final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
-  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()

@@ -127,15 +127,14 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
 
   }
 
-
   def weight: TensorVector =
     TensorVector(nativeModule.weight_hh(), nativeModule.weight_ih()) /// all_weights()
 
   def forward(
-             t: Tensor[ParamType],
-             h0: Tensor[ParamType],
-             c0: Tensor[ParamType]
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      t: Tensor[ParamType],
+      h0: Tensor[ParamType],
+      c0: Tensor[ParamType]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(h0.native, c0.native)
     //    val hx_opt = new T_TensorTensor_TOptional(hx)
     val fore = nativeModule.forward(t.native, hx)
@@ -143,9 +142,9 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def forward(
-             input: Tensor[ParamType],
-             hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      input: Tensor[ParamType],
+      hidden_state: Tuple2[Tensor[ParamType], Tensor[ParamType]]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val hx = new T_TensorTensor_T(hidden_state._1.native, hidden_state._2.native)
     //    val hx_opt = new T_TensorTensor_TOptional(hx)
     val fore = nativeModule.forward(input.native, hx)
@@ -153,9 +152,9 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def forward(
-             input: Tensor[ParamType],
-             hidden_state: Option[Tuple2[Tensor[ParamType], Tensor[ParamType]]] = None
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      input: Tensor[ParamType],
+      hidden_state: Option[Tuple2[Tensor[ParamType], Tensor[ParamType]]] = None
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     if (hidden_state.isDefined) {
       val hx = new T_TensorTensor_T(hidden_state.get._1.native, hidden_state.get._2.native)
       //      val hx_opt = new T_TensorTensor_TOptional(hx)
@@ -168,10 +167,10 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def forward(
-             t: Tensor[ParamType],
-             h0: Option[Tensor[ParamType]],
-             c0: Option[Tensor[ParamType]]
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      t: Tensor[ParamType],
+      h0: Option[Tensor[ParamType]],
+      c0: Option[Tensor[ParamType]]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     if (h0.isDefined && c0.isDefined) {
       val hx = new T_TensorTensor_T(h0.get.native, c0.get.native)
       //      val hx_opt = new T_TensorTensor_TOptional(hx)

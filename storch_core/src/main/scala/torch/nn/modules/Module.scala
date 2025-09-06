@@ -165,7 +165,7 @@ abstract class Module {
   def isTraining: Boolean = nativeModule.is_training
 
   def is_training: Boolean = nativeModule.is_training
-  
+
   def train(on: Boolean = true): Unit = nativeModule.train(on)
 
   def to(device: Device): this.type =

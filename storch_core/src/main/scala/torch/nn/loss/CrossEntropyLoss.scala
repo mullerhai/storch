@@ -41,7 +41,7 @@ final class CrossEntropyLoss extends LossFunc {
       nativeModule.forward(input.native, target.native) // .output()
     )
   }
-  
+
   def forward[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head
     fromNative(

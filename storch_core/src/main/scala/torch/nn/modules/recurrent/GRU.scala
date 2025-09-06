@@ -111,17 +111,17 @@ final class GRU[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   def forward(
-             input: Tensor[ParamType],
-             hx: Tensor[ParamType]
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      input: Tensor[ParamType],
+      hx: Tensor[ParamType]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val fore = nativeModule.forward(input.native, hx.native)
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
   def forward(
-             input: Tensor[ParamType],
-             hx: Option[Tensor[ParamType]] = None
-           ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+      input: Tensor[ParamType],
+      hx: Option[Tensor[ParamType]] = None
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
     val fore =
       if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
       else nativeModule.forward(input.native)

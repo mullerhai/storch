@@ -136,7 +136,9 @@ final class BatchNorm3d[ParamType <: FloatNN | ComplexNN: Default](
   def num_batches_tracked(): Tensor[ParamType] = fromNative(nativeModule.num_batches_tracked())
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
-  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 
   override def toString(): String =
     s"${getClass().getSimpleName()}(numFeatures=$numFeatures eps=$eps momentum=$momentum affine=$affine trackRunningStats=$trackRunningStats)"

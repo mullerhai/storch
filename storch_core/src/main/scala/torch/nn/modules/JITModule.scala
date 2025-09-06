@@ -113,8 +113,14 @@ class JITModule(nativeModule: JitModule) {
 
   }
 
-  def register_attribute(name: String, typez: Type.TypePtr, value: IValue, is_buffer: Boolean, persistent: Boolean): Unit = {
-     nativeJitModule.register_attribute(name, typez, value, is_buffer, persistent)
+  def register_attribute(
+      name: String,
+      typez: Type.TypePtr,
+      value: IValue,
+      is_buffer: Boolean,
+      persistent: Boolean
+  ): Unit = {
+    nativeJitModule.register_attribute(name, typez, value, is_buffer, persistent)
 
   }
   def register_module(name: String, module: JitModule) =

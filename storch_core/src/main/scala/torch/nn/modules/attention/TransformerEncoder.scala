@@ -94,8 +94,6 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
     fromNative(fore)
   }
 
-
-
   override def hasBias(): Boolean = false // options.bias().get()
 
   def reset(): Unit = nativeModule.reset()

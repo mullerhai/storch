@@ -138,7 +138,9 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
   nativeModule.to(paramType.toScalarType, false)
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
-  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 
   def apply(input: Tensor[ParamType], output_size: Seq[Int]): Tensor[ParamType] = {
 

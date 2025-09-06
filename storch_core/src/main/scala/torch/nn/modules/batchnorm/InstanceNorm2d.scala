@@ -81,7 +81,7 @@ final class InstanceNorm2d[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
-    
+
   def forward(input: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(input.native))
 

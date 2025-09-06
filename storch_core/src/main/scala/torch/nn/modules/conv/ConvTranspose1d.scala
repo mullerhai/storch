@@ -104,7 +104,9 @@ final class ConvTranspose1d[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
-  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 
   def apply(input: Tensor[ParamType], output_size: Seq[Int]): Tensor[ParamType] = {
 
@@ -116,8 +118,6 @@ final class ConvTranspose1d[ParamType <: FloatNN | ComplexNN: Default](
     val outputSize = LongArrayRefOptional(output_size.map(_.toLong)*)
     fromNative(nativeModule.forward(input.native, outputSize))
   }
-
-
 
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
 

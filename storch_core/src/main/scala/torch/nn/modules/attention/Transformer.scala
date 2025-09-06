@@ -146,7 +146,6 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
     fromNative(fore)
   }
 
-
   override def hasBias(): Boolean = false
 
   override def toString =

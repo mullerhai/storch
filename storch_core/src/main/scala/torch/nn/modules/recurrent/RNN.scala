@@ -116,7 +116,6 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
     (output.get0(), fromNative(output.get1()))
   }
-  
 
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensor = {
 

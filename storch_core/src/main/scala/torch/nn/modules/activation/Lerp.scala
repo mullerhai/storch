@@ -14,7 +14,7 @@ final class Lerp[D <: DType: Default](end: Tensor[D], weight: Float = 0.5) exten
   def apply(input: Tensor[D]): Tensor[D] = {
     torch.lerp(input, end, weight)
   }
-  
+
   def forward(input: Tensor[D]): Tensor[D] = {
     torch.lerp(input, end, weight)
   }

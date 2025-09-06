@@ -62,6 +62,14 @@ final class AdaptiveLogSoftmaxWithLoss(
       nativeModule.forward(input.native, target.native).output()
     )
   }
+
+  def forward[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
+    val input = inputs.toSeq.head
+    fromNative(
+      nativeModule.forward(input.native, target.native).output()
+    )
+  }
+
 }
 //  /** Given input tensor, and output of {@code head}, computes the log of the full
 //   *  distribution */

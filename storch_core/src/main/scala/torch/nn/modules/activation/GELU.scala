@@ -52,7 +52,6 @@ final class GELU[D <: DType: Default](size: Int, approximate: Float | Double, in
 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
-
 object GELU {
   def apply[D <: DType: Default](size: Int, approximate: Float, inplace: Boolean): GELU[D] =
     new GELU(size, approximate, inplace)
