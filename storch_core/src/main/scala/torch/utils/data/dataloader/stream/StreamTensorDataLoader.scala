@@ -1,4 +1,8 @@
-package torch.utils.data.dataloader
+package torch
+package utils
+package data
+package dataloader
+package stream
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -15,20 +19,30 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   TensorMapper,
   TensorVector,
-  JavaDistributedSequentialTensorDataLoader as DSTDL,
+  TransformerImpl,
+  TransformerOptions,
+  kCircular,
+  kGELU,
+  kReflect,
+  kReplicate,
+  kZeros,
+  ChunkBatchDataset as CBD,
+  ChunkRandomDataLoader as CRDL,
+  JavaStreamTensorDataLoader as STDL,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.TensorDataset
+import torch.utils.data.dataset.java.StreamTensorDataset
+import torch.utils.data.sampler.stream.StreamSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.sampler.DistributedSequentialSampler
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
-class DistributedSequentialTensorDataLoader(
-    dataset: java.TensorDataset,
-    sampler: DistributedSequentialSampler,
+
+class StreamTensorDataLoader(
+    dataset: java.StreamTensorDataset,
+    sampler: StreamSampler,
     option: DataLoaderOptions
-) extends DSTDL(dataset, sampler, option)
+) extends STDL(dataset, sampler, option)
     with DataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()
@@ -37,5 +51,5 @@ class DistributedSequentialTensorDataLoader(
 
   override def join(): Unit = super.join()
 
-  override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(option)
+  override def options(): FullDataLoaderOptions = super.options()
 }

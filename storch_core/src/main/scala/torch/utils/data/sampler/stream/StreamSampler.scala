@@ -1,4 +1,8 @@
-package torch.utils.data.sampler
+package torch
+package utils
+package data
+package sampler
+package stream
 
 import torch.utils.data.dataset.java.SDataset
 import torch.utils.data.sampler.BatchSizeSampler

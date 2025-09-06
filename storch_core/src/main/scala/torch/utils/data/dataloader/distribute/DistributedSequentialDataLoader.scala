@@ -1,4 +1,8 @@
-package torch.utils.data.dataloader
+package torch
+package utils
+package data
+package dataloader
+package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -24,21 +28,21 @@ import org.bytedeco.pytorch.{
   kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
-  JavaDistributedRandomDataLoader as DRDL,
+  JavaDistributedSequentialDataLoader as DSDL,
   RandomSampler as RS,
   SequentialSampler as SS
 }
 import torch.utils.data.dataset.java.JavaDataset
-import torch.utils.data.sampler.DistributedRandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
+import torch.utils.data.sampler.distribute.DistributedSequentialSampler
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
-class DistributedRandomDataLoader(
+class DistributedSequentialDataLoader(
     dataset: java.JavaDataset,
-    sampler: DistributedRandomSampler,
+    sampler: DistributedSequentialSampler,
     option: DataLoaderOptions
-) extends DRDL(dataset, sampler, option)
+) extends DSDL(dataset, sampler, option)
     with DataLoader {
 
   override def begin(): ExampleVectorIterator = super.begin()

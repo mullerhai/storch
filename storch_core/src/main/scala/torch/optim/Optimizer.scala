@@ -50,6 +50,12 @@ case class TorchOptimizerParamGroup(paramGroup: OptimizerParamGroup) {
 /** Base class for all optimizers. */
 abstract class Optimizer extends Pointer {
   private[torch] def native: pytorch.Optimizer
+  private val stateDictPreHooks = mutable.ListBuffer[(Optimizer, Map[String, Any]) => Unit]()
+  private val stateDictPostHooks = mutable.ListBuffer[(Optimizer, Map[String, Any]) => Unit]()
+  private val loadStateDictPreHooks = mutable.ListBuffer[(Optimizer, Map[String, Any]) => Unit]()
+  private val loadStateDictPostHooks = mutable.ListBuffer[(Optimizer, Map[String, Any]) => Unit]()
+  private val stepPreHooks = mutable.ListBuffer[Optimizer => Unit]()
+  private val stepPostHooks = mutable.ListBuffer[Optimizer => Unit]()
 
   val optimizerParamState: OptimizerParamState
 
@@ -60,7 +66,10 @@ abstract class Optimizer extends Pointer {
     *   parameters.
     */
   def step(): Unit =
+    stepPreHooks.foreach(hook => hook(this))
+
     native.step()
+    stepPostHooks.foreach(hook => hook(this))
     // TODO check what tensor is returned by step
     ()
 
@@ -78,6 +87,57 @@ abstract class Optimizer extends Pointer {
     tensorVector.put(parameters.map(_.native)*)
     native.add_parameters(tensorVector)
 
+  }
+
+  def state_dict(): Map[String, Any] = {
+    // 执行前置钩子
+    val stateDict = mutable.Map[String, Any]()
+    stateDictPreHooks.foreach(hook => hook(this, stateDict.toMap))
+
+    // 收集参数组信息
+    stateDict("param_groups") = param_groups.map(_.paramGroupDict.toMap)
+
+    // 收集状态信息
+    val stateArchive = new OutputArchive()
+    native.save(stateArchive)
+    stateDict("state") = stateArchive
+
+    // 执行后置钩子
+    stateDictPostHooks.foreach(hook => hook(this, stateDict.toMap))
+
+    stateDict.toMap
+  }
+
+  def load_state_dict(state_dict: Map[String, Any]): Unit = {
+    // 执行前置钩子
+    loadStateDictPreHooks.foreach(hook => hook(this, state_dict))
+
+    // 加载参数组
+    state_dict.get("param_groups").foreach {
+      case groups: Seq[Map[String, Any]] =>
+        groups.zip(param_groups).foreach { case (groupDict, paramGroup) =>
+          groupDict.foreach { case (key, value) =>
+            paramGroup.paramGroupDict(key) = value
+            key match {
+              case "lr" => paramGroup.paramGroup.options().set_lr(value.asInstanceOf[Double])
+              //todo  添加其他参数组键的处理
+            }
+          }
+        }
+      case _ => throw new IllegalArgumentException("Invalid param_groups format")
+    }
+
+    // 加载状态
+    state_dict.get("state").foreach {
+      case archive: OutputArchive =>
+        val inputArchive = new InputArchive()
+        //todo 转换OutputArchive到InputArchive的逻辑
+        native.load(inputArchive)
+      case _ => throw new IllegalArgumentException("Invalid state format")
+    }
+
+    // 执行后置钩子
+    loadStateDictPostHooks.foreach(hook => hook(this, state_dict))
   }
 
   def add_param_group[D <: DType](parameters: Seq[Tensor[D]], options: OptimizerOptions): Unit = {
@@ -98,6 +158,25 @@ abstract class Optimizer extends Pointer {
     native.add_param_group(paramGroup)
 
   }
+
+  def register_state_dict_pre_hook(hook: (Optimizer, Map[String, Any]) => Unit): Unit =
+    stateDictPreHooks += hook
+
+  def register_state_dict_post_hook(hook: (Optimizer, Map[String, Any]) => Unit): Unit =
+    stateDictPostHooks += hook
+
+  def register_load_state_dict_pre_hook(hook: (Optimizer, Map[String, Any]) => Unit): Unit =
+    loadStateDictPreHooks += hook
+
+  def register_load_state_dict_post_hook(hook: (Optimizer, Map[String, Any]) => Unit): Unit =
+    loadStateDictPostHooks += hook
+
+  def register_step_pre_hook(hook: Optimizer => Unit): Unit =
+    stepPreHooks += hook
+
+  def register_step_post_hook(hook: Optimizer => Unit): Unit =
+    stepPostHooks += hook
+
   def zeroGrad(setToNone: Boolean = true): Unit = native.zero_grad(setToNone)
 
   /** Sets the gradients of all optimized `Tensor`s to zero. */

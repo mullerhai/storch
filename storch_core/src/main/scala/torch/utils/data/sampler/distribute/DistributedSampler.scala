@@ -1,4 +1,8 @@
-package torch.utils.data.sampler
+package torch
+package utils
+package data
+package sampler
+package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
