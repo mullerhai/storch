@@ -36,6 +36,7 @@ final class Mish[D <: DType: Default] extends TensorModule[D]:
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString = getClass().getSimpleName()
 

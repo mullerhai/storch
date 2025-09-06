@@ -79,8 +79,36 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
     val fore = nativeModule.forward(query.native, key.native, value.native)
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
+  def forward(
+      query: Tensor[ParamType],
+      key: Tensor[ParamType],
+      value: Tensor[ParamType]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+    val fore = nativeModule.forward(query.native, key.native, value.native)
+    (fromNative(fore.get0()), fromNative(fore.get1()))
+  }
 
   def apply(
+      query: Tensor[ParamType],
+      key: Tensor[ParamType],
+      value: Tensor[ParamType],
+      key_padding_mask: Tensor[ParamType],
+      need_weights: Boolean,
+      attn_mask: Tensor[ParamType],
+      average_attn_weights: Boolean
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+    val fore = nativeModule.forward(
+      query.native,
+      key.native,
+      value.native,
+      key_padding_mask.native,
+      need_weights,
+      attn_mask.native,
+      average_attn_weights
+    )
+    (fromNative(fore.get0()), fromNative(fore.get1()))
+  }
+  def forward(
       query: Tensor[ParamType],
       key: Tensor[ParamType],
       value: Tensor[ParamType],

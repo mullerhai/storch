@@ -42,6 +42,7 @@ final class PixelShuffle[D <: FloatNN | ComplexNN: Default](upscaleFactor: Int)
     s"${getClass.getSimpleName}(upscaleFactor=$upscaleFactor)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
 object PixelShuffle:
   def apply[D <: FloatNN | ComplexNN: Default](upscale_factor: Int): PixelShuffle[D] =

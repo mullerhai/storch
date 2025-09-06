@@ -76,6 +76,9 @@ final class AvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 
   override def toString(): String =
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding, countIncludePad=$countIncludePad, divisorOverride=${divisorOverride}  ceilMode=$ceilMode)"

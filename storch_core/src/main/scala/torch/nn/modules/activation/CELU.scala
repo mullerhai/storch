@@ -47,6 +47,7 @@ final class CELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
     getClass().getSimpleName() + "(size=" + size + ",alpha=" + alpha + ",inplace=" + inplace + ")"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 object CELU {
 
   def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): CELU[D] =

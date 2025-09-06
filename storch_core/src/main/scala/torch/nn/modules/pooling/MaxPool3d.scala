@@ -67,6 +67,7 @@ final class MaxPool3d[D <: FloatNN | ComplexNN: Default](
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding, dilation=$dilation, ceilMode=$ceilMode)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   def forward_with_indices(t: Tensor[D]): (Tensor[D], Tensor[Int64]) =
     val outputWithIndices = nativeModule.forward_with_indices(t.native)

@@ -12,6 +12,7 @@ final class Hardsigmoid[D <: DType: Default] extends TensorModule[D]:
 
   override def toString = getClass().getSimpleName()
   def apply(t: Tensor[D]): Tensor[D] = torch.hardsigmoid(t)
+  def forward(input: Tensor[D]): Tensor[D] = torch.hardsigmoid(input)
 
 object Hardsigmoid:
   def apply[D <: DType: Default](): Hardsigmoid[D] = new Hardsigmoid()

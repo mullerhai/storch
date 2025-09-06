@@ -111,6 +111,8 @@ final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] =
+    fromNative[ParamType](nativeModule.forward(input.native))
 
 object LayerNorm:
   def apply[ParamType <: FloatNN | ComplexNN: Default](

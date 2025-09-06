@@ -144,11 +144,23 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input.native.to(ScalarType.Long))
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native.to(ScalarType.Long))
+  )
 
   def apply(
       indices: Tensor[Int64] | Tensor[Int32],
       weight: Option[Tensor[ParamType]] = None
   ): Tensor[ParamType] = {
+    indices.dtype match
+      case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
+      case torch.int32 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
+  }
+
+  def forward(
+               indices: Tensor[Int64] | Tensor[Int32],
+               weight: Option[Tensor[ParamType]] = None
+             ): Tensor[ParamType] = {
     indices.dtype match
       case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
       case torch.int32 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
@@ -168,11 +180,25 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     )
   }
 
-  def apply32(
-      input: Tensor[ParamType],
-      offsets: Tensor[Int32],
-      per_sample_weights: Tensor[ParamType]
-  ): Tensor[ParamType] = {
+  def forward(
+             input: Tensor[ParamType],
+             offsets: Tensor[Int64] | Tensor[Int32],
+             size: Seq[Int]
+           ): Tensor[ParamType] = {
+    fromNative(
+      nativeModule.forward(
+        input.native.to(ScalarType.Long),
+        offsets.native.to(ScalarType.Long),
+        torch.empty(size).native.to(ScalarType.Float)
+      )
+    )
+  }
+  
+  def forward(
+               input: Tensor[ParamType],
+               offsets: Tensor[Int64] | Tensor[Int32],
+               per_sample_weights: Tensor[ParamType]
+             ): Tensor[ParamType] = {
     fromNative(
       nativeModule.forward(
         input.native.to(ScalarType.Long),
@@ -195,6 +221,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
       )
     )
   }
+
 
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"

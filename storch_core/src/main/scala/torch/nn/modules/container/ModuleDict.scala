@@ -80,6 +80,8 @@ final class ModuleDict[D <: DType](var nameModules: (String, TensorModule[D])*)
   override def apply(input: Tensor[D]): Tensor[D] =
     nameModules.foldLeft(input)((tensor, nameModule) => nameModule._2(tensor))
 
+  def forward(input: Tensor[D]): Tensor[D] = apply(input)
+
   override def toString = getClass().getSimpleName()
 
   /** Insert a given module before a given index in the list.

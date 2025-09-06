@@ -41,6 +41,7 @@ final class SELU[D <: DType: Default](size: Int, inplace: Boolean) extends Tenso
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString = getClass().getSimpleName() + s"(size=$size,inplace=$inplace)"
 

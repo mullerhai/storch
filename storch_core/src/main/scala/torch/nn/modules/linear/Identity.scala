@@ -38,6 +38,7 @@ final class Identity[D <: DType: Default](@nowarn("msg=unused explicit parameter
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
 object Identity:
   def apply[D <: DType: Default](@nowarn("msg=unused explicit parameter") args: Any*): Identity[D] =

@@ -19,8 +19,17 @@ final class TripletMarginWithDistanceLoss extends LossFunc {
     fromNative(
       nativeModule.forward(anchor.native, positive.native, negative.native)
     )
+  def forward[D <: DType](anchor: Tensor[D], positive: Tensor[D], negative: Tensor[?]): Tensor[D] =
+    apply(anchor, positive, negative)
 
   override def apply[D <: DType](inputs: Tensor[D]*)(negative: Tensor[?]): Tensor[D] = {
+    val anchor = inputs.toSeq.head
+    val positive = inputs.toSeq.last
+    fromNative(
+      nativeModule.forward(anchor.native, positive.native, negative.native) // .output()
+    )
+  }
+  def forward[D <: DType](inputs: Tensor[D]*)(negative: Tensor[?]): Tensor[D] = {
     val anchor = inputs.toSeq.head
     val positive = inputs.toSeq.last
     fromNative(

@@ -34,6 +34,10 @@ class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
     x.add(encoding.index(::, 0.&&(x.size(1))).to(x.device))
   }
 
+  def forward(x: Tensor[ParamType]): Tensor[ParamType] = {
+    x.add(encoding.index(::, 0.&&(x.size(1))).to(x.device))
+  }
+
 }
 
 object PositionalEncoding {

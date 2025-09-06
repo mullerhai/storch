@@ -82,6 +82,9 @@ final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
   def apply(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input1.native, input2.native)
   )
+  def forward(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input1.native, input2.native)
+  )
 
   override def toString =
     s"${getClass.getSimpleName}(inFeatures1=$inFeatures1, inFeatures2=$inFeatures2, outFeatures=$outFeatures, bias=$addBias)"

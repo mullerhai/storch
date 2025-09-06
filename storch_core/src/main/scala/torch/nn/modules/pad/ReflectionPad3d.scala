@@ -62,6 +62,9 @@ final class ReflectionPad3d[ParamType <: FloatNN | ComplexNN: Default](
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 }
 
 object ReflectionPad3d:

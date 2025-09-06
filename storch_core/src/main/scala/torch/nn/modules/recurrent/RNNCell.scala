@@ -86,6 +86,16 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
       else nativeModule.forward(input.native)
     fromNative(fore)
   }
+  def forward(input: Tensor[ParamType], hx: Option[Tensor[ParamType]] = None): Tensor[ParamType] = {
+    val fore =
+      if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
+      else nativeModule.forward(input.native)
+    fromNative(fore)
+  }
+  def forward(input: Tensor[ParamType], hx: Tensor[ParamType]): Tensor[ParamType] = {
+    val fore = nativeModule.forward(input.native, hx.native)
+    fromNative(fore)
+  }
 
   def weight: TensorVector =
     TensorVector(nativeModule.weight_hh(), nativeModule.weight_ih()) // all_weights()

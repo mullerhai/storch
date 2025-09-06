@@ -102,6 +102,27 @@ final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
       else nativeModule.forward(tgt.native, memory.native)
     fromNative(fore)
   }
+  def forward(
+      tgt: Tensor[ParamType],
+      memory: Tensor[ParamType],
+      tgt_mask: Option[Tensor[ParamType]] = None,
+      memory_mask: Option[Tensor[ParamType]] = None,
+      tgt_key_padding_mask: Option[Tensor[ParamType]] = None,
+      memory_key_padding_mask: Option[Tensor[ParamType]] = None
+  ): Tensor[ParamType] = {
+    val fore =
+      if (tgt_mask.isDefined)
+        nativeModule.forward(
+          tgt.native,
+          memory.native,
+          tgt_mask.get.native,
+          memory_mask.get.native,
+          tgt_key_padding_mask.get.native,
+          memory_key_padding_mask.get.native
+        )
+      else nativeModule.forward(tgt.native, memory.native)
+    fromNative(fore)
+  }
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 

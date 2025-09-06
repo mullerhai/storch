@@ -124,6 +124,17 @@ final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
       case torch.int64 => fromNative(nativeModule.forward(indices.native))
       case torch.int32 => fromNative(nativeModule.forward(indices.to(torch.int64).native))
   }
+  def forward(
+               indices: Tensor[Int64] | Tensor[Int32],
+               weight: Option[Tensor[ParamType]] = None
+             ): Tensor[ParamType] = {
+    indices.dtype match
+      case torch.int64 => fromNative(nativeModule.forward(indices.native))
+      case torch.int32 => fromNative(nativeModule.forward(indices.to(torch.int64).native))
+  }
+  def forward(indices: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(indices.to(torch.int64).native)
+  )
 
   override def toString(): String =
     val numEmbed = s"numEmbeddings=$numEmbeddings"

@@ -84,6 +84,7 @@ final class CrossMapLRN2d[ParamType <: FloatNN | ComplexNN: Default](
 
   def reset(): Unit = nativeModule.reset()
   def apply(t: Tensor[Int64]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[Int64]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
 
   override def toString(): String =
     s"${getClass().getSimpleName()} size = ${size} alpha = ${alpha} beta = ${beta} k = ${k} )"

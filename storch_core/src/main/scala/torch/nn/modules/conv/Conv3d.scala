@@ -118,6 +118,7 @@ final class Conv3d[ParamType <: FloatNN | ComplexNN: Default](
   nativeModule.to(paramType.toScalarType, false)
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(input.native))
 
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
 

@@ -57,6 +57,8 @@ final class LPPool3d[D <: FloatNN | ComplexNN: Default](
     s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, normType=$normType,  ceilMode=$ceilMode)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+  
 
 object LPPool3d:
   def apply[D <: FloatNN | ComplexNN: Default](

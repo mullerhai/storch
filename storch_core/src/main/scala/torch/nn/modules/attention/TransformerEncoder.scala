@@ -82,6 +82,19 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
       else nativeModule.forward(src.native)
     fromNative(fore)
   }
+  def forward(
+      src: Tensor[ParamType],
+      src_mask: Option[Tensor[ParamType]] = None,
+      src_key_padding_mask: Option[Tensor[ParamType]] = None
+  ): Tensor[ParamType] = {
+    val fore =
+      if (src_mask.isDefined && src_key_padding_mask.isDefined)
+        nativeModule.forward(src.native, src_mask.get.native, src_key_padding_mask.get.native)
+      else nativeModule.forward(src.native)
+    fromNative(fore)
+  }
+
+
 
   override def hasBias(): Boolean = false // options.bias().get()
 

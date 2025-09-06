@@ -39,6 +39,8 @@ final class Threshold[D <: DType: Default](threshold: Float, value: Float, inpla
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+
   override def toString =
     getClass().getSimpleName() + s"(threshold=$threshold, value=$value, inplace=$inplace)"
 

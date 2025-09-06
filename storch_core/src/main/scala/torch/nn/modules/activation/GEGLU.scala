@@ -32,6 +32,11 @@ final class GEGLU[D <: FloatNN: Default](dim: Int) extends TensorModule[D]:
     val xPartGate = torch.chunk(xProj, 2, dim = -1)
     xPartGate(0) * torch.gelu(xPartGate(1))
   }
+  def forward(input: Tensor[D]): Tensor[D] = {
+    val xProj = linearLayer(input)
+    val xPartGate = torch.chunk(xProj, 2, dim = -1)
+    xPartGate(0) * torch.gelu(xPartGate(1))
+  }
 
 object GEGLU {
 

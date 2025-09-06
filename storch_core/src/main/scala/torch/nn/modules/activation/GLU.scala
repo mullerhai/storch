@@ -42,6 +42,7 @@ final class GLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
 
   override def toString = getClass().getSimpleName() + s"(dim=$dim)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
 object GLU {
   def apply[D <: DType: Default](dim: Int): GLU[D] = new GLU(dim)

@@ -96,6 +96,9 @@ final class PairwiseDistance[ParamType <: FloatNN | ComplexNN: Default](
   def apply(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input1.native, input2.native)
   )
+  def forward(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input1.native, input2.native)
+  )
 
   override def toString(): String =
     s"${getClass().getSimpleName()}( p =${p}, keepdim=${keepdim}, eps=${eps} )"

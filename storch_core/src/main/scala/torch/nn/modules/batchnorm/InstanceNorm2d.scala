@@ -81,6 +81,9 @@ final class InstanceNorm2d[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+    
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] =
+    fromNative[ParamType](nativeModule.forward(input.native))
 
   override def toString(): String =
     s"${getClass().getSimpleName()}(numFeatures=$numFeatures eps=$eps momentum=$momentum affine=$affine trackRunningStats=$trackRunningStats)"

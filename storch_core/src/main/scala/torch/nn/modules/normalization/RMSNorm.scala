@@ -37,6 +37,19 @@ final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
     output.to(input.dtype)
   }
 
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = {
+    val output =
+      if elementWiseAffine then
+        torch.rms_norm(
+          input,
+          normalizedShape.map(_.toLong),
+          Some(weight.to(DType.float32)),
+          Some(eps)
+        )
+      else torch.rms_norm(input, normalizedShape.map(_.toLong), None, Some(eps))
+    output.to(input.dtype)
+  }
+
 object RMSNorm:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       normalized_shape: Seq[Int],

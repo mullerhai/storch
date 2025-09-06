@@ -23,6 +23,7 @@ final class BCELoss extends LossFunc {
       nativeModule.forward(input.native, target.native) // .output()
     )
   }
+  def forward[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = apply(input, target)
 }
 object BCELoss {
   def apply(): BCELoss = new BCELoss()

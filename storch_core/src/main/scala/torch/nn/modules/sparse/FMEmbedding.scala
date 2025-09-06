@@ -96,7 +96,16 @@ final class FMEmbedding[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
 
+  def forward(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
+
   def apply(
+      indices: Tensor[Int64 | Int32],
+      weight: Option[Tensor[ParamType]] = None
+  ): Tensor[ParamType] = indices match {
+    case input: Tensor[Int64] => fromNative(nativeModule.forward(indices.native))
+    case input: Tensor[Int32] => fromNative(nativeModule.forward(indices.to(torch.int64).native))
+  }
+  def forward(
       indices: Tensor[Int64 | Int32],
       weight: Option[Tensor[ParamType]] = None
   ): Tensor[ParamType] = indices match {

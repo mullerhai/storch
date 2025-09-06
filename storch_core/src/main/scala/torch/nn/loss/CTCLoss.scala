@@ -21,8 +21,22 @@ final class CTCLoss extends LossFunc {
   ): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native, w.native, k.native)
   )
+  def forward[D <: DType](
+      input: Tensor[D],
+      target: Tensor[?],
+      w: Tensor[?],
+      k: Tensor[D]
+  ): Tensor[D] = apply(input, target, w, k)
 
   override def apply[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
+    val input = inputs.toSeq.head
+    val k = inputs.toSeq.last
+    val w = inputs.toSeq.dropRight(1).head
+    fromNative(
+      nativeModule.forward(input.native, target.native, w.native, k.native) // .output()
+    )
+  }
+  def forward[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head
     val k = inputs.toSeq.last
     val w = inputs.toSeq.dropRight(1).head

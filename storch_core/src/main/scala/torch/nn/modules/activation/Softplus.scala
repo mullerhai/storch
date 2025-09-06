@@ -37,6 +37,7 @@ final class Softplus[D <: DType: Default](size: Int, threshold: Float, beta: Flo
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
     getClass().getSimpleName() + s"(size=$size,threshold=$threshold,beta=$beta)"

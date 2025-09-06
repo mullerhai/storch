@@ -45,7 +45,7 @@ final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
 
   override def toString = getClass().getSimpleName() + s"(size=$size,alpha=$alpha,inplace=$inplace)"
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 object ELU {
 
   def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): ELU[D] =

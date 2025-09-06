@@ -102,6 +102,7 @@ final class Fold[D <: DType: Default](
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
     s"${getClass.getSimpleName}(outputSize = ${outputSize}, kernelSize = ${kernelSize}, dilation = ${dilation}, padding = ${padding}, stride = ${stride}"

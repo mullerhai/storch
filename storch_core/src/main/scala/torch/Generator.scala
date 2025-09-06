@@ -31,6 +31,7 @@ class Generator(val device: Device = Device.CPU) {
 
   /** Returns the Generator state as a [[torch.Tensor[UInt8]]. */
   def getState: Tensor[UInt8] = fromNative(native.get_state())
+  def get_state: Tensor[UInt8] = fromNative(native.get_state())
 
   /** Sets the Generator state.
     *
@@ -39,8 +40,10 @@ class Generator(val device: Device = Device.CPU) {
     */
   def setState(newState: Tensor[UInt8]) = native.set_state(newState.native)
 
+  def set_state(newState: Tensor[UInt8]) = native.set_state(newState.native)
   /** Returns the initial seed for generating random numbers. */
   def initialSeed: Long = native.seed()
+  def init_seed: Long = native.seed()
 
   /** Sets the seed for generating random numbers. Returns a torch.Generator object.
     *
@@ -55,8 +58,10 @@ class Generator(val device: Device = Device.CPU) {
     */
   def manualSeed(seed: Long): Unit = native.set_current_seed(seed)
 
+  def set_current_seed(seed: Long): Unit = native.set_current_seed(seed)
   /** Gets a non-deterministic random number from std::random_device or the current time and uses it
     * to seed a Generator.
     */
   def seed: Long = native.current_seed()
+  def current_seed: Long = native.current_seed()
 }

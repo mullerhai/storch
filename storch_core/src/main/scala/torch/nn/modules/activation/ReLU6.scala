@@ -39,6 +39,7 @@ final class ReLU6[D <: DType: Default](inplace: Boolean = false) extends TensorM
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString = getClass().getSimpleName() + s"(inplace=$inplace)"
 

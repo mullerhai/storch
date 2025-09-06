@@ -35,6 +35,8 @@ final class Hardshrink[D <: DType: Default](lambda: Float) extends TensorModule[
   def reset(): Unit = nativeModule.reset()
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+
   override def toString = getClass().getSimpleName() + s"(lambda=$lambda)"
 
 object Hardshrink:

@@ -54,6 +54,7 @@ final class AdaptiveLogSoftmaxWithLoss(
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native).output()
   )
+  def forward[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = apply(input, target)
 
   override def apply[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head

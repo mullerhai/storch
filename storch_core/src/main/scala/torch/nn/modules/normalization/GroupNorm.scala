@@ -61,6 +61,8 @@ final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] =
+    fromNative[ParamType](nativeModule.forward(input.native))
 
 object GroupNorm:
   def apply[ParamType <: FloatNN | ComplexNN: Default](

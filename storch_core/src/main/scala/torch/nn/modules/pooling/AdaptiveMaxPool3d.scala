@@ -63,6 +63,9 @@ final class AdaptiveMaxPool3d[ParamType <: FloatNN | ComplexNN: Default](
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
   def forward_with_indices(t: Tensor[ParamType]): (Tensor[ParamType], Tensor[ParamType]) =
     val outputWithIndices = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))

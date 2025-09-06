@@ -96,6 +96,9 @@ final class CosineSimilarity[ParamType <: FloatNN | ComplexNN: Default](
   def apply(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input1.native, input2.native)
   )
+  def forward(input1: Tensor[ParamType], input2: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input1.native, input2.native)
+  )
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
   override def toString(): String =
     s"${getClass().getSimpleName()}  dim = ${dim} eps = ${eps} )"

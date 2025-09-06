@@ -20,6 +20,7 @@ final class BCEWithLogitsLoss extends LossFunc {
   def apply[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, target.native)
   )
+  def forward[D <: DType](input: Tensor[D], target: Tensor[?]): Tensor[D] = apply(input, target)
 
   override def apply[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head
@@ -27,6 +28,14 @@ final class BCEWithLogitsLoss extends LossFunc {
       nativeModule.forward(input.native, target.native) // .output()
     )
   }
+
+  def forward[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
+    val input = inputs.toSeq.head
+    fromNative(
+      nativeModule.forward(input.native, target.native) // .output()
+    )
+  }
+
 }
 object BCEWithLogitsLoss {
   def apply(): BCEWithLogitsLoss = new BCEWithLogitsLoss()

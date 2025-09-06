@@ -57,6 +57,9 @@ final class ZeroPad2d[ParamType <: FloatNN | ComplexNN: Default](
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(t.native)
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 }
 
 object ZeroPad2d:

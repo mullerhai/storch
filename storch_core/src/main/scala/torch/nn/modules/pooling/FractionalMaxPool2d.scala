@@ -109,6 +109,9 @@ final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+
+  
   def forward_with_indices(t: Tensor[D]): (Tensor[D], Tensor[D]) =
     val outputWithIndices: T_TensorTensor_T = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))

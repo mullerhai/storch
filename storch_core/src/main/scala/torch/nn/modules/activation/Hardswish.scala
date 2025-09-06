@@ -13,6 +13,7 @@ final class Hardswish[D <: DType: Default] extends TensorModule[D]:
 
   override def toString = getClass().getSimpleName()
   def apply(t: Tensor[D]): Tensor[D] = torch.hardswish(t)
+  def forward(input: Tensor[D]): Tensor[D] = torch.hardswish(input)
 
 object Hardswish:
   def apply[D <: DType: Default](): Hardswish[D] = new Hardswish()

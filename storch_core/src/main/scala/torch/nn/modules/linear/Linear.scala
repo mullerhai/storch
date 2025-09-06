@@ -79,6 +79,9 @@ final class Linear[ParamType <: FloatNN | ComplexNN: Default](
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input.native)
   )
+  def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
+    nativeModule.forward(input.native)
+  )
 
   override def toString =
     s"${getClass.getSimpleName}(inFeatures=$inFeatures, outFeatures=$outFeatures, bias=$addBias)"

@@ -36,6 +36,8 @@ final class Tanhshrink[D <: DType: Default] extends TensorModule[D]:
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+
   override def toString = getClass().getSimpleName()
 
 object Tanhshrink:

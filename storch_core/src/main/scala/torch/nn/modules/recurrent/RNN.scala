@@ -68,8 +68,24 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     val fore = nativeModule.forward(input.native, hx.native)
     Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
   }
+  def forward(
+      input: Tensor[ParamType],
+      hx: Tensor[ParamType]
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+    val fore = nativeModule.forward(input.native, hx.native)
+    Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
+  }
 
   def apply(
+      input: Tensor[ParamType],
+      hx: Option[Tensor[ParamType]] = None
+  ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+    val fore =
+      if hx.isDefined then nativeModule.forward(input.native, hx.get.native)
+      else nativeModule.forward(input.native)
+    Tuple2(fromNative(fore.get0()), fromNative(fore.get1()))
+  }
+  def forward(
       input: Tensor[ParamType],
       hx: Option[Tensor[ParamType]] = None
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
@@ -84,12 +100,23 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     val output = nativeModule.forward_with_packed_input(packed_input)
     (output.get0(), fromNative(output.get1()))
   }
+  def forward(packed_input: PackedSequence): PackedSequenceTensor = {
+    val output = nativeModule.forward_with_packed_input(packed_input)
+    (output.get0(), fromNative(output.get1()))
+  }
 
   def apply(packed_input: PackedSequence, hx: Tensor[ParamType]): PackedSequenceTensor = {
 
     val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
     (output.get0(), fromNative(output.get1()))
   }
+
+  def forward(packed_input: PackedSequence, hx: Tensor[ParamType]): PackedSequenceTensor = {
+
+    val output = nativeModule.forward_with_packed_input(packed_input, hx.native)
+    (output.get0(), fromNative(output.get1()))
+  }
+  
 
   def forward_with_packed_input(packed_input: PackedSequence): PackedSequenceTensor = {
 

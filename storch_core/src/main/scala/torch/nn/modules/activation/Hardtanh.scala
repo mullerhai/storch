@@ -44,6 +44,7 @@ final class Hardtanh[D <: DType: Default](
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
     getClass().getSimpleName() + s"(size=$size,minVal=$minVal,maxVal=$maxVal,inplace=$inplace)"

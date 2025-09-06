@@ -70,6 +70,7 @@ final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
 
   override def apply(input: Tensor[D]): Tensor[D] =
     modules.foldLeft(input)((i, module) => module(i))
+  def forward(input: Tensor[D]): Tensor[D] = apply(input)
 
   override def toString = getClass().getSimpleName()
 
