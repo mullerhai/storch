@@ -129,6 +129,10 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
     (fromNative(fore.get0()), fromNative(fore.get1()))
   }
 
+  def reset(): Unit = nativeModule.reset()
+
+  def reset_parameters(): Unit = nativeModule._reset_parameters()
+
   def qkv_same_embed_dim(): Boolean = nativeModule._qkv_same_embed_dim()
 
   def in_proj_weight(weight: Tensor[ParamType]): MultiheadAttentionImpl =

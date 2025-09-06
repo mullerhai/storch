@@ -42,7 +42,11 @@ libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.4.5-1.15.2
 ## STorch TensorRT
 ## STorch Triton
 ## STorch Transformers
+## Storch Multinmodel
 ## STorch RL
+## STorch Data
+## STorch Graph
+## STorch Geometric
 ## STorch Peft
 ## STorch Vision
 ## STorch Text
@@ -50,6 +54,7 @@ libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.4.5-1.15.2
 ## STorch Jieba
 ## STorch Recommend
 ## STorch Finance
+## STorch Drug
 ## STorch LLM
 ## STorch Faiss
 ## STorch Milvus

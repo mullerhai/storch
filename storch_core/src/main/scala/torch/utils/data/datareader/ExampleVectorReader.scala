@@ -20,15 +20,14 @@ import org.bytedeco.pytorch.{
   SequentialSampler as SS
 }
 
-class ExampleVectorReader(batch: Int = 32) extends Pointer with DataReader {
-
+trait ExampleVectorReader(batch: Int = 32) extends Pointer with DataReader {
 
   // new Example(Tensors.create(10.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(200.0)), new Example(Tensors.create(15.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(400.0)), new Example(Tensors.create(20.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(500.0)), new Example(Tensors.create(35.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(600.0)), new Example(Tensors.create(40.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(700.0)), new Example(Tensors.create(55.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(800.0)), new Example(Tensors.create(60.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(900.0)), new Example(Tensors.create(75.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(300.0)))
   val exampleVec: ExampleVector = new ExampleVector()
-  
+
   override def read_chunk(chunk_index: Long): ExampleVector = exampleVec
 
-  override def chunk_count: Long = if exampleVec.size() == 0 then 1 else exampleVec.size() 
+  override def chunk_count: Long = if exampleVec.size() == 0 then 1 else exampleVec.size()
 
   override def reset(): Unit = {}
 

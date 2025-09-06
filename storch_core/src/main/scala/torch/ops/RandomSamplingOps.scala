@@ -327,7 +327,7 @@ private[torch] trait RandomSamplingOps {
     *
     * TODO support custom generator
     */
-  def randperm[D <: DType](
+  def randperm_torch[D <: DType](
       n: Long,
       dtype: D = int64,
       layout: Layout = Strided,
@@ -342,19 +342,36 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
+  def randperm[D <: DType](
+      n: Long,
+      generator: Option[Generator] | Generator = None,
+      dtype: D = int64,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false,
+      pinMemory: Boolean = false
+  ): Tensor[D] =
+    fromNative(
+      torchNative.torch_randperm(
+        n,
+        generator.toOptional,
+        NativeConverters.tensorOptions(dtype, layout, device, requires_grad, pinMemory)
+      )
+    )
+
   def bernoulli[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2] | Long,
-      generator: Option[Generator] = None
+      generator: Option[Generator] | Generator = None
   ): Tensor[Promoted[D1, D2]] = {
     t2 match {
       case t: Tensor[D2] =>
-        if generator.isDefined then
-          fromNative(torchNative.bernoulli(t1.native, t.native, generator.get.toOptional))
+        if generator != None then
+          fromNative(torchNative.bernoulli(t1.native, t.native, generator.toOptional))
         else fromNative(torchNative.bernoulli(t1.native, t.native))
       case l: Long =>
-        if generator.isDefined then
-          fromNative(torchNative.bernoulli(t1.native, l, generator.get.toOptional))
+        if generator != None then
+          fromNative(torchNative.bernoulli(t1.native, l, generator.toOptional))
         else fromNative(torchNative.bernoulli(t1.native, l))
 
     }
@@ -371,6 +388,57 @@ private[torch] trait RandomSamplingOps {
 
   }
 
+  def binomial[D1 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D1],
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] = {
+    if generator != None then
+      fromNative(torchNative.binomial(t1.native, t2.native, generator.toOptional))
+    else fromNative(torchNative.binomial(t1.native, t2.native))
+
+  }
+
+  def cauchy[D1 <: DType](
+      t1: Tensor[D1],
+      median: Double = 0,
+      sigma: Double = 1,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] = {
+    fromNative(torchNative.cauchy(t1.native, median, sigma, generator.toOptional))
+
+  }
+
+  def exponential[D1 <: DType](
+      t1: Tensor[D1],
+      lambd: Double = 1,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] = {
+    fromNative(torchNative.exponential(t1.native, lambd, generator.toOptional))
+
+  }
+
+  def geometric[D1 <: DType](
+      t1: Tensor[D1],
+      t2: Double,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] = {
+    fromNative(torchNative.geometric(t1.native, t2, generator.toOptional))
+
+  }
+
+  //  public static native Tensor rrelu(@Const @ByRef Tensor var0,
+  //  @Const @ByRef(nullValue = "at::Scalar(0.125)") Scalar var1,
+  //  @Const @ByRef(nullValue = "at::Scalar(0.3333333333333333)")
+  //  Scalar var2, @Cast({"bool"}) boolean var3, @ByVal(nullValue = "std::optional<at::Generator>(
+  //  ::std::nullopt)") GeneratorOptional var4);
+
+  // public static native Tensor rrelu_with_noise(@Const @ByRef Tensor var0, @ByRef Tensor var1,
+  // @Const @ByRef(nullValue = "at::Scalar(0.125)") Scalar var2,
+  // @Const @ByRef(nullValue = "at::Scalar(0.3333333333333333)") Scalar var3,
+  // @Cast({"bool"}) boolean var4,
+  // @ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var5);
+
   def manualSeed(seed: Long) = torchNative.manual_seed(seed)
 
   def manual_seed(seed: Long) = torchNative.manual_seed(seed)
@@ -378,6 +446,12 @@ private[torch] trait RandomSamplingOps {
   def setNumThreads(threads: Int): Unit = torchNative.set_num_threads(threads)
 
   def set_num_threads(threads: Int): Unit = torchNative.set_num_threads(threads)
+
+  def create_cpu_generator = torchNative.createCPUGenerator()
+
+  def create_cpu_generator(seed: Long) = torchNative.createCPUGenerator(seed)
+
+  def get_default_cpu_generator = torchNative.getDefaultCPUGenerator()
 
   def createCPUGenerator = torchNative.createCPUGenerator()
 

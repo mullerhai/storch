@@ -120,7 +120,7 @@ abstract class Optimizer extends Pointer {
             paramGroup.paramGroupDict(key) = value
             key match {
               case "lr" => paramGroup.paramGroup.options().set_lr(value.asInstanceOf[Double])
-              //todo  添加其他参数组键的处理
+              // todo  添加其他参数组键的处理
             }
           }
         }
@@ -131,7 +131,7 @@ abstract class Optimizer extends Pointer {
     state_dict.get("state").foreach {
       case archive: OutputArchive =>
         val inputArchive = new InputArchive()
-        //todo 转换OutputArchive到InputArchive的逻辑
+        // todo 转换OutputArchive到InputArchive的逻辑
         native.load(inputArchive)
       case _ => throw new IllegalArgumentException("Invalid state format")
     }
