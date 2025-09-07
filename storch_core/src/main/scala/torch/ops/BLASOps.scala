@@ -2004,6 +2004,14 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.embedding_renorm(t1.native, t2.native, d1, d2))
 
+  def embedding_renorm_[D1 <: DType, D2 <: DType](
+                                                  t1: Tensor[D1],
+                                                  t2: Tensor[D2],
+                                                  d1: Double,
+                                                  d2: Double
+                                                ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.embedding_renorm_(t1.native, t2.native, d1, d2))
+
   def copy_sparse_to_sparse[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]

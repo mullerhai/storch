@@ -1006,8 +1006,8 @@ private[torch] trait ReductionOps {
       input: Tensor[D],
       k: Int,
       dim: Int,
-      largest: Boolean,
-      sorted: Boolean
+      largest: Boolean = true,
+      sorted: Boolean = true
   ): TensorTuple[D] = {
 
     val valueIndices = torchNative.topk(input.native, k.toLong, dim.toLong, largest, sorted)

@@ -64,7 +64,7 @@ private[torch] trait Sparse {
       max_norm: Double,
       norm_type: Double = 2,
       scale_grad_by_freq: Boolean = false,
-      mode: String = "",
+      mode: String = "mean",
       sparse: Boolean = false,
       per_sample_weight: Tensor[D],
       include_last_offset: Boolean = false,

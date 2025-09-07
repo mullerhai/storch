@@ -57,15 +57,18 @@ private[torch] trait Vision {
 //    val result = torchNative.pad(x.native, outputRef)
 //    fromNative(result)
 //  }
-
+//torch.nn.functional.interpolate(input, size=None, 
+// 
+// scale_factor=None, mode='nearest', align_corners=None,
+// recompute_scale_factor=None, antialias=False)
   def interpolate[D <: DType](
       x: Tensor[D],
+      output_size: List[Long] = List(),
       scale_factor: List[Double],
-      mode: String,
-      antialias: Boolean,
-      align_corners: Boolean,
-      recompute_scale_factor: Boolean,
-      output_size: List[Long]
+      mode: String = "nearest",
+      align_corners: Boolean = false,
+      recompute_scale_factor: Boolean = false,
+      antialias: Boolean = false
   ): Tensor[D] = {
     val options = new InterpolateFuncOptions
     val nativeMode = mode match {

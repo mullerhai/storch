@@ -414,8 +414,8 @@ private[torch] trait RecurrentOps {
       hx: Tensor[TT],
       w_ih: Tensor[TT],
       w_hh: Tensor[TT],
-      b_ih: Option[Tensor[TT]],
-      b_hh: Option[Tensor[TT]]
+      b_ih: Option[Tensor[TT]] = None,
+      b_hh: Option[Tensor[TT]] = None
   ): Tensor[TT] = {
 
     val inputNative = input.native
@@ -457,8 +457,8 @@ private[torch] trait RecurrentOps {
       hx: Tensor[TT],
       w_ih: Tensor[TT],
       w_hh: Tensor[TT],
-      b_ih: Option[Tensor[TT]],
-      b_hh: Option[Tensor[TT]]
+      b_ih: Option[Tensor[TT]] = None,
+      b_hh: Option[Tensor[TT]] = None
   ): Tensor[TT] = {
 
     val inputNative = input.native

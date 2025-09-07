@@ -139,10 +139,10 @@ private[torch] trait Activations {
 
   def rrelu[D <: DType](
       input: Tensor[D],
-      lower: Double,
-      upper: Double,
-      training: Boolean,
-      inplace: Boolean
+      lower: Double = 0.125,
+      upper: Double = 0.3333333333333333,
+      training: Boolean = false,
+      inplace: Boolean = false
   ): Tensor[D] = {
     val options = RReLUFuncOptions()
     options.lower().put(lower)
@@ -152,11 +152,11 @@ private[torch] trait Activations {
     fromNative(torchNative.rrelu(input.native, options))
   }
 
-  def celu[D <: DType](input: Tensor[D], alpha: Double): Tensor[D] = fromNative(
+  def celu[D <: DType](input: Tensor[D], alpha: Double = 1.0): Tensor[D] = fromNative(
     torchNative.celu(input.native, Scalar(alpha))
   )
 
-  def celu_[D <: DType](input: Tensor[D], alpha: Double): Tensor[D] = fromNative(
+  def celu_[D <: DType](input: Tensor[D], alpha: Double = 1.0): Tensor[D] = fromNative(
     torchNative.celu_(input.native, Scalar(alpha))
   )
 
