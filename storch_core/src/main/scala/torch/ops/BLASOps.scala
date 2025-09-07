@@ -16,13 +16,14 @@
 
 package torch
 package ops
-
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.{
   DoubleOptional,
   LongOptional,
   PackedSequence,
   Scalar,
+  ScalarTypeOptional,
   ScalarOptional,
   TensorOptional,
   TensorOptionalList,
@@ -152,6 +153,18 @@ private[torch] trait BLASOps {
         )
   }
 
+  def log_softmax[In <: DType, Out <: FloatNN | Derive](
+      input: Tensor[In],
+      dim: Long,
+      dtype: Out = derive
+  ): Tensor[DTypeOrDeriveFromTensor[In, Out]] =
+    val derivedDType = dtype match
+      case _: Derive => input.dtype
+      case d: DType  => d
+    val nativeDType =
+      if dtype == input.dtype then ScalarTypeOptional()
+      else ScalarTypeOptional(derivedDType.toScalarType)
+    fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
   /*
   // dim (int) – the axis along which to index
   //

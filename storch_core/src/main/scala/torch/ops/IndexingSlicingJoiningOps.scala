@@ -18,10 +18,11 @@ package torch
 package ops
 
 import internal.NativeConverters.*
-
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.TensorArrayRef
 import org.bytedeco.pytorch.TensorVector
+
+import scala.collection.mutable.ListBuffer
 
 /** Indexing, Slicing, Joining, Mutating Ops
   *
@@ -1690,4 +1691,15 @@ private[torch] trait IndexingSlicingJoiningOps {
     fromNative(torchNative.where(condition.native, input.toScalar, other.native))
   def where[D <: DType](condition: Tensor[Bool], input: ScalaType, other: ScalaType): Tensor[D] =
     fromNative(torchNative.where(condition.native, input.toScalar, other.toScalar))
+
+  def where[D <: DType](other: Tensor[D]): Seq[Tensor[D]] = {
+    val tensorVector = torchNative.where(other.native)
+    val buffer = new ListBuffer[Tensor[D]]()
+    var it = tensorVector.begin()
+    while !it.equals(tensorVector.end()) do
+      val element = it.get()
+      buffer.append(fromNative[D](element))
+      it = it.increment()
+    buffer.toSeq
+  }
 }

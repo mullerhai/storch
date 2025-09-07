@@ -284,6 +284,34 @@ trait JitOps {
     operator
   }
 
+  def peek(ivalueSeq: Seq[IValue], l1: Long, l2: Long): IValue = {
+    torchNative.peek(new IValueVector(ivalueSeq*), l1, l2)
+  }
+
+  def peekSlice(ivalueSeq: Seq[IValue], l1: Long, l2: Long, l3: Long) = {
+    torchNative.peekSlice(new IValueVector(ivalueSeq*), l1, l2, l3)
+  }
+
+  def pop(ivalueSeq: Seq[IValue]): IValue = {
+    torchNative.pop(new IValueVector(ivalueSeq*))
+  }
+
+  def pop(ivalueSeq: Seq[IValue], l: Long): IValueVector = {
+    torchNative.pop(new IValueVector(ivalueSeq*), l)
+  }
+
+  def drop(ivalueSeq: Seq[IValue], l1: Long): Unit = {
+    torchNative.drop(new IValueVector(ivalueSeq*), l1)
+  }
+
+  def last(ivalueSeq: Seq[IValue], l1: Long) = {
+    torchNative.last(new IValueVector(ivalueSeq*), l1)
+  }
+
+  def push_one(ivalueSeq: Seq[IValue], tensorOpt: TensorOptions): Unit = {
+    torchNative.push_one(new IValueVector(ivalueSeq*), tensorOpt)
+  }
+
 }
 //object ModelSerializer {
 //  // 将 Module 序列化为 BytePointer

@@ -20,7 +20,7 @@ package functional
 
 import Derive.derive
 import org.bytedeco.pytorch
-
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.pytorch.{
@@ -66,6 +66,7 @@ private[torch] trait Activations {
       dtype: Out = derive
   ) = logSoftmax(input, dim, dtype)
 
+  ////    public static native Tensor log_softmax(@Const @ByRef Tensor var0, @Const @ByRef LogSoftmaxFuncOptions var1);
   /** Applies the rectified linear unit function element-wise.
     *
     * See [[torch.nn.ReLU]] for more details.
@@ -167,10 +168,10 @@ private[torch] trait Activations {
     torchNative.glu(input.native, dim)
   )
 
-  def gelu[D <: DType](input: Tensor[D], approximate: Byte): Tensor[D] = {
-
+  def gelu[D <: DType](input: Tensor[D], approximate: String = "none"): Tensor[D] = {
+    require(approximate == "none" || approximate == "tanh", "approximate must be none or tanh")
     val options = GELUOptions()
-    options.approximate().put(approximate)
+    options.approximate().put(BytePointer(approximate.toLowerCase))
     fromNative(
       torchNative.gelu(input.native, options)
     )

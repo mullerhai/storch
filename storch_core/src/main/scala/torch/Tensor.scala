@@ -28,6 +28,8 @@ import org.bytedeco.javacpp.{
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   BoolOptional,
+  TensorIndexVector,
+  TensorIndex,
   DoubleOptional,
   EllipsisIndexType,
   Generator,
@@ -509,6 +511,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.floor_divide(toScalar(s))
   )
 
+  def floor_divide[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.floor_divide(toScalar(s))
+  )
+
   /** Divides each element of this tensor by the corresponding element of `other` and floors the
     * result.
     */
@@ -699,6 +705,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     * @return
     *   Tensor with masked elements set to `value`
     */
+
+  def masked_fill[S <: ScalaType](
+      mask: Tensor[Bool],
+      value: S
+  ): Tensor[Promoted[D, ScalaToDType[S]]] =
+    fromNative(native.masked_fill(mask.native, toScalar(value)))
+
   def maskedFill[S <: ScalaType](
       mask: Tensor[Bool],
       value: S
@@ -1225,6 +1238,22 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.dividePut(other.native)
   )
 
+  def addPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.addPut(toScalar(other))
+  )
+
+  def subtractPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.subtractPut(toScalar(other))
+  )
+
+  def multiplyPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.multiplyPut(toScalar(other))
+  )
+
+  def dividePut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.dividePut(toScalar(other))
+  )
+
   def andPut[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] = fromNative(
     native.andPut(other.native)
   )
@@ -1244,6 +1273,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def get(index: Int): Tensor[D] = fromNative(native.get(index.toLong))
+
+  def get[S <: ScalaType](index: S): Tensor[D] = fromNative(native.get(toScalar(index)))
 
   def mutable_grad(): Tensor[D] = fromNative(native.mutable_grad())
 
@@ -1324,8 +1355,27 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def addmv[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(native.addmv(mat.native, vec.native))
 
+  def addmv[D1 <: DType, D2 <: DType, S <: ScalaType](
+      mat: Tensor[D1],
+      vec: Tensor[D2],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(native.addmv(mat.native, vec.native, toScalar(beta), toScalar(alpha)))
+
   def addr[D1 <: DType, D2 <: DType](vec1: Tensor[D1], vec2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(native.addr(vec1.native, vec2.native))
+
+//  def addr[D1 <: DType, D2 <: DType, S <: ScalaType](vec1: Tensor[D1], vec2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+//    fromNative(native.addr(vec1.native, vec2.native))
+
+  def addr[D1 <: DType, D2 <: DType, S <: ScalaType](
+      vec1: Tensor[D1],
+      vec2: Tensor[D2],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(native.addr(vec1.native, vec2.native, toScalar(beta), toScalar(alpha)))
 
   def acos_(): this.type = {
     native.acos_()
@@ -1344,6 +1394,26 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def addmv_[D1 <: DType, D2 <: DType](mat: Tensor[D1], vec: Tensor[D2]): this.type = {
     native.addmv_(mat.native, vec.native)
+    this
+  }
+
+  def addmv_[D1 <: DType, D2 <: DType, S <: ScalaType](
+      mat: Tensor[D1],
+      vec: Tensor[D2],
+      beta: S,
+      alpha: S
+  ): this.type = {
+    native.addmv_(mat.native, vec.native, toScalar(beta), toScalar(alpha))
+    this
+  }
+
+  def addr_[D1 <: DType, D2 <: DType, S <: ScalaType](
+      vec1: Tensor[D1],
+      vec2: Tensor[D2],
+      beta: S,
+      alpha: S
+  ): this.type = {
+    native.addr_(vec1.native, vec2.native, toScalar(beta), toScalar(alpha))
     this
   }
 
@@ -1431,10 +1501,14 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def index_put(indices: Seq[Tensor[Int64]], value: Tensor[D], k: Boolean): this.type = {
+  def index_put(
+      indices: Seq[Tensor[Int64]],
+      value: Tensor[D],
+      accumulate: Boolean = false
+  ): this.type = {
     val list = new TensorOptionalList()
     indices.map(tensor => list.push_back(new TensorOptional(tensor.native)))
-    native.index_put(list, value.native, k)
+    native.index_put(list, value.native, accumulate)
     this
   }
   // index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
@@ -1444,13 +1518,43 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.index_put_(list, value.native)
     this
   }
+
+  def where[S <: ScalaType](condition: Tensor[Bool], other: S): Tensor[D] =
+    fromNative(native.where(condition.native, toScalar(other)))
+
+  def where(condition: Tensor[Bool], other: Tensor[D]): Tensor[D] =
+    fromNative(native.where(condition.native, other.native))
+
+//  def index_put[S <: ScalaType](indices: Seq[Tensor[Int64]], value: S, acc: Boolean = false): this.type = {
+//    val list = new TensorIndexVector()
+//    indices.map(tensor => list.push_back(new TensorIndex(tensor.native)))
+//    native.index_put(list, toScalar(value), acc)
+//    this
+//  }
+
+  // index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
+  def index_put_[S <: ScalaType](indices: Seq[Tensor[Int64]], value: S): this.type = {
+    val list = new TensorIndexVector()
+    indices.map(tensor => list.push_back(new TensorIndex(tensor.native)))
+    native.index_put_(list, toScalar(value))
+    this
+  }
+
   def bincount[D1 <: DType](weights: Tensor[D1], minlength: Int = 0): Tensor[Promoted[D, D1]] =
     fromNative(native.bincount(new TensorOptional(weights.native), minlength.toLong))
 
   def bincount(): Tensor[D] = fromNative(native.bincount())
+
   def baddbmm[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] =
     fromNative(native.baddbmm(batch1.native, batch2.native))
 
+  def baddbmm[D1 <: DType, S <: ScalaType](
+      batch1: Tensor[D1],
+      batch2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D]] =
+    fromNative(native.baddbmm(batch1.native, batch2.native, toScalar(beta), toScalar(alpha)))
   def bernoulli(p: Double): Tensor[D] = fromNative(native.bernoulli(p))
 
   def bernoulli(): Tensor[D] = fromNative(native.bernoulli())
@@ -1458,6 +1562,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def bitwise_not(): Tensor[D] = fromNative(native.bitwise_not())
   def baddbmm_[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
     native.baddbmm_(batch1.native, batch2.native)
+    this
+  }
+
+  def baddbmm_[D1 <: DType, S <: ScalaType](
+      batch1: Tensor[D1],
+      batch2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): this.type = {
+    native.baddbmm_(batch1.native, batch2.native, toScalar(beta), toScalar(alpha))
     this
   }
 
@@ -1482,6 +1596,15 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def copysign_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.copysign_(other.native)
+    this
+  }
+
+  def copysign[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.copysign(toScalar(other))
+  )
+
+  def copysign_[S <: ScalaType](other: S): this.type = {
+    native.copysign_(toScalar(other))
     this
   }
 
@@ -1599,9 +1722,24 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.clamp_min(min.native)
   )
 
+  def clamp_max[S <: ScalaType](max: S): Tensor[D] = fromNative(
+    native.clamp_max(toScalar(max))
+  )
+
+  def clamp_min[S <: ScalaType](min: S): Tensor[D] = fromNative(
+    native.clamp_min(toScalar(min))
+  )
+
   def clip(min: Float): Tensor[D] = fromNative(native.clip(new ScalarOptional(toScalar(min))))
 
+//  def clip[S <: ScalaType](min: S): Tensor[D] = fromNative(native.clip(new ScalarOptional(toScalar(min))))
+
   def clamp_(min: Float): this.type = {
+    native.clamp_(new ScalarOptional(toScalar(min)))
+    this
+  }
+
+  def clamp_[S <: ScalaType](min: S): this.type = {
     native.clamp_(new ScalarOptional(toScalar(min)))
     this
   }
@@ -1611,8 +1749,23 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def clamp_[S <: ScalaType](min: S, max: S): this.type = {
+    native.clamp_(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
+    this
+  }
+
   def clamp_(): this.type = {
     native.clamp_()
+    this
+  }
+
+  def clamp_max_[S <: ScalaType](max: S): this.type = {
+    native.clamp_max_(toScalar(max))
+    this
+  }
+
+  def clamp_min_[S <: ScalaType](min: S): this.type = {
+    native.clamp_min_(toScalar(min))
     this
   }
 
@@ -1631,13 +1784,28 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def clip_(min: Float): this.type = {
+  def clip_[S <: ScalaType](min: S): this.type = {
     native.clip_(new ScalarOptional(toScalar(min)))
     this
   }
 
   def clip_(min: Float, max: Float): this.type = {
     native.clip_(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
+    this
+  }
+
+  def clip_[S <: ScalaType](min: S, max: S): this.type = {
+    native.clip_(new ScalarOptional(toScalar(min)), new ScalarOptional(toScalar(max)))
+    this
+  }
+
+//  def clip_[S <: ScalaType](min: S): this.type = {
+//    native.clip_(new ScalarOptional(toScalar(min)))
+//    this
+//  }
+
+  def clip_(min: Float): this.type = {
+    native.clip_(new ScalarOptional(toScalar(min)))
     this
   }
 
@@ -1711,6 +1879,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def fill_diagonal_[S <: ScalaType](fill_value: S): this.type = {
+    native.fill_diagonal_(toScalar(fill_value))
+    this
+  }
+
   def diagonal: Tensor[D] = fromNative(native.diagonal())
   def diagonal(offset: Int = 0, dim1: Int = 0, dim2: Int = 1): Tensor[D] = fromNative(
     native.diagonal(offset.toLong, dim1.toLong, dim2.toLong)
@@ -1744,6 +1917,29 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def true_divide_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.true_divide_(other.native)
+    this
+  }
+
+  def divide[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.divide(toScalar(other))
+  )
+
+  def true_divide[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.true_divide(toScalar(other))
+  )
+
+  def div_[S <: ScalaType](other: S): this.type = {
+    native.div_(toScalar(other))
+    this
+  }
+
+  def divide_[S <: ScalaType](other: S): this.type = {
+    native.divide_(toScalar(other))
+    this
+  }
+
+  def true_divide_[S <: ScalaType](other: S): this.type = {
+    native.true_divide_(toScalar(other))
     this
   }
 
@@ -1824,6 +2020,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def fill_[S <: ScalaType](value: S): this.type = {
+    native.fill_(toScalar(value))
+    this
+  }
+
   def floor_(): this.type = {
     native.floor_()
     this
@@ -1831,6 +2032,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def floor_divide_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.floor_divide_(other.native)
+    this
+  }
+
+  def floor_divide_[S <: ScalaType](other: S): this.type = {
+    native.floor_divide_(toScalar(other))
     this
   }
 
@@ -1856,7 +2062,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.lcm(other.native)
   )
 
-//  def index_put(): Tensor[D] = fromNative(native.index_put())
   def index_copy(dim: Int, index: Tensor[Int64] | Tensor[Int32], source: Tensor[D]): Tensor[D] = {
     index.dtype match
       case torch.int64 => fromNative(native.index_copy(dim.toLong, index.native, source.native))
@@ -1968,6 +2173,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def xlogy[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.xlogy(other.native)
   )
+
+  def xlogy_[S <: ScalaType](other: S): this.type = {
+    native.xlogy_(toScalar(other))
+    this
+  }
+
+  def xlogy[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.xlogy(toScalar(other))
+  )
+
   def log_softmax(dim: Int): Tensor[D] = fromNative(native.log_softmax(dim.toLong))
   def logsumexp(dim: Int): Tensor[D] = fromNative(native.logsumexp(dim.toLong))
 
@@ -2090,9 +2305,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def mv[D1 <: DType](vec: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(native.mv(vec.native))
 
-//  def mul(other: Tensor[D]): Tensor[D] = fromNative(native.mul(other.native))
+//  def mul[S <: ScalaType](other: S): Tensor[D] = fromNative(native.mul(toScalar(other)))
 
-//  def multiply(other: Tensor[D]):Tensor[D] = fromNative(native.multiply(other.native))
+  def multiply[S <: ScalaType](other: S): Tensor[D] = fromNative(native.multiply(toScalar(other)))
 
   def mvlgamma(p: Long): Tensor[D] = fromNative(native.mvlgamma(p))
   def mul_[D1 <: DType](other: Tensor[D1]): this.type = {
@@ -2102,6 +2317,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def multiply_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.multiply_(other.native)
+    this
+  }
+
+  def mul_[S <: ScalaType](other: S): this.type = {
+    native.mul_(toScalar(other))
+    this
+  }
+
+  def multiply_[S <: ScalaType](other: S): this.type = {
+    native.multiply_(toScalar(other))
     this
   }
 
@@ -2210,6 +2435,15 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def round(): Tensor[D] = fromNative(native.round())
 
   def hardshrink(): Tensor[D] = fromNative(native.hardshrink())
+
+  def hardshrink[S <: ScalaType](lambda: S = 0.5): Tensor[D] = fromNative(
+    native.hardshrink(toScalar(lambda))
+  )
+
+  def hardshrink_backward[S <: ScalaType, D1 <: DType](
+      grad_out: Tensor[D1],
+      lambda: S = 0.5
+  ): Tensor[D] = fromNative(native.hardshrink_backward(grad_out.native, toScalar(lambda)))
 
   def prelu[D1 <: DType](weight: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.prelu(weight.native)
@@ -2609,12 +2843,39 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.addmm(mat1.native, mat2.native)
   )
 
+  def addmm[D1 <: DType, S <: ScalaType](
+      mat1: Tensor[D1],
+      mat2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.addmm(mat1.native, mat2.native, toScalar(beta), toScalar(alpha))
+  )
+
   def sub_[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.sub_(other.native)
   )
 
   def subtract_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.subtract_(other.native)
+    this
+  }
+
+  def sub_[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.sub_(toScalar(other))
+  )
+
+  def subtract_[S <: ScalaType](other: S): this.type = {
+    native.subtract_(toScalar(other))
+    this
+  }
+
+  def sub_[S <: ScalaType](other: S, alpha: S): Tensor[D] = fromNative(
+    native.sub_(toScalar(other), toScalar(alpha))
+  )
+
+  def subtract_[S <: ScalaType](other: S, alpha: S): this.type = {
+    native.subtract_(toScalar(other), toScalar(alpha))
     this
   }
 
@@ -2625,6 +2886,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def addmm_[D1 <: DType](mat1: Tensor[D1], mat2: Tensor[D1]): this.type = {
     native.addmm_(mat1.native, mat2.native)
+    this
+  }
+
+  def addmm_[D1 <: DType, S <: ScalaType](
+      mat1: Tensor[D1],
+      mat2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): this.type = {
+    native.addmm_(mat1.native, mat2.native, toScalar(beta), toScalar(alpha))
     this
   }
 
@@ -2688,8 +2959,22 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def index_fill_[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      value: S
+  ): this.type = {
+    native.index_fill_(dim.toLong, index.native, toScalar(value))
+    this
+  }
+
   def masked_fill_[D1 <: DType](mask: Tensor[Bool], value: Tensor[D1]): this.type = {
     native.masked_fill_(mask.native, value.native)
+    this
+  }
+
+  def masked_fill_[D1 <: DType, S <: ScalaType](mask: Tensor[Bool], value: S): this.type = {
+    native.masked_fill_(mask.native, toScalar(value))
     this
   }
 
@@ -2720,6 +3005,25 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def index_add_[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      alpha: S
+  ): this.type = {
+    index.dtype match
+      case torch.int64 =>
+        native.index_add_(dim.toLong, index.native, source.native, toScalar(alpha))
+      case torch.int32 =>
+        native.index_add_(
+          dim.toLong,
+          index.to(dtype = torch.int64).native,
+          source.native,
+          toScalar(alpha)
+        )
+    this
+  }
+
   def index_reduce_[D1 <: DType](
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
@@ -2747,6 +3051,36 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       case torch.int64 => native.index_fill_(dim.toLong, index.native, source.native)
       case torch.int32 =>
         native.index_fill_(dim.toLong, index.to(dtype = torch.int64).native, source.native)
+    this
+  }
+
+  def scatter_[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: S
+  ): this.type = {
+    index.dtype match
+      case torch.int64 => native.scatter_(dim.toLong, index.native, toScalar(source))
+      case torch.int32 =>
+        native.scatter_(dim.toLong, index.to(dtype = torch.int64).native, toScalar(source))
+    this
+  }
+
+  def scatter_[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: S,
+      reduceMode: String
+  ): this.type = {
+    index.dtype match
+      case torch.int64 => native.scatter_(dim.toLong, index.native, toScalar(source), reduceMode)
+      case torch.int32 =>
+        native.scatter_(
+          dim.toLong,
+          index.to(dtype = torch.int64).native,
+          toScalar(source),
+          reduceMode
+        )
     this
   }
 
@@ -2805,8 +3139,34 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def scatter_reduce_[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1],
+      reduceMode: String,
+      include_self: Boolean = true
+  ): this.type = {
+    index.dtype match
+      case torch.int64 =>
+        native.scatter_reduce_(dim.toLong, index.native, src.native, reduceMode, include_self)
+      case torch.int32 =>
+        native.scatter_reduce_(
+          dim.toLong,
+          index.to(dtype = torch.int64).native,
+          src.native,
+          reduceMode,
+          include_self
+        )
+    this
+  }
+
   def eq_(other: Tensor[D]): this.type = {
     native.eq_(other.native)
+    this
+  }
+
+  def eq_[S <: ScalaType](other: S): this.type = {
+    native.eq_(toScalar(other))
     this
   }
   // mask D2 Bool
@@ -2836,6 +3196,26 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         )
   }
 
+  def index_add[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      alpha: S
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(native.index_add(dim.toLong, index.native, source.native, toScalar(alpha)))
+      case torch.int32 =>
+        fromNative(
+          native.index_add(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native,
+            toScalar(alpha)
+          )
+        )
+  }
+
   def index_reduce[D1 <: DType](
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
@@ -2856,6 +3236,43 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         )
   }
 
+  def index_reduce[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D1],
+      reduceMode: String,
+      include_self: Boolean = true
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(
+          native.index_reduce(dim.toLong, index.native, source.native, reduceMode, include_self)
+        )
+      case torch.int32 =>
+        fromNative(
+          native.index_reduce(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native,
+            reduceMode,
+            include_self
+          )
+        )
+  }
+
+  def index_fill[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: S
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 => fromNative(native.index_fill(dim.toLong, index.native, toScalar(source)))
+      case torch.int32 =>
+        fromNative(
+          native.index_fill(dim.toLong, index.to(dtype = torch.int64).native, toScalar(source))
+        )
+
+  }
   def index_fill[D1 <: DType](
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
@@ -2870,6 +3287,38 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   }
 
+  def scatter[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: S
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 => fromNative(native.scatter(dim.toLong, index.native, toScalar(source)))
+      case torch.int32 =>
+        fromNative(
+          native.scatter(dim.toLong, index.to(dtype = torch.int64).native, toScalar(source))
+        )
+  }
+
+  def scatter[D1 <: DType, S <: ScalaType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: S,
+      reduceMode: String
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(native.scatter(dim.toLong, index.native, toScalar(source), reduceMode))
+      case torch.int32 =>
+        fromNative(
+          native.scatter(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            toScalar(source),
+            reduceMode
+          )
+        )
+  }
   def scatter[D1 <: DType](
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
@@ -2933,7 +3382,56 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         )
   }
 
-//  def eq(other: Tensor[D]): Tensor[D] = fromNative(native.eq(other.native))
+  def scatter_reduce[D1 <: DType](
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D1],
+      reduceMode: String,
+      include_self: Boolean = true
+  ): Tensor[Promoted[D1, D]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(
+          native.scatter_reduce(dim.toLong, index.native, src.native, reduceMode, include_self)
+        )
+      case torch.int32 =>
+        fromNative(
+          native.scatter_reduce(
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            src.native,
+            reduceMode,
+            include_self
+          )
+        )
+  }
+
+  def bitwise_and[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.bitwise_and(toScalar(other))
+  )
+
+  def bitwise_or[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.bitwise_or(toScalar(other))
+  )
+
+  def bitwise_xor[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.bitwise_xor(toScalar(other))
+  )
+
+  def bitwise_and_[S <: ScalaType](other: S): this.type = {
+    native.bitwise_and_(toScalar(other))
+    this
+  }
+
+  def bitwise_or_[S <: ScalaType](other: S): this.type = {
+    native.bitwise_or_(toScalar(other))
+    this
+  }
+
+  def bitwise_xor_[S <: ScalaType](other: S): this.type = {
+    native.bitwise_xor_(toScalar(other))
+    this
+  }
 
   def bitwise_and[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.bitwise_and(other.native)
@@ -2972,6 +3470,32 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def bitwise_left_shift_[S <: ScalaType](other: S): this.type = {
+    native.bitwise_left_shift_(toScalar(other))
+    this
+  }
+
+  def bitwise_right_shift_[S <: ScalaType](other: S): this.type = {
+    native.bitwise_right_shift_(toScalar(other))
+    this
+  }
+
+  def bitwise_right_shift[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bitwise_right_shift(other.native)
+  )
+
+  def bitwise_right_shift[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.bitwise_right_shift(toScalar(other))
+  )
+
+  def bitwise_left_shift[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.bitwise_left_shift(other.native)
+  )
+
+  def bitwise_left_shift[S <: ScalaType](other: S): Tensor[D] = fromNative(
+    native.bitwise_left_shift(toScalar(other))
+  )
+
   def tril_(): this.type = {
     native.tril_()
     this
@@ -3003,14 +3527,36 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
+  def lerp_[D1 <: DType, S <: ScalaType](end: Tensor[D1], weight: S): this.type = {
+    native.lerp_(end.native, toScalar(weight))
+    this
+  }
+
   def addbmm_[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): this.type = {
     native.addbmm_(batch1.native, batch2.native)
     this
   }
 
+  def addbmm[D1 <: DType, S <: ScalaType](
+      batch1: Tensor[D1],
+      batch2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D]] =
+    fromNative(native.addbmm(batch1.native, batch2.native, toScalar(beta), toScalar(alpha)))
+
+  def addbmm_[D1 <: DType, S <: ScalaType](
+      batch1: Tensor[D1],
+      batch2: Tensor[D1],
+      beta: S,
+      alpha: S
+  ): this.type = {
+    native.addbmm_(batch1.native, batch2.native, toScalar(beta), toScalar(alpha))
+    this
+  }
+
   def addbmm[D1 <: DType](batch1: Tensor[D1], batch2: Tensor[D1]): Tensor[Promoted[D1, D]] =
     fromNative(native.addbmm(batch1.native, batch2.native))
-
   def random_(to: Long): this.type = {
     native.random_(to)
     this
@@ -3177,6 +3723,97 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def less[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.less(other.native)
   )
+
+  def ne_[S <: ScalaType](other: S): this.type = {
+    native.ne_(toScalar(other))
+    this
+  }
+
+  def not_equal_[S <: ScalaType](other: S): this.type = {
+    native.not_equal_(toScalar(other))
+    this
+  }
+
+  def ge_[S <: ScalaType](other: S): this.type = {
+    native.ge_(toScalar(other))
+    this
+  }
+
+  def greater_equal_[S <: ScalaType](other: S): this.type = {
+    native.greater_equal_(toScalar(other))
+    this
+  }
+
+  def le_[S <: ScalaType](other: S): this.type = {
+    native.le_(toScalar(other))
+    this
+  }
+
+  def less_equal_[S <: ScalaType](other: S): this.type = {
+    native.less_equal_(toScalar(other))
+    this
+  }
+
+  def gt_[S <: ScalaType](other: S): this.type = {
+    native.gt_(toScalar(other))
+    this
+  }
+
+  def greater_[S <: ScalaType](other: S): this.type = {
+    native.greater_(toScalar(other))
+    this
+  }
+
+  def lt_[S <: ScalaType](other: S): this.type = {
+    native.lt_(toScalar(other))
+    this
+  }
+
+  def less_[S <: ScalaType](other: S): this.type = {
+    native.less_(toScalar(other))
+    this
+  }
+
+  def ne[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.ne(toScalar(other))
+  )
+
+  def not_equal[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.not_equal(toScalar(other))
+  )
+
+//  def ge[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+//    native.ge(toScalar(other))
+//  )
+
+  def greater_equal[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.greater_equal(toScalar(other))
+  )
+
+//  def le[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+//    native.le(toScalar(other))
+//  )
+
+  def less_equal[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.less_equal(toScalar(other))
+  )
+
+//  def gt[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+//    native.gt(toScalar(other))
+//  )
+
+  def greater[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.greater(toScalar(other))
+  )
+
+//  def lt[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+//    native.lt(toScalar(other))
+//  )
+
+  def less[S <: ScalaType](other: S): Tensor[Bool] = fromNative(
+    native.less(toScalar(other))
+  )
+
   def diag(diagonal: Long = 0): Tensor[D] = fromNative(native.diag(diagonal))
   def triu(diagonal: Long = 0): Tensor[D] = fromNative(native.triu(diagonal))
   def diag(): Tensor[D] = fromNative(native.diag())
@@ -3222,6 +3859,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     tensorList.toSeq
   }
   def argwhere(): Tensor[D] = fromNative(native.argwhere())
+
   def gather(
       dim: Long,
       index: Tensor[Int64] | Tensor[Int32],
@@ -3238,6 +3876,32 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       case torch.int64 => fromNative(native.gather(dim.toLong, index.native))
       case torch.int32 =>
         fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native))
+  }
+
+  def addcmul[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: Tensor[D1],
+      value: S
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.addcmul(t1.native, t2.native, toScalar(value))
+  )
+
+  def addcdiv[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: Tensor[D1],
+      value: S
+  ): Tensor[Promoted[D1, D]] = fromNative(
+    native.addcdiv(t1.native, t2.native, toScalar(value))
+  )
+
+  def addcmul_[D1 <: DType, S <: ScalaType](t1: Tensor[D1], t2: Tensor[D1], value: S): this.type = {
+    native.addcmul_(t1.native, t2.native, toScalar(value))
+    this
+  }
+
+  def addcdiv_[D1 <: DType, S <: ScalaType](t1: Tensor[D1], t2: Tensor[D1], value: S): this.type = {
+    native.addcdiv_(t1.native, t2.native, toScalar(value))
+    this
   }
 
   def addcmul[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
@@ -3396,6 +4060,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.dist(other.native)
   )
 
+  def dist[D1 <: DType, S <: ScalaType](other: Tensor[D1], p: S): Tensor[Promoted[D1, D]] =
+    fromNative(
+      native.dist(other.native, toScalar(p))
+    )
+
   def atan2_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.atan2_(other.native)
     this
@@ -3423,10 +4092,22 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         fromNative(native.lerp(ends.to(dtype = torch.int64).native, weight.native))
   }
 
-  def histc(bins: Long, min: Double, max: Double): Tensor[D] = fromNative(
+  def lerp[D1 <: DType, S <: ScalaType](
+      ends: Tensor[Int64] | Tensor[Int32],
+      weight: S
+  ): Tensor[Promoted[D1, D]] = {
+    ends.dtype match
+      case torch.int64 => fromNative(native.lerp(ends.native, toScalar(weight)))
+      case torch.int32 =>
+        fromNative(native.lerp(ends.to(dtype = torch.int64).native, toScalar(weight)))
+  }
+
+  def histc[D <: DType, S <: ScalaType](bins: Long, min: S, max: S): Tensor[D] = fromNative(
     native.histc(bins, toScalar(min), toScalar(max))
   )
-  def histc(): Tensor[D] = fromNative(native.histc())
+
+  def histc[D <: DType](): Tensor[D] = fromNative(native.histc())
+
   def histogram[D1 <: DType, D2 <: DType](
       bins: Int,
       range: Seq[Double],
@@ -3456,6 +4137,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     val h2 = fromNative[D2](his.get1())
     (h1, h2)
   }
+
+  def fmod_[D1 <: DType, S <: ScalaType](other: S): this.type = {
+    native.fmod_(toScalar(other))
+    this
+  }
+
+  def fmod[D1 <: DType, S <: ScalaType](other: S): Tensor[D1] = fromNative(
+    native.fmod(toScalar(other))
+  )
+
   def fmod_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.fmod_(other.native)
     this
@@ -3499,6 +4190,14 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.nextafter(other.native)
   )
 
+  def remainder_[D1 <: DType, S <: ScalaType](other: S): this.type = {
+    native.remainder_(toScalar(other))
+    this
+  }
+
+  def remainder[D1 <: DType, S <: ScalaType](other: S): Tensor[D1] = fromNative(
+    native.remainder(toScalar(other))
+  )
   def remainder_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.remainder_(other.native)
     this
@@ -3508,11 +4207,24 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.remainder(other.native)
   )
 
+  def renorm_[S <: ScalaType](p: S, dim: Long, maxnorm: S): this.type = {
+    native.renorm_(toScalar(p), dim, toScalar(maxnorm))
+    this
+  }
   def renorm_(p: Float, dim: Long, maxnorm: Float): this.type = {
     native.renorm_(toScalar(p), dim, toScalar(maxnorm))
     this
   }
 
+  def pow_[S <: ScalaType](exponent: S): this.type = {
+    native.pow_(toScalar(exponent))
+    this
+  }
+
+  def float_power_[S <: ScalaType](exponent: S): this.type = {
+    native.float_power_(toScalar(exponent))
+    this
+  }
   def pow_[D1 <: DType](exponent: Tensor[D1]): this.type = {
     native.pow_(exponent.native)
     this
@@ -3599,11 +4311,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.float_power(exponent.native)
   )
 
+  def float_power[D1 <: DType, S <: ScalaType](exponent: S): Tensor[D] = fromNative(
+    native.float_power(toScalar(exponent))
+  )
+
   def pow[D1 <: DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.pow(exponent.native)
   )
 
   def renorm(p: Float, dim: Long, maxnorm: Float): Tensor[D] = fromNative(
+    native.renorm(toScalar(p), dim, toScalar(maxnorm))
+  )
+
+  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[D] = fromNative(
     native.renorm(toScalar(p), dim, toScalar(maxnorm))
   )
 
