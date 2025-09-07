@@ -29,13 +29,13 @@ final class Hardshrink[D <: DType: Default](lambda: Float = 0.5f) extends Tensor
 
   val options = HardshrinkOptions(lambda.toDouble)
   options.lambda().put(lambda.toDouble)
-  
+
   override protected[torch] val nativeModule: HardshrinkImpl = new HardshrinkImpl(options)
 
   override def hasBias(): Boolean = false
 
   def reset(): Unit = nativeModule.reset()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))

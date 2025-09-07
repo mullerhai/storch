@@ -27,21 +27,25 @@ import torch.internal.NativeConverters.fromNative
   *
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class LeakyReLU[D <: DType: Default](negativeSlope: Float = 0.01f, inplace: Boolean = false, size: Option[Int] = None)
-    extends TensorModule[D]:
+final class LeakyReLU[D <: DType: Default](
+    negativeSlope: Float = 0.01f,
+    inplace: Boolean = false,
+    size: Option[Int] = None
+) extends TensorModule[D]:
 
-  private val options = if size.isDefined then LeakyReLUOptions(size.get) else new LeakyReLUOptions()
+  private val options =
+    if size.isDefined then LeakyReLUOptions(size.get) else new LeakyReLUOptions()
   options.inplace().put(inplace)
   options.negative_slope().put(negativeSlope.toDouble)
 
   override protected[torch] val nativeModule: LeakyReLUImpl = LeakyReLUImpl(options)
 
   def reset(): Unit = nativeModule.reset()
-  
+
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-  
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =

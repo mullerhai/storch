@@ -27,7 +27,8 @@ import torch.internal.NativeConverters.fromNative
   *
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class ReLU[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None) extends TensorModule[D]:
+final class ReLU[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None)
+    extends TensorModule[D]:
 
   private val options = if size.isDefined then ReLUOptions(size.get) else new ReLUOptions()
   options.inplace().put(inplace)
@@ -39,10 +40,11 @@ final class ReLU[D <: DType: Default](inplace: Boolean = false, size: Option[Int
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-  
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString = getClass().getSimpleName()
 
 object ReLU:
-  def apply[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None): ReLU[D] = new ReLU(inplace, size)
+  def apply[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None): ReLU[D] =
+    new ReLU(inplace, size)

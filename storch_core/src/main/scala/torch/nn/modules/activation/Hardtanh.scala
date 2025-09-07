@@ -30,11 +30,12 @@ import torch.internal.NativeConverters.fromNative
 final class Hardtanh[D <: DType: Default](
     minVal: Float,
     maxVal: Float,
-    inplace: Boolean = false, 
+    inplace: Boolean = false,
     size: Option[Int] = None
 ) extends TensorModule[D]:
 
-  private val options = if size.isDefined then new HardtanhOptions(size.get) else new HardtanhOptions()
+  private val options =
+    if size.isDefined then new HardtanhOptions(size.get) else new HardtanhOptions()
   options.inplace().put(inplace)
   options.min_val().put(minVal.toDouble)
   options.max_val().put(maxVal.toDouble)
@@ -44,7 +45,7 @@ final class Hardtanh[D <: DType: Default](
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-  
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =

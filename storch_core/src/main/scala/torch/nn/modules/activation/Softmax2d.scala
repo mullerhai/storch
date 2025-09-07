@@ -43,7 +43,7 @@ final class Softmax2d[D <: DType: Default] extends TensorModule[D]:
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
-  override def toString = getClass().getSimpleName() 
+  override def toString = getClass().getSimpleName()
 
 object Softmax2d:
   def apply[D <: DType: Default]: Softmax2d[D] = new Softmax2d()

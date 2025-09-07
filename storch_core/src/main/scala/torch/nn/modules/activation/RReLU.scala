@@ -23,12 +23,15 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{RReLUImpl, RReLUOptions}
 import torch.internal.NativeConverters.fromNative
 
-/** Applies the rectified linear unit function element-wise:
-  * class torch.nn.RReLU(lower=0.125, upper=0.3333333333333333, inplace=False)[source]
-  * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
+/** Applies the rectified linear unit function element-wise: class torch.nn.RReLU(lower=0.125,
+  * upper=0.3333333333333333, inplace=False)[source] $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class RReLU[D <: DType: Default](lower: Float = 0.125f, upper: Float = 0.3333333333333333f, inplace: Boolean = false, size: Option[Int] = None)
-    extends TensorModule[D]:
+final class RReLU[D <: DType: Default](
+    lower: Float = 0.125f,
+    upper: Float = 0.3333333333333333f,
+    inplace: Boolean = false,
+    size: Option[Int] = None
+) extends TensorModule[D]:
 
   private val options = if size.isDefined then RReLUOptions(size.get) else RReLUOptions()
   options.inplace().put(inplace)
@@ -42,12 +45,17 @@ final class RReLU[D <: DType: Default](lower: Float = 0.125f, upper: Float = 0.3
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-  
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
     getClass().getSimpleName() + s"(lower=$lower,upper=$upper,inplace=$inplace)"
 
 object RReLU:
-  def apply[D <: DType: Default](lower: Float = 0.125f, upper: Float = 0.3333333333333333f, inplace: Boolean = false, size: Option[Int] = None): RReLU[D] =
+  def apply[D <: DType: Default](
+      lower: Float = 0.125f,
+      upper: Float = 0.3333333333333333f,
+      inplace: Boolean = false,
+      size: Option[Int] = None
+  ): RReLU[D] =
     new RReLU[D](lower, upper, inplace, size)

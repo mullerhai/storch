@@ -48,5 +48,9 @@ final class Threshold[D <: DType: Default](threshold: Float, value: Float, inpla
     getClass().getSimpleName() + s"(threshold=$threshold, value=$value, inplace=$inplace)"
 
 object Threshold:
-  def apply[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean = false): Threshold[D] =
+  def apply[D <: DType: Default](
+      threshold: Float,
+      value: Float,
+      inplace: Boolean = false
+  ): Threshold[D] =
     new Threshold(threshold, value, inplace)

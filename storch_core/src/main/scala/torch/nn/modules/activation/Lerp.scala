@@ -11,7 +11,7 @@ final class Lerp[D <: DType: Default](end: Tensor[D], weight: Float = 0.5) exten
   override def hasBias(): Boolean = false
 
   override def toString = getClass().getSimpleName()
-  
+
   def apply(input: Tensor[D]): Tensor[D] = {
     torch.lerp(input, end, weight)
   }

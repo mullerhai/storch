@@ -28,14 +28,9 @@ import torch.nn.modules
   * val m = nn.Tanh()
   * val input = torch.randn(Seq(2))
   * val output = m(input)
- * class torch.nn.Softmin(dim=None)[source]
- * >>> m = nn.Softmin(dim=1)
- * >>> input = torch.randn(2, 3)
- * >>> output = m(input)
   * ```
   */
-final class Softmin[D <: DType: Default](dim: Int = 1)
-    extends TensorModule[D]:
+final class Softmin[D <: DType: Default](dim: Int = 1) extends TensorModule[D]:
 
   val option = SoftminOptions(dim)
 
@@ -54,4 +49,3 @@ final class Softmin[D <: DType: Default](dim: Int = 1)
 object Softmin:
   def apply[D <: DType: Default](dim: Int = 1): Softmin[D] =
     new Softmin(dim)
-

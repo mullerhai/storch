@@ -31,13 +31,16 @@ import org.bytedeco.pytorch.{CELUImpl, CELUOptions}
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class CELU[D <: DType: Default](alpha: Float = 1.0f, inplace: Boolean = false, size: Option[Int] = None)
-    extends TensorModule[D]:
+final class CELU[D <: DType: Default](
+    alpha: Float = 1.0f,
+    inplace: Boolean = false,
+    size: Option[Int] = None
+) extends TensorModule[D]:
 
   val options = if size.isDefined then CELUOptions(size.get) else CELUOptions()
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)
-  
+
   override val nativeModule: CELUImpl = CELUImpl(options)
 
   override def hasBias(): Boolean = false
@@ -46,13 +49,17 @@ final class CELU[D <: DType: Default](alpha: Float = 1.0f, inplace: Boolean = fa
 
   override def toString =
     getClass().getSimpleName() + "(size=" + size + ",alpha=" + alpha + ",inplace=" + inplace + ")"
-    
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
-  
+
 object CELU {
 
-  def apply[D <: DType: Default](alpha: Float = 1.0f, inplace: Boolean = false, size: Option[Int] = None): CELU[D] =
+  def apply[D <: DType: Default](
+      alpha: Float = 1.0f,
+      inplace: Boolean = false,
+      size: Option[Int] = None
+  ): CELU[D] =
     new CELU(alpha, inplace, size)
 }

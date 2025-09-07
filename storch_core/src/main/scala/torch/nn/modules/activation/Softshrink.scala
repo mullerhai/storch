@@ -31,7 +31,7 @@ final class Softshrink[D <: DType: Default](lambda: Float = 0.5f) extends Tensor
 
   val option = SoftshrinkOptions(lambda.toDouble)
   option.lambda().put(lambda.toDouble)
-  
+
   override protected[torch] val nativeModule: SoftshrinkImpl = new SoftshrinkImpl(option)
 
   override def hasBias(): Boolean = false
@@ -39,7 +39,7 @@ final class Softshrink[D <: DType: Default](lambda: Float = 0.5f) extends Tensor
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
-  
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString = getClass().getSimpleName() + s"(lambda=$lambda)"

@@ -12,9 +12,9 @@ final class Hardswish[D <: DType: Default] extends TensorModule[D]:
   override def hasBias(): Boolean = false
 
   override def toString = getClass().getSimpleName()
-  
+
   def apply(t: Tensor[D]): Tensor[D] = torch.hardswish(t)
-  
+
   def forward(input: Tensor[D]): Tensor[D] = torch.hardswish(input)
 
 object Hardswish:

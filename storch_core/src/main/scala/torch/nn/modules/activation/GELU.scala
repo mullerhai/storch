@@ -28,16 +28,16 @@ import org.bytedeco.pytorch.{GELUImpl, GELUOptions}
   * elements of the n-dimensional output Tensor lie in the range [0,1] and sum to 1.
   *
   * Softmax is defined as: $$\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
-  * approximate ： none , "tanh"
-  * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
+  * approximate ： none , "tanh" When the input Tensor is a sparse tensor then the unspecifed values
+  * are treated as ``-inf``.
   */
 final class GELU[D <: DType: Default](approximate: String = "none", size: Option[Int] = None)
     extends TensorModule[D]:
 
   val options = if size.isDefined then GELUOptions(size.get) else GELUOptions()
-  
+
   options.approximate().put(new BytePointer(approximate.toLowerCase()))
-  
+
   override val nativeModule: GELUImpl = GELUImpl(options)
 
   override def hasBias(): Boolean = false
@@ -46,7 +46,7 @@ final class GELU[D <: DType: Default](approximate: String = "none", size: Option
 
   override def toString =
     getClass().getSimpleName() + s"(size=$size,approximate=$approximate)"
-    
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
