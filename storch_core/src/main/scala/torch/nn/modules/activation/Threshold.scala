@@ -26,11 +26,14 @@ import torch.nn.modules
   * val output = m(input)
   * ```
   */
-final class Threshold[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean)
+final class Threshold[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean = false)
     extends TensorModule[D]:
 
   val options = ThresholdOptions(threshold.toDouble, value.toDouble)
   options.inplace().put(inplace)
+  options.threshold().put(threshold.toDouble)
+  options.value().put(value.toDouble)
+
   override protected[torch] val nativeModule: ThresholdImpl = new ThresholdImpl(options)
 
   override def hasBias(): Boolean = false
@@ -45,5 +48,5 @@ final class Threshold[D <: DType: Default](threshold: Float, value: Float, inpla
     getClass().getSimpleName() + s"(threshold=$threshold, value=$value, inplace=$inplace)"
 
 object Threshold:
-  def apply[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean): Threshold[D] =
+  def apply[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean = false): Threshold[D] =
     new Threshold(threshold, value, inplace)

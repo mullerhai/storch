@@ -18,7 +18,7 @@ import scala.collection.mutable.ListBuffer
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class GEGLU[D <: FloatNN: Default](dim: Int) extends TensorModule[D]:
+final class GEGLU[D <: FloatNN: Default](dim: Int = -1) extends TensorModule[D]:
 
   val linearLayer = register(nn.Linear(dim, dim * 2))
 
@@ -32,6 +32,7 @@ final class GEGLU[D <: FloatNN: Default](dim: Int) extends TensorModule[D]:
     val xPartGate = torch.chunk(xProj, 2, dim = -1)
     xPartGate(0) * torch.gelu(xPartGate(1))
   }
+
   def forward(input: Tensor[D]): Tensor[D] = {
     val xProj = linearLayer(input)
     val xPartGate = torch.chunk(xProj, 2, dim = -1)
@@ -40,7 +41,7 @@ final class GEGLU[D <: FloatNN: Default](dim: Int) extends TensorModule[D]:
 
 object GEGLU {
 
-  def apply[D <: FloatNN: Default](dim: Int): GEGLU[D] = new GEGLU(dim)
+  def apply[D <: FloatNN: Default](dim: Int = -1): GEGLU[D] = new GEGLU(dim)
 }
 
 //import torch

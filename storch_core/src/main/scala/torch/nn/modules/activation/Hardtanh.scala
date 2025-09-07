@@ -28,13 +28,13 @@ import torch.internal.NativeConverters.fromNative
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class Hardtanh[D <: DType: Default](
-    size: Int,
     minVal: Float,
     maxVal: Float,
-    inplace: Boolean = false
+    inplace: Boolean = false, 
+    size: Option[Int] = None
 ) extends TensorModule[D]:
 
-  private val options = new HardtanhOptions(size.toLong)
+  private val options = if size.isDefined then new HardtanhOptions(size.get) else new HardtanhOptions()
   options.inplace().put(inplace)
   options.min_val().put(minVal.toDouble)
   options.max_val().put(maxVal.toDouble)
@@ -44,6 +44,7 @@ final class Hardtanh[D <: DType: Default](
   override def hasBias(): Boolean = false
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
@@ -51,8 +52,8 @@ final class Hardtanh[D <: DType: Default](
 
 object Hardtanh:
   def apply[D <: DType: Default](
-      size: Int,
       min_val: Float,
       max_val: Float,
-      inplace: Boolean = false
-  ): Hardtanh[D] = new Hardtanh(size, min_val, max_val, inplace)
+      inplace: Boolean = false,
+      size: Option[Int] = None
+  ): Hardtanh[D] = new Hardtanh(min_val, max_val, inplace, size)

@@ -28,12 +28,16 @@ import torch.nn.modules
   * val m = nn.Tanh()
   * val input = torch.randn(Seq(2))
   * val output = m(input)
+ * class torch.nn.Softmin(dim=None)[source]
+ * >>> m = nn.Softmin(dim=1)
+ * >>> input = torch.randn(2, 3)
+ * >>> output = m(input)
   * ```
   */
-final class Softmin[D <: DType: Default](dim: Int, threshold: Float, beta: Float)
+final class Softmin[D <: DType: Default](dim: Int = 1)
     extends TensorModule[D]:
 
-  val option = SoftminOptions(dim.toLong)
+  val option = SoftminOptions(dim)
 
   override protected[torch] val nativeModule: SoftminImpl = new SoftminImpl(option)
 
@@ -42,12 +46,12 @@ final class Softmin[D <: DType: Default](dim: Int, threshold: Float, beta: Float
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
-  override def toString = getClass().getSimpleName() + s"(dim=$dim threshold=$threshold beta=$beta)"
+  override def toString = getClass().getSimpleName() + s"(dim=$dim)"
 
 object Softmin:
-  def apply[D <: DType: Default](dim: Int, threshold: Float, beta: Float): Softmin[D] =
-    new Softmin(dim, threshold, beta)
-//  option.beta().put(beta) .toDouble
-//  option.threshold().put(threshold) .toDouble
+  def apply[D <: DType: Default](dim: Int = 1): Softmin[D] =
+    new Softmin(dim)
+

@@ -32,7 +32,7 @@ import torch.internal.NativeConverters.fromNative
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class Softmax2d[D <: DType: Default](dim: Int) extends TensorModule[D]:
+final class Softmax2d[D <: DType: Default] extends TensorModule[D]:
 
   override val nativeModule: Softmax2dImpl = Softmax2dImpl()
 
@@ -43,7 +43,7 @@ final class Softmax2d[D <: DType: Default](dim: Int) extends TensorModule[D]:
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
-  override def toString = getClass().getSimpleName() + s"(dim=$dim)"
+  override def toString = getClass().getSimpleName() 
 
 object Softmax2d:
-  def apply[D <: DType: Default](dim: Int): Softmax2d[D] = new Softmax2d(dim)
+  def apply[D <: DType: Default]: Softmax2d[D] = new Softmax2d()

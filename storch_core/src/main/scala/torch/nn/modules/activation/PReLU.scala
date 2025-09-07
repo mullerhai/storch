@@ -24,13 +24,13 @@ import org.bytedeco.pytorch.{PReLUImpl, PReLUOptions}
 import torch.internal.NativeConverters.fromNative
 
 /** Applies the rectified linear unit function element-wise:
-  *
+  * class torch.nn.PReLU(num_parameters=1, init=0.25, device=None, dtype=None
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class PReLU[D <: DType: Default](init: Float, numParameters: Int, optionSize: Int)
+final class PReLU[D <: DType: Default](numParameters: Int = 1, init: Float = 0.25f, size: Option[Int] = None)
     extends TensorModule[D]:
 
-  private val options = new PReLUOptions(optionSize.toLong)
+  private val options = if size.isDefined then new PReLUOptions(size.get) else new PReLUOptions()
   options.init.put(init.toDouble)
   options.num_parameters().put(numParameters.toLong)
 
@@ -41,14 +41,15 @@ final class PReLU[D <: DType: Default](init: Float, numParameters: Int, optionSi
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    getClass().getSimpleName() + s"(init=$init,numParameters=$numParameters,optionSize=$optionSize)"
+    getClass().getSimpleName() + s"(init=$init,numParameters=$numParameters,Size=$size)"
 
 object PReLU:
-  def apply[D <: DType: Default](init: Float, num_parameters: Int, option_size: Int): PReLU[D] =
-    new PReLU[D](init, num_parameters, option_size)
+  def apply[D <: DType: Default](num_parameters: Int = 1, init: Float = 0.25f, size: Option[Int] = None): PReLU[D] =
+    new PReLU[D](num_parameters, init, size)
 
 //  def apply[D <: DType: Default](init: Double,numParameters: Long): PReLU[D] = new PReLU[D](init,numParameters,numParameters)
 //  def apply[D <: DType: Default](init: Double): PReLU[D] = new PReLU[D](init,1,1)

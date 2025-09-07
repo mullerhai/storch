@@ -24,12 +24,13 @@ import torch.nn.modules
   * val output = m(input)
   * ```
   */
-final class Softplus[D <: DType: Default](size: Int, threshold: Float, beta: Float)
+final class Softplus[D <: DType: Default](beta: Float = 1.0f, threshold: Float = 20.0f, size: Option[Int] = None)
     extends TensorModule[D]:
 
-  val option = SoftplusOptions(size.toLong)
+  val option = if size.isDefined then SoftplusOptions(size.get) else SoftplusOptions()
   option.beta().put(beta.toDouble)
   option.threshold().put(threshold.toDouble)
+  
   override protected[torch] val nativeModule: SoftplusImpl = new SoftplusImpl(option)
 
   override def hasBias(): Boolean = false
@@ -37,11 +38,12 @@ final class Softplus[D <: DType: Default](size: Int, threshold: Float, beta: Flo
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
     getClass().getSimpleName() + s"(size=$size,threshold=$threshold,beta=$beta)"
 
 object Softplus:
-  def apply[D <: DType: Default](size: Int, threshold: Float, beta: Float): Softplus[D] =
-    new Softplus(size, threshold, beta)
+  def apply[D <: DType: Default](beta: Float = 1.0f, threshold: Float = 20.0f, size: Option[Int] = None): Softplus[D] =
+    new Softplus(beta, threshold, size)

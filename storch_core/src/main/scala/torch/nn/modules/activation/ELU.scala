@@ -31,12 +31,13 @@ import org.bytedeco.pytorch.{ELUImpl, ELUOptions}
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
+final class ELU[D <: DType: Default](alpha: Float = 1.0f, inplace: Boolean = false, size: Option[Int] = None)
     extends TensorModule[D]:
 
-  val options = ELUOptions(size)
+  val options = if size.isDefined then ELUOptions(size.get) else ELUOptions()
   options.inplace().put(inplace)
   options.alpha().put(alpha.toDouble)
+  
   override val nativeModule: ELUImpl = ELUImpl(options)
 
   override def hasBias(): Boolean = false
@@ -44,10 +45,13 @@ final class ELU[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean)
   def reset(): Unit = nativeModule.reset()
 
   override def toString = getClass().getSimpleName() + s"(size=$size,alpha=$alpha,inplace=$inplace)"
+  
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
+  
 object ELU {
 
-  def apply[D <: DType: Default](size: Int, alpha: Float, inplace: Boolean): ELU[D] =
-    new ELU(size, alpha, inplace)
+  def apply[D <: DType: Default](alpha: Float = 1.0f, inplace: Boolean = false ,size: Option[Int] = None): ELU[D] =
+    new ELU(alpha, inplace, size)
 }

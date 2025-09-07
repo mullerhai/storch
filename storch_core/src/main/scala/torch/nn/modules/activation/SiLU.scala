@@ -30,7 +30,7 @@ import torch.internal.NativeConverters.fromNative
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class SiLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
+final class SiLU[D <: DType: Default] extends TensorModule[D]:
 
   override val nativeModule: SiLUImpl = SiLUImpl()
 
@@ -39,9 +39,10 @@ final class SiLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+  
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
-  override def toString = getClass().getSimpleName() + s"(dim=$dim)"
+  override def toString = getClass().getSimpleName() 
 
 object SiLU:
-  def apply[D <: DType: Default](dim: Int): SiLU[D] = new SiLU(dim)
+  def apply[D <: DType: Default]: SiLU[D] = new SiLU()

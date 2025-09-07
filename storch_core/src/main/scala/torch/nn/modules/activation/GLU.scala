@@ -30,7 +30,7 @@ import torch.internal.NativeConverters.fromNative
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class GLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
+final class GLU[D <: DType: Default](dim: Int = -1) extends TensorModule[D]:
 
   val options = GLUOptions(dim)
 
@@ -41,9 +41,11 @@ final class GLU[D <: DType: Default](dim: Int) extends TensorModule[D]:
   def reset(): Unit = nativeModule.reset()
 
   override def toString = getClass().getSimpleName() + s"(dim=$dim)"
+
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
 object GLU {
-  def apply[D <: DType: Default](dim: Int): GLU[D] = new GLU(dim)
+  def apply[D <: DType: Default](dim: Int = -1): GLU[D] = new GLU(dim)
 }

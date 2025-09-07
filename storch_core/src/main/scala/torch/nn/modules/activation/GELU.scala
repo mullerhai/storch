@@ -20,26 +20,24 @@ package modules
 package activation
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{ELUOptions, SELUImpl, SELUOptions, SoftmaxOptions}
 import torch.internal.NativeConverters.fromNative
-
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.{GELUImpl, GELUOptions}
 
 /** Applies the Softmax function to an n-dimensional input Tensor rescaling them so that the
   * elements of the n-dimensional output Tensor lie in the range [0,1] and sum to 1.
   *
   * Softmax is defined as: $$\text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}$$
-  *
+  * approximate ： none , "tanh"
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class GELU[D <: DType: Default](size: Int, approximate: Float | Double, inplace: Boolean)
+final class GELU[D <: DType: Default](approximate: String = "none", size: Option[Int] = None)
     extends TensorModule[D]:
 
-  val options = GELUOptions(size)
-  approximate match
-    case a: Float  => options.approximate().put(a.toByte)
-    case a: Double => options.approximate().put(a.toByte)
-
+  val options = if size.isDefined then GELUOptions(size.get) else GELUOptions()
+  
+  options.approximate().put(new BytePointer(approximate.toLowerCase()))
+  
   override val nativeModule: GELUImpl = GELUImpl(options)
 
   override def hasBias(): Boolean = false
@@ -47,12 +45,13 @@ final class GELU[D <: DType: Default](size: Int, approximate: Float | Double, in
   def reset(): Unit = nativeModule.reset()
 
   override def toString =
-    getClass().getSimpleName() + s"(size=$size,approximate=$approximate,inplace=$inplace)"
+    getClass().getSimpleName() + s"(size=$size,approximate=$approximate)"
+    
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
 object GELU {
-  def apply[D <: DType: Default](size: Int, approximate: Float, inplace: Boolean): GELU[D] =
-    new GELU(size, approximate, inplace)
+  def apply[D <: DType: Default](approximate: String = "none", size: Option[Int] = None): GELU[D] =
+    new GELU[D](approximate, size)
 }
