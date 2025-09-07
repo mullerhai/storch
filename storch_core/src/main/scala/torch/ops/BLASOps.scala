@@ -143,7 +143,12 @@ private[torch] trait BLASOps {
         fromNative(torchNative.scatter(input.native, dim.toLong, index.native, toScalar(src)))
       case torch.int32 =>
         fromNative(
-          torchNative.scatter(input.native, dim.toLong, index.to(dtype = torch.int64).native, toScalar(src))
+          torchNative.scatter(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            toScalar(src)
+          )
         )
   }
 

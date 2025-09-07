@@ -43,6 +43,7 @@ abstract class LRScheduler(val optimizer: Optimizer) extends LRSchedulerPtr(opti
   def get_lr(): Seq[Float]
 
   override def step() = super.step()
+
   /** 执行一步学习率更新
     */
   def step(epoch: Option[Int] = None): Unit = {

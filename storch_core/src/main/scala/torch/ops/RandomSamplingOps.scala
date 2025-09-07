@@ -428,42 +428,64 @@ private[torch] trait RandomSamplingOps {
   }
 
   def rrelu[D1 <: DType, S <: ScalaType](
-                                                                  t1: Tensor[D1],
-                                                                  lower: S = 0.125,
-                                                                  upper: S = 0.3333333333333333,
-                                                                  train: Boolean = false,
-                                                                  generator: Option[Generator] | Generator = None
-                                                                ): Tensor[D1] =
-    fromNative(torchNative.rrelu(t1.native, toScalar(lower), toScalar(upper), train, generator.toOptional))
+      t1: Tensor[D1],
+      lower: S = 0.125,
+      upper: S = 0.3333333333333333,
+      train: Boolean = false,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] =
+    fromNative(
+      torchNative.rrelu(t1.native, toScalar(lower), toScalar(upper), train, generator.toOptional)
+    )
 
   def rrelu_with_noise[D1 <: DType, D2 <: DType, S <: ScalaType](
-                                                  t1: Tensor[D1],
-                                                  t2: Tensor[D2],
-                                                  lower: S = 0.125,
-                                                  upper: S = 0.3333333333333333,
-                                                  train: Boolean = false,
-                                                  generator: Option[Generator] | Generator = None
-                                                ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.rrelu_with_noise(t1.native, t2.native, toScalar(lower), toScalar(upper), train, generator.toOptional))
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      lower: S = 0.125,
+      upper: S = 0.3333333333333333,
+      train: Boolean = false,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(
+      torchNative.rrelu_with_noise(
+        t1.native,
+        t2.native,
+        toScalar(lower),
+        toScalar(upper),
+        train,
+        generator.toOptional
+      )
+    )
 
   def rrelu_[D1 <: DType, S <: ScalaType](
-                                          t1: Tensor[D1],
-                                          lower: S = 0.125,
-                                          upper: S = 0.3333333333333333,
-                                          train: Boolean = false,
-                                          generator: Option[Generator] | Generator = None
-                                        ): Tensor[D1] =
-    fromNative(torchNative.rrelu_(t1.native, toScalar(lower), toScalar(upper), train, generator.toOptional))
+      t1: Tensor[D1],
+      lower: S = 0.125,
+      upper: S = 0.3333333333333333,
+      train: Boolean = false,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[D1] =
+    fromNative(
+      torchNative.rrelu_(t1.native, toScalar(lower), toScalar(upper), train, generator.toOptional)
+    )
 
   def rrelu_with_noise_[D1 <: DType, D2 <: DType, S <: ScalaType](
-                                                                  t1: Tensor[D1],
-                                                                  t2: Tensor[D2],
-                                                                  lower: S = 0.125,
-                                                                  upper: S = 0.3333333333333333,
-                                                                  train: Boolean = false,
-                                                                  generator: Option[Generator] | Generator = None
-                                                                ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.rrelu_with_noise_(t1.native, t2.native, toScalar(lower), toScalar(upper), train, generator.toOptional))
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      lower: S = 0.125,
+      upper: S = 0.3333333333333333,
+      train: Boolean = false,
+      generator: Option[Generator] | Generator = None
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(
+      torchNative.rrelu_with_noise_(
+        t1.native,
+        t2.native,
+        toScalar(lower),
+        toScalar(upper),
+        train,
+        generator.toOptional
+      )
+    )
 
   // def clip[D1 <: DType, S <: ScalaType](t1: Tensor[D1], min: S): Tensor[Div[D1, ScalaToDType[S]]] =
   //    fromNative(torchNative.clip(t1.native, new ScalarOptional(toScalar(min))))
