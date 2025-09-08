@@ -456,6 +456,20 @@ type NumericPromoted[D <: DType] <: DType = D match
   case Bool => Int64
   case _    => D
 
+/** Mapping Storch Tensor DType to Storch numpy DType */
+type NumpyDType[D <: DType] <: torch.numpy.enums.DType = D match
+  case Float16 | BFloat16 => torch.numpy.enums.DType.Float16.type
+  case Float32            => torch.numpy.enums.DType.Float32.type
+  case Float64            => torch.numpy.enums.DType.Float64.type
+  case Int8               => torch.numpy.enums.DType.Int8.type
+  case UInt8              => torch.numpy.enums.DType.Int8.type
+  case Int16              => torch.numpy.enums.DType.Int16.type
+  case Int32              => torch.numpy.enums.DType.Int32.type
+  case Int64              => torch.numpy.enums.DType.Int64.type
+  case Bool               => torch.numpy.enums.DType.Bool.type
+  case Complex64          => torch.numpy.enums.DType.Float64.type
+  case Complex128         => torch.numpy.enums.DType.Float64.type
+
 /** Promoted type for tensor operations that always output floats (e.g. `sin`) */
 type FloatPromoted[D <: DType] <: FloatNN | ComplexNN = D match
   case Float16    => Float16

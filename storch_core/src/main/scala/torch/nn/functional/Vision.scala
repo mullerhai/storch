@@ -57,8 +57,8 @@ private[torch] trait Vision {
 //    val result = torchNative.pad(x.native, outputRef)
 //    fromNative(result)
 //  }
-//torch.nn.functional.interpolate(input, size=None, 
-// 
+//torch.nn.functional.interpolate(input, size=None,
+//
 // scale_factor=None, mode='nearest', align_corners=None,
 // recompute_scale_factor=None, antialias=False)
   def interpolate[D <: DType](

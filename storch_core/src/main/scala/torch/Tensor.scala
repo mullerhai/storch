@@ -301,8 +301,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
 
   def apply[T <: Boolean | Long: ClassTag](
-      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] |
-        None.type | Ellipsis)*
+      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int32] | Tensor[Int64] |
+        Seq[T] | None.type | Ellipsis)*
   ): Tensor[D] = index(indices*)
 
 //  def apply[T <: Boolean | Long : ClassTag](
@@ -940,8 +940,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
 
   private def nativeIndices[T <: Boolean | Long: ClassTag](
-      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] |
-        None.type | Ellipsis)*
+      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int32] | Tensor[Int64] |
+        Seq[T] | None.type | Ellipsis)*
   ): TensorIndexArrayRef =
     def toSymInt(maybeInt: Option[Int]) = maybeInt.map(l => SymIntOptional(SymInt(l))).orNull
     // see https://pytorch.org/cppdocs/notes/tensor_indexing.html
@@ -965,8 +965,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     new pytorch.TensorIndexArrayRef(new pytorch.TensorIndexVector(nativeIndices.toArray*))
 
   def index[T <: Boolean | Long: ClassTag](
-      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] |
-        None.type | Ellipsis)*
+      indices: (Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int32] | Tensor[Int64] |
+        Seq[T] | None.type | Ellipsis)*
   ): Tensor[D] =
     fromNative(native.index(nativeIndices(indices*)))
 
@@ -1084,6 +1084,162 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         )
       )
 
+  def numpy[D <: DType]()(implicit
+      ct: ClassTag[DTypeToScala[D]] = this.scalarClassTag
+  ): NDArray[DTypeToScala[D]] = {
+    val cpuTensor = to(device = CPU)
+    // get data array and shape info
+    val dataArray: Array[DTypeToScala[D]] = cpuTensor.toArray.asInstanceOf[Array[DTypeToScala[D]]]
+    val shape = cpuTensor.size
+    val ndim = shape.length
+    NDArray(dataArray, shape, ndim, this.toNumpyDType).reshape(shape*)
+
+  }
+
+  def scalarClassTag: ClassTag[DTypeToScala[D]] = this.dtype match {
+    case Float   => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Double  => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Byte    => ClassTag.Byte.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Short   => ClassTag.Short.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Int     => ClassTag.Int.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Long    => ClassTag.Long.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Boolean => ClassTag.Boolean.asInstanceOf[ClassTag[DTypeToScala[D]]]
+//    case Complex[Float] => ClassTag(classOf[Complex[Float]]).asInstanceOf[ClassTag[DTypeToScala[D]]]
+//    case _: Complex128.type => ClassTag(classOf[Complex[Double]]).asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case _ =>
+      throw new UnsupportedOperationException(
+        s"Unsupported dtype for numpy conversion: ${this.dtype}"
+      )
+  }
+
+  def toNDArray[D <: DType]()(implicit ct: ClassTag[DTypeToScala[D]]): NDArray[DTypeToScala[D]] = {
+    // move tensor to cpu
+    val cpuTensor = to(device = CPU)
+    // get data array and shape info
+    val dataArray: Array[DTypeToScala[D]] = cpuTensor.toArray.asInstanceOf[Array[DTypeToScala[D]]]
+    val shape = cpuTensor.size
+    val ndim = shape.length
+
+    // 根据维度创建对应的多维数组
+    val ndArray = shape.length match {
+      case 0 =>
+        // 标量
+        dataArray.head.asInstanceOf[DTypeToScala[D]]
+      case 1 =>
+        // 1D数组
+        dataArray
+      case 2 =>
+        // 2D数组
+        dataArray.grouped(shape(1)).toArray
+//        reshapeArray[DTypeToScala[D]](dataArray, shape(0), shape(1))
+      case 3 =>
+        // 3D数组
+//        arr.grouped(dim2 * dim3).map(_.grouped(dim3).toArray).toArray
+        reshapeArray[DTypeToScala[D]](dataArray, shape(0), shape(1), shape(2))
+      case 4 =>
+        // 4D数组
+        reshapeArray(dataArray, shape(0), shape(1), shape(2), shape(3))
+      case 5 =>
+        // 5D数组
+        reshapeArray(dataArray, shape(0), shape(1), shape(2), shape(3), shape(4))
+      case _ =>
+        throw new IllegalArgumentException(s"Unsupported tensor dimension: ${shape.length}")
+    }
+    val numpyDtype: torch.numpy.enums.DType = this.dtype match {
+      case DType.float16 | DType.bfloat16 => torch.numpy.enums.DType.Float16
+      case DType.float32                  => torch.numpy.enums.DType.Float32
+      case DType.float64                  => torch.numpy.enums.DType.Float64
+      case DType.int8 | DType.uint8       => torch.numpy.enums.DType.Int8
+      case DType.int16                    => torch.numpy.enums.DType.Int16
+      case DType.int32                    => torch.numpy.enums.DType.Int32
+      case DType.int64                    => torch.numpy.enums.DType.Int64
+      case DType.bool                     => torch.numpy.enums.DType.Bool
+      case DType.complex64                => torch.numpy.enums.DType.Float64
+      case DType.complex128               => torch.numpy.enums.DType.Float64
+      // 添加其他需要支持的dtype映射
+      case _ => throw new UnsupportedOperationException(s"Unsupported dtype: ${this.dtype}")
+    }
+    // 创建NDArray实例
+//    NDArray(ndArray)
+    NDArray(dataArray, shape, ndim, this.toNumpyDType).reshape(shape*)
+  }
+
+  def toNumpyDType: torch.numpy.enums.DType = {
+    this.dtype match {
+      case DType.float16 | DType.bfloat16 => torch.numpy.enums.DType.Float16
+      case DType.float32                  => torch.numpy.enums.DType.Float32
+      case DType.float64                  => torch.numpy.enums.DType.Float64
+      case DType.int8 | DType.uint8       => torch.numpy.enums.DType.Int8
+      case DType.int16                    => torch.numpy.enums.DType.Int16
+      case DType.int32                    => torch.numpy.enums.DType.Int32
+      case DType.int64                    => torch.numpy.enums.DType.Int64
+      case DType.bool                     => torch.numpy.enums.DType.Bool
+      case DType.complex64                => torch.numpy.enums.DType.Float64
+      case DType.complex128               => torch.numpy.enums.DType.Float64
+      // 添加其他需要支持的dtype映射
+      case _ => throw new UnsupportedOperationException(s"Unsupported dtype: ${this.dtype}")
+    }
+  }
+
+  /** 将一维数组重塑为二维数组
+    */
+  private def reshapeArray[T: ClassTag](arr: Array[T], dim1: Int, dim2: Int): Array[Array[T]] = {
+    arr.grouped(dim2).toArray
+  }
+
+  /** 将一维数组重塑为三维数组
+    */
+  private def reshapeArray[T: ClassTag](
+      arr: Array[T],
+      dim1: Int,
+      dim2: Int,
+      dim3: Int
+  ): Array[Array[Array[T]]] = {
+    arr.grouped(dim2 * dim3).map(_.grouped(dim3).toArray).toArray
+  }
+
+  /** 将一维数组重塑为四维数组
+    */
+  private def reshapeArray[T: ClassTag](
+      arr: Array[T],
+      dim1: Int,
+      dim2: Int,
+      dim3: Int,
+      dim4: Int
+  ): Array[Array[Array[Array[T]]]] = {
+    arr
+      .grouped(dim2 * dim3 * dim4)
+      .map(
+        _.grouped(dim3 * dim4)
+          .map(_.grouped(dim4).toArray)
+          .toArray
+      )
+      .toArray
+  }
+
+  /** 将一维数组重塑为五维数组
+    */
+  private def reshapeArray[T: ClassTag](
+      arr: Array[T],
+      dim1: Int,
+      dim2: Int,
+      dim3: Int,
+      dim4: Int,
+      dim5: Int
+  ): Array[Array[Array[Array[Array[T]]]]] = {
+    arr
+      .grouped(dim2 * dim3 * dim4 * dim5)
+      .map(
+        _.grouped(dim3 * dim4 * dim5)
+          .map(
+            _.grouped(dim4 * dim5)
+              .map(_.grouped(dim5).toArray)
+              .toArray
+          )
+          .toArray
+      )
+      .toArray
+  }
   def toBuffer: TypedBuffer[DTypeToScala[D]] =
     to(device = CPU).native.createBuffer[TypedBuffer[DTypeToScala[D]]]()
 
@@ -1238,19 +1394,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.dividePut(other.native)
   )
 
-  def addPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def addPut[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.addPut(toScalar(other))
   )
 
-  def subtractPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def subtractPut[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.subtractPut(toScalar(other))
   )
 
-  def multiplyPut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def multiplyPut[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.multiplyPut(toScalar(other))
   )
 
-  def dividePut[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def dividePut[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.dividePut(toScalar(other))
   )
 
@@ -1519,10 +1675,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def where[S <: ScalaType](condition: Tensor[Bool], other: S): Tensor[D] =
+  def where[S <: ScalaType](condition: Tensor[Bool], other: S): Tensor[Promoted[Int64, ScalaToDType[S]]] =
     fromNative(native.where(condition.native, toScalar(other)))
 
-  def where(condition: Tensor[Bool], other: Tensor[D]): Tensor[D] =
+  def where(condition: Tensor[Bool], other: Tensor[D]): Tensor[Int64] =
     fromNative(native.where(condition.native, other.native))
 
 //  def index_put[S <: ScalaType](indices: Seq[Tensor[Int64]], value: S, acc: Boolean = false): this.type = {
@@ -1599,7 +1755,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def copysign[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def copysign[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.copysign(toScalar(other))
   )
 
@@ -1722,11 +1878,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.clamp_min(min.native)
   )
 
-  def clamp_max[S <: ScalaType](max: S): Tensor[D] = fromNative(
+  def clamp_max[S <: ScalaType](max: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.clamp_max(toScalar(max))
   )
 
-  def clamp_min[S <: ScalaType](min: S): Tensor[D] = fromNative(
+  def clamp_min[S <: ScalaType](min: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.clamp_min(toScalar(min))
   )
 
@@ -1920,11 +2076,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def divide[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def divide[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.divide(toScalar(other))
   )
 
-  def true_divide[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def true_divide[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.true_divide(toScalar(other))
   )
 
@@ -2179,7 +2335,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def xlogy[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def xlogy[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.xlogy(toScalar(other))
   )
 
@@ -2307,7 +2463,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def mul[S <: ScalaType](other: S): Tensor[D] = fromNative(native.mul(toScalar(other)))
 
-  def multiply[S <: ScalaType](other: S): Tensor[D] = fromNative(native.multiply(toScalar(other)))
+  def multiply[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(native.multiply(toScalar(other)))
 
   def mvlgamma(p: Long): Tensor[D] = fromNative(native.mvlgamma(p))
   def mul_[D1 <: DType](other: Tensor[D1]): this.type = {
@@ -2861,7 +3017,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def sub_[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def sub_[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.sub_(toScalar(other))
   )
 
@@ -2870,7 +3026,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def sub_[S <: ScalaType](other: S, alpha: S): Tensor[D] = fromNative(
+  def sub_[S <: ScalaType](other: S, alpha: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.sub_(toScalar(other), toScalar(alpha))
   )
 
@@ -3406,15 +3562,15 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         )
   }
 
-  def bitwise_and[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def bitwise_and[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.bitwise_and(toScalar(other))
   )
 
-  def bitwise_or[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def bitwise_or[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.bitwise_or(toScalar(other))
   )
 
-  def bitwise_xor[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def bitwise_xor[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.bitwise_xor(toScalar(other))
   )
 
@@ -3484,7 +3640,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.bitwise_right_shift(other.native)
   )
 
-  def bitwise_right_shift[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def bitwise_right_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.bitwise_right_shift(toScalar(other))
   )
 
@@ -3492,7 +3648,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.bitwise_left_shift(other.native)
   )
 
-  def bitwise_left_shift[S <: ScalaType](other: S): Tensor[D] = fromNative(
+  def bitwise_left_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.bitwise_left_shift(toScalar(other))
   )
 
@@ -4323,7 +4479,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.renorm(toScalar(p), dim, toScalar(maxnorm))
   )
 
-  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[D] = fromNative(
+  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.renorm(toScalar(p), dim, toScalar(maxnorm))
   )
 

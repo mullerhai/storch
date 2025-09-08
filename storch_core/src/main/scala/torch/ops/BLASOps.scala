@@ -246,7 +246,7 @@ private[torch] trait BLASOps {
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
       value: Tensor[D2]
-  ): Tensor[D1] = {
+  ): Tensor[Promoted[D1, D2]] = {
     index.dtype match
       case torch.int64 =>
         fromNative(torchNative.index_fill(input.native, dim.toLong, index.native, value.native))
@@ -275,14 +275,14 @@ private[torch] trait BLASOps {
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
       source: Tensor[D2]
-  ): Tensor[D1] = {
+  ):  Tensor[Promoted[D1, D2]] = {
     index.dtype match
       case torch.int64 =>
-        fromNative[D1](
+        fromNative(
           torchNative.index_copy(input.native, dim.toLong, index.native, source.native)
         )
       case torch.int32 =>
-        fromNative[D1](
+        fromNative(
           torchNative.index_copy(
             input.native,
             dim.toLong,
@@ -2005,11 +2005,11 @@ private[torch] trait BLASOps {
     fromNative(torchNative.embedding_renorm(t1.native, t2.native, d1, d2))
 
   def embedding_renorm_[D1 <: DType, D2 <: DType](
-                                                  t1: Tensor[D1],
-                                                  t2: Tensor[D2],
-                                                  d1: Double,
-                                                  d2: Double
-                                                ): Tensor[Promoted[D1, D2]] =
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      d1: Double,
+      d2: Double
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.embedding_renorm_(t1.native, t2.native, d1, d2))
 
   def copy_sparse_to_sparse[D1 <: DType, D2 <: DType](

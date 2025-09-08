@@ -982,6 +982,16 @@ private[torch] trait ReductionOps {
       if nativeDim.isEmpty then torchNative.count_nonzero(input.native)
       else torchNative.count_nonzero(input.native, nativeDim: _*)
     )
+
+  def count_nonzero(
+      input: Tensor[?],
+      dim: Int | Seq[Int] = Seq.empty
+  ): Tensor[Int64] =
+    val nativeDim = dim.toArray
+    fromNative(
+      if nativeDim.isEmpty then torchNative.count_nonzero(input.native)
+      else torchNative.count_nonzero(input.native, nativeDim: _*)
+    )
 //    public static native T_TensorTensor_T topk(
 //    @Const @ByRef Tensor var0,
 //    @Cast({"int64_t"}) long var1

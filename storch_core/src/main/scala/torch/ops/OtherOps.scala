@@ -290,7 +290,7 @@ private[torch] trait OtherOps {
   def affine_grid[D <: DType](
       theta: Tensor[D],
       size: List[Long],
-      align_corners: Option[Boolean]
+      align_corners: Option[Boolean] = None
   ): Tensor[D] = {
 
     val longVecRef = LongArrayRef(size.toArray, size.length)

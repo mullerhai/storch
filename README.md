@@ -22,10 +22,11 @@ STorch aims to close to the Python API to make porting existing models and the l
 
 STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
 
+### STorch LLM -> Scala3gpt-llm is ready to use Pure Pytorch Neural Network for Scala 3 ON LLM
 How to fetch STorch Library
 ```scala 3
 
-libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.4.5-1.15.2"
+libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.4.7-1.15.2"
 
 ```
 

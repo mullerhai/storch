@@ -97,7 +97,7 @@ object EventIO {
   def createEventStream(filePath: String): Unit = {
     state.reset()
     val file = new File(filePath)
-    if (file.exists()) file.delete()
+    if (file.exists()) then file.delete()
     appendEvents(filePath, Seq(startEvent()))
   }
 
