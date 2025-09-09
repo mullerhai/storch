@@ -14,24 +14,17 @@ import org.bytedeco.pytorch.{
   TensorExampleVector,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   JavaTensorDataset as TD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.TensorExampleVectorReader
 import torch.utils.data.datareader
 
-class TensorDataset(reader: datareader.TensorExampleVectorReader) extends TD {
+class NormalTensorDataset(reader: datareader.TensorExampleVectorReader) extends TD {
 
   var tensorExampleVec: TensorExampleVector = reader.read_chunk(0)
 //  override def get_batch(request: Long): TensorExampleVector = super.get_batch(request)

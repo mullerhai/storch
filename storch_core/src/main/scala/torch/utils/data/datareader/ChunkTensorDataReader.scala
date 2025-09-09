@@ -32,9 +32,10 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.pytorch.AbstractTensor as Tensor
+import torch.utils.data.Dataset
+
 class ChunkTensorDataReader(batch: Int = 32) extends CTDR with DataReader {
 
   var tensorExampleVec: TensorExampleVector = new TensorExampleVector(

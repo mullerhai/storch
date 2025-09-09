@@ -15,13 +15,6 @@ import org.bytedeco.pytorch.{
   T_TensorTensor_TOptional,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
   JavaSequentialDataLoader as SDL,
@@ -39,7 +32,7 @@ class SequentialDataLoader(
     sampler: SequentialSampler,
     option: DataLoaderOptions
 ) extends SDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): ExampleVectorIterator = super.begin()
 

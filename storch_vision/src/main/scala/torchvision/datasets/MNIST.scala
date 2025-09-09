@@ -18,7 +18,7 @@ package torchvision.datasets
 
 import torch.*
 import org.bytedeco.pytorch
-import torch.utils.data.TensorDataset
+import torch.utils.data.NormalTensorDataset
 import java.nio.file.Path
 import scala.util.Using
 import java.net.URL
@@ -36,7 +36,7 @@ trait MNISTBase(
     val root: Path,
     val train: Boolean,
     val download: Boolean
-) extends TensorDataset[Float32, Int64] {
+) extends NormalTensorDataset[Float32, Int64] {
 
   private def downloadAndExtractArchive(url: URL, target: Path): Unit =
     println(s"downloading from $url")
@@ -68,7 +68,7 @@ trait MNISTBase(
   private val native = pytorch.MNIST(root.toString(), mode)
 
   private val ds =
-    TensorDataset(
+    NormalTensorDataset(
       fromNative[Float32](native.images().clone()),
       fromNative[Int64](native.targets().clone())
     )

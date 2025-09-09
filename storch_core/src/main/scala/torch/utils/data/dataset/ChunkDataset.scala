@@ -20,7 +20,6 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkDataset(

@@ -26,7 +26,7 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.TensorExampleVectorReader
 import torch.utils.data.datareader

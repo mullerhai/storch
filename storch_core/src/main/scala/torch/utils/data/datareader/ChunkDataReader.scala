@@ -32,9 +32,9 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.pytorch.AbstractTensor as Tensors
+import torch.utils.data.Dataset
 
 import scala.collection.mutable.ListBuffer
 

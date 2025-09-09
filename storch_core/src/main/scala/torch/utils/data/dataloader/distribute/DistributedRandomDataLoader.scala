@@ -19,13 +19,6 @@ import org.bytedeco.pytorch.{
   T_TensorTensor_TOptional,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
   JavaDistributedRandomDataLoader as DRDL,
@@ -43,7 +36,7 @@ class DistributedRandomDataLoader(
     sampler: DistributedRandomSampler,
     option: DataLoaderOptions
 ) extends DRDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): ExampleVectorIterator = super.begin()
 

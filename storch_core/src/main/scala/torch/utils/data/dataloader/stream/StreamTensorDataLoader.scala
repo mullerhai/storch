@@ -19,13 +19,6 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
   JavaStreamTensorDataLoader as STDL,
@@ -43,7 +36,7 @@ class StreamTensorDataLoader(
     sampler: StreamSampler,
     option: DataLoaderOptions
 ) extends STDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()
 

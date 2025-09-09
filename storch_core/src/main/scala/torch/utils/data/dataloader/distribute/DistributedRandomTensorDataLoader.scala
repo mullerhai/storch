@@ -22,18 +22,18 @@ import org.bytedeco.pytorch.{
   JavaDistributedRandomTensorDataLoader as DRTDL,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.TensorDataset
+import torch.utils.data.dataset.java.NormalTensorDataset
 import torch.utils.data.sampler.distribute.DistributedRandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class DistributedRandomTensorDataLoader(
-    dataset: TensorDataset,
-    sampler: DistributedRandomSampler,
-    option: DataLoaderOptions
+                                         dataset: NormalTensorDataset,
+                                         sampler: DistributedRandomSampler,
+                                         option: DataLoaderOptions
 ) extends DRTDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()
 

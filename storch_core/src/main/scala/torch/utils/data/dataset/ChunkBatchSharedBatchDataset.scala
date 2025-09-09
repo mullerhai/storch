@@ -22,7 +22,7 @@ import org.bytedeco.pytorch.{
   SequentialSampler as SS
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 
 //ChunkMapDataset
 class ChunkBatchSharedBatchDataset(chunkReader: ChunkDataReader) extends CBSBD(chunkReader) {

@@ -15,13 +15,6 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
   JavaStatefulTensorDataLoader as STDL,
@@ -34,7 +27,7 @@ import torch.utils.data.dataset.java
 
 class StatefulTensorDataLoader(dataset: java.StatefulTensorDataset, option: DataLoaderOptions)
     extends STDL(dataset, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()
 

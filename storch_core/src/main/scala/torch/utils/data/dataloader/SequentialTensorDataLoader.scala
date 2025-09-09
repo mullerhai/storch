@@ -20,18 +20,18 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.TensorDataset
+import torch.utils.data.dataset.java.NormalTensorDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.sampler.SequentialSampler
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class SequentialTensorDataLoader(
-    dataset: java.TensorDataset,
-    sampler: SequentialSampler,
-    option: DataLoaderOptions
+                                  dataset: java.NormalTensorDataset,
+                                  sampler: SequentialSampler,
+                                  option: DataLoaderOptions
 ) extends STDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): TensorExampleVectorIterator = super.begin()
 

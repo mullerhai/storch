@@ -15,19 +15,12 @@ import org.bytedeco.pytorch.{
   TensorExampleVector,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkMapTensorBatchDataset as CMTBD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkMapTensorBatchDataset(chunkMapTensorDataset: ChunkMapTensorDataset)

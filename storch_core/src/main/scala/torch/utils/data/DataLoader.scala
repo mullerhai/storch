@@ -1,62 +1,103 @@
-/*
- * Copyright 2022 storch.dev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package torch
-package utils.data
+package utils
+package data
 
-import scala.util.Random
+import org.bytedeco.pytorch.*
+import torch.utils.data.dataloader.TorchDataLoaderOptions
+import torch.utils.data.datareader.ChunkDataReader
+import torch.utils.data.sampler.RandomSampler
+import torch.{DType, Default}
 
-/** Provides an iterable over batches of a given dataset. */
-class DataLoader[Input, Batch](
-    dataset: IndexedSeq[Input],
-    batchSize: Int = 1,
-    shuffle: Boolean = false,
-    collateFn: Seq[Input] => Batch
-) extends Iterable[Batch] {
+import java.nio.file.Paths
+import scala.collection.Iterator
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+//import torch.utils.data.dataloader.ChunkRandomDataLoader
 
-  override def iterator =
-    (if shuffle then Random.shuffle(dataset) else dataset)
-      .grouped(batchSize)
-      .map(collateFn)
+// 定义一个可迭代的类，用于遍历用户自定义数据集
+class DataLoader[ParamType <: DType: Default](
+    dataset: Dataset[ParamType],
+    options: TorchDataLoaderOptions
+) extends Iterable[Example] {
+  // 转换用户自定义数据集为 Example 序列
+  private def convertDatasetToExamples(): Seq[Example] = {
+    val examples = new ArrayBuffer[Example]()
+    for (i <- 0 until dataset.length.toInt) {
+      val (data, target) = dataset.getItem(i)
+      // 这里需要根据实际的 Tensor 类型转换为 native 数据
+      val example = new Example(data.native, target.native)
+      examples += example
+    }
+    examples.toSeq
+  }
+
+  def exampleVectorToExample(exVec: ExampleVector): Example = {
+    val example = new Example(exVec.get(0).data(), exVec.get(0).target())
+    example
+  }
+  // 创建 ChunkDataReader
+  private def createChunkDataReader(examples: Seq[Example]): ChunkDataReader = {
+    val reader = new ChunkDataReader()
+    val exampleVector = new org.bytedeco.pytorch.ExampleVector(examples*)
+    reader(exampleVector)
+    reader
+  }
+
+  // 创建 ChunkDataset
+  private def createChunkDataset(
+      reader: ChunkDataReader,
+      examples: Seq[Example],
+      options: TorchDataLoaderOptions
+  ): ChunkDataset = {
+
+    val prefetch_count = 1
+    new ChunkDataset(
+      reader,
+      new RandomSampler(examples.size),
+      new RandomSampler(examples.size),
+      new ChunkDatasetOptions(prefetch_count, options.batch_size.toLong)
+    )
+  }
+
+  // 创建 ChunkSharedBatchDataset
+  private def createChunkSharedBatchDataset(chunkDataset: ChunkDataset): ChunkMapDataset = {
+    new ChunkSharedBatchDataset(chunkDataset).map(new ExampleStack)
+  }
+
+  // 创建 ChunkRandomDataLoader
+  private def createChunkRandomDataLoader(
+      ds: ChunkMapDataset,
+      options: TorchDataLoaderOptions
+  ): ChunkRandomDataLoader = {
+    val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(options.batch_size)
+    loaderOpts.batch_size.put(options.batch_size)
+    //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong))
+    loaderOpts.drop_last().put(options.drop_last)
+    loaderOpts.enforce_ordering().put(!options.shuffle)
+    loaderOpts.workers().put(options.num_workers)
+    loaderOpts.max_jobs().put(4)
+    new ChunkRandomDataLoader(ds, loaderOpts)
+  }
+
+  // 初始化内部组件
+  private val examples = convertDatasetToExamples()
+  private val reader = createChunkDataReader(examples)
+  private val nativeDataset: ChunkDataset = createChunkDataset(reader, examples, options)
+  private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
+  private val nativeDataLoader: ChunkRandomDataLoader =
+    createChunkRandomDataLoader(sharedBatchDataset, options)
+
+  override def iterator: Iterator[Example] = new Iterator[Example] {
+    private var current: ExampleIterator = nativeDataLoader.begin
+    private val endIterator: ExampleIterator = nativeDataLoader.end
+
+    // 检查是否还有下一个元素
+    override def hasNext: Boolean = !current.equals(endIterator)
+
+    // 获取下一个元素并移动迭代器
+    override def next(): Example = {
+      val batch = current.access
+      current = current.increment
+      batch
+    }
+  }
 }
-
-class TupleDataLoader[D1 <: DType, D2 <: DType](
-    dataset: IndexedSeq[(Tensor[D1], Tensor[D2])],
-    batchSize: Int = 1,
-    shuffle: Boolean = false,
-    collateFn: Seq[(Tensor[D1], Tensor[D2])] => (Tensor[D1], Tensor[D2]) =
-      (examples: Seq[(Tensor[D1], Tensor[D2])]) =>
-        (torch.stack(examples.map(_._1)), torch.stack(examples.map(_._2)))
-) extends DataLoader[(Tensor[D1], Tensor[D2]), (Tensor[D1], Tensor[D2])](
-      dataset,
-      batchSize,
-      shuffle,
-      collateFn
-    )
-
-class ExampleDataLoader[D1 <: DType, D2 <: DType](
-    dataset: IndexedSeq[Example[D1, D2]],
-    batchSize: Int = 1,
-    shuffle: Boolean = false,
-    collateFn: Seq[Example[D1, D2]] => (Tensor[D1], Tensor[D2]) =
-      (examples: Seq[Example[D1, D2]]) =>
-        (torch.stack(examples.map(_.feature)), torch.stack(examples.map(_.target)))
-) extends DataLoader[Example[D1, D2], (Tensor[D1], Tensor[D2])](
-      dataset,
-      batchSize,
-      shuffle,
-      collateFn
-    )

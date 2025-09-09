@@ -35,7 +35,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkRandomDataLoader(dataset: ChunkMapDataset, option: DataLoaderOptions)
     extends CRDL(dataset, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): ExampleIterator = super.begin()
 

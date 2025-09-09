@@ -34,7 +34,7 @@ class StreamDataLoader(
     sampler: StreamSampler,
     option: DataLoaderOptions
 ) extends SDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): ExampleVectorIterator = super.begin()
 

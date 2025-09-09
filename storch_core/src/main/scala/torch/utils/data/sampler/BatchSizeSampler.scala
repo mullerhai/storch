@@ -23,7 +23,7 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 
 trait BatchSizeSampler extends BSS {
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)

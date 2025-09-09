@@ -1,30 +1,21 @@
 package torch
 package utils
 package data
-package dataloader
 
-import org.bytedeco.pytorch.{
-  ChunkMapTensorDataset,
-  ChunkSharedTensorBatchDataset,
-  ChunkTensorDataset,
-  TensorExample,
-  TensorExampleIterator,
-  TensorExampleStack,
-  TensorExampleVector
-}
-import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
+import org.bytedeco.pytorch.*
+import torch.utils.data
+import torch.utils.data.dataloader.{ChunkRandomTensorDataLoader, TorchTensorDataLoaderOptions}
+import torch.utils.data.datareader.ChunkTensorDataReader
+import torch.utils.data.sampler.RandomSampler
+
 import java.nio.file.Paths
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
-import torch.utils.data.dataset.TorchTensorDataset
-import torch.utils.data.sampler.RandomSampler
-import torch.utils.data.datareader.ChunkTensorDataReader
-import torch.utils.data.dataloader.ChunkRandomTensorDataLoader
 
 // 定义一个可迭代的类，用于遍历用户自定义张量数据集
-class TorchTensorDataLoader[ParamType <: DType: Default](
-    dataset: TorchTensorDataset[ParamType],
-    options: TorchTensorDataLoaderOptions
+class TensorDataLoader[ParamType <: DType: Default](
+                                                     dataset: data.TensorDataset[ParamType],
+                                                     options: TorchTensorDataLoaderOptions
 ) extends Iterable[TensorExample] {
   // 转换用户自定义数据集为 TensorExample 序列
   private def convertDatasetToTensorExamples(): Seq[TensorExample] = {

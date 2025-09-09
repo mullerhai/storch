@@ -12,20 +12,13 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorOptional,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   JavaStatefulTensorBatchDataset as STBD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
 import torch.utils.data.datareader.TensorExampleVectorReader
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader
 

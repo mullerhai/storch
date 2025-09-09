@@ -222,7 +222,7 @@ object LstmNetApp extends App {
     StatefulTensorDataset,
     StreamDataset,
     StreamTensorDataset,
-    TensorDataset
+    NormalTensorDataset
   }
 
   def exampleVectorToExample(exVec: ExampleVector): Example = {

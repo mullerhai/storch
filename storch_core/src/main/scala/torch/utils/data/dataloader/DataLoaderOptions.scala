@@ -18,7 +18,7 @@ import torch.{DType, Default}
 import torch.utils.data.sampler.Sampler
 import scala.collection.mutable.ArrayBuffer
 
-trait DataLoader
+trait TorchDataLoader
 
 case class TorchDataLoaderOptions(
     batch_size: Int = 1,

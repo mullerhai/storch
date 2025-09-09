@@ -14,15 +14,10 @@ import org.bytedeco.pytorch.{
   TensorVector,
   TransformerImpl,
   TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   RandomSampler as RS
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.dataset.Dataset
+import torch.utils.data.Dataset
 trait Sampler extends SM {
 
 //  override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)

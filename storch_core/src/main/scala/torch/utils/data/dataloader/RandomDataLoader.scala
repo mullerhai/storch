@@ -16,13 +16,6 @@ import org.bytedeco.pytorch.{
   T_TensorTensor_TOptional,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   ChunkRandomDataLoader as CRDL,
   JavaRandomDataLoader as RDL,
@@ -36,7 +29,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 class RandomDataLoader(dataset: JavaDataset, sampler: RandomSampler, option: DataLoaderOptions)
     extends RDL(dataset, sampler, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): ExampleVectorIterator =
     super.begin() // exampleVectorIterator //dataset.exampleVector.begin()

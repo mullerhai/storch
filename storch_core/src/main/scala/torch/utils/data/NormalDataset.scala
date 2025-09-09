@@ -1,7 +1,6 @@
 package torch
 package utils
 package data
-package dataset.java
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -17,22 +16,14 @@ import org.bytedeco.pytorch.{
   T_TensorTensor_TOptional,
   TensorMapper,
   TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   ChunkBatchDataset as CBD,
   JavaDataset as SD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.Dataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-trait SDataset extends SD {
+trait NormalDataset extends SD {
 
 //  override def get_batch(request: Long): ExampleVector = super.get_batch(request)
 

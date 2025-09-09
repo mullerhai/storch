@@ -6,22 +6,8 @@ import org.bytedeco.pytorch.{
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
-  RandomSampler as RS
+  SizeTVectorOptional
 }
-import torch.utils.data.dataset.java.SDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class SequentialSampler(size: Long) extends SS(size) with Sampler {

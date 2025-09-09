@@ -25,10 +25,8 @@ import org.bytedeco.pytorch.{
   kZeros,
   RandomSampler as RS
 }
-import torch.utils.data.dataset.java.SDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.javacpp.Pointer
-import torch.utils.data.dataset.java.SDataset
 import torch.utils.data.sampler.BatchSizeSampler
 import org.bytedeco.pytorch.StreamSampler as SS
 class StreamSampler(epochSize: Long) extends SS(epochSize) with BatchSizeSampler {

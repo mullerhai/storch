@@ -25,7 +25,6 @@ import org.bytedeco.pytorch.{
   kZeros,
   RandomSampler as RS
 }
-import torch.utils.data.dataset.java.SDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class DistributedRandomSampler(

@@ -11,21 +11,8 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   RandomSampler as RS
 }
-import torch.utils.data.dataset.java.SDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.javacpp.Pointer
 class DistributedSampler(epoch: Int) extends DS(epoch.toNative) with Sampler {

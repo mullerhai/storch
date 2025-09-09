@@ -37,7 +37,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 //import torch.utils.data.dataset.ChunkSharedTensorBatchDataset .map(new TensorExampleStack)
 class ChunkRandomTensorDataLoader(dataset: ChunkMapTensorDataset, option: DataLoaderOptions)
     extends CRTDL(dataset, option)
-    with DataLoader {
+    with TorchDataLoader {
 
   override def begin(): TensorExampleIterator = super.begin()
 
