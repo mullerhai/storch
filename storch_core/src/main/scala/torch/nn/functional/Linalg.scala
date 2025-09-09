@@ -11,7 +11,7 @@ import org.bytedeco.pytorch.ScalarTypeOptional
 import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
 
 //@Namespace("torch::linalg
-private[torch] trait linalg {
+private[torch] trait Linalg {
 
   def cholesky_inverse[D <: DType](input: Tensor[D]): Tensor[D] = {
     val result = torchNative.cholesky_inverse(input.native)

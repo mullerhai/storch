@@ -32,10 +32,14 @@ import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
   */
 package object functional
     extends Activations
+    with BatchNorm
     with Convolution
+    with Distance
     with Dropout
     with Linear
     with Loss
+    with Normalization
+    with Linalg
     with Pooling
     with Sparse
     with UnSampling
@@ -43,6 +47,7 @@ package object functional
     with FFT
     with Fold
     with Padding
+    with Recurrent
 
 //@native
 //@Namespace("at::native")
