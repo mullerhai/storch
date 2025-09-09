@@ -33,7 +33,7 @@ package object cuda {
 
   def device_count = torchNative.cuda_device_count()
 
-//  def cudnn_is_available :Boolean = torchNative.cudnn_is_available()
+  def cudnn_is_available :Boolean = torchNative.cudnn_is_available()
 //
 //  def getCurrentCUDASolverDnHandle = torchCuda.getCurrentCUDASolverDnHandle()
 //

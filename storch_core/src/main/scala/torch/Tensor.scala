@@ -3084,15 +3084,27 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   )
 //  def to_mkldnn():Tensor[D] = fromNative(native.to_mkldnn())
   def dequantize(): Tensor[D] = fromNative(native.dequantize())
+
   def q_scale(): Double = native.q_scale()
+  
   def q_zero_point(): Long = native.q_zero_point()
+  
   def q_per_channel_scales(): Tensor[D] = fromNative(native.q_per_channel_scales())
+  
   def q_per_channel_zero_points(): Tensor[D] = fromNative(native.q_per_channel_zero_points())
+  
   def q_per_channel_axis(): Long = native.q_per_channel_axis()
+  
   def int_repr(): Tensor[D] = fromNative(native.int_repr())
+  
   def qscheme() = native.qscheme()
+  
   def _autocast_to_full_precision(cuda_enabled: Boolean, cpu_enabled: Boolean): Tensor[D] =
     fromNative(native._autocast_to_full_precision(cuda_enabled, cpu_enabled))
+
+  def _autocast_to_reduced_precision[D1 <: DType,D2 <: DType](cuda_enabled: Boolean, cpu_enabled: Boolean, cuda_dtype: D1, cpu_dtype: D2): Tensor[D] =
+    fromNative(native._autocast_to_reduced_precision(cuda_enabled, cpu_enabled, cuda_dtype.toScalarType, cpu_dtype.toScalarType))
+
   def set_(source: Storage): this.type = {
     native.set_(source)
     this
