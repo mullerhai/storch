@@ -16,6 +16,11 @@
 
 package torch
 package ops
+
+import Layout.Strided
+import Device.CPU
+import internal.NativeConverters
+import NativeConverters.*
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.{
@@ -275,7 +280,7 @@ private[torch] trait BLASOps {
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],
       source: Tensor[D2]
-  ):  Tensor[Promoted[D1, D2]] = {
+  ): Tensor[Promoted[D1, D2]] = {
     index.dtype match
       case torch.int64 =>
         fromNative(
@@ -2144,17 +2149,120 @@ private[torch] trait BLASOps {
 //  def trace[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trace(t1.native))
 
+//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal(nullValue = "at::TensorOptions(at::kLong)") TensorOptions var6);
+//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2);
+//
+//      torch.tril_indices(row, col, offset=0, *, dtype=torch.long, device='cpu', layout=torch.strided)
+
+//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8, @ByVal BoolOptional var9);
+
+//    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal(nullValue = "at::TensorOptions(at::kLong)") TensorOptions var6);
+  //    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2);
+  //    torch.triu_indices(row, col, offset=0, *, dtype=torch.long, device='cpu', layout=torch.strided) →
+  //    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2,
+  //    @Cast({"int64_t"}) long var4,
+  //    @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8, @ByVal BoolOptional var9);
+
+  def tril_indices[D1 <: DType](
+      row: Long,
+      col: Long,
+      offset: Long,
+      dtype: D1,
+      device: Device = CPU,
+      layout: Layout = Strided,
+      requires_grad: Boolean = false
+  ): Tensor[D1] =
+    val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+    fromNative(torchNative.tril_indices(row, col, offset, options))
+
+  def triu_indices[D1 <: DType](
+      row: Long,
+      col: Long,
+      offset: Long,
+      dtype: D1,
+      device: Device = CPU,
+      layout: Layout = Strided,
+      requires_grad: Boolean = false
+  ): Tensor[D1] =
+    val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+    fromNative(torchNative.triu_indices(row, col, offset, options))
+
+  def tril_indices[D1 <: DType](row: Long, col: Long): Tensor[D1] =
+    fromNative(torchNative.tril_indices(row, col))
+
+  def triu_indices[D1 <: DType](row: Long, col: Long): Tensor[D1] =
+    fromNative(torchNative.triu_indices(row, col))
+
+  def trapezoid[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Long): Tensor[D1] =
+    fromNative(torchNative.trapezoid(t1.native, t2.native, dim))
+
+  // torch.isin(elements, test_elements, *, assume_unique=False, invert=False)
+  def isin[D1 <: DType](elements: Tensor[D1], test_elements: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.isin(elements.native, test_elements.native))
+
+  def isin[D1 <: DType](
+      elements: Tensor[D1],
+      test_elements: Tensor[D1],
+      assume_unique: Boolean = false,
+      invert: Boolean = false
+  ): Tensor[D1] =
+    fromNative(torchNative.isin(elements.native, test_elements.native, assume_unique, invert))
+//isFloatingType
+  def isFloatingType[D1 <: DType](t1: D1): Boolean =
+    torchNative.isFloatingType(t1.toScalarType)
+
+  def isFloat8Type[D1 <: DType](t1: D1): Boolean =
+    torchNative.isFloat8Type(t1.toScalarType)
+
+  def isComplexType[D1 <: DType](t1: D1): Boolean =
+    torchNative.isComplexType(t1.toScalarType)
+
+  def isIntegralType[D1 <: DType](t1: D1, include_bool: Boolean = false): Boolean =
+    torchNative.isIntegralType(t1.toScalarType, include_bool)
+
+  def isReducedFloatingType[D1 <: DType](t1: D1): Boolean =
+    torchNative.isReducedFloatingType(t1.toScalarType)
+
+  def isBitsType[D1 <: DType](t1: D1): Boolean =
+    torchNative.isBitsType(t1.toScalarType)
+
+  def isBarebonesUnsignedType[D1 <: DType](t1: D1): Boolean = {
+    torchNative.isBarebonesUnsignedType(t1.toScalarType)
+  }
+
+  def isQIntType[D1 <: DType](t1: D1): Boolean = {
+    torchNative.isQIntType(t1.toScalarType)
+  }
+
+  //  def trapezoid[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.trapezoid(t1.native, t2.native))
+
+  def trapezoid[D1 <: DType, S <: ScalaType](t1: Tensor[D1], t2: S, dim: Long): Tensor[D1] =
+    fromNative(torchNative.trapezoid(t1.native, toScalar(t2), dim))
+
   def trapezoid[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.trapezoid(t1.native))
 
   def trapz[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.trapz(t1.native))
 
+  def trapz[D1 <: DType](t1: Tensor[D1], xy: Double, dim: Long): Tensor[D1] =
+    fromNative(torchNative.trapz(t1.native, xy, dim))
+
+  def trapz[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Long): Tensor[D1] =
+    fromNative(torchNative.trapz(t1.native, t2.native, dim))
+
   def tril[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.tril(t1.native))
 
+//  def tril[D1 <: DType](t1: Tensor[D1], diagonal: Int = 0): Tensor[D1] =
+//    fromNative(torchNative.tril(t1.native, diagonal))
+
   def triu[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.triu(t1.native))
+
+  def triu[D1 <: DType](t1: Tensor[D1], diagonal: Int = 0): Tensor[D1] =
+    fromNative(torchNative.triu(t1.native, diagonal))
 
 //  def trunc[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trunc(t1.native))

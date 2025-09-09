@@ -504,7 +504,15 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def float: Tensor[Float32] = to(dtype = float32)
 
-  def toBool: Tensor[Bool] = to(dtype = bool)
+  def bools: Tensor[Bool] = to(dtype = bool)
+
+  def boolean: Tensor[Bool] = to(dtype = bool)
+
+  def double: Tensor[Float64] = to(dtype = float64)
+
+//  def long: Tensor[Int64] = to(dtype = int64)
+
+  def int: Tensor[Int32] = to(dtype = int32)
 
   /** Divides each element of this tensor by `s` and floors the result. */
   def floorDivide[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
@@ -1675,7 +1683,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  def where[S <: ScalaType](condition: Tensor[Bool], other: S): Tensor[Promoted[Int64, ScalaToDType[S]]] =
+  def where[S <: ScalaType](
+      condition: Tensor[Bool],
+      other: S
+  ): Tensor[Promoted[Int64, ScalaToDType[S]]] =
     fromNative(native.where(condition.native, toScalar(other)))
 
   def where(condition: Tensor[Bool], other: Tensor[D]): Tensor[Int64] =
@@ -2463,7 +2474,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def mul[S <: ScalaType](other: S): Tensor[D] = fromNative(native.mul(toScalar(other)))
 
-  def multiply[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(native.multiply(toScalar(other)))
+  def multiply[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
+    native.multiply(toScalar(other))
+  )
 
   def mvlgamma(p: Long): Tensor[D] = fromNative(native.mvlgamma(p))
   def mul_[D1 <: DType](other: Tensor[D1]): this.type = {
@@ -2950,6 +2963,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def trunc(): Tensor[D] = fromNative(native.trunc())
 
   def fix(): Tensor[D] = fromNative(native.fix())
+
   def type_as[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.type_as(other.native)
   )
@@ -3640,17 +3654,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.bitwise_right_shift(other.native)
   )
 
-  def bitwise_right_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
-    native.bitwise_right_shift(toScalar(other))
-  )
+  def bitwise_right_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] =
+    fromNative(
+      native.bitwise_right_shift(toScalar(other))
+    )
 
   def bitwise_left_shift[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.bitwise_left_shift(other.native)
   )
 
-  def bitwise_left_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
-    native.bitwise_left_shift(toScalar(other))
-  )
+  def bitwise_left_shift[S <: ScalaType](other: S): Tensor[Promoted[D, ScalaToDType[S]]] =
+    fromNative(
+      native.bitwise_left_shift(toScalar(other))
+    )
 
   def tril_(): this.type = {
     native.tril_()
@@ -4479,9 +4495,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.renorm(toScalar(p), dim, toScalar(maxnorm))
   )
 
-  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
-    native.renorm(toScalar(p), dim, toScalar(maxnorm))
-  )
+  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[Promoted[D, ScalaToDType[S]]] =
+    fromNative(
+      native.renorm(toScalar(p), dim, toScalar(maxnorm))
+    )
 
   def alias(): Tensor[D] = fromNative(native.alias())
 
@@ -4782,26 +4799,27 @@ object Tensor:
       case _ => throw new IllegalArgumentException("Unsupported array dimension")
     }
     tensor
-//    val tensor2 : Tensor[ScalaToDType[U]] =  ndArray match {
-//      case singleDim: Array[U] =>
-//        val dataSeq = singleDim.toSeq
-//        this.apply(dataSeq, Strided, device, requires_grad)
-//      case twoDim: Array[Array[U]] =>
-//        val dataSeq = twoDim.map((arr:Array[U]) => arr.toSeq).toSeq
-//        this.apply(dataSeq, Strided, device, requires_grad)
-//      case threeDim: Array[Array[Array[U]]] =>
-//        val dataSeq = threeDim.map((arr:Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
-//        this.apply(dataSeq, Strided, device, requires_grad)
-//      case fourDim: Array[Array[Array[Array[U]]]] =>
-//        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
-//        Tensor(dataSeq, Strided, device, requires_grad)
-//      case fiveDim: Array[Array[Array[Array[Array[U]]]]] =>
-//        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
-//        Tensor(dataSeq, Strided, device, requires_grad)
-//      case _ => throw new IllegalArgumentException("Unsupported array dimension")
-//    }
-//    tensor
   }
+
+  //    val tensor2 : Tensor[ScalaToDType[U]] =  ndArray match {
+  //      case singleDim: Array[U] =>
+  //        val dataSeq = singleDim.toSeq
+  //        this.apply(dataSeq, Strided, device, requires_grad)
+  //      case twoDim: Array[Array[U]] =>
+  //        val dataSeq = twoDim.map((arr:Array[U]) => arr.toSeq).toSeq
+  //        this.apply(dataSeq, Strided, device, requires_grad)
+  //      case threeDim: Array[Array[Array[U]]] =>
+  //        val dataSeq = threeDim.map((arr:Array[Array[U]]) => arr.map(_.toSeq).toSeq).toSeq
+  //        this.apply(dataSeq, Strided, device, requires_grad)
+  //      case fourDim: Array[Array[Array[Array[U]]]] =>
+  //        val dataSeq = fourDim.map((arr: Array[Array[Array[U]]]) => arr.map(_.map(_.toSeq).toSeq).toSeq).toSeq
+  //        Tensor(dataSeq, Strided, device, requires_grad)
+  //      case fiveDim: Array[Array[Array[Array[Array[U]]]]] =>
+  //        val dataSeq = fiveDim.map((arr: Array[Array[Array[Array[U]]]]) => arr.map(_.map(_.map(_.toSeq).toSeq).toSeq).toSeq).toSeq
+  //        Tensor(dataSeq, Strided, device, requires_grad)
+  //      case _ => throw new IllegalArgumentException("Unsupported array dimension")
+  //    }
+  //    tensor
 
   def arrayToSeq[U <: ScalaType: ClassTag](
       arr: Array[U] | Array[Array[U]] | Array[Array[Array[U]]] | Array[Array[Array[Array[U]]]] |
@@ -4930,6 +4948,20 @@ object Tensor:
         tensor.set_requires_grad(requiresGrad)
         tensor.to(device = device)
       case _ => throw new IllegalArgumentException("Unsupported type")
+
+  def scalar_tensor[S <: ScalaType](
+      s: S,
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requiresGrad: Boolean = false
+  ): Tensor[ScalaToDType[S]] =
+    val dtype = scalaToDType(s)
+    fromNative(
+      torchNative.scalar_tensor(
+        NativeConverters.toScalar(s),
+        NativeConverters.tensorOptions(dtype, layout, device, requiresGrad)
+      )
+    )
 
   def fromScalar[S <: ScalaType](
       s: S,

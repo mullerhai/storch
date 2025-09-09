@@ -301,7 +301,7 @@ private[torch] trait IndexingSlicingJoiningOps {
     */
   def columnStack[D <: DType](tensors: Seq[Tensor[D]]): Tensor[D] =
     fromNative(torchNative.column_stack(toArrayRef(tensors)))
-  
+
 //  def column_stack[D <: DType](tensors: Seq[Tensor[D]]): Tensor[D] =
 //    fromNative(torchNative.column_stack(toArrayRef(tensors)))
   /** Stack tensors in sequence depthwise (along third axis).
@@ -1038,12 +1038,12 @@ private[torch] trait IndexingSlicingJoiningOps {
     )
 
   def diagonal_scatter[D <: DType](
-                                   input: Tensor[D],
-                                   src: Tensor[D],
-                                   offset: Int = 0,
-                                   dim1: Int = 0,
-                                   dim2: Int = 1
-                                 ): Tensor[D] =
+      input: Tensor[D],
+      src: Tensor[D],
+      offset: Int = 0,
+      dim1: Int = 0,
+      dim2: Int = 1
+  ): Tensor[D] =
     fromNative(
       torchNative.diagonal_scatter(
         input.native,
@@ -1057,7 +1057,12 @@ private[torch] trait IndexingSlicingJoiningOps {
   def selectScatter[D <: DType](input: Tensor[D], src: Tensor[D], dim: Int, index: Int): Tensor[D] =
     fromNative(torchNative.select_scatter(input.native, src.native, dim.toLong, index.toLong))
 
-  def select_scatter[D <: DType](input: Tensor[D], src: Tensor[D], dim: Int, index: Int): Tensor[D] =
+  def select_scatter[D <: DType](
+      input: Tensor[D],
+      src: Tensor[D],
+      dim: Int,
+      index: Int
+  ): Tensor[D] =
     fromNative(torchNative.select_scatter(input.native, src.native, dim.toLong, index.toLong))
 
   // TODO Add docs for sliceScatterd
@@ -1082,13 +1087,13 @@ private[torch] trait IndexingSlicingJoiningOps {
     )
 
   def slice_scatter[D <: DType](
-                                input: Tensor[D],
-                                src: Tensor[D],
-                                dim: Int,
-                                start: Int | Option[Int] = None,
-                                end: Int | Option[Int] = None,
-                                step: Int = 1
-                              ): Tensor[D] =
+      input: Tensor[D],
+      src: Tensor[D],
+      dim: Int,
+      start: Int | Option[Int] = None,
+      end: Int | Option[Int] = None,
+      step: Int = 1
+  ): Tensor[D] =
     fromNative(
       torchNative.slice_scatter(
         input.native,
@@ -1099,7 +1104,7 @@ private[torch] trait IndexingSlicingJoiningOps {
         step.toLong
       )
     )
-    
+
   // TODO Add docs for scatter_add
   def scatterAdd[D <: DType](
       input: Tensor[D],
@@ -1121,7 +1126,6 @@ private[torch] trait IndexingSlicingJoiningOps {
           )
         )
   }
-
 
   // TODO scatter_reduce
   // TODO enum for reduce options?
@@ -1495,10 +1499,10 @@ private[torch] trait IndexingSlicingJoiningOps {
   }
 
   def tensor_split[D <: DType](
-                               input: Tensor[D],
-                               splitSizeOrSections: Int | Seq[Int],
-                               dim: Int = 0
-                             ): Seq[Tensor[D]] = {
+      input: Tensor[D],
+      splitSizeOrSections: Int | Seq[Int],
+      dim: Int = 0
+  ): Seq[Tensor[D]] = {
     val result = splitSizeOrSections match {
       case i: Int => torchNative.tensor_split(input.native, i.toLong, dim.toLong)
       case s: Seq[Int] =>

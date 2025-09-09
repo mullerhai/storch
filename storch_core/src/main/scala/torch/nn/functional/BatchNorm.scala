@@ -105,8 +105,6 @@ private[torch] trait BatchNorm {
     fromNative(result)
   }
 
-
-
 }
 
 //torch.nn.functional.rms_norm(input, normalized_shape, weight=None, eps=None)
