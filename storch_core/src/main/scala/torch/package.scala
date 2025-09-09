@@ -40,6 +40,7 @@ package object torch
     with ops.JitOps
     with ops.NumpyOps
     with ops.FftOps
+    with ops.ProfilerOPs
     with ops.UnSamplingOps
     with ops.RecurrentOps
     with ops.OtherOps {
