@@ -8,7 +8,8 @@ import org.bytedeco.pytorch.{
   TensorOptional,
   LongOptional,
   BoolOptional,
-  SymInt,StringIValueMap,
+  SymInt,
+  StringIValueMap,
   SymIntOptional,
   LongVector
 }
@@ -54,6 +55,5 @@ trait ProfilerOPs {
   def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
 
   def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
-
 
 }

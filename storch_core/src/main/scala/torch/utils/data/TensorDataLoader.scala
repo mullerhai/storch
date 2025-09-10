@@ -14,8 +14,8 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 // 定义一个可迭代的类，用于遍历用户自定义张量数据集
 class TensorDataLoader[ParamType <: DType: Default](
-                                                     dataset: data.TensorDataset[ParamType],
-                                                     options: TorchTensorDataLoaderOptions
+    dataset: data.TensorDataset[ParamType],
+    options: TorchTensorDataLoaderOptions
 ) extends Iterable[TensorExample] {
   // 转换用户自定义数据集为 TensorExample 序列
   private def convertDatasetToTensorExamples(): Seq[TensorExample] = {

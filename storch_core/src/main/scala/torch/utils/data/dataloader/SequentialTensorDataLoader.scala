@@ -27,9 +27,9 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class SequentialTensorDataLoader(
-                                  dataset: java.NormalTensorDataset,
-                                  sampler: SequentialSampler,
-                                  option: DataLoaderOptions
+    dataset: java.NormalTensorDataset,
+    sampler: SequentialSampler,
+    option: DataLoaderOptions
 ) extends STDL(dataset, sampler, option)
     with TorchDataLoader {
 

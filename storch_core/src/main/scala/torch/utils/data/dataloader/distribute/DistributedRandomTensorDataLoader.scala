@@ -29,9 +29,9 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class DistributedRandomTensorDataLoader(
-                                         dataset: NormalTensorDataset,
-                                         sampler: DistributedRandomSampler,
-                                         option: DataLoaderOptions
+    dataset: NormalTensorDataset,
+    sampler: DistributedRandomSampler,
+    option: DataLoaderOptions
 ) extends DRTDL(dataset, sampler, option)
     with TorchDataLoader {
 

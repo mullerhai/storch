@@ -5,38 +5,37 @@ import org.bytedeco.pytorch.global.torch.*
 import org.bytedeco.javacpp.chrono.Milliseconds
 import org.bytedeco.pytorch.Store.kNoTimeout
 
-/**
- * Scala 包装器类，封装 Java 的 c10d::Work 实现
- * 注意：原 Java 类注释提示该 API 将被 ivalue::Future 替代，使用时需谨慎
- */
-class WorkWrapper private(private val underlying: Work) {
+/** Scala 包装器类，封装 Java 的 c10d::Work 实现 注意：原 Java 类注释提示该 API 将被 ivalue::Future 替代，使用时需谨慎
+  */
+class WorkWrapper private (private val underlying: Work) {
 
-  //region 构造函数映射
+  // region 构造函数映射
 
-  /**
-   * Pointer 构造函数（用于指针转换场景）
-   */
+  /** Pointer 构造函数（用于指针转换场景）
+    */
   def this(p: Pointer) = this(new Work(p))
 
-  /**
-   * 默认构造函数（无参数）
-   */
+  /** 默认构造函数（无参数）
+    */
   def this() = this(new Work())
 
-  /**
-   * 完整参数构造函数（带默认值）
-   *
-   * @param rank           排名（默认 -1）
-   * @param opType         操作类型（默认 OpType.UNKNOWN）
-   * @param profilingTitle 性能分析标题（默认 null）
-   * @param inputTensors   输入张量（默认空 optional）
-   */
+  /** 完整参数构造函数（带默认值）
+    *
+    * @param rank
+    *   排名（默认 -1）
+    * @param opType
+    *   操作类型（默认 OpType.UNKNOWN）
+    * @param profilingTitle
+    *   性能分析标题（默认 null）
+    * @param inputTensors
+    *   输入张量（默认空 optional）
+    */
   def this(
-            rank: Int = -1,
-            opType: OpType = OpType.UNKNOWN,
-            profilingTitle: String = null,
-            inputTensors: TensorVectorOptional = TensorVectorOptional()
-          ) = this(
+      rank: Int = -1,
+      opType: OpType = OpType.UNKNOWN,
+      profilingTitle: String = null,
+      inputTensors: TensorVectorOptional = TensorVectorOptional()
+  ) = this(
     new Work(
       rank,
       opType,
@@ -45,9 +44,8 @@ class WorkWrapper private(private val underlying: Work) {
     )
   )
 
-  /**
-   * 字节类型 opType 构造函数（兼容 byte 类型参数）
-   */
+  /** 字节类型 opType 构造函数（兼容 byte 类型参数）
+    */
 //  def this(
 //            rank: Int = -1,
 //            opType: Byte,
@@ -61,9 +59,9 @@ class WorkWrapper private(private val underlying: Work) {
 //      inputTensors
 //    )
 //  )
-  //endregion
+  // endregion
 
-  //region 实例方法映射
+  // region 实例方法映射
 
   /** 检查请求是否完成（非阻塞操作） */
   def isCompleted(): Boolean = underlying.isCompleted()
@@ -103,7 +101,7 @@ class WorkWrapper private(private val underlying: Work) {
 
   /** 获取操作类型 */
   def retrieveOpType(): OpType = underlying.retrieveOpType()
-  //endregion
+  // endregion
 
   /** 获取底层 Java 实例 */
 //  def underlying(): Work = underlying
@@ -111,6 +109,7 @@ class WorkWrapper private(private val underlying: Work) {
 
 /** 伴生对象，映射静态方法 */
 object WorkWrapper {
+
   /** 从 Future 创建 Work 实例 */
   def createFromFuture(arg0: Future): WorkWrapper =
     new WorkWrapper(Work.create_from_future(arg0))

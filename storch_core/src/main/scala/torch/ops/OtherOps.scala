@@ -471,9 +471,9 @@ private[torch] trait OtherOps {
   def torch_function_mode_enabled: Boolean = torchNative.torch_function_mode_enabled()
   def torch_function_all_disabled: Boolean = torchNative.torch_function_all_disabled()
   def dispatch_mode_enabled: Boolean = torchNative.dispatch_mode_enabled()
- // def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
-  //def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
- // def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
+  // def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
+  // def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
+  // def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
   def enter_dual_level = torchNative.enter_dual_level()
   def exit_dual_level(level: Long) = torchNative.exit_dual_level(level)
   def backward[D <: DType](tensors: Seq[Tensor[D]]) =

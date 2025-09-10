@@ -29,7 +29,8 @@ package object nn {
   export modules.container.Sequential
   export modules.container.ModuleList
   export modules.container.ModuleDict
-
+  export modules.container.Buffer
+  export modules.container.Parameter
   export modules.flatten.Flatten
   export modules.linear.Linear
   export modules.linear.Identity

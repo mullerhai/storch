@@ -1,7 +1,6 @@
 package torch
 package jit
 
-
 enum TokenKind(val value: Int):
   case TK_DUMMY_START extends TokenKind(256)
   case TK_EOF extends TokenKind(257)
@@ -99,13 +98,11 @@ enum TokenKind(val value: Int):
   case TK_ELLIPSIS extends TokenKind(349)
   case TK_NONE_TYPE extends TokenKind(350)
 
-  /**
-   * 查找并返回与当前value匹配的枚举单例实例，逻辑与Java版`intern()`完全一致
-   */
+  /** 查找并返回与当前value匹配的枚举单例实例，逻辑与Java版`intern()`完全一致
+    */
   def intern(): TokenKind =
     TokenKind.values.find(_.value == this.value).getOrElse(this)
 
-  /**
-   * 重写toString，返回interned实例的名称（保持与Java行为一致）
-   */
+  /** 重写toString，返回interned实例的名称（保持与Java行为一致）
+    */
 //  override def toString(): String = intern().name

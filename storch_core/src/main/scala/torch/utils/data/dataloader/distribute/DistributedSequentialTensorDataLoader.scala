@@ -29,9 +29,9 @@ import torch.utils.data.sampler.distribute.DistributedSequentialSampler
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 class DistributedSequentialTensorDataLoader(
-                                             dataset: NormalTensorDataset,
-                                             sampler: DistributedSequentialSampler,
-                                             option: DataLoaderOptions
+    dataset: NormalTensorDataset,
+    sampler: DistributedSequentialSampler,
+    option: DataLoaderOptions
 ) extends DSTDL(dataset, sampler, option)
     with TorchDataLoader {
 

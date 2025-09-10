@@ -2,8 +2,8 @@ package torch
 package nn
 package loss
 
-import torch.nn.modules.Module
 import torch.internal.NativeConverters.fromNative
+import torch.nn.modules.Module
 
 trait LossFunc extends Module {
 

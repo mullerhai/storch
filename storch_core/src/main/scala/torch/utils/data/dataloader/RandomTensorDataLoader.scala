@@ -28,9 +28,9 @@ import torch.utils.data.dataset.java
 import torch.utils.data.sampler
 
 class RandomTensorDataLoader(
-                              dataset: java.NormalTensorDataset,
-                              sampler: RandomSampler,
-                              option: DataLoaderOptions
+    dataset: java.NormalTensorDataset,
+    sampler: RandomSampler,
+    option: DataLoaderOptions
 ) extends RTDL(dataset, sampler, option)
     with TorchDataLoader {
 

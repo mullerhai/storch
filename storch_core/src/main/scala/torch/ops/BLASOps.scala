@@ -1793,20 +1793,59 @@ private[torch] trait BLASOps {
   def ravel[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ravel(t1.native))
 
-//  def real[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-//    fromNative(torchNative.real(t1.native))
+  //    public static native Tensor repeat_interleave(@Const @ByRef Tensor var0, LongOptional var1);
 
-//  def reciprocal[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-//    fromNative(torchNative.reciprocal(t1.native))
+  //    public static native Tensor repeat_interleave(Tensor var0, Tensor var1, LongOptional var2,  LongOptional var3);
+  def repeat_interleave[D1 <: DType](
+      t1: Tensor[D1],
+      repeats: Tensor[Int64],
+      dim: Option[Long],
+      output_size: Option[Long] = None
+  ): Tensor[D1] = {
+    val dimOpt = if dim.isDefined then new LongOptional(dim.get) else new LongOptional()
+    val outputSizeOpt =
+      if output_size.isDefined then new LongOptional(output_size.get) else new LongOptional()
+    fromNative(torchNative.repeat_interleave(t1.native, repeats.native, dimOpt, outputSizeOpt))
+  }
+
+  //    public static native Tensor repeat_interleave(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, LongOptional var3, LongOptional var4);
+  def repeat_interleave[D1 <: DType](
+      t1: Tensor[D1],
+      repeats: Long,
+      dim: Option[Long],
+      output_size: Option[Long]
+  ): Tensor[D1] = {
+    val dimOpt = if dim.isDefined then new LongOptional(dim.get) else new LongOptional()
+    val outputSizeOpt =
+      if output_size.isDefined then new LongOptional(output_size.get) else new LongOptional()
+    fromNative(torchNative.repeat_interleave(t1.native, repeats, dimOpt, outputSizeOpt))
+  }
+
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Long, dim: Long): Tensor[D1] =
+    fromNative(
+      torchNative.repeat_interleave(t1.native, repeats, new LongOptional(dim), new LongOptional())
+    )
+
+  //    public static native Tensor repeat_interleave( Tensor var0,  long var1);
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Long): Tensor[D1] =
+    fromNative(torchNative.repeat_interleave(t1.native, repeats))
+
+  //    public static native Tensor repeat_interleave( Tensor var0,  Tensor var1);
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Tensor[Int64]): Tensor[D1] =
+    fromNative(torchNative.repeat_interleave(t1.native, repeats.native))
+
+  //    public static native Tensor repeat_interleave( Tensor var0);
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.repeat_interleave(t1.native))
+
+//  def repeat_interleave[D1 <: DType](t1: Long): Tensor[D1] =
+//    fromNative(torchNative.repeat_interleave(t1))
 
   def relu[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.relu(t1.native))
 
   def relu6[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.relu6(t1.native))
-
-  def repeat_interleave[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.repeat_interleave(t1.native))
 
   def resolve_conj[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.resolve_conj(t1.native))

@@ -127,19 +127,19 @@ abstract class Module {
     nativeModule.register_parameter(name_, t.native, requiresGrad)
     t
 
-  def register_parameter_r[D <: DType](t: Tensor[D], requiresGrad: Boolean = true, n: String = "")(
+  def register_parameter_r[D <: DType](t: Tensor[D], requires_grad: Boolean = true, n: String = "")(
       using name: sourcecode.Name
   ): Tensor[D] =
     val name_ = if n.trim().isEmpty() then name.value else n.trim()
-    nativeModule.register_parameter(name_, t.native, requiresGrad)
+    nativeModule.register_parameter(name_, t.native, requires_grad)
     t
 
   def register_parameter[D <: DType](
       name: String,
       t: Tensor[D],
-      requiresGrad: Boolean = true
+      requires_grad: Boolean = true
   ): Tensor[D] =
-    nativeModule.register_parameter(name, t.native, requiresGrad)
+    nativeModule.register_parameter(name, t.native, requires_grad)
     t
 
   def registerBuffer[D <: DType](t: Tensor[D], n: String = "")(using

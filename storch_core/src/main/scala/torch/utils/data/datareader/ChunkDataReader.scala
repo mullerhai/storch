@@ -1,42 +1,6 @@
 package torch.utils.data.datareader
 
-import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  Example,
-  ExampleOptional,
-  ExampleStack,
-  ExampleVector,
-  ExampleVectorOptional,
-  InputArchive,
-  OutputArchive,
-  SizeTArrayRef,
-  SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  Tensor,
-  TensorMapper,
-  TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
-  ChunkBatchDataset as CBD,
-  ChunkDataReader as CDR,
-  ChunkMapBatchDataset as CMBD,
-  ChunkMapDataset as CMD,
-  RandomSampler as RS,
-  SequentialSampler as SS
-}
-import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.pytorch.AbstractTensor as Tensors
-import torch.utils.data.Dataset
-
-import scala.collection.mutable.ListBuffer
+import org.bytedeco.pytorch.{Example, ExampleVector, Tensor, ChunkDataReader as CDR}
 
 class ChunkDataReader(batch: Int = 32) extends CDR with DataReader {
 
