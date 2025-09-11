@@ -1,9 +1,10 @@
-# AI Infra 3.0:  Build Powerful AI Infrastructure for Scala 3 
-# STorch AI - GPU Accelerated Distributeed Deep Learning && LLM && RL for Scala 3
+#  Build Powerful AI Infrastructure for Scala 3 🌟🌟🌟🌟
+# .                        🎖️ AI Infra 3.0 ON Scala3 ! 🎖️
+# STorch AI - 🌟🌟🌟🌟 GPU Accelerated Distributeed Deep Learning && LLM && RL for Scala 3 🌟🌟🌟🌟
 
 ## STorch is a Scala library for fast tensor computations and deep learning, same as PyTorch.
  
-### Like PyTorch, STorch provides
+### Like PyTorch, STorch provides 📇 🏠 🪟 🍎 🐧
 * Both Compile from Cpp LibTorch, STorch has Same Equal Position with Pytorch
 * A NumPy like API for working with tensors 
 * GPU support [Future will support HuaWei CANN NPU]
@@ -23,10 +24,11 @@ STorch aims to close to the Python API to make porting existing models and the l
 STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
 
 ### STorch LLM -> Scala3gpt-llm is ready to use Pure Pytorch Neural Network for Scala 3 ON LLM
-How to fetch STorch Library
+
+### How to fetch STorch Library [Extended Version]
 ```scala 3
 
-libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.5.0-1.15.2"
+libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.5.1-1.15.2"
 
 ```
 

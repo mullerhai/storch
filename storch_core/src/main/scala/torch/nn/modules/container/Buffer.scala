@@ -7,11 +7,11 @@ import torch.internal.NativeConverters.fromNative
 
 object Buffer {
 
-  def apply[D <: DType](name: String, tensor: Tensor[D])(using
+  def apply[D <: DType](name: String, tensor: Tensor[D], persistent: Boolean = false)(using
       nativeModule: Module = pytorch.Module()
   ): Tensor[D] = fromNative(nativeModule.register_buffer(name, tensor.native))
 
-  def register_buffer[D <: DType](name: String, tensor: Tensor[D])(using
+  def register_buffer[D <: DType](name: String, tensor: Tensor[D], persistent: Boolean = false)(using
       nativeModule: Module = pytorch.Module()
   ): Tensor[D] =
     fromNative(nativeModule.register_buffer(name, tensor.native))

@@ -17,6 +17,7 @@
 package torch
 package ops
 
+import torch.nn.init.{NonLinearity, Mode}
 import Layout.Strided
 import Device.CPU
 import internal.NativeConverters
@@ -1793,6 +1794,88 @@ private[torch] trait BLASOps {
   def ravel[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ravel(t1.native))
 
+  def kaiming_normal_[D <: DType](
+                                   weight: Tensor[D],
+                                   a: Double = 0,
+                                   mode: Mode = Mode.FanIn,
+                                   nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+                                 ): weight.type =
+    torchNative.kaiming_normal_(weight.native, a, mode.toNative, nonlinearity.toNative)
+    weight
+
+  def kaiming_uniform_[D <: DType](
+                                    weight: Tensor[D],
+                                    a: Double = 0,
+                                    mode: Mode = Mode.FanIn,
+                                    nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+                                  ): weight.type =
+    torchNative.kaiming_uniform_(weight.native, a, mode.toNative, nonlinearity.toNative)
+    weight
+
+  def xavier_uniform_[D <: DType](
+                                   weight: Tensor[D],
+                                   gain: Double = 1.0
+                                 ): weight.type =
+    torchNative.xavier_uniform_(weight.native, gain)
+    weight
+
+  def xavier_normal_[D <: DType](
+                                  weight: Tensor[D],
+                                  gain: Double = 1.0
+                                ): weight.type =
+    torchNative.xavier_normal_(weight.native, gain)
+    weight
+
+  def normal_[D <: DType](
+                           weight: Tensor[D],
+                           mean: Double = 0,
+                           std: Double = 0
+                         ): weight.type =
+    torchNative.normal_(weight.native, mean, std)
+    weight
+
+  def uniform_[D <: DType](
+                            weight: Tensor[D],
+                            a: Double = 0,
+                            b: Double = 1
+                          ): Tensor[D] =
+    torchNative.uniform_(weight.native, a, b)
+    weight
+
+  def calculate_gain(
+                      nonlinearity: NonLinearity = NonLinearity.LeakyReLU,
+                      param: Double = 0.01
+                    ): Double =
+    torchNative.calculate_gain(nonlinearity.toNative, param)
+
+  def constant_[D <: DType](weight: Tensor[D], fillValue: Double): weight.type =
+    torchNative.constant_(weight.native, Scalar(fillValue))
+    weight
+
+  def ones_[D <: DType](
+                         weight: Tensor[D]
+                       ): weight.type =
+    torchNative.ones_(weight.native)
+    weight
+
+  def zeros_[D <: DType](
+                          weight: Tensor[D]
+                        ): weight.type =
+    torchNative.zeros_(weight.native)
+    weight
+
+  def eye_[D <: DType](
+                        weight: Tensor[D]
+                      ): weight.type =
+    torchNative.eye_(weight.native)
+    weight
+
+  def dirac_[D <: DType](
+                          weight: Tensor[D]
+                        ): weight.type =
+    torchNative.dirac_(weight.native)
+    weight
+
   //    public static native Tensor repeat_interleave(@Const @ByRef Tensor var0, LongOptional var1);
 
   //    public static native Tensor repeat_interleave(Tensor var0, Tensor var1, LongOptional var2,  LongOptional var3);
@@ -2454,8 +2537,8 @@ private[torch] trait BLASOps {
   def orthogonal_[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.orthogonal_(t1.native))
 
-  def zeros_[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.zeros_(t1.native))
+//  def zeros_[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.zeros_(t1.native))
 
   def gammaln[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.gammaln(t1.native))
