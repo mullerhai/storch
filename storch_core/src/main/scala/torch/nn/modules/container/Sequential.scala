@@ -19,9 +19,11 @@ package nn
 package modules
 package container
 
+import scala.annotation.varargs
 import sourcecode.Name
 
-final class Sequential[D <: DType](override val modules: TensorModule[D]*)
+@varargs
+final class Sequential[D <: DType](@varargs override val modules: TensorModule[D]*)
     extends Module
     with TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
@@ -40,5 +42,6 @@ final class Sequential[D <: DType](override val modules: TensorModule[D]*)
 
 object Sequential {
 
+  @varargs
   def apply[D <: DType](modules: TensorModule[D]*): Sequential[D] = new Sequential(modules*)
 }

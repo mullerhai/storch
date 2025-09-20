@@ -205,6 +205,9 @@ private[torch] trait CreationOps {
       )
     )
 
+  def ones_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.ones_like(t1.native))
+
   def ones_like[D <: DType, D2 <: DType | Derive](
       input: Tensor[D],
       dtype: D2 = derive,

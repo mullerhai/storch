@@ -43,6 +43,12 @@ import org.bytedeco.pytorch.TensorVector
   */
 private[torch] trait ReductionOps {
 
+  def argmin[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.argmin(t1.native))
+
+  def argmax[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.argmax(t1.native))
+
   /** Returns the indices of the maximum value of all elements in the tensor.
     *
     * This is the second value returned by torch.max(). See its documentation for the exact
@@ -285,6 +291,9 @@ private[torch] trait ReductionOps {
       AtLeastOneFloat[D, D2]
   ): Tensor[Promoted[FloatPromoted[ComplexToReal[D]], FloatPromoted[ComplexToReal[D2]]]] =
     fromNative(torchNative.dist(input.native, other.native, toScalar(p)))
+
+  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
+    fromNative(torchNative.dist(tensor.native, tensor2.native))
 
   /** Returns the log of summed exponentials of each row of the `input` tensor in the given
     * dimension `dim`. The computation is numerically stabilized.
@@ -542,6 +551,9 @@ private[torch] trait ReductionOps {
         new ScalarTypeOptional(derivedDType.toScalarType)
       )
     )
+
+  def nansum[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.nansum(t1.native))
 
   /** Returns the product of all elements in the `input` tensor.
     *

@@ -190,8 +190,8 @@ private[torch] trait OtherOps {
   def block_diag[D <: DType](tensorList: Seq[Tensor[D]]): Tensor[D] =
     fromNative(torchNative.block_diag(new TensorVector(tensorList.map(_.native)*)))
 
-  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
-    fromNative(torchNative.dist(tensor.native, tensor2.native))
+//  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
+//    fromNative(torchNative.dist(tensor.native, tensor2.native))
 
   def isclose[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
     fromNative(torchNative.isclose(tensor.native, tensor2.native))

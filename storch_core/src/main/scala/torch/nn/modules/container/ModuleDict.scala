@@ -20,7 +20,7 @@ package modules
 package container
 
 import sourcecode.Name
-
+import scala.annotation.varargs
 import scala.collection.SortedSet
 import scala.collection.immutable.TreeSeqMap
 import scala.collection.mutable.{LinkedHashMap}
@@ -60,11 +60,14 @@ import scala.reflect.ClassTag.Any
   *   [[container ModuleList https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html#ModuleList]]
   */
 object ModuleDict {
+  @varargs
   def apply[D <: DType](nameModules: (String, TensorModule[D])*): ModuleDict[D] = new ModuleDict(
     nameModules*
   )
 }
-final class ModuleDict[D <: DType](var nameModules: (String, TensorModule[D])*)
+
+@varargs
+final class ModuleDict[D <: DType](@varargs var nameModules: (String, TensorModule[D])*)
     extends Module
     with TensorModule[D]
     with scala.collection.mutable.Iterable[(String, TensorModule[D])]:

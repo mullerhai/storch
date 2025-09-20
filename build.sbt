@@ -31,7 +31,7 @@ val pytorchVersion = "2.7.1" // "2.5.1"
 val cudaVersion =  "12.9-9.10" //"12.6-9.5"
 val openblasVersion ="0.3.30" //"0.3.28"
 val mklVersion = "2025.0"
-ThisBuild / scalaVersion := "3.7.2"
+ThisBuild / scalaVersion := "3.6.3"
 ThisBuild / javaCppVersion := "1.5.12"  //"1.5.11"
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
@@ -49,7 +49,7 @@ val hasMKL = false
 //}
 
 lazy val commonSettings = Seq(
-  Compile / doc / scalacOptions ++= Seq("-groups", "-snippet-compiler:compile"),
+  Compile / doc / scalacOptions ++= Seq("-groups","-Xno-duplicate-tasty","-Ycache-macro-class-loader:last-modified" ,"-snippet-compiler:compile","-Ywarn-conflicts","-Ywarn-unused","-Xno-enrich-error-messages","-Ycook-docs","-deprecation", "-feature","-Yresolve-term-conflict:package","--no-warnings"),
   javaCppVersion := (ThisBuild / javaCppVersion).value,
   javaCppPlatform := Seq(),
   // This is a hack to avoid depending on the native libs when publishing
@@ -112,6 +112,7 @@ excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
   "com.thesamet.scalapb" % "scalapb-runtime_2.13"
 )
+
 lazy val storch_core = project
   .in(file("storch_core"))
   .settings(commonSettings)
@@ -247,6 +248,9 @@ ThisBuild / assemblyMergeStrategy := {
   case v if v.contains("main$package.class")                 => MergeStrategy.first
   case v if v.contains("main$package.tasty")                 => MergeStrategy.first
   case v if v.contains("main.tasty")                         => MergeStrategy.first
+  case v if v.contains("PointwiseOps.tasty")                 => MergeStrategy.first
+  case v if v.contains("BLASOps.tasty")                      => MergeStrategy.first
+  case v if v.contains("*.tasty")                            => MergeStrategy.first
   case v if v.contains("main.class")                         => MergeStrategy.discard
   case v if v.contains("module-info.class")                  => MergeStrategy.discard
   case v if v.contains("UnusedStub")                         => MergeStrategy.first

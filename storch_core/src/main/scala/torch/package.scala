@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import torch.ops
+
 import scala.util.Using
 
 /** The torch package contains data structures for multi-dimensional tensors and defines

@@ -49,42 +49,21 @@ package object functional
     with Padding
     with Recurrent
 
-//@native
-//@Namespace("at::native")
-//@ByVal def log[TT <: DType](@Const @ByRef self: Tensor[TT]): Tensor[TT]
-
-//@native
-//@Namespace("at::native")
-//@ByVal def view[TT <: DType](@Const @ByRef self: Tensor[ TT], @ByVal size: IntArrayRef): Tensor[ TT]
-
-//@native
-//@Namespace("at::native") @ByVal def relu[TT <: DType](@Const @ByRef input: Tensor[TT]): Tensor[ TT]
-
-//@native
-//@Namespace("at::native")
-//@ByVal def log_softmax[TT <: DType](@Const @ByRef self: Tensor[TT], @Cast(Array("int64_t")) dim: CLongPointer): Tensor[TT]
-//
-//@native
-//@Namespace("at::native")
-//@ByVal def linear[TT <: DType](@Const @ByRef input: Tensor[TT], @Const @ByRef weight: Tensor[TT], @Const @ByRef bias: Tensor[TT] | Option[Tensor[TT]]): Tensor[TT]
-//
-//
-//@native
-//@Namespace("at::native")
-//@ByVal def view[T, TT <: DType](@Const @ByRef self: Tensor[ TT], @ByVal size: IntArrayRef): Tensor[ TT]
-
-//@native
-//@Namespace("at::native")
-//@ByVal def mkldnn_view[T, TT <: DType](@Const @ByRef self: Tensor[TT], @ByVal size: IntArrayRef): Tensor[ TT]
-////@native
-//@Namespace("at::native")
-//@ByVal def lstm[TT <: DType](@Const @ByRef input: Tensor[TT], @ByVal hx: TensorList[TT], @ByVal params: TensorList[TT], @Cast(Array("bool")) has_biases: Boolean, @Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double, @Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean, @Cast(Array("bool")) batch_first: Boolean): TensorTriple[T, T, T, TT]
-//
-//@native
-//@Namespace("at::native")
-//@ByVal def lstm[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @ByVal hx: TensorList[T, TT], @ByVal params: TensorList[T, TT], @Cast(Array("bool")) has_biases: Boolean, @Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double, @Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean, @Cast(Array("bool")) batch_first: Boolean): TensorTriple[T, T, T, TT]
-//
-//@native
-//@Namespace("at::native")
-//@ByVal def lstm[T, TT <: DType](@Const @ByRef data: Tensor[T, TT], @Const @ByRef batch_sizes: Tensor[T, TT], @ByVal hx: TensorList[T, TT], @ByVal params: TensorList[T, TT], @Cast(Array("bool")) has_biases: Boolean, @Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double, @Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean): TensorTriple[T, T, T, TT]
-//}
+class Functional
+    extends functional.Activations
+    with functional.BatchNorm
+    with functional.Convolution
+    with functional.Distance
+    with functional.Dropout
+    with functional.Linear
+    with functional.Loss
+    with functional.Normalization
+    with functional.Linalg
+    with functional.Pooling
+    with functional.Sparse
+    with functional.UnSampling
+    with functional.Vision
+    with functional.FFT
+    with functional.Fold
+    with functional.Padding
+    with functional.Recurrent

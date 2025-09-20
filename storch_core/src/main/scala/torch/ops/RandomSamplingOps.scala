@@ -53,6 +53,9 @@ private[torch] trait RandomSamplingOps {
     fromNative(torchNative.uniform(low.native, mean, std, generator.toOptional))
   }
 
+  def poisson[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.poisson(t1.native))
+
   def poisson[D1 <: DType, D2 <: DType](
       lambda: Tensor[D1],
       generator: Option[Generator] | Generator = None
@@ -398,6 +401,9 @@ private[torch] trait RandomSamplingOps {
     else fromNative(torchNative.binomial(t1.native, t2.native))
 
   }
+
+  def cauchy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.cauchy(t1.native))
 
   def cauchy[D1 <: DType](
       t1: Tensor[D1],

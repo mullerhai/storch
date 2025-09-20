@@ -999,7 +999,7 @@ private[torch] trait IndexingSlicingJoiningOps {
 
   // TODO Add docs for scatter
   // TODO Add reduction arg
-  def scatter[D <: DType](
+  def scatter_raw[D <: DType](
       input: Tensor[D],
       dim: Int,
       index: Tensor[Int64] | Tensor[Int32],

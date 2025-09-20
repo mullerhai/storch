@@ -153,7 +153,11 @@ abstract class Module {
   def registerBuffer[D <: DType](name: String, tensor: Tensor[D]): Tensor[D] =
     fromNative(nativeModule.register_buffer(name, tensor.native))
 
-  def register_buffer[D <: DType](name: String, tensor: Tensor[D], persistent: Boolean = false): Tensor[D] =
+  def register_buffer[D <: DType](
+      name: String,
+      tensor: Tensor[D],
+      persistent: Boolean = false
+  ): Tensor[D] =
     fromNative(nativeModule.register_buffer(name, tensor.native))
 
   def hasBias(): Boolean = modules.exists(_.hasBias())
@@ -284,7 +288,13 @@ abstract class Module {
   def asCrossEntropyLoss = nativeModule.asCrossEntropyLoss()
   def asBCEWithLogitsLoss = nativeModule.asBCEWithLogitsLoss()
 
-  override def toString(): String = getClass().getSimpleName()
+  override def toString(): String = {
+    val className = getClass().getName()
+    className.split("\\$").last
+    //getClass().getSimpleName()
+  }
+
+
 
   private def doSummarize(indent: Int): String =
     val thisModule = toString

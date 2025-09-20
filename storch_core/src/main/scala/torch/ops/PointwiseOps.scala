@@ -217,7 +217,7 @@ private[torch] trait PointwiseOps {
     * @group pointwise_ops
     */
 // TODO Support Tensor for min and max
-  def clamp[D <: RealNN](
+  def clamp_raw[D <: RealNN](
       input: Tensor[D],
       min: Option[Real],
       max: Option[Real]

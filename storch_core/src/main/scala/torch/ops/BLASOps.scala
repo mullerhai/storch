@@ -382,8 +382,8 @@ private[torch] trait BLASOps {
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
     fromNative(torchNative.cartesian_prod(tensorVector))
 
-  def cauchy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.cauchy(t1.native))
+//  def cauchy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.cauchy(t1.native))
 
   def ccol_indices_copy[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ccol_indices_copy(t1.native))
@@ -553,7 +553,7 @@ private[torch] trait BLASOps {
   def diagonal[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.diagonal(t1.native))
 
-  def diagonal_scatter[D1 <: DType, D2 <: DType](
+  def diagonal_scatter_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
   ): Tensor[Promoted[D1, D2]] =
@@ -592,7 +592,7 @@ private[torch] trait BLASOps {
 //  def expm1[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.expm1(t1.native))
 
-  def exponential[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def exponential_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.exponential(t1.native))
 
   def fft_fft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -720,7 +720,7 @@ private[torch] trait BLASOps {
   def pad[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.pad(t1.native, sliceSeq*))
 
-  def pad_sequence[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
+  def pad_sequence_raw[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
     fromNative(torchNative.pad_sequence(tensorVector))
 
@@ -866,7 +866,7 @@ private[torch] trait BLASOps {
   def fmin[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.fmin(t1.native, t2.native))
 
-  def fmod[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def fmod_raw[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.fmod(t1.native, t2.native))
 
   def gcd[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
@@ -918,13 +918,23 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.huber_loss(t1.native, t2.native))
 
-  def hypot[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def hypot_raw[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.hypot(t1.native, t2.native))
 
-  def igamma[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def igamma_raw[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.igamma(t1.native, t2.native))
 
-  def igammac[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def igammac_raw[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      inplace: Boolean = false
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.igammac(t1.native, t2.native))
 
   def inner[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
@@ -1057,7 +1067,10 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.linalg_vecdot(t1.native, t2.native))
 
-  def linear[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def linear_raw[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.linear(t1.native, t2.native))
 
 //  def logaddexp[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
@@ -1081,7 +1094,7 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.logical_xor(t1.native, t2.native))
 
-  def count_nonzero[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
+  def count_nonzero_raw[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
     fromNative(torchNative.count_nonzero(t1.native, sliceSeq*))
 
   def dequantize[D1 <: DType](tensor: Tensor[D1]): Tensor[D1] =
@@ -1177,7 +1190,7 @@ private[torch] trait BLASOps {
 //  def log2[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.log2(t1.native))
 
-  def log_normal[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def log_normal_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.log_normal(t1.native))
 
   def log_sigmoid[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1312,7 +1325,7 @@ private[torch] trait BLASOps {
   def smm[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.smm(t1.native, t2.native))
 
-  def slice_scatter[D1 <: DType, D2 <: DType](
+  def slice_scatter_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
   ): Tensor[Promoted[D1, D2]] =
@@ -1336,7 +1349,7 @@ private[torch] trait BLASOps {
   def rsub[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.rsub(t1.native, t2.native))
 
-  def rrelu_with_noise[D1 <: DType, D2 <: DType](
+  def rrelu_with_noise_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
   ): Tensor[Promoted[D1, D2]] =
@@ -1396,9 +1409,10 @@ private[torch] trait BLASOps {
   def ne[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.ne(t1.native, t2.native))
 
-  def nextafter[D1 <: DType, D2 <: DType](
+  def nextafter_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
-      t2: Tensor[D2]
+      t2: Tensor[D2],
+      inplace: Boolean = false
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.nextafter(t1.native, t2.native))
 
@@ -1447,7 +1461,7 @@ private[torch] trait BLASOps {
 //  def max[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.max(t1.native))
 
-  def mean[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def mean_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.mean(t1.native))
 
 //  def median[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1572,14 +1586,14 @@ private[torch] trait BLASOps {
   def nan_to_num[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.nan_to_num(t1.native))
 
-  def nanmean[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def nanmean_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.nanmean(t1.native))
 
 //  def nanmedian[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.nanmedian(t1.native))
 
-  def nansum[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.nansum(t1.native))
+//  def nansum[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.nansum(t1.native))
 
   def native_norm[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.native_norm(t1.native))
@@ -1724,7 +1738,7 @@ private[torch] trait BLASOps {
   def normal_functional[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.normal_functional(t1.native))
 
-  def normal[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def normal_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.normal(t1.native))
 
   def nuclear_norm[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1733,8 +1747,8 @@ private[torch] trait BLASOps {
 //  def ones[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
 //    fromNative(torchNative.ones(t1 *))
 
-  def ones_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.ones_like(t1.native))
+//  def ones_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.ones_like(t1.native))
 
   def pdist[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.pdist(t1.native))
@@ -1742,7 +1756,7 @@ private[torch] trait BLASOps {
   def pinverse[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.pinverse(t1.native))
 
-  def poisson[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def poisson_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.poisson(t1.native))
 
 //  def positive[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -1776,7 +1790,7 @@ private[torch] trait BLASOps {
   def rad2deg[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rad2deg(t1.native))
 
-  def rand_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def rand_like_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rand_like(t1.native))
 
   def randint_like[D1 <: DType](t1: Tensor[D1], ln: Long): Tensor[D1] =
@@ -1795,57 +1809,57 @@ private[torch] trait BLASOps {
     fromNative(torchNative.ravel(t1.native))
 
   def kaiming_normal_[D <: DType](
-                                   weight: Tensor[D],
-                                   a: Double = 0,
-                                   mode: Mode = Mode.FanIn,
-                                   nonlinearity: NonLinearity = NonLinearity.LeakyReLU
-                                 ): weight.type =
+      weight: Tensor[D],
+      a: Double = 0,
+      mode: Mode = Mode.FanIn,
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+  ): weight.type =
     torchNative.kaiming_normal_(weight.native, a, mode.toNative, nonlinearity.toNative)
     weight
 
   def kaiming_uniform_[D <: DType](
-                                    weight: Tensor[D],
-                                    a: Double = 0,
-                                    mode: Mode = Mode.FanIn,
-                                    nonlinearity: NonLinearity = NonLinearity.LeakyReLU
-                                  ): weight.type =
+      weight: Tensor[D],
+      a: Double = 0,
+      mode: Mode = Mode.FanIn,
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU
+  ): weight.type =
     torchNative.kaiming_uniform_(weight.native, a, mode.toNative, nonlinearity.toNative)
     weight
 
   def xavier_uniform_[D <: DType](
-                                   weight: Tensor[D],
-                                   gain: Double = 1.0
-                                 ): weight.type =
+      weight: Tensor[D],
+      gain: Double = 1.0
+  ): weight.type =
     torchNative.xavier_uniform_(weight.native, gain)
     weight
 
   def xavier_normal_[D <: DType](
-                                  weight: Tensor[D],
-                                  gain: Double = 1.0
-                                ): weight.type =
+      weight: Tensor[D],
+      gain: Double = 1.0
+  ): weight.type =
     torchNative.xavier_normal_(weight.native, gain)
     weight
 
   def normal_[D <: DType](
-                           weight: Tensor[D],
-                           mean: Double = 0,
-                           std: Double = 0
-                         ): weight.type =
+      weight: Tensor[D],
+      mean: Double = 0,
+      std: Double = 0
+  ): weight.type =
     torchNative.normal_(weight.native, mean, std)
     weight
 
   def uniform_[D <: DType](
-                            weight: Tensor[D],
-                            a: Double = 0,
-                            b: Double = 1
-                          ): Tensor[D] =
+      weight: Tensor[D],
+      a: Double = 0,
+      b: Double = 1
+  ): Tensor[D] =
     torchNative.uniform_(weight.native, a, b)
     weight
 
   def calculate_gain(
-                      nonlinearity: NonLinearity = NonLinearity.LeakyReLU,
-                      param: Double = 0.01
-                    ): Double =
+      nonlinearity: NonLinearity = NonLinearity.LeakyReLU,
+      param: Double = 0.01
+  ): Double =
     torchNative.calculate_gain(nonlinearity.toNative, param)
 
   def constant_[D <: DType](weight: Tensor[D], fillValue: Double): weight.type =
@@ -1853,26 +1867,26 @@ private[torch] trait BLASOps {
     weight
 
   def ones_[D <: DType](
-                         weight: Tensor[D]
-                       ): weight.type =
+      weight: Tensor[D]
+  ): weight.type =
     torchNative.ones_(weight.native)
     weight
 
   def zeros_[D <: DType](
-                          weight: Tensor[D]
-                        ): weight.type =
+      weight: Tensor[D]
+  ): weight.type =
     torchNative.zeros_(weight.native)
     weight
 
   def eye_[D <: DType](
-                        weight: Tensor[D]
-                      ): weight.type =
+      weight: Tensor[D]
+  ): weight.type =
     torchNative.eye_(weight.native)
     weight
 
   def dirac_[D <: DType](
-                          weight: Tensor[D]
-                        ): weight.type =
+      weight: Tensor[D]
+  ): weight.type =
     torchNative.dirac_(weight.native)
     weight
 
@@ -1977,7 +1991,7 @@ private[torch] trait BLASOps {
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
     fromNative(torchNative.row_stack(tensorVector))
 
-  def rrelu[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def rrelu_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.rrelu(t1.native))
 
 //  def rsqrt[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -2160,7 +2174,10 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.binary_cross_entropy_with_logits(t1.native, t2.native))
 
-  def binomial[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+  def binomial_raw[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.binomial(t1.native, t2.native))
 
   def bitwise_and[D1 <: DType, D2 <: DType](
@@ -2241,7 +2258,7 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.trapezoid(t1.native, t2.native))
 
-  def take_along_dim[D1 <: DType, D2 <: DType](
+  def take_along_dim_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
   ): Tensor[Promoted[D1, D2]] =
@@ -2374,7 +2391,7 @@ private[torch] trait BLASOps {
   def trapz[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Long): Tensor[D1] =
     fromNative(torchNative.trapz(t1.native, t2.native, dim))
 
-  def tril[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def tril_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.tril(t1.native))
 
 //  def tril[D1 <: DType](t1: Tensor[D1], diagonal: Int = 0): Tensor[D1] =
@@ -2561,11 +2578,11 @@ private[torch] trait BLASOps {
 //  def argwhere[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.argwhere(t1.native))
 
-  def argmin[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.argmin(t1.native))
-
-  def argmax[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.argmax(t1.native))
+//  def argmin[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.argmin(t1.native))
+//
+//  def argmax[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.argmax(t1.native))
 
   def arctanh[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.arctanh(t1.native))
@@ -2573,7 +2590,7 @@ private[torch] trait BLASOps {
   def bincount[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.bincount(t1.native))
 
-  def bernoulli[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def bernoulli_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.bernoulli(t1.native))
 
   def atleast_3d[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
@@ -2652,7 +2669,7 @@ private[torch] trait BLASOps {
   def matrix_power[D1 <: DType](t1: Tensor[D1], num: Int): Tensor[D1] =
     fromNative(torchNative.matrix_power(t1.native, num))
 
-  def empty_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def empty_like_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.empty_like(t1.native))
 
 //  def empty[D1 <: DType](t1: Seq[Long]): Tensor[D1] =
@@ -2721,14 +2738,14 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.addmm(t1.native, t2.native, t3.native))
 
-  def addcmul[D1 <: DType, D2 <: DType](
+  def addcmul_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2],
       t3: Tensor[D1 | D2]
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.addcmul(t1.native, t2.native, t3.native))
 
-  def addcdiv[D1 <: DType, D2 <: DType](
+  def addcdiv_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2],
       t3: Tensor[D1 | D2]
@@ -2773,7 +2790,7 @@ private[torch] trait BLASOps {
     val tup = torchNative.lu_unpack(t1.native, t2.native)
     (fromNative(tup.get0), fromNative(tup.get1), fromNative(tup.get2))
 
-  def scaled_dot_product_attention[D1 <: DType, D2 <: DType](
+  def scaled_dot_product_attention_raw[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2],
       t3: Tensor[D1 | D2]
@@ -2804,7 +2821,7 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.batch_norm(t1.native, t2.native, t3.native))
 
-  def std_mean[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+  def std_mean_raw[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
     val tup = torchNative.std_mean(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
 
@@ -2815,7 +2832,7 @@ private[torch] trait BLASOps {
 //  def take[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
 //    fromNative(torchNative.take(t1.native, t2.native))
 
-  def var_mean[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+  def var_mean_raw[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
     val tup = torchNative.var_mean(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
 
@@ -2864,7 +2881,7 @@ private[torch] trait BLASOps {
     val tup = torchNative.linalg_lu(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1), fromNative(tup.get2))
 
-  def aminmax[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+  def aminmax_raw[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
     val tup = torchNative.aminmax(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
 

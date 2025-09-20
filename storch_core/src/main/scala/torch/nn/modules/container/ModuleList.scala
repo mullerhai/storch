@@ -21,6 +21,7 @@ package container
 
 import sourcecode.Name
 import scala.collection.mutable.ListBuffer
+import scala.annotation.varargs
 
 /** Holds submodules in a list.
   *
@@ -46,10 +47,12 @@ import scala.collection.mutable.ListBuffer
   *   [[container ModuleList https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html#ModuleList]]
   */
 object ModuleList {
-
+  @varargs
   def apply[D <: DType](modules: TensorModule[D]*): ModuleList[D] = new ModuleList(modules*)
 }
-final class ModuleList[D <: DType](override val modules: TensorModule[D]*)
+
+@varargs
+final class ModuleList[D <: DType](@varargs override val modules: TensorModule[D]*)
     extends Module
     with TensorModule[D]
     with scala.collection.mutable.Iterable[TensorModule[D]]:

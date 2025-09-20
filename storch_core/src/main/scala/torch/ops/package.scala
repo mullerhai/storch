@@ -20,6 +20,24 @@ import internal.NativeConverters.{fromNative, tensorOptions}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.MemoryFormatOptional
 
+class Torch
+    extends ops.BLASOps
+    with ops.ComparisonOps
+    with ops.ContextOps
+    with ops.CreationOps
+    with ops.IndexingSlicingJoiningOps
+    with ops.PointwiseOps
+    with ops.RandomSamplingOps
+    with ops.ReductionOps
+    with ops.SparseOps
+    with ops.JitOps
+    with ops.NumpyOps
+    with ops.FftOps
+    with ops.ProfilerOPs
+    with ops.UnSamplingOps
+    with ops.RecurrentOps
+    with ops.OtherOps
+
 package object ops {
 
   private[torch] def xLike[D <: DType, D2 <: DType | Derive](
