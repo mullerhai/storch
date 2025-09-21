@@ -5,10 +5,35 @@ package loss
 
 import torch.nn.modules.Module
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.pytorch.CosineEmbeddingLossImpl
+import org.bytedeco.pytorch.{
+  CosineEmbeddingLossImpl,
+  CosineEmbeddingLossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 
-final class CosineEmbeddingLoss extends LossFunc {
-  override private[torch] val nativeModule: CosineEmbeddingLossImpl = CosineEmbeddingLossImpl()
+//class torch.nn.CosineEmbeddingLoss(margin=0.0, size_average=None, reduce=None, reduction='mean')[source]
+final class CosineEmbeddingLoss(
+    margin: Double = 0.0,
+    reduction: String = "mean",
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: CosineEmbeddingLossOptions = new CosineEmbeddingLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  options.margin().put(margin)
+  override private[torch] val nativeModule: CosineEmbeddingLossImpl = CosineEmbeddingLossImpl(
+    options
+  )
 
   override def hasBias(): Boolean = false
 
@@ -40,5 +65,10 @@ final class CosineEmbeddingLoss extends LossFunc {
 
 }
 object CosineEmbeddingLoss {
-  def apply(): CosineEmbeddingLoss = new CosineEmbeddingLoss()
+  def apply(
+      margin: Double = 0.0,
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): CosineEmbeddingLoss = new CosineEmbeddingLoss(margin, reduction, size_average, reduce)
 }

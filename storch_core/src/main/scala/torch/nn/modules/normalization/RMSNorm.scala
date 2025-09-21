@@ -17,7 +17,7 @@ final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
 
   var weight: Tensor[ParamType] =
-    registerParameter(torch.empty(normalizedShape, dtype = this.paramType), true, "weight")
+    registerParameter(torch.empty(normalizedShape, dtype = this.paramType, requires_grad = true), true, "weight")
 
   override def hasBias(): Boolean = false
 

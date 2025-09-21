@@ -291,10 +291,8 @@ abstract class Module {
   override def toString(): String = {
     val className = getClass().getName()
     className.split("\\$").last
-    //getClass().getSimpleName()
+    // getClass().getSimpleName()
   }
-
-
 
   private def doSummarize(indent: Int): String =
     val thisModule = toString

@@ -37,7 +37,7 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     nonLinearity: String | RNNNonlinearity = "tanh",
     bias: Boolean = true,
     batchFirst: Boolean = false,
-    dropout: Float = 0f,
+    dropout: Float | Double = 0f,
     bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
@@ -45,7 +45,10 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new RNNOptions(inputSize.toLong, hiddenSize.toLong)
   options.bias().put(bias)
-  options.dropout().put(dropout.toDouble)
+  dropout match {
+    case p: Float  => options.dropout().put(p.toDouble)
+    case p: Double => options.dropout().put(p)
+  }
   options.batch_first().put(batchFirst)
   options.bidirectional().put(bidirectional)
   options.input_size().put(LongPointer(1).put(inputSize.toLong))
@@ -158,7 +161,7 @@ object RNN:
       non_linearity: String | RNNNonlinearity = "tanh",
       bias: Boolean = true,
       batch_first: Boolean = false,
-      dropout: Float = 0f,
+      dropout: Float | Double = 0f,
       bidirectional: Boolean = false
   ): RNN[ParamType] = new RNN(
     input_size,

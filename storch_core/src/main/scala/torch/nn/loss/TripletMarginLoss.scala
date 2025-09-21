@@ -5,10 +5,40 @@ package loss
 
 import torch.nn.modules.Module
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.pytorch.TripletMarginLossImpl
+import org.bytedeco.pytorch.{
+  TripletMarginLossImpl,
+  TripletMarginLossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 
-final class TripletMarginLoss extends LossFunc {
-  override private[torch] val nativeModule: TripletMarginLossImpl = TripletMarginLossImpl()
+//class torch.nn.TripletMarginLoss(margin=1.0, p=2.0, eps=1e-06, swap=False, size_average=None, reduce=None, reduction='mean')[source]
+final class TripletMarginLoss(
+    margin: Double = 1.0,
+    p: Double = 2.0,
+    eps: Double = 1e-06,
+    swap: Boolean = false,
+    reduction: String = "mean",
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+  private[torch] val options: TripletMarginLossOptions = new TripletMarginLossOptions()
+
+  options.margin().put(margin)
+  options.p().put(p)
+  options.eps().put(eps)
+  options.swap().put(swap)
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+
+  override private[torch] val nativeModule: TripletMarginLossImpl = TripletMarginLossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -42,5 +72,14 @@ final class TripletMarginLoss extends LossFunc {
 
 object TripletMarginLoss {
 
-  def apply(): TripletMarginLoss = new TripletMarginLoss()
+  def apply(
+      margin: Double = 1.0,
+      p: Double = 2.0,
+      eps: Double = 1e-06,
+      swap: Boolean = false,
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): TripletMarginLoss =
+    new TripletMarginLoss(margin, p, eps, swap, reduction, size_average, reduce)
 }

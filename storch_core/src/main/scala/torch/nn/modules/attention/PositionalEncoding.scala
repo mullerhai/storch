@@ -29,9 +29,9 @@ class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
   override def toString =
     s"${getClass.getSimpleName}(d_model=$dModel max_len=$maxLen)"
 
-  def apply(x: Tensor[ParamType]): Tensor[ParamType] = {
+  def apply(input: Tensor[ParamType]): Tensor[ParamType] = {
 
-    x.add(encoding.index(::, 0.&&(x.size(1))).to(x.device))
+    forward(input)
   }
 
   def forward(x: Tensor[ParamType]): Tensor[ParamType] = {

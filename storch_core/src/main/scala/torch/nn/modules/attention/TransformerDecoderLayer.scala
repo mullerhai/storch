@@ -44,7 +44,7 @@ final class TransformerDecoderLayer[ParamType <: FloatNN | ComplexNN: Default](
     dModel: Int,
     nHead: Int,
     dimFeedforward: Int = 2048,
-    dropout: Float = 0.1,
+    dropout: Float | Double = 0.1,
     activation: TransformerActivation | String = TransformerActivation.kReLU,
     layerNormEps: Float = 1e-5,
     batchFirst: Boolean = false,
@@ -60,7 +60,10 @@ final class TransformerDecoderLayer[ParamType <: FloatNN | ComplexNN: Default](
   options.d_model().put(LongPointer(1).put(dModel.toLong))
   options.nhead().put(LongPointer(1).put(nHead.toLong))
   options.dim_feedforward().put(LongPointer(1).put(dimFeedforward.toLong))
-  options.dropout().put(DoublePointer(1).put(dropout.toDouble))
+  dropout match {
+    case d: Double => options.dropout().put(DoublePointer(1).put(d))
+    case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
+  }
 
   activation match {
     case TransformerActivation.kReLU | "relu" | "Relu" | "ReLU" | "RELU" | "ReLu" =>
@@ -130,7 +133,7 @@ object TransformerDecoderLayer:
       d_model: Int,
       n_head: Int,
       dim_feedforward: Int = 2048,
-      dropout: Float = 0.1,
+      dropout: Float | Double = 0.1,
       activation: TransformerActivation | String = TransformerActivation.kReLU,
       layer_norm_eps: Float = 1e-5,
       batch_first: Boolean = false,

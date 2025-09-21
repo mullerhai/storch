@@ -46,7 +46,7 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     numLayers: Int,
     bias: Boolean = true,
     batchFirst: Boolean = false,
-    dropout: Float = 0.1f,
+    dropout: Float | Double = 0.1f,
     bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
@@ -57,10 +57,12 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
   options.input_size().put(LongPointer(1).put(inputSize.toLong))
   options.hidden_size().put(LongPointer(1).put(hiddenSize.toLong))
   options.num_layers().put(LongPointer(1).put(numLayers.toLong))
-
+  dropout match {
+    case p: Float  => options.dropout().put(p.toDouble)
+    case p: Double => options.dropout().put(p)
+  }
   options.bias().put(bias)
   options.batch_first().put(batchFirst)
-  options.dropout().put(dropout.toDouble)
   options.bidirectional().put(bidirectional)
 
   override private[torch] val nativeModule: LSTMImpl = LSTMImpl(options)
@@ -236,7 +238,7 @@ object LSTM:
       num_layers: Int,
       bias: Boolean = true,
       batch_first: Boolean = false,
-      dropout: Float = 0.1f,
+      dropout: Float | Double = 0.1f,
       bidirectional: Boolean = false
   ): LSTM[ParamType] =
     new LSTM(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)

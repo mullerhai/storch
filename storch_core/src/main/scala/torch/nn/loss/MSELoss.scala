@@ -3,12 +3,25 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.MSELossImpl
+import org.bytedeco.pytorch.{MSELossImpl, MSELossOptions, LossReduction, kMean, kSum, kNone}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
+//class torch.nn.MSELoss(size_average=None, reduce=None, reduction='mean')[source]
+final class MSELoss(
+    reduction: String = "mean",
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
 
-final class MSELoss extends LossFunc {
-  override private[torch] val nativeModule: MSELossImpl = MSELossImpl()
+  private[torch] val options: MSELossOptions = new MSELossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  override private[torch] val nativeModule: MSELossImpl = MSELossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -37,5 +50,9 @@ final class MSELoss extends LossFunc {
 
 object MSELoss {
 
-  def apply(): MSELoss = new MSELoss()
+  def apply(
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): MSELoss = new MSELoss(reduction, size_average, reduce)
 }

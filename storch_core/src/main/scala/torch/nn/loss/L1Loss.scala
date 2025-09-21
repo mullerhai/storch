@@ -3,12 +3,26 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.L1LossImpl
+import org.bytedeco.pytorch.{L1LossImpl, L1LossOptions, LossReduction, kMean, kSum, kNone}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
-final class L1Loss extends LossFunc {
-  override private[torch] val nativeModule: L1LossImpl = L1LossImpl()
+//class torch.nn.L1Loss(size_average=None, reduce=None, reduction='mean')[source]
+final class L1Loss(
+    reduction: String = "mean",
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: L1LossOptions = new L1LossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  override private[torch] val nativeModule: L1LossImpl = L1LossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -36,5 +50,9 @@ final class L1Loss extends LossFunc {
 
 object L1Loss {
 
-  def apply(): L1Loss = new L1Loss()
+  def apply(
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): L1Loss = new L1Loss(reduction, size_average, reduce)
 }

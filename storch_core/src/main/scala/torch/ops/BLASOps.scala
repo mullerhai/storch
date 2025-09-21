@@ -45,6 +45,15 @@ import scala.collection.mutable.ListBuffer
   */
 private[torch] trait BLASOps {
 
+  def nan_to_num[D <: DType](
+      input: Tensor[D],
+      nan: Option[Double] = None,
+      posinf: Option[Double] = None,
+      neginf: Option[Double] = None
+  ): Tensor[D] =
+    fromNative(
+      torchNative.nan_to_num(input.native, toOptional(nan), toOptional(posinf), toOptional(neginf))
+    )
   /*
    *Tensor scatter_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1,
   // @Const @ByRef Tensor var3, @Const @ByRef Tensor var4,

@@ -11,19 +11,22 @@ import org.bytedeco.pytorch.{
   LongVector
 }
 
+//class torch.nn.AdaptiveLogSoftmaxWithLoss(in_features, n_classes, cutoffs, div_value=4.0, head_bias=False, device=None, dtype=None)[source]
 final class AdaptiveLogSoftmaxWithLoss(
     inFeatures: Long,
     nClasses: Long,
     cutoffs: Array[Long],
-    divValue: Double,
-    headBias: Boolean
+    divValue: Double = 4.0,
+    headBias: Boolean = false
 ) extends LossFunc {
 
   val cutoffsVec = LongVector(cutoffs*)
   val options = new AdaptiveLogSoftmaxWithLossOptions(inFeatures, nClasses, cutoffsVec)
   options.div_value.put(divValue)
   options.head_bias.put(headBias)
-//  options.nClasses = 1000
+  options.n_classes.put(nClasses)
+  options.in_features.put(inFeatures)
+  options.cutoffs().put(cutoffsVec)
 
   override private[torch] val nativeModule: AdaptiveLogSoftmaxWithLossImpl =
     AdaptiveLogSoftmaxWithLossImpl(options)
@@ -71,8 +74,20 @@ final class AdaptiveLogSoftmaxWithLoss(
   }
 
 }
+
+object AdaptiveLogSoftmaxWithLoss:
+  def apply(
+      in_features: Long,
+      n_classes: Long,
+      cutoffs: Array[Long],
+      div_value: Double = 4.0,
+      head_bias: Boolean = false
+  ): AdaptiveLogSoftmaxWithLoss =
+    new AdaptiveLogSoftmaxWithLoss(in_features, n_classes, cutoffs, div_value, head_bias)
+
 //  /** Given input tensor, and output of {@code head}, computes the log of the full
 //   *  distribution */
+
 //  public native @ByVal Tensor _get_full_log_prob(@Const @ByRef Tensor input, @Const @ByRef Tensor head_output);
 //
 //  /** Computes log probabilities for all n_classes */
@@ -96,12 +111,3 @@ final class AdaptiveLogSoftmaxWithLoss(
 //
 //  /** Output size of head classifier */
 //  public native @Cast("int64_t") long head_size(); public native AdaptiveLogSoftmaxWithLossImpl head_size(long setter);
-object AdaptiveLogSoftmaxWithLoss:
-  def apply(
-      in_features: Long,
-      n_classes: Long,
-      cutoffs: Array[Long],
-      div_value: Double,
-      head_bias: Boolean
-  ): AdaptiveLogSoftmaxWithLoss =
-    new AdaptiveLogSoftmaxWithLoss(in_features, n_classes, cutoffs, div_value, head_bias)

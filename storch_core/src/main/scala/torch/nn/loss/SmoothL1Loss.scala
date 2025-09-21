@@ -3,12 +3,35 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.SmoothL1LossImpl
+import org.bytedeco.pytorch.{
+  SmoothL1LossImpl,
+  SmoothL1LossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
-final class SmoothL1Loss extends LossFunc {
-  override private[torch] val nativeModule: SmoothL1LossImpl = SmoothL1LossImpl()
+//class torch.nn.SmoothL1Loss(size_average=None, reduce=None, reduction='mean', beta=1.0)[source]
+final class SmoothL1Loss(
+    reduction: String = "mean",
+    beta: Double = 1.0,
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: SmoothL1LossOptions = new SmoothL1LossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  options.beta().put(beta)
+  override private[torch] val nativeModule: SmoothL1LossImpl = SmoothL1LossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -37,5 +60,10 @@ final class SmoothL1Loss extends LossFunc {
 
 object SmoothL1Loss {
 
-  def apply(): SmoothL1Loss = new SmoothL1Loss()
+  def apply(
+      reduction: String = "mean",
+      beta: Double = 1.0,
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): SmoothL1Loss = new SmoothL1Loss(reduction, beta, size_average, reduce)
 }

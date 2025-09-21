@@ -3,12 +3,37 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.BCEWithLogitsLossImpl
+import org.bytedeco.pytorch.{
+  BCEWithLogitsLossImpl,
+  BCEWithLogitsLossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
-final class BCEWithLogitsLoss extends LossFunc {
-  override private[torch] val nativeModule: BCEWithLogitsLossImpl = BCEWithLogitsLossImpl()
+//class torch.nn.BCEWithLogitsLoss(weight=None, size_average=None, reduce=None, reduction='mean', pos_weight=None)[source]
+final class BCEWithLogitsLoss(
+    weight: Option[Tensor[?]] = None,
+    reduction: String = "mean",
+    pos_weight: Option[Tensor[?]] = None,
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: BCEWithLogitsLossOptions = new BCEWithLogitsLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  if weight.isDefined then options.weight().put(weight.get.native)
+  if pos_weight.isDefined then options.pos_weight().put(pos_weight.get.native)
+  override private[torch] val nativeModule: BCEWithLogitsLossImpl = BCEWithLogitsLossImpl(options)
 
   override def hasBias(): Boolean = false
   def weight[D <: DType](): Tensor[D] = fromNative(nativeModule.weight())
@@ -40,7 +65,13 @@ final class BCEWithLogitsLoss extends LossFunc {
 
 }
 object BCEWithLogitsLoss {
-  def apply(): BCEWithLogitsLoss = new BCEWithLogitsLoss()
+  def apply(
+      weight: Option[Tensor[?]] = None,
+      reduction: String = "mean",
+      pos_weight: Option[Tensor[?]] = None,
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): BCEWithLogitsLoss = new BCEWithLogitsLoss(weight, reduction, pos_weight, size_average, reduce)
 }
 
 //  public native @ByRef Tensor weight(); public native BCEWithLogitsLossImpl weight(Tensor setter);

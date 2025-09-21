@@ -3,12 +3,23 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.HuberLossImpl
+import org.bytedeco.pytorch.{HuberLossImpl, HuberLossOptions, LossReduction, kMean, kSum, kNone}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
-final class HuberLoss extends LossFunc {
-  override private[torch] val nativeModule: HuberLossImpl = HuberLossImpl()
+//class torch.nn.HuberLoss(reduction='mean', delta=1.0)[source]
+final class HuberLoss(reduction: String = "mean", delta: Double = 1.0) extends LossFunc {
+
+  private[torch] val options: HuberLossOptions = new HuberLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  options.delta().put(delta)
+  override private[torch] val nativeModule: HuberLossImpl = HuberLossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -36,5 +47,6 @@ final class HuberLoss extends LossFunc {
 }
 
 object HuberLoss {
-  def apply(): HuberLoss = new HuberLoss()
+  def apply(reduction: String = "mean", delta: Double = 1.0): HuberLoss =
+    new HuberLoss(reduction, delta)
 }

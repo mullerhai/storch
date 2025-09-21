@@ -46,7 +46,7 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
     numEncoderLayers: Int = 6,
     numDecoderLayers: Int = 6,
     dimFeedforward: Int = 2048,
-    dropout: Float = 0.1,
+    dropout: Float | Double = 0.1,
     activation: TransformerActivation | String = TransformerActivation.kReLU,
     customEncoder: Option[AnyModule] = None,
     customDecoder: Option[AnyModule] = None,
@@ -66,7 +66,10 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
   options.num_encoder_layers().put(LongPointer(1).put(numEncoderLayers.toLong))
   options.num_decoder_layers().put(LongPointer(1).put(numDecoderLayers.toLong))
   options.dim_feedforward().put(LongPointer(1).put(dimFeedforward.toLong))
-  options.dropout().put(dropout.toDouble)
+  dropout match {
+    case d: Double => options.dropout().put(DoublePointer(1).put(d))
+    case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
+  }
   options.nhead().put(LongPointer(1).put(nhead.toLong))
   options.d_model().put(LongPointer(1).put(dModel.toLong))
 
@@ -161,7 +164,7 @@ object Transformer:
       num_encoder_layers: Int = 6,
       num_decoder_layers: Int = 6,
       dim_feedforward: Int = 2048,
-      dropout: Float = 0.1,
+      dropout: Float | Double = 0.1,
       activation: TransformerActivation | String = TransformerActivation.kReLU,
       custom_encoder: Option[AnyModule] = None,
       custom_decoder: Option[AnyModule] = None,

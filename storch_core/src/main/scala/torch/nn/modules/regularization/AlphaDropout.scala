@@ -67,12 +67,15 @@ import torch.internal.NativeConverters.fromNative
  */
 // format: on
 final class AlphaDropout[ParamType <: FloatNN | ComplexNN: Default](
-    p: Float = 0.5,
+    p: Float | Double = 0.5,
     inplace: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: DropoutOptions = DropoutOptions(p.toDouble)
+  private val options: DropoutOptions = p match {
+    case p: Float  => DropoutOptions(p.toDouble)
+    case p: Double => DropoutOptions(p)
+  }
   options.inplace().put(inplace)
 
   override private[torch] val nativeModule: AlphaDropoutImpl = AlphaDropoutImpl(options)
@@ -91,6 +94,6 @@ final class AlphaDropout[ParamType <: FloatNN | ComplexNN: Default](
 
 object AlphaDropout:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
-      p: Float = 0.5,
+      p: Float | Double = 0.5,
       inplace: Boolean = false
   ): AlphaDropout[ParamType] = new AlphaDropout(p, inplace)

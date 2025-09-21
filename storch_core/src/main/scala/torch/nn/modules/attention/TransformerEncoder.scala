@@ -96,6 +96,8 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false // options.bias().get()
 
+  def norm_raw() = nativeModule.norm()
+
   def reset(): Unit = nativeModule.reset()
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()

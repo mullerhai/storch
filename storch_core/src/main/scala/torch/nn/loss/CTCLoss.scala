@@ -3,12 +3,24 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.CTCLossImpl
+import org.bytedeco.pytorch.{CTCLossImpl, CTCLossOptions, LossReduction, kMean, kSum, kNone}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
+//class torch.nn.CTCLoss(blank=0, reduction='mean', zero_infinity=False)[source]
+final class CTCLoss(blank: Long = 0, reduction: String = "mean", zero_infinity: Boolean = false)
+    extends LossFunc {
 
-final class CTCLoss extends LossFunc {
-  override private[torch] val nativeModule: CTCLossImpl = CTCLossImpl()
+  private[torch] val options: CTCLossOptions = new CTCLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  options.blank().put(blank)
+  options.zero_infinity().put(zero_infinity)
+  override private[torch] val nativeModule: CTCLossImpl = CTCLossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -49,6 +61,7 @@ final class CTCLoss extends LossFunc {
 }
 
 object CTCLoss {
-  def apply(): CTCLoss = new CTCLoss()
+  def apply(blank: Int = 0, reduction: String = "mean", zero_infinity: Boolean = false): CTCLoss =
+    new CTCLoss(blank, reduction, zero_infinity)
 
 }

@@ -175,7 +175,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
       nativeModule.forward(
         input.native.to(ScalarType.Long),
         offsets.native.to(ScalarType.Long),
-        torch.empty(size).native.to(ScalarType.Float)
+        torch.empty(size, dtype = float32, requires_grad = true).native.to(ScalarType.Float)
       )
     )
   }
@@ -189,7 +189,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
       nativeModule.forward(
         input.native.to(ScalarType.Long),
         offsets.native.to(ScalarType.Long),
-        torch.empty(size).native.to(ScalarType.Float)
+        torch.empty(size, dtype = float32, requires_grad = true).native.to(ScalarType.Float)
       )
     )
   }

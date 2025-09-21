@@ -18,14 +18,43 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.CrossEntropyLossImpl
+import org.bytedeco.pytorch.{
+  CrossEntropyLossImpl,
+  CrossEntropyLossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
 /** This criterion computes the cross entropy loss between input and target. */
 // TODO optional args
-final class CrossEntropyLoss extends LossFunc {
-  override private[torch] val nativeModule: CrossEntropyLossImpl = CrossEntropyLossImpl()
+//class torch.nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=-100, reduce=None, reduction='mean', label_smoothing=0.0)[source]
+final class CrossEntropyLoss(
+    weight: Option[Tensor[?]] = None,
+    ignore_index: Long = -100,
+    reduction: String = "mean",
+    label_smoothing: Double = 0.0,
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: CrossEntropyLossOptions = new CrossEntropyLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  options.ignore_index().put(ignore_index)
+  options.label_smoothing().put(label_smoothing)
+  if weight.isDefined then options.weight().put(weight.get.native)
+
+  override private[torch] val nativeModule: CrossEntropyLossImpl = CrossEntropyLossImpl(options)
+
   def weight[D <: DType](): Tensor[D] = fromNative(nativeModule.weight())
   def reset(): Unit = nativeModule.reset()
   override def hasBias(): Boolean = false
@@ -52,5 +81,13 @@ final class CrossEntropyLoss extends LossFunc {
 }
 
 object CrossEntropyLoss {
-  def apply(): CrossEntropyLoss = new CrossEntropyLoss()
+  def apply(
+      weight: Option[Tensor[?]] = None,
+      ignore_index: Long = -100,
+      reduction: String = "mean",
+      label_smoothing: Double = 0.0,
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): CrossEntropyLoss =
+    new CrossEntropyLoss(weight, ignore_index, reduction, label_smoothing, size_average, reduce)
 }

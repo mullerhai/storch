@@ -5,11 +5,36 @@ package loss
 
 import torch.nn.modules.Module
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.pytorch.MultiLabelSoftMarginLossImpl
+import org.bytedeco.pytorch.{
+  MultiLabelSoftMarginLossImpl,
+  MultiLabelSoftMarginLossOptions,
+  LossReduction,
+  kMean,
+  kSum,
+  kNone
+}
 
-final class MultiLabelSoftMarginLoss extends LossFunc {
+//class torch.nn.MultiLabelSoftMarginLoss(weight=None, size_average=None, reduce=None, reduction='mean')[source]
+final class MultiLabelSoftMarginLoss(
+    weight: Option[Tensor[?]] = None,
+    reduction: String = "mean",
+    size_average: Option[Boolean] = None,
+    reduce: Option[Boolean] = None
+) extends LossFunc {
+
+  private[torch] val options: MultiLabelSoftMarginLossOptions =
+    new MultiLabelSoftMarginLossOptions()
+  val lossReduction = reduction match {
+    case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
+    case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
+    case "none" | "None" | "NONE" => new LossReduction(new kNone())
+    case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
+  }
+  options.reduction().put(lossReduction)
+  if weight.isDefined then options.weight().put(weight.get.native)
+
   override private[torch] val nativeModule: MultiLabelSoftMarginLossImpl =
-    MultiLabelSoftMarginLossImpl()
+    MultiLabelSoftMarginLossImpl(options)
 
   override def hasBias(): Boolean = false
 
@@ -37,5 +62,11 @@ final class MultiLabelSoftMarginLoss extends LossFunc {
 
 object MultiLabelSoftMarginLoss {
 
-  def apply(): MultiLabelSoftMarginLoss = new MultiLabelSoftMarginLoss()
+  def apply(
+      weight: Option[Tensor[?]] = None,
+      reduction: String = "mean",
+      size_average: Option[Boolean] = None,
+      reduce: Option[Boolean] = None
+  ): MultiLabelSoftMarginLoss =
+    new MultiLabelSoftMarginLoss(weight, reduction, size_average, reduce)
 }

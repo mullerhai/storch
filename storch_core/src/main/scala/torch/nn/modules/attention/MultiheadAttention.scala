@@ -18,7 +18,7 @@ package torch
 package nn
 package modules
 package attention
-
+import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -37,7 +37,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
     embedDim: Int,
     numHeads: Int,
-    dropout: Float = 0.0f,
+    dropout: Float | Double = 0.0f,
     bias: Boolean = true,
     addBiasKV: Boolean = false,
     addZeroAttn: Boolean = false,
@@ -50,7 +50,11 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
   private val options = new MultiheadAttentionOptions(embedDim.toLong, numHeads.toLong)
   options.embed_dim().put(LongPointer(1).put(embedDim.toLong))
   options.num_heads().put(LongPointer(1).put(numHeads.toLong))
-  options.dropout().put(DoublePointer(1).put(dropout.toDouble))
+  dropout match {
+    case d: Double => options.dropout().put(DoublePointer(1).put(d))
+    case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
+  }
+
   options.bias().put(bias)
   options.add_bias_kv().put(addBiasKV)
   options.add_zero_attn().put(addZeroAttn)
@@ -92,38 +96,45 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
       query: Tensor[ParamType],
       key: Tensor[ParamType],
       value: Tensor[ParamType],
-      key_padding_mask: Tensor[ParamType],
-      need_weights: Boolean,
-      attn_mask: Tensor[ParamType],
-      average_attn_weights: Boolean
+      key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      need_weights: Boolean = true,
+      attn_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      average_attn_weights: Boolean = true
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
-    val fore = nativeModule.forward(
-      query.native,
-      key.native,
-      value.native,
-      key_padding_mask.native,
+    this.forward(
+      query,
+      key,
+      value,
+      key_padding_mask,
       need_weights,
-      attn_mask.native,
+      attn_mask,
       average_attn_weights
     )
-    (fromNative(fore.get0()), fromNative(fore.get1()))
   }
   def forward(
       query: Tensor[ParamType],
       key: Tensor[ParamType],
       value: Tensor[ParamType],
-      key_padding_mask: Tensor[ParamType],
-      need_weights: Boolean,
-      attn_mask: Tensor[ParamType],
-      average_attn_weights: Boolean
+      key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      need_weights: Boolean = true,
+      attn_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      average_attn_weights: Boolean = true
   ): Tuple2[Tensor[ParamType], Tensor[ParamType]] = {
+    val kpm = key_padding_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val am = attn_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
     val fore = nativeModule.forward(
       query.native,
       key.native,
       value.native,
-      key_padding_mask.native,
+      kpm,
       need_weights,
-      attn_mask.native,
+      am,
       average_attn_weights
     )
     (fromNative(fore.get0()), fromNative(fore.get1()))
@@ -182,7 +193,7 @@ object MultiheadAttention:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       embed_dim: Int,
       num_heads: Int,
-      dropout: Float = 0.0f,
+      dropout: Float | Double = 0.0f,
       bias: Boolean = true,
       add_bias_kv: Boolean = false,
       add_zero_attn: Boolean = false,

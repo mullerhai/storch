@@ -23,7 +23,7 @@ import internal.NativeConverters
 import NativeConverters.*
 import org.bytedeco.pytorch.TensorOptions
 import org.bytedeco.pytorch.global.{torch as torchNative}
-import torch.Float32
+import torch.{Float32, Int64}
 
 /** Random Sampling
   *
@@ -181,15 +181,21 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
-  def rand[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D): Tensor[D] = {
-    rand(size.toSeq, dtype, Strided, CPU, requires_grad)
+  def rand_raw[D <: FloatNN | ComplexNN](
+      size: Int*
+  )(using requires_grads: Boolean = false)(using dtypes: D = float32): Tensor[D] = {
+    rand(size.toSeq, dtypes, requires_grads, Strided, CPU)
+  }
+
+  def rand[D <: FloatNN | ComplexNN](size: Int*): Tensor[D] = {
+    rand(size.toSeq, D, false, Strided, CPU)
   }
   def rand[D <: FloatNN | ComplexNN](
       size: Seq[Int],
       dtype: D = float32,
+      requires_grad: Boolean = false,
       layout: Layout = Strided,
-      device: Device = CPU,
-      requires_grad: Boolean = false
+      device: Device = CPU
   ): Tensor[D] =
     fromNative(
       torchNative.torch_rand(
@@ -261,10 +267,9 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
-  def randint[D <: DType](low: Long, high: Long, size: Int*)(
-      requires_grad: Boolean,
-      dtype: D
-  ): Tensor[D] = {
+  def randint_raw[D <: DType](low: Long, high: Long, size: Int*)(using
+      requires_grad: Boolean = false
+  )(using dtype: D = int64): Tensor[D] = {
     randint(
       low = low,
       high = high,
@@ -277,6 +282,18 @@ private[torch] trait RandomSamplingOps {
     )
   }
 
+  def randint[D <: DType](low: Long, high: Long, sizes: Int*): Tensor[D] = {
+    randint(
+      low = low,
+      high = high,
+      size = sizes.toSeq,
+      generator = None,
+      dtype = D, //Int64
+      layout = Strided,
+      device = CPU,
+      requires_grad = false
+    )
+  }
   def randint[D <: DType](
       low: Long = 0,
       high: Long,
@@ -301,13 +318,25 @@ private[torch] trait RandomSamplingOps {
 
 // TODO Randnd acepts Seq[Int] | Int
 
-  def randn[D <: FloatNN | ComplexNN](size: Int*)(requires_grad: Boolean, dtype: D): Tensor[D] = {
+  def randn_raw[D <: FloatNN | ComplexNN](
+      size: Int*
+  )(using requires_grad: Boolean = false)(using dtype: D = float32): Tensor[D] = {
     randn(
       size = size.toSeq,
       dtype = dtype,
       layout = Strided,
       device = CPU,
       requires_grad = requires_grad
+    )
+  }
+
+  def randn[D <: FloatNN | ComplexNN](size: Int*): Tensor[D] = {
+    randn(
+      size = size.toSeq,
+      dtype = D,
+      layout = Strided,
+      device = CPU,
+      requires_grad = false
     )
   }
   def randn[D <: FloatNN | ComplexNN](

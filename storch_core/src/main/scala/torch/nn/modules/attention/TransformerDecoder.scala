@@ -81,6 +81,8 @@ final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = false // options.bias().get()
 
+  def norm_raw() = nativeModule.norm()
+
   def apply(
       tgt: Tensor[ParamType],
       memory: Tensor[ParamType],

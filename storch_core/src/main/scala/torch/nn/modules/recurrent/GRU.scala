@@ -47,7 +47,7 @@ final class GRU[ParamType <: FloatNN | ComplexNN: Default](
     numLayers: Int,
     bias: Boolean = true,
     batchFirst: Boolean = false,
-    dropout: Float = 0f,
+    dropout: Float | Double = 0f,
     bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
@@ -60,7 +60,10 @@ final class GRU[ParamType <: FloatNN | ComplexNN: Default](
   options.num_layers().put(LongPointer(1).put(numLayers.toLong))
   options.bias().put(bias)
   options.batch_first().put(batchFirst)
-  options.dropout().put(dropout.toDouble)
+  dropout match {
+    case p: Float  => options.dropout().put(p.toDouble)
+    case p: Double => options.dropout().put(p)
+  }
   options.bidirectional().put(bidirectional)
 
   override private[torch] val nativeModule: GRUImpl = GRUImpl(options)
@@ -164,7 +167,7 @@ object GRU:
       num_layers: Int,
       bias: Boolean = true,
       batch_first: Boolean = false,
-      dropout: Float = 0f,
+      dropout: Float | Double = 0f,
       bidirectional: Boolean = false
   ): GRU[ParamType] =
     new GRU(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)

@@ -125,16 +125,30 @@ private[torch] trait CreationOps {
     *
     * @group creation_ops
     */
+  def zeros_raw[D <: DType](size: Int*)(using dtype: D = float32)(using
+      requires_grad: Boolean = false
+  ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
+
+  def zeros[D <: DType](size: Int*): Tensor[D] = this.zeros(size, D, Strided, CPU, false)
+
+  def ones[D <: DType](size: Int*): Tensor[D] = this.ones(size, D, Strided, CPU, requires_grad)
+
+  def empty[D <: DType](size: Int*): Tensor[D] = this.empty(size, D, Strided, CPU, false, false, Contiguous)
+  
+  def ones_raw[D <: DType](size: Int*)(using dtype: D = float32)(using
+      requires_grad: Boolean = false
+  ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
+
   def zeros[D <: DType](
       size: Seq[Int] | Int,
-      dtype: D,
-      requires_grad: Boolean
+      dtype: D ,
+      requires_grad: Boolean 
   ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
   def ones[D <: DType](
       size: Seq[Int] | Int,
-      dtype: D,
-      requires_grad: Boolean
+      dtype: D ,
+      requires_grad: Boolean 
   ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
 
 //  def ones[D <: DType](
@@ -371,17 +385,21 @@ private[torch] trait CreationOps {
       requires_grad: Boolean
   ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
 
-//  def empty[D <: DType](
+  def empty_raw[D <: DType](size: Int*)(using dtype: D = float32)(using
+      requires_grad: Boolean = false
+  ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
+
+  //  def empty[D <: DType](
 //                         size: Seq[Int],
 //                         requires_grad: Boolean
 //                       ): Tensor[D] = this.empty[Float32](size, float32, Strided, CPU, requires_grad, false, Contiguous)
 
   def empty[D <: DType](
       size: Seq[Int],
-      dtype: D = float32,
+      dtype: D,
       layout: Layout = Strided,
       device: Device = CPU,
-      requires_grad: Boolean = false,
+      requires_grad: Boolean,
       pinMemory: Boolean = false,
       memoryFormat: MemoryFormat = Contiguous
   ): Tensor[D] =
