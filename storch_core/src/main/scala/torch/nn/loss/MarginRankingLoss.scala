@@ -32,6 +32,7 @@ final class MarginRankingLoss(
     case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
   }
   options.reduction().put(lossReduction)
+  options.margin().put(margin)
   override private[torch] val nativeModule: MarginRankingLossImpl = MarginRankingLossImpl(options)
 
   override def hasBias(): Boolean = false

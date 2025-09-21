@@ -22,7 +22,7 @@ import Device.CPU
 import internal.NativeConverters
 import NativeConverters.*
 import org.bytedeco.pytorch.TensorOptions
-import org.bytedeco.pytorch.global.{torch as torchNative}
+import org.bytedeco.pytorch.global.torch as torchNative
 import torch.{Float32, Int64}
 
 /** Random Sampling
@@ -31,6 +31,8 @@ import torch.{Float32, Int64}
   */
 private[torch] trait RandomSamplingOps {
 
+  val normalfDtype: Float32 = float32
+  val normaliDtype: Int64 = int64
   /* Returns a tensor where each row contains `numSamples` indices sampled from the multinomial probability distribution located in the corresponding row of tensor `input`. */
   def multinomial[D <: FloatNN](
       input: Tensor[D],
@@ -187,8 +189,8 @@ private[torch] trait RandomSamplingOps {
     rand(size.toSeq, dtypes, requires_grads, Strided, CPU)
   }
 
-  def rand[D <: FloatNN | ComplexNN](size: Int*): Tensor[D] = {
-    rand(size.toSeq, D, false, Strided, CPU)
+  def rands[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
+    rand(size = size.toSeq, dtype = dtype ,requires_grad = false, layout = Strided, device = CPU)
   }
   def rand[D <: FloatNN | ComplexNN](
       size: Seq[Int],
@@ -204,6 +206,15 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
+  def rand[D <: FloatNN | ComplexNN](
+                                      size: Int*
+                                    ): Tensor[D] =
+    fromNative(
+      torchNative.torch_rand(
+        size.toArray.map(_.toLong),
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
   /** Returns a tensor with the same size as `input` that is filled with random numbers from a
     * uniform distribution on the interval $[0, 1)$.
     *
@@ -267,7 +278,7 @@ private[torch] trait RandomSamplingOps {
     * @tparam T
     *   the dtype of the created tensor.
     */
-  def randint_raw[D <: DType](low: Long, high: Long, size: Int*)(using
+  def randint_none[D <: DType](low: Long, high: Long, size: Int*)(using
       requires_grad: Boolean = false
   )(using dtype: D = int64): Tensor[D] = {
     randint(
@@ -282,16 +293,16 @@ private[torch] trait RandomSamplingOps {
     )
   }
 
-  def randint[D <: DType](low: Long, high: Long, sizes: Int*): Tensor[D] = {
+  def randints[D <: DType](low: Long, high: Long, sizes: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = {
     randint(
       low = low,
       high = high,
       size = sizes.toSeq,
       generator = None,
-      dtype = D, //Int64
+      dtype = dtype,
       layout = Strided,
       device = CPU,
-      requires_grad = false
+      requires_grad = requires_grad
     )
   }
   def randint[D <: DType](
@@ -314,6 +325,17 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
+  def randint_raws[D <: DType](low: Long = 0, high: Long, size: Int*): Tensor[D] =
+    val generator = new Generator(CPU)
+    fromNative(
+      torchNative.torch_randint(
+        low,
+        high,
+        size.toArray.map(_.toLong),
+        generator.toNativeOptional,
+        NativeConverters.tensorOptions(int64, Strided, CPU, false)
+      )
+    )
 // TODO randint_like Returns a tensor with the same shape as Tensor input filled with random integers generated uniformly between low (inclusive) and high (exclusive).
 
 // TODO Randnd acepts Seq[Int] | Int
@@ -330,15 +352,27 @@ private[torch] trait RandomSamplingOps {
     )
   }
 
-  def randn[D <: FloatNN | ComplexNN](size: Int*): Tensor[D] = {
+
+  def randns[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
     randn(
       size = size.toSeq,
-      dtype = D,
+      dtype = dtype,
       layout = Strided,
       device = CPU,
       requires_grad = false
     )
   }
+
+  def randn[D <: FloatNN | ComplexNN](
+                                       size: Int*
+                                     ): Tensor[D] =
+    fromNative(
+      torchNative.torch_randn(
+        size.toArray.map(_.toLong),
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
   def randn[D <: FloatNN | ComplexNN](
       size: Seq[Int],
       dtype: D = float32,

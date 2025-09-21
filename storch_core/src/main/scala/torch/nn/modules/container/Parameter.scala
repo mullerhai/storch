@@ -14,14 +14,14 @@ object Parameter {
       name: String,
       weight: Tensor[D],
       requires_grad: Boolean = true
-  )(using nativeModule: Module = pytorch.Module()): Tensor[D] =
+  )(implicit nativeModule: Module = pytorch.Module()): Tensor[D] =
     nativeModule.register_parameter(name, weight.native, requires_grad)
     weight
   def register_parameter[D <: DType](
       name: String,
       weight: Tensor[D],
       requires_grad: Boolean = true
-  )(using nativeModule: Module = pytorch.Module()): Tensor[D] =
+  )(implicit nativeModule: Module = pytorch.Module()): Tensor[D] =
     nativeModule.register_parameter(name, weight.native, requires_grad)
     weight
 }

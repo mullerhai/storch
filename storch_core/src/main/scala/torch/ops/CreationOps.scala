@@ -129,29 +129,30 @@ private[torch] trait CreationOps {
       requires_grad: Boolean = false
   ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
-  def zeros[D <: DType](size: Int*): Tensor[D] = this.zeros(size, D, Strided, CPU, false)
-
-  def ones[D <: DType](size: Int*): Tensor[D] = this.ones(size, D, Strided, CPU, requires_grad)
-
-  def empty[D <: DType](size: Int*): Tensor[D] = this.empty(size, D, Strided, CPU, false, false, Contiguous)
-  
   def ones_raw[D <: DType](size: Int*)(using dtype: D = float32)(using
       requires_grad: Boolean = false
   ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
 
-  def zeros[D <: DType](
+  def zeros_raw[D <: DType](
       size: Seq[Int] | Int,
       dtype: D ,
-      requires_grad: Boolean 
+      requires_grad: Boolean
   ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
-  def ones[D <: DType](
+  def ones_raw[D <: DType](
       size: Seq[Int] | Int,
       dtype: D ,
-      requires_grad: Boolean 
+      requires_grad: Boolean
   ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
 
-//  def ones[D <: DType](
+
+  def zeross[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.zeros(size = size,dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
+
+  def oness[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.ones(size = size, dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
+
+  def emptys[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.empty(size = size,dtype = dtype, layout = Strided, device = CPU, requires_grad = false, pinMemory = false, memoryFormat = Contiguous)
+
+  //  def ones[D <: DType](
 //                         size: Seq[Int] | Int,
 //                         requires_grad: Boolean
 //                       ): Tensor[D] = this.ones(size, torch.float32, Strided, CPU, requires_grad)
@@ -170,6 +171,18 @@ private[torch] trait CreationOps {
       torchNative.torch_zeros(
         nativeSize,
         NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+      )
+    )
+
+  def zeros[D <: DType](
+                         size: Int*
+                       ): Tensor[D] =
+    val nativeSize = size match
+      case s: Seq[Int] => s.map(_.toLong).toArray
+    fromNative(
+      torchNative.torch_zeros(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
       )
     )
 
@@ -219,6 +232,18 @@ private[torch] trait CreationOps {
       )
     )
 
+  def ones[D <: DType](
+                        size: Int*
+                      ): Tensor[D] =
+    val nativeSize = size match
+      case s: Seq[Int] => s.map(_.toLong).toArray
+    
+    fromNative(
+      torchNative.torch_ones(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
   def ones_like[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.ones_like(t1.native))
 
@@ -379,13 +404,13 @@ private[torch] trait CreationOps {
     *
     * @group creation_ops
     */
-  def empty[D <: DType](
+  def empty_raw[D <: DType](
       size: Seq[Int],
       dtype: D,
       requires_grad: Boolean
   ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
 
-  def empty_raw[D <: DType](size: Int*)(using dtype: D = float32)(using
+  def empty_raws[D <: DType](size: Int*)(using dtype: D = float32)(using
       requires_grad: Boolean = false
   ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
 
@@ -394,6 +419,18 @@ private[torch] trait CreationOps {
 //                         requires_grad: Boolean
 //                       ): Tensor[D] = this.empty[Float32](size, float32, Strided, CPU, requires_grad, false, Contiguous)
 
+  def empty[D <: DType](
+                         size: Int*
+                       ): Tensor[D] =
+    fromNative(
+      torchNative.torch_empty(
+        size.toArray.map(_.toLong),
+        NativeConverters
+          .tensorOptions(float32, Strided, CPU, false)
+          .pinned_memory(BoolOptional(false)),
+        new MemoryFormatOptional(Contiguous.toNative)
+      )
+    )
   def empty[D <: DType](
       size: Seq[Int],
       dtype: D,
