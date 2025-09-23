@@ -21,10 +21,6 @@ package sparse
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.EmbeddingImpl
-import org.bytedeco.pytorch.TransformerImpl
-import org.bytedeco.pytorch.MultiheadAttentionImpl
-import org.bytedeco.pytorch.ModuleListImpl
-import org.bytedeco.pytorch.SequentialImpl
 import org.bytedeco.pytorch.EmbeddingOptions
 import torch.internal.NativeConverters.{fromNative, toNative}
 

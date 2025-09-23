@@ -2,10 +2,10 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  TensorExampleVectorOptional,
   ChunkTensorDataReader,
   SizeTOptional,
   TensorExampleStack,
+  TensorExampleVectorOptional,
   ChunkSharedTensorBatchDataset as CSTBD,
   RandomSampler as RS,
   SequentialSampler as SS

@@ -2,23 +2,16 @@ package torch
 package nn
 package functional
 
-import Derive.derive
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   BatchNormFuncOptions,
-  TensorOptional,
   GroupNormFuncOptions,
   InstanceNormFuncOptions,
   LayerNormFuncOptions,
-  LocalResponseNormOptions,
-  NormalizeFuncOptions,
-  TensorVector,
-  ScalarTypeOptional,
-  DoubleOptional
+  TensorVector
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 
 private[torch] trait BatchNorm {
 

@@ -21,20 +21,16 @@ package attention
 
 import org.bytedeco.pytorch.global.torch as torchNative
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   kReLU,
   kGELU,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorVector,
   TransformerDecoderLayerImpl,
   TransformerDecoderLayerOptions
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.nn.modules.attention.Transformer.TransformerActivation
+//import torch.nn.modules.attention.Transformer.TransformerActivation
 
 import torch.nn.modules.attention.Transformer.TransformerActivation
 

@@ -25,15 +25,12 @@ import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.pytorch.{
   RReLUFuncOptions,
-  TensorOptional,
-  DoubleOptional,
   GELUOptions,
   SoftminFuncOptions,
   GumbelSoftmaxFuncOptions,
   ScalarTypeOptional,
   Scalar
 }
-import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
 
 private[torch] trait Activations {
 

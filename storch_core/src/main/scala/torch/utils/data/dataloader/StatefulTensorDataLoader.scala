@@ -4,13 +4,10 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
   FullDataLoaderOptions,
-  SizeTOptional,
   TensorExample,
   TensorExampleIterator,
   TensorExampleVectorIterator,
   JavaStatefulTensorDataLoader as STDL,
-  RandomSampler as RS,
-  SequentialSampler as SS
 }
 import torch.utils.data.dataset.java.StatefulTensorDataset
 import torch.utils.data.dataset.java

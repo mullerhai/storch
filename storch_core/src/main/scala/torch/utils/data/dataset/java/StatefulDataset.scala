@@ -6,11 +6,11 @@ import org.bytedeco.pytorch.{
   ExampleVector,
   ExampleVectorOptional,
   SizeTOptional,
+  AbstractTensor as Tensor,
   JavaStatefulDataset as JSD
 }
-import org.bytedeco.pytorch.AbstractTensor as Tensor
-import torch.utils.data.datareader.ExampleVectorReader
 import torch.utils.data.datareader
+import torch.utils.data.datareader.ExampleVectorReader
 
 class StatefulDataset(reader: datareader.ExampleVectorReader) extends JSD(reader) {
 

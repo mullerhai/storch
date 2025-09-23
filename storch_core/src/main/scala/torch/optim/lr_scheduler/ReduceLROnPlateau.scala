@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 
 import scala.math.max
 

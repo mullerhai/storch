@@ -19,9 +19,9 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer}
+import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{MaxUnpool3dOptions, PixelShuffleImpl, PixelShuffleOptions}
+import org.bytedeco.pytorch.{PixelShuffleImpl, PixelShuffleOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */

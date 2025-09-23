@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 import scala.math.min
 
 /** 使用多项式函数衰减学习率

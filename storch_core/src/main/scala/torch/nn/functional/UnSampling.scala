@@ -2,17 +2,17 @@ package torch
 package nn
 package functional
 
-import org.bytedeco.pytorch.{
-  StringViewOptional,
-  LongArrayRefOptional,
-  LongOptional,
-  BoolOptional,
-  SymInt,
-  SymIntOptional
-}
+//import org.bytedeco.pytorch.{
+//  StringViewOptional,
+//  LongArrayRefOptional,
+//  LongOptional,
+//  BoolOptional,
+//  SymInt,
+//  SymIntOptional
+//}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
+//import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 
 trait UnSampling {
 

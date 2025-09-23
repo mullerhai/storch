@@ -2,12 +2,12 @@ package torch.utils.data.sampler
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  Sampler as SM,
   InputArchive,
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  RandomSampler as RS
+  RandomSampler as RS,
+  Sampler as SM
 }
 
 trait Sampler extends SM {

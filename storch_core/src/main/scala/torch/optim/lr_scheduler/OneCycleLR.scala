@@ -3,7 +3,7 @@ package optim
 package lr_scheduler
 
 import scala.math.{Pi, cos}
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 
 /** 1cycle学习率策略 optimizer, max_lr, total_steps=None, epochs=None, steps_per_epoch=None,
   * pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85,

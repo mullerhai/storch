@@ -19,7 +19,7 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{DoublePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{LPPool3dImpl, LPPool3dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}

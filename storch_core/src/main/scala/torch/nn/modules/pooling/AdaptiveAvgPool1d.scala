@@ -24,7 +24,6 @@ import org.bytedeco.pytorch
 
 import torch.internal.NativeConverters.{fromNative, toNative, toOptional}
 import org.bytedeco.pytorch.LongOptionalVector
-import org.bytedeco.pytorch.LongOptional
 
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.
   *

@@ -18,7 +18,7 @@ package torch
 package nn
 package functional
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   AvgPool1dOptions,
@@ -35,9 +35,6 @@ import org.bytedeco.pytorch.{
   MaxPool2dOptions,
   MaxUnpool3dFuncOptions,
   MaxPool3dOptions,
-  MaxUnpool1dOptions,
-  MaxUnpool2dOptions,
-  MaxUnpool3dOptions,
   AdaptiveMaxPool1dOptions,
   AdaptiveMaxPool2dOptions,
   AdaptiveMaxPool3dOptions,

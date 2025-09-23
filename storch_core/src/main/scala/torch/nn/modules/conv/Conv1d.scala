@@ -19,7 +19,7 @@ package nn
 package modules
 package conv
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{Conv1dImpl, Conv1dOptions, kZeros, kReflect, kReplicate, kCircular}
 import torch.internal.NativeConverters.{fromNative, toNative}

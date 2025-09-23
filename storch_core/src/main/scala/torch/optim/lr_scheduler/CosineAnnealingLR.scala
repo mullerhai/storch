@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 import scala.math.{Pi, cos}
 
 /** 使用余弦退火策略调整学习率 optimizer, T_max, eta_min=0, last_epoch=-1, verbose="deprecated"

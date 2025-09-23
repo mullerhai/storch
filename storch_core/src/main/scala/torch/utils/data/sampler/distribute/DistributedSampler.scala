@@ -6,11 +6,11 @@ package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  DistributedSampler as DS,
   InputArchive,
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
+  DistributedSampler as DS,
   RandomSampler as RS
 }
 import torch.internal.NativeConverters.{fromNative, toNative}

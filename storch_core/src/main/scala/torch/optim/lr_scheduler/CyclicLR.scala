@@ -3,7 +3,7 @@ package optim
 package lr_scheduler
 
 import scala.math.floor
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 //import torch.optim.Optimizer
 /** 循环学习率策略 optimizer, base_lr, max_lr, step_size_up=2000, step_size_down=None, mode='triangular',
   * gamma=1., scale_fn=None, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8,

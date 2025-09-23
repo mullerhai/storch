@@ -2,10 +2,10 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  ChunkStatefulDataset as CSD,
   ChunkDataReader,
   ExampleVectorOptional,
-  SizeTOptional
+  SizeTOptional,
+  ChunkStatefulDataset as CSD
 }
 
 class ChunkStatefulDataset(chunkReader: ChunkDataReader) extends CSD(chunkReader) {

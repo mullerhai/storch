@@ -19,12 +19,9 @@ package nn
 package modules
 package attention
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
   MultiheadAttentionImpl,
   MultiheadAttentionOptions
 }
@@ -32,6 +29,10 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D convolution over an input signal composed of several input planes. long input_size,
   * \@Cast("int64_t") long hidden_size
+ * T_TensorT_TensorTensor_T_T,
+ * T_TensorTensor_T,
+ * T_TensorTensor_TOptional,
+ *
   * @group nn_conv
   */
 final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](

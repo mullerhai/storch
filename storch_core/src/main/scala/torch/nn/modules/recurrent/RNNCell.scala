@@ -26,10 +26,6 @@ import org.bytedeco.pytorch.{
   kTanh,
   kReLU,
   TensorVector,
-  kCircular,
-  kReflect,
-  kReplicate,
-  kZeros
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 

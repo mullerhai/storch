@@ -6,7 +6,6 @@ package java
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  ChunkMapDataset,
   Example,
   ExampleVector,
   SizeTArrayRef,
@@ -14,10 +13,9 @@ import org.bytedeco.pytorch.{
   JavaDataset as JD
 }
 import torch.utils.data.datareader.ExampleVectorReader
-import torch.utils.data.datareader
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
-import scala.collection.mutable.ListBuffer
 
 class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
@@ -42,6 +40,8 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
   override def size: SizeTOptional = ds.size() // new SizeTOptional(exampleVector.size)
 
+//  def size: Int = length.toInt
+  
   def length = exampleVector.size
 
   override def get_batch(indices: SizeTArrayRef): ExampleVector =
@@ -51,10 +51,10 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
       lengths: Seq[Int],
       seed: Long = System.currentTimeMillis()
   ): Array[JavaDataset] = {
-    require(lengths.sum == size().get(), "切分长度总和必须等于数据集大小")
+    require(lengths.sum == length.toInt, "切分长度总和必须等于数据集大小")
 
-    // 创建索引序列并随机打乱
-    val indices = ArrayBuffer.range(0, size().get().toInt)
+    // 创建索引序列并随机打乱 size().get()
+    val indices = ArrayBuffer.range(0, length.toInt)
     val random = new Random(seed)
     for (i <- indices.length - 1 to 1 by -1) {
       val j = random.nextInt(i + 1)
@@ -99,7 +99,7 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
   ): Array[JavaDataset] = {
     require(math.abs(ratios.sum - 1.0) < 1e-6, "比例总和必须接近1.0")
 
-    val totalSize = size().get().toInt
+    val totalSize = length.toInt
     val lengths = ratios.map(ratio => (ratio * totalSize).toInt)
 
     // 处理四舍五入误差

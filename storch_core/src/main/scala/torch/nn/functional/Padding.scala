@@ -7,7 +7,6 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   PadFuncOptions,
   LongVector,
-//  LongArrayRef,
   kConstant,
   kReflect,
   kReplicate,

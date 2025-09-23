@@ -3,7 +3,7 @@ package optim
 package lr_scheduler
 
 //import torch.optim.Optimizer
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 //import torch.{ClosedFormLR, LRScheduler, optimizer}
 
 /** 在指定的迭代次数内将学习率乘以一个小的常数因子

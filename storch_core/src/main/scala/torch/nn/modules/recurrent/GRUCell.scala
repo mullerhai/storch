@@ -21,16 +21,9 @@ package recurrent
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
   GRUCellImpl,
   GRUCellOptions,
   TensorVector,
-  kCircular,
-  kReflect,
-  kReplicate,
-  kZeros
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 

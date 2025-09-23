@@ -1,8 +1,7 @@
 package torch
 package nn
 import org.bytedeco.pytorch.ParameterDictImpl
-import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{DoubleOptional, PackedSequence, TensorOptional, TensorVector}
+//import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 
 import scala.collection.mutable.ListBuffer

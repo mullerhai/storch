@@ -6,8 +6,7 @@ import org.bytedeco.pytorch.{
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  BatchSizeSampler as BSS,
-  RandomSampler as RS
+  BatchSizeSampler as BSS
 }
 
 trait BatchSizeSampler extends BSS {

@@ -19,11 +19,10 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{DoublePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{LPPool2dImpl, LPPool2dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class LPPool2d[D <: FloatNN | ComplexNN: Default](

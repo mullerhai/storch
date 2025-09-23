@@ -19,12 +19,10 @@ package nn
 package modules
 package flatten
 
-import org.bytedeco.javacpp.{LongPointer, BytePointer}
+import org.bytedeco.javacpp.{BytePointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{UnflattenImpl, UnflattenOptions, StringLongVector, LongVector}
-import torch.internal.NativeConverters.fromNative
-import torch.internal.NativeConverters.{toNative, fromNative}
-import torch.internal.NativeConverters.toOptional
+import torch.internal.NativeConverters.{fromNative, toNative}
 // format: off
 /** Flattens a contiguous range of dims into a tensor. For use with [[nn.Sequential]].
  *

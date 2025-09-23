@@ -19,7 +19,7 @@ package nn
 package modules
 package flatten
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{FlattenImpl, FlattenOptions}
 import torch.internal.NativeConverters.fromNative

@@ -6,11 +6,11 @@ package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  DistributedRandomSampler as DRS,
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  SizeTVectorOptional
+  SizeTVectorOptional,
+  DistributedRandomSampler as DRS
 }
 
 class DistributedRandomSampler(

@@ -3,9 +3,9 @@ package nn
 package modules
 package attention
 
-import torch.nn.modules.{HasParams, Module}
-import torch.{BFloat16, Default, Float32, Tensor}
-import torch.internal.NativeConverters.{fromNative, toNative}
+//import torch.nn.modules.{HasParams, Module}
+//import torch.{BFloat16, Default, Float32, Tensor}
+//import torch.internal.NativeConverters.{fromNative, toNative}
 
 class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
     dModel: Long,

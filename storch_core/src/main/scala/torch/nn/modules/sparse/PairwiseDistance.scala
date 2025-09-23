@@ -22,14 +22,10 @@ package sparse
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   PairwiseDistanceOptions,
-  ModuleListImpl,
-  MultiheadAttentionImpl,
   PairwiseDistanceImpl,
-  SequentialImpl,
-  TransformerImpl
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{DoublePointer}
 // format: off
 /** A simple lookup table that stores embeddings of a fixed dictionary and size.
  *

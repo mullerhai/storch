@@ -5,11 +5,12 @@ package dataloader
 package distribute
 
 import org.bytedeco.pytorch
+import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
   DataLoaderOptions,
   Example,
-  ExampleVector,
   ExampleIterator,
+  ExampleVector,
   ExampleVectorIterator,
   ExampleVectorOptional,
   FullDataLoaderOptions,
@@ -17,13 +18,12 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.dataset.java.JavaDataset
-import torch.utils.data.sampler.distribute.DistributedRandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.dataset.java
-import torch.utils.data.sampler
-import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.utils.data.dataloader.TorchDataLoaderOptions
+import torch.utils.data.dataset.java
+import torch.utils.data.dataset.java.JavaDataset
+import torch.utils.data.sampler
+import torch.utils.data.sampler.distribute.DistributedRandomSampler
 
 object DistributedRandomDataLoader {
 

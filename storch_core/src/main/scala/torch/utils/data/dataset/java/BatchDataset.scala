@@ -2,8 +2,8 @@ package torch.utils.data.dataset.java
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{ExampleVector, SizeTArrayRef, SizeTOptional, JavaBatchDataset as BD}
-import torch.utils.data.datareader.ExampleVectorReader
 import torch.utils.data.datareader
+import torch.utils.data.datareader.ExampleVectorReader
 
 class BatchDataset(reader: datareader.ExampleVectorReader) extends BD(reader) {
 

@@ -1,9 +1,7 @@
 package torch
 package nn
 
-import org.bytedeco.pytorch.{ParameterDictImpl, ParameterListImpl}
-import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{PackedSequence, TensorVector, TensorOptional, DoubleOptional}
+import org.bytedeco.pytorch.{ParameterListImpl}
 import torch.internal.NativeConverters.fromNative
 
 class ParameterList[D <: DType] extends ParameterListImpl {

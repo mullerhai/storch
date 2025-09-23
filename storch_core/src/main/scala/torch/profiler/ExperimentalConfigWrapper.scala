@@ -1,6 +1,6 @@
 package torch.profiler
 
-import org.bytedeco.pytorch.{ExperimentalConfig, StringVector}
+import org.bytedeco.pytorch.{ExperimentalConfig}
 
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.pytorch.StringVector

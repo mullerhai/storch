@@ -19,10 +19,10 @@ package nn
 package modules
 package recurrent
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch.{PackedSequence}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{RNNImpl, RNNOptions, TensorVector, kTanh, kReLU}
+import org.bytedeco.pytorch.{RNNImpl, RNNOptions, kTanh, kReLU}
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.nn.modules.recurrent.RNN.RNNNonlinearity
 

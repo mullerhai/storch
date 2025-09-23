@@ -2,13 +2,10 @@ package torch
 package nn
 package functional
 
-import Derive.derive
-import org.bytedeco.pytorch
+
 import org.bytedeco.pytorch.{DoubleOptional, LongArrayRefOptional}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.pytorch.ScalarTypeOptional
-import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
 
 //@Namespace("torch::linalg
 private[torch] trait Linalg {

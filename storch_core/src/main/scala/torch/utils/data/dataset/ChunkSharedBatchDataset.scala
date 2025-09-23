@@ -6,11 +6,11 @@ import org.bytedeco.pytorch.{
   ExampleStack,
   ExampleVectorOptional,
   SizeTOptional,
+  ChunkMapDataset as CMD,
   ChunkSharedBatchDataset as CSBD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import org.bytedeco.pytorch.ChunkMapDataset as CMD
 import torch.utils.data.dataset.ChunkMapDataset
 
 class ChunkSharedBatchDataset(chunkDataset: ChunkDataset) extends CSBD(chunkDataset) {

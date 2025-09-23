@@ -2,9 +2,9 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
+  ChunkDataReader,
   ChunkMapDataset,
   ExampleStack,
-  ChunkDataReader,
   ExampleVectorOptional,
   SizeTOptional,
   ChunkBatchSharedBatchDataset as CBSBD

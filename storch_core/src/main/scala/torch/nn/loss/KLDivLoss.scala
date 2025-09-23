@@ -3,7 +3,7 @@ package torch
 package nn
 package loss
 
-import org.bytedeco.pytorch.{KLDivLossImpl, KLDivLossOptions, LossReduction, kMean, kSum, kNone}
+import org.bytedeco.pytorch.{KLDivLossImpl, KLDivLossOptions, LossReduction, kMean, kSum, kBatchMean, kNone}
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
@@ -15,11 +15,17 @@ final class KLDivLoss(
     reduce: Option[Boolean] = None
 ) extends LossFunc {
 
-  private[torch] val options: KLDivLossOptions = new KLDivLossOptions()
+  private[torch] val options: KLDivLossOptions = reduction match {
+    case "mean" | "Mean" | "MEAN" => new KLDivLossOptions(new kMean())
+    case "sum" | "Sum" | "SUM"    => new KLDivLossOptions(new kSum())
+    case "none" | "None" | "NONE" => new KLDivLossOptions(new kNone)
+    case "batchmean" | "BatchMean" | "BATCHMEAN" => new KLDivLossOptions(new kBatchMean())
+  }
   val lossReduction = reduction match {
     case "mean" | "Mean" | "MEAN" => new LossReduction(new kMean())
     case "sum" | "Sum" | "SUM"    => new LossReduction(new kSum())
     case "none" | "None" | "NONE" => new LossReduction(new kNone())
+//    case "batchmean" | "BatchMean" | "BATCHMEAN" => new LossReduction(new kBatchMean())
     case _ => throw new IllegalArgumentException(s"Unknown reduction $reduction")
   }
   options.reduction().put(lossReduction)

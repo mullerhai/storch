@@ -2,17 +2,17 @@ package torch
 package nn
 package functional
 
-import Derive.derive
-import org.bytedeco.pytorch
+//import Derive.derive
+//import org.bytedeco.pytorch
+//GroupNormFuncOptions,
+//InstanceNormFuncOptions,
+//LayerNormFuncOptions,
+//LocalResponseNormOptions,
+//NormalizeFuncOptions,
+//ScalarTypeOptional
 import org.bytedeco.pytorch.{
   PairwiseDistanceOptions,
-  CosineSimilarityOptions,
-  GroupNormFuncOptions,
-  InstanceNormFuncOptions,
-  LayerNormFuncOptions,
-  LocalResponseNormOptions,
-  NormalizeFuncOptions,
-  ScalarTypeOptional
+  CosineSimilarityOptions
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative

@@ -3,17 +3,15 @@ package torch.utils.data.dataset
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   ChunkDatasetOptions,
-  ExampleVectorOptional,
   InputArchive,
   OutputArchive,
   SizeTOptional,
   TensorExampleVectorOptional,
   ChunkTensorDataset as CTD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  RandomSampler as RS
 }
-import torch.utils.data.datareader.ChunkTensorDataReader
 import torch.utils.data.datareader
+import torch.utils.data.datareader.ChunkTensorDataReader
 
 class ChunkTensorDataset(
     chunkReader: datareader.ChunkTensorDataReader,

@@ -19,7 +19,7 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.pytorch.{AdaptiveMaxPool1dImpl, AdaptiveMaxPool1dOptions, T_TensorTensor_T}
+import org.bytedeco.pytorch.{AdaptiveMaxPool1dImpl, AdaptiveMaxPool1dOptions}
 import org.bytedeco.pytorch
 
 import torch.internal.NativeConverters.{fromNative, toNative, toOptional}

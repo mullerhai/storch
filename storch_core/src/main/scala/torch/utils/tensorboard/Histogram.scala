@@ -2,10 +2,10 @@ package torch
 package utils
 package tensorboard
 
-import org.tensorflow.util.event.Event
+//import org.tensorflow.util.event.Event
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+//import scala.collection.mutable.ListBuffer
 
 object Histogram {
   // 生成直方图桶边界

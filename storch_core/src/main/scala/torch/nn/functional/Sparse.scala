@@ -20,28 +20,26 @@ package functional
 
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import Derive.derive
-import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   kSum,
   kMean,
   kMax,
   DoubleOptional,
   LongOptional,
-  EmbeddingBagMode,
   EmbeddingBagFuncOptions,
   EmbeddingFuncOptions
 }
-import org.bytedeco.pytorch.{
-  BatchNormFuncOptions,
-  GroupNormFuncOptions,
-  InstanceNormFuncOptions,
-  LayerNormFuncOptions,
-  LocalResponseNormOptions,
-  NormalizeFuncOptions,
-  ScalarTypeOptional
-}
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
+//  EmbeddingBagMode,
+//import org.bytedeco.pytorch.{
+//  BatchNormFuncOptions,
+//  GroupNormFuncOptions,
+//  InstanceNormFuncOptions,
+//  LayerNormFuncOptions,
+//  LocalResponseNormOptions,
+//  NormalizeFuncOptions,
+//  ScalarTypeOptional
+//}
+//import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 
 private[torch] trait Sparse {
 

@@ -21,7 +21,6 @@ package pooling
 
 import org.bytedeco.pytorch.{AvgPool1dImpl, AvgPool1dOptions}
 import org.bytedeco.pytorch
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import torch.internal.NativeConverters.{fromNative, toNative, toOptional}
 import org.bytedeco.pytorch.LongOptionalVector
 import org.bytedeco.pytorch.LongOptional

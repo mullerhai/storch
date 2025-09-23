@@ -2,10 +2,10 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  ChunkTensorBatchDataset as CTBD,
   ChunkTensorDataReader,
   SizeTOptional,
-  TensorExampleVectorOptional
+  TensorExampleVectorOptional,
+  ChunkTensorBatchDataset as CTBD
 }
 
 class ChunkTensorBatchDataset(chunkReader: ChunkTensorDataReader) extends CTBD(chunkReader) {

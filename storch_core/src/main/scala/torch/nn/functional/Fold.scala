@@ -2,8 +2,8 @@ package torch
 package nn
 package functional
 
-import org.bytedeco.javacpp.LongPointer
-import org.bytedeco.pytorch.{UnfoldOptions, ConvTranspose1dFuncOptions, FoldOptions}
+
+import org.bytedeco.pytorch.{UnfoldOptions, FoldOptions}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.*
 

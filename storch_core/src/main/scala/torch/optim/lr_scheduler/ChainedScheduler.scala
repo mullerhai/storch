@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 
 /** 链式调用多个学习率调度器
   */

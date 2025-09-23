@@ -2,8 +2,8 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  ExampleVectorOptional,
   ChunkTensorDataReader,
+  ExampleVectorOptional,
   SizeTArrayRef,
   SizeTOptional,
   TensorExampleVector,

@@ -23,20 +23,16 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   LSTMCellImpl,
   LSTMCellOptions,
-  T_TensorT_TensorTensor_T_T,
   T_TensorTensor_T,
-  T_TensorTensor_TOptional,
   TensorVector,
-  kCircular,
-  kReflect,
-  kReplicate,
-  kZeros
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.{Default, FloatNN, ComplexNN, Tensor}
 
 /** Applies a 2D convolution over an input signal composed of several input planes. long input_size,
   * \@Cast("int64_t") long hidden_size
+ *  T_TensorTensor_TOptional,
+ *    T_TensorT_TensorTensor_T_T,
   * @group nn_conv
   */
 final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](

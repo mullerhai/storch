@@ -2,14 +2,14 @@ package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  ChunkDataset as CDS,
-  Sampler,
-  ChunkDatasetOptions,
   ChunkDataReader,
+  ChunkDatasetOptions,
   ExampleVectorOptional,
   InputArchive,
   OutputArchive,
+  Sampler,
   SizeTOptional,
+  ChunkDataset as CDS,
   RandomSampler as RS,
   SequentialSampler as SS
 }

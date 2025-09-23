@@ -25,10 +25,9 @@ import org.bytedeco.pytorch.{Conv3dImpl, Conv3dOptions, kZeros, kReflect, kRepli
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.nn.modules.conv.Conv3d.PaddingMode
 
-/** Applies a 2D convolution over an input signal composed of several input planes.
-  *
-  * @group nn_conv
-  */
+/**
+ * Applies a 3D convolution over an input signal composed of several input planes.
+ */
 final class Conv3d[ParamType <: FloatNN | ComplexNN: Default](
     inChannels: Int,
     outChannels: Int,

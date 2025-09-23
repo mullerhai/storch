@@ -2,8 +2,7 @@ package torch
 package nn
 package functional
 
-import Derive.derive
-import org.bytedeco.pytorch
+
 import org.bytedeco.pytorch.{
   kZeros,
   kBorder,
@@ -26,16 +25,11 @@ import org.bytedeco.pytorch.{
   DoubleVectorOptional,
   InterpolateMode,
   PixelShuffleOptions,
-  InterpolateFuncOptions,
-  InstanceNormFuncOptions,
-  LayerNormFuncOptions,
-  LocalResponseNormOptions,
-  NormalizeFuncOptions,
-  ScalarTypeOptional
+  InterpolateFuncOptions
+
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 
 private[torch] trait Vision {
 

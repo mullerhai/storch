@@ -6,16 +6,13 @@ package stream
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  DistributedSampler as DS,
+  BatchSizeOptional,
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  BatchSizeOptional,
-  RandomSampler as RS
+  StreamSampler as SS
 }
-import torch.utils.data.sampler.BatchSizeSampler
-
-import org.bytedeco.pytorch.StreamSampler as SS
+//import torch.utils.data.sampler.BatchSizeSampler
 class StreamSampler(epoch_size: Long) extends SS(epoch_size) with BatchSizeSampler {
 
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)

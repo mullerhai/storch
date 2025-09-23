@@ -19,11 +19,10 @@ package nn
 package modules
 package pad
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, IntPointer}
+import org.bytedeco.javacpp.{LongPointer}
 
-import org.bytedeco.pytorch.{LongOptional, LongOptionalVector, ZeroPad2dImpl, ZeroPad2dOptions}
+import org.bytedeco.pytorch.{ZeroPad2dImpl, ZeroPad2dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.internal.NativeConverters.toOptional
 
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.
   *

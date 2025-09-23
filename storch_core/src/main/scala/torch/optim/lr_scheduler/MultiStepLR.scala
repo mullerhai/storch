@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 
 /** 在指定的里程碑处将学习率乘以gamma因子
   */

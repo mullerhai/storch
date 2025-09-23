@@ -2,23 +2,16 @@ package torch.utils.data.dataloader
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  DataLoaderOptions,
-  ExampleVectorIterator,
-  ExampleVectorOptional,
-  FullDataLoaderOptions,
-  TensorVector,
-  Example,
   ExampleVector,
-  ExampleIterator,
+  ExampleVectorIterator,
+  FullDataLoaderOptions,
+  DataLoaderOptions as DLOP,
   JavaSequentialDataLoader as SDL
 }
-import torch.utils.data.dataset.java.JavaDataset
-import torch.utils.data.sampler.SequentialSampler
 import torch.utils.data.dataset.java
-import torch.utils.data.sampler
-import org.bytedeco.pytorch.DataLoaderOptions as DLOP
-import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.Dataset as DatasetTrait
+import torch.utils.data.dataset.java.JavaDataset
+import torch.utils.data.{sampler, Dataset as DatasetTrait}
+import torch.utils.data.sampler.SequentialSampler
 
 object SequentialDataLoader {
 

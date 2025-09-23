@@ -6,11 +6,11 @@ package distribute
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  DistributedSequentialSampler as DSS,
   InputArchive,
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
+  DistributedSequentialSampler as DSS,
   RandomSampler as RS
 }
 

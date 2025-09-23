@@ -22,7 +22,7 @@ package pooling
 import org.bytedeco.pytorch.{AdaptiveAvgPool2dImpl, AdaptiveAvgPool2dOptions}
 import org.bytedeco.pytorch
 
-import torch.internal.NativeConverters.{fromNative, toNative, toOptional}
+import torch.internal.NativeConverters.{fromNative, toOptional}
 import org.bytedeco.pytorch.LongOptionalVector
 import org.bytedeco.pytorch.LongOptional
 

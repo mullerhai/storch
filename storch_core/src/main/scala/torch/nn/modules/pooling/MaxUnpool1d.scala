@@ -22,7 +22,6 @@ package pooling
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{MaxUnpool1dImpl, MaxUnpool1dOptions, LongVectorOptional, LongVector}
 import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes.
   * torch.nn.MaxUnpool1d(kernel_size, stride=None, padding=0)

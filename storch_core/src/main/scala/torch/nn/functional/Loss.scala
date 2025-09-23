@@ -18,8 +18,7 @@ package torch
 package nn
 package functional
 
-import org.bytedeco.javacpp.Pointer
-import org.bytedeco.pytorch
+
 import org.bytedeco.pytorch.{
   NLLLossOptions,
   MSELossOptions,

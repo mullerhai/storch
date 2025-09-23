@@ -2,13 +2,12 @@ package torch.utils.data.sampler
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  SequentialSampler as SS,
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  SizeTVectorOptional
+  SizeTVectorOptional,
+  SequentialSampler as SS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class SequentialSampler(size: Long) extends SS(size) with Sampler {
 

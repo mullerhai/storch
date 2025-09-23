@@ -22,8 +22,6 @@ package flatten
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{UnfoldImpl, UnfoldOptions}
 import torch.internal.NativeConverters.{toNative, fromNative}
-import torch.internal.NativeConverters.toOptional
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 // format: off
 /** Flattens a contiguous range of dims into a tensor. For use with [[nn.Sequential]].
  *

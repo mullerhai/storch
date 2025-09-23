@@ -21,7 +21,8 @@ trait NormalDataset extends SD {
 
   override def get(index: Long): Example = super.get(index)
 
-  override def get_batch(indices: SizeTArrayRef): ExampleVector = super.get_batch(indices)
+  
+//  override def get_batch(indices: SizeTArrayRef): ExampleVector = super.get_batch(indices)
 
-  override def get_batch(request: Long*): ExampleVector = super.get_batch(request: _*)
+//  def get_batch(request: Seq[Long]): ExampleVector = super.get_batch(request*)
 }

@@ -26,8 +26,6 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.UpsampleImpl
 import org.bytedeco.pytorch.{
   UpsampleOptions,
-  BoolOptional,
-  LongVectorOptional,
   DoubleVector,
   kNearest,
   kLinear,

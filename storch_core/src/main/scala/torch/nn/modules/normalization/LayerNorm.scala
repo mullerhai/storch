@@ -21,7 +21,6 @@ package nn
 package modules
 package normalization
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{LayerNormImpl, LayerNormOptions, LongVector}
 import internal.NativeConverters.fromNative

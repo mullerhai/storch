@@ -2,20 +2,15 @@ package torch.utils.data.dataloader
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  JavaStatefulDataset,
   JavaStatefulDataLoader as SDL,
-  DataLoaderOptions,
   ExampleVectorIterator,
-  ExampleVectorOptional,
   FullDataLoaderOptions,
-  TensorVector,
-  Example,
   ExampleVector
 }
 import torch.utils.data.dataset.java.StatefulDataset
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
-import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.Dataset as DatasetTrait
+//import torch.utils.data.dataloader.TorchDataLoaderOptions
+//import torch.utils.data.Dataset as DatasetTrait
 
 object StatefulDataLoader {
 

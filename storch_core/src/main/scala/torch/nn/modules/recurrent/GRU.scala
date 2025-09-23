@@ -19,26 +19,21 @@ package nn
 package modules
 package recurrent
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  T_TensorT_TensorTensor_T_T,
   PackedSequence,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
   GRUImpl,
   GRUOptions,
-  TensorVector,
-  kCircular,
-  kReflect,
-  kReplicate,
-  kZeros
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.nn.modules.conv.Conv2d.PaddingMode
 
 /** Applies a 2D convolution over an input signal composed of several input planes. long input_size,
   * \@Cast("int64_t") long hidden_size
+ * T_TensorTensor_T,
+ * T_TensorTensor_TOptional,
+ *   T_TensorT_TensorTensor_T_T,
+ *
   * @group nn_conv
   */
 final class GRU[ParamType <: FloatNN | ComplexNN: Default](

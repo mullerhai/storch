@@ -6,9 +6,8 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorOptional,
   JavaStatefulTensorBatchDataset as STBD
 }
-import torch.utils.data.datareader.TensorExampleVectorReader
-
 import torch.utils.data.datareader
+import torch.utils.data.datareader.TensorExampleVectorReader
 
 class StatefulTensorBatchDataset(reader: datareader.TensorExampleVectorReader)
     extends STBD(reader) {

@@ -23,14 +23,9 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   CrossMapLRN2dImpl,
   CrossMapLRN2dOptions,
-  ModuleListImpl,
-  PairwiseDistanceImpl,
-  PairwiseDistanceOptions,
-  SequentialImpl,
-  TransformerImpl
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
+import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 // format: off
 /** A simple lookup table that stores embeddings of a fixed dictionary and size.
  *

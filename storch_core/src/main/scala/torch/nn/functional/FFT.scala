@@ -16,11 +16,10 @@ import org.bytedeco.pytorch.{
 import Layout.Strided
 import Device.CPU
 import internal.NativeConverters
-import NativeConverters.*
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
+
 trait FFT {
 
   def _interp_output_size(dim: Long, closed_over_args: Pointer): LongVector = {

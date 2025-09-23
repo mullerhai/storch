@@ -19,11 +19,9 @@ package nn
 package modules
 package pooling
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer}
+import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  MaxUnpool3dOptions,
-  PixelShuffleOptions,
   PixelUnshuffleImpl,
   PixelUnshuffleOptions
 }

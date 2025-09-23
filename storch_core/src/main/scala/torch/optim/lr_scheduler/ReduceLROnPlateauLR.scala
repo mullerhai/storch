@@ -2,7 +2,7 @@ package torch
 package optim
 package lr_scheduler
 
-import torch.optim.Optimizer
+//import torch.optim.Optimizer
 import org.bytedeco.pytorch.ReduceLROnPlateauScheduler
 import org.bytedeco.pytorch.LRScheduler as LRS
 

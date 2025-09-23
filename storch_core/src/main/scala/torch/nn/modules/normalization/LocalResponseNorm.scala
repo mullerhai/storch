@@ -19,9 +19,8 @@ package nn
 package modules
 package normalization
 
-import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{BatchNormOptions, LocalResponseNormImpl, LocalResponseNormOptions}
+import org.bytedeco.pytorch.{LocalResponseNormImpl, LocalResponseNormOptions}
 import torch.internal.NativeConverters.fromNative
 
 /** Applies Batch Normalization over a 2D or 3D input as described in the paper [Batch

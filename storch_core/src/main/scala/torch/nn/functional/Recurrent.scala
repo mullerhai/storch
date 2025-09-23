@@ -2,24 +2,18 @@ package torch
 package nn
 package functional
 
-import Derive.derive
-import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  Tensor as TensorNative,
-  LongOptional,
-  PackedSequence,
   MultiheadAttentionForwardFuncOptions,
   TensorVector,
   TensorOptional,
-  DoubleOptional,
-  TensorArrayRef
+  DoubleOptional
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.{fromNative, toArrayRef}
-import org.bytedeco.pytorch.ScalarTypeOptional
-import org.bytedeco.javacpp.{Pointer, CLongPointer}
-import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
-import torch.internal.NativeConverters.*
+//import org.bytedeco.pytorch.ScalarTypeOptional
+//import org.bytedeco.javacpp.{Pointer, CLongPointer}
+//import org.bytedeco.javacpp.annotation.{Const, ByRef, ByVal, Namespace}
+//import torch.internal.NativeConverters.*
 
 //case class TensorTriple[T <: FloatNN | ComplexNN](
 private[torch] trait Recurrent {

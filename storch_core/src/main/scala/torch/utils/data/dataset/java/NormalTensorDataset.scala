@@ -8,8 +8,8 @@ import org.bytedeco.pytorch.{
   TensorExampleVector,
   JavaTensorDataset as TD
 }
-import torch.utils.data.datareader.TensorExampleVectorReader
 import torch.utils.data.datareader
+import torch.utils.data.datareader.TensorExampleVectorReader
 
 class NormalTensorDataset(reader: datareader.TensorExampleVectorReader) extends TD {
 
