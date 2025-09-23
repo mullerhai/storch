@@ -25,15 +25,15 @@ object LstmTrainerExample {
     val model = new LstmNet[Float32](inputSize, hiddenSize, numLayers, numClasses)
 
     // 假设已经有训练和评估数据加载器
-    // val trainDataset: Dataset[Float32] = ...
-    // val evalDataset: Dataset[Float32] = ...
-    // val trainLoader = DataLoader(trainDataset, batchSize, shuffle = true)
-    // val evalLoader = DataLoader(evalDataset, batchSize, shuffle = false)
-
-    // 创建训练器实例 (这里需要替换为实际的DataLoader)
-    // val trainer = new LstmTrainer(model, trainLoader, evalLoader, Device.CUDA if torch.cuda.isAvailable else Device.CPU)
-
-    // 开始训练
-    // trainer.train(numEpochs, learningRate, batchSize)
+//     val trainDataset: Dataset = new ExampleDataset(trainExamples)
+//     val evalDataset: Dataset = new ExampleDataset(evalExamples)
+//     val trainLoader = DataLoader(trainDataset, batchSize, shuffle = true)
+//     val evalLoader = DataLoader(evalDataset, batchSize, shuffle = false)
+//
+//
+//     val trainer = new LstmTrainer(model, trainLoader, evalLoader, Device.CUDA if torch.cuda.isAvailable else Device.CPU)
+//
+//     开始训练
+//     trainer.train(numEpochs, learningRate, batchSize)
   }
 }
