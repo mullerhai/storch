@@ -36,10 +36,7 @@ package torch.utils.data.datareader
 //  }
 //}
 
-
-
-
-//java code 
+//java code
 //import org.bytedeco.javacpp.*;
 //import org.bytedeco.pytorch.*;
 //import static org.bytedeco.pytorch.global.torch.*;

@@ -24,7 +24,7 @@
 //import torch.optim.Adam
 //import java.nio.file.Paths
 //
-//class LstmNet[D <: BFloat16 | Float32 : Default](
+//class LstmNets[D <: BFloat16 | Float32 : Default](
 //                                                  inputSize: Int = 28,
 //                                                  hiddenSize: Int = 128,
 //                                                  numLayers: Int = 2,

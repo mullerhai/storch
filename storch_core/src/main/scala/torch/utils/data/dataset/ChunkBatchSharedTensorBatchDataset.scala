@@ -1,10 +1,7 @@
 package torch.utils.data.dataset
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  ChunkBatchSharedTensorBatchDataset as CBSTBD,
-  ChunkTensorDataReader
-}
+import org.bytedeco.pytorch.{ChunkBatchSharedTensorBatchDataset as CBSTBD, ChunkTensorDataReader}
 
 class ChunkBatchSharedTensorBatchDataset(chunkReader: ChunkTensorDataReader)
     extends CBSTBD(chunkReader) {
@@ -18,4 +15,3 @@ class ChunkBatchSharedTensorBatchDataset(chunkReader: ChunkTensorDataReader)
       transform: _root_.org.bytedeco.pytorch.TensorExampleStack
   ): _root_.org.bytedeco.pytorch.ChunkMapTensorDataset = super.map(transform)
 }
-

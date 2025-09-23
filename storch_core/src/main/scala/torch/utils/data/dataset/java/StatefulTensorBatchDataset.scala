@@ -4,7 +4,7 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   SizeTOptional,
   TensorExampleVectorOptional,
-  JavaStatefulTensorBatchDataset as STBD,
+  JavaStatefulTensorBatchDataset as STBD
 }
 import torch.utils.data.datareader.TensorExampleVectorReader
 

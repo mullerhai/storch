@@ -44,5 +44,5 @@ object Adagrad:
       lr_decay: Double = 0.999,
       eps: Double = 1e-8,
       weight_decay: Double = 0,
-      initial_accumulator_value: Double
+      initial_accumulator_value: Double = 0.001
   ): Adagrad = new Adagrad(params, lr, lr_decay, eps, weight_decay, initial_accumulator_value)

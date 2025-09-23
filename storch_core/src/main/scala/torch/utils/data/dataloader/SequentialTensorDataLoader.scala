@@ -25,9 +25,23 @@ import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
 
 object SequentialTensorDataLoader {
-  
-  def apply(dataset: java.NormalTensorDataset, sampler: SequentialSampler, option: TorchTensorDataLoaderOptions) =
-    new SequentialTensorDataLoader(dataset, sampler, option.batch_size, option.shuffle, option.num_workers, option.max_jobs, option.drop_last, option.in_order, option.timeout)
+
+  def apply(
+      dataset: java.NormalTensorDataset,
+      sampler: SequentialSampler,
+      option: TorchTensorDataLoaderOptions
+  ) =
+    new SequentialTensorDataLoader(
+      dataset,
+      sampler,
+      option.batch_size,
+      option.shuffle,
+      option.num_workers,
+      option.max_jobs,
+      option.drop_last,
+      option.in_order,
+      option.timeout
+    )
 }
 
 class SequentialTensorDataLoader(
@@ -36,17 +50,26 @@ class SequentialTensorDataLoader(
     batch_size: Int,
     shuffle: Boolean = false,
     num_workers: Int = 0,
-    max_jobs: Long = 0l,
+    max_jobs: Long = 0L,
     drop_last: Boolean = false,
     in_order: Boolean = true,
     timeout: Float = 0
 ) extends STDL(dataset, sampler, new DLOP())
-    with TorchDataLoader with Iterable[TensorExample] {
+    with TorchDataLoader
+    with Iterable[TensorExample] {
 
-  val option = TorchTensorDataLoaderOptions(batch_size = batch_size, shuffle = shuffle, num_workers = num_workers, max_jobs = max_jobs, drop_last = drop_last, in_order = in_order, timeout = timeout)
+  val option = TorchTensorDataLoaderOptions(
+    batch_size = batch_size,
+    shuffle = shuffle,
+    num_workers = num_workers,
+    max_jobs = max_jobs,
+    drop_last = drop_last,
+    in_order = in_order,
+    timeout = timeout
+  )
 
   val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
-    
+
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
   override def end(): TensorExampleVectorIterator = nativeDataLoader.end()
@@ -55,17 +78,16 @@ class SequentialTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
-  
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
-    
+
     private var current: TensorExampleIterator =
       nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]
-      
+
     private val endIterator: TensorExampleIterator =
       nativeDataLoader.end.asInstanceOf[TensorExampleIterator]
-    
+
     override def hasNext: Boolean = !current.equals(endIterator)
-    
+
     override def next(): TensorExample = {
       val batch = current.access
       current = current.increment

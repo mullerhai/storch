@@ -5,8 +5,7 @@ import org.bytedeco.pytorch.{Tensor, TensorExample, TensorExampleVector}
 
 trait TensorExampleVectorReader(batch: Int = 32) extends Pointer with DataReader {
 
-  def tensorExampleVec: TensorExampleVector //= new TensorExampleVector()
-
+  def tensorExampleVec: TensorExampleVector // = new TensorExampleVector()
 
   override def read_chunk(chunk_index: Long): TensorExampleVector = tensorExampleVec
 
@@ -34,9 +33,6 @@ trait TensorExampleVectorReader(batch: Int = 32) extends Pointer with DataReader
   }
 
 }
-
-
-
 
 // new TensorExampleVector(new TensorExample(Tensor.create(10.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(15.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(20.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(35.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(40.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(55.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(60.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(75.0, 30.0, 50.0, 80.0, 300.0)))
 

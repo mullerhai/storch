@@ -4,7 +4,17 @@ package data
 package dataloader
 
 import org.bytedeco.javacpp.chrono.Milliseconds
-import org.bytedeco.pytorch.{ChunkDataset, ChunkDatasetOptions, ChunkMapDataset, ChunkRandomDataLoader, ChunkSharedBatchDataset, Example, ExampleIterator, ExampleStack, ExampleVector}
+import org.bytedeco.pytorch.{
+  ChunkDataset,
+  ChunkDatasetOptions,
+  ChunkMapDataset,
+  ChunkRandomDataLoader,
+  ChunkSharedBatchDataset,
+  Example,
+  ExampleIterator,
+  ExampleStack,
+  ExampleVector
+}
 import torch.{DType, Default}
 import torch.utils.data.sampler.Sampler
 
@@ -38,7 +48,7 @@ case class TorchDataLoaderOptions(
     loaderOpts.max_jobs().put(max_jobs)
     loaderOpts
   }
-  
+
   def toNativeFull: org.bytedeco.pytorch.FullDataLoaderOptions = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(batch_size)
     loaderOpts.batch_size.put(batch_size)

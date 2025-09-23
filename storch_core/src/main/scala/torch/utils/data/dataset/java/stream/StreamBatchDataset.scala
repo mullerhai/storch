@@ -6,13 +6,8 @@ package java
 package stream
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  ExampleVector,
-  SizeTOptional,
-  JavaStreamBatchDataset as SBD
-}
+import org.bytedeco.pytorch.{ExampleVector, SizeTOptional, JavaStreamBatchDataset as SBD}
 import torch.utils.data.datareader.ExampleVectorReader
-
 
 class StreamBatchDataset(reader: datareader.ExampleVectorReader) extends SBD(reader) {
 

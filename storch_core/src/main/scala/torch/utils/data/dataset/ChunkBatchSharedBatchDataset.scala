@@ -7,7 +7,7 @@ import org.bytedeco.pytorch.{
   ChunkDataReader,
   ExampleVectorOptional,
   SizeTOptional,
-  ChunkBatchSharedBatchDataset as CBSBD,
+  ChunkBatchSharedBatchDataset as CBSBD
 }
 
 class ChunkBatchSharedBatchDataset(chunkReader: ChunkDataReader) extends CBSBD(chunkReader) {
@@ -18,5 +18,3 @@ class ChunkBatchSharedBatchDataset(chunkReader: ChunkDataReader) extends CBSBD(c
 
   override def map(transform: ExampleStack): ChunkMapDataset = super.map(transform)
 }
-
-

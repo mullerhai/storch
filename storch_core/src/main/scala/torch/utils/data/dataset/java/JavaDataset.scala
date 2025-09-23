@@ -32,7 +32,6 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
   }
 
-
   override def get(index: Long): Example = {
     val example = ds.get(index)
     val oldExample = exampleVector.get(index)
@@ -64,7 +63,7 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
       indices(j) = temp
     }
 
-    //split index create dataset 分割索引并创建子数据集
+    // split index create dataset 分割索引并创建子数据集
     val splitDatasets = ArrayBuffer[JavaDataset]()
     var current = 0
 
@@ -72,10 +71,10 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
       val end = current + length
       val subsetIndices = indices.slice(current, end)
       val subsetExampleSeq = subsetIndices.map(idx => ds.get(idx.toLong))
-      val exampleVector: ExampleVector = new ExampleVector(subsetExampleSeq.toArray:_*)
-      //create sub dataset reader  创建子数据集读取器
+      val exampleVector: ExampleVector = new ExampleVector(subsetExampleSeq.toArray: _*)
+      // create sub dataset reader  创建子数据集读取器
       val subsetReader = new ExampleVectorReader {
-        override def exampleVec: ExampleVector = ExampleVector(subsetExampleSeq.toArray:_*)
+        override def exampleVec: ExampleVector = ExampleVector(subsetExampleSeq.toArray: _*)
       }
 
       splitDatasets += new JavaDataset(subsetReader)
@@ -114,11 +113,6 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
 }
 
-
-
-
-
-
 //  override def get(index: Long): Example = super.get(index) // 失败
 
 //    {
@@ -135,7 +129,6 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 //
 //    override def size = new SizeTOptional(exampleVector.size)
 //
-
 
 // def random_split[T](dataset: JavaDataset[T]
 //  def random_split(dataset: JavaDataset,

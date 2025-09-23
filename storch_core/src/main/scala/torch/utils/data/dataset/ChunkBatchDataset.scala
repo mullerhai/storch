@@ -6,7 +6,7 @@ import org.bytedeco.pytorch.{
   ChunkDataReader,
   ExampleVectorOptional,
   SizeTOptional,
-  ChunkBatchDataset as CBD,
+  ChunkBatchDataset as CBD
 }
 
 class ChunkBatchDataset(chunkReader: ChunkDataReader) extends CBD(chunkReader) {

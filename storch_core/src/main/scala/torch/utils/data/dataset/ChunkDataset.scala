@@ -16,10 +16,10 @@ import org.bytedeco.pytorch.{
 
 class ChunkDataset(
     chunkReader: ChunkDataReader,
-    sampler1: RS,
-    sampler2: RS,
+    chunkSampler: RS,
+    batchSampler: RS,
     datasetOptions: ChunkDatasetOptions
-) extends CDS(chunkReader, sampler1, sampler2, datasetOptions) {
+) extends CDS(chunkReader, chunkSampler, batchSampler, datasetOptions) {
 
   override def get_batch(batch_size: Long): ExampleVectorOptional =
     super.get_batch(datasetOptions.batch_size().get())
@@ -36,5 +36,3 @@ class ChunkDataset(
 
   override def load(archive: InputArchive): Unit = super.load(archive)
 }
-
-

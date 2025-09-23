@@ -17,11 +17,10 @@ class StatefulTensorDataset(reader: datareader.TensorExampleVectorReader) extend
   override def get_batch(size: Long) = new TensorExampleVectorOptional(reader.tensorExampleVec)
 
   override def size = new SizeTOptional(reader.tensorExampleVec.size)
-  
+
   override def reset(): Unit = {
 //    reader.tensorExampleVec =  new TensorExampleVector()
   }
-
 
   private val exTest = new TensorExampleVector(
     new TensorExample(Tensor.create(10.0, 20.0, 50.0, 80.0, 100.0)),

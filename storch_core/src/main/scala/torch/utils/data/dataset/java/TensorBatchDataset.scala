@@ -13,11 +13,9 @@ import torch.utils.data.datareader
 
 class TensorBatchDataset(reader: datareader.TensorExampleVectorReader) extends TBD(reader) {
 
-
   override def size(): SizeTOptional = super.size()
 
   override def get_batch(request: SizeTArrayRef): TensorExampleVector = super.get_batch(request)
 
   override def get_batch(request: Long*): TensorExampleVector = super.get_batch(request: _*)
 }
-

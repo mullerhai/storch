@@ -12,7 +12,7 @@ import org.bytedeco.pytorch.{
 }
 
 trait NormalDataset extends SD {
-  
+
   override def size(): SizeTOptional = super.size()
 
   override def position(position: Long): SD = super.position(position)

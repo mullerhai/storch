@@ -16,7 +16,7 @@ import org.bytedeco.pytorch.{
 import torch.utils.data.sampler.BatchSizeSampler
 
 import org.bytedeco.pytorch.StreamSampler as SS
-class StreamSampler(epochSize: Long) extends SS(epochSize) with BatchSizeSampler {
+class StreamSampler(epoch_size: Long) extends SS(epoch_size) with BatchSizeSampler {
 
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)
 

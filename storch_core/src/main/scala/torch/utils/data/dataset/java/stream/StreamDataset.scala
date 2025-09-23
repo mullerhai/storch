@@ -6,13 +6,8 @@ package java
 package stream
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  ExampleVector,
-  SizeTOptional,
-  JavaStreamDataset as JSD,
-}
+import org.bytedeco.pytorch.{ExampleVector, SizeTOptional, JavaStreamDataset as JSD}
 import torch.utils.data.datareader.ExampleVectorReader
-
 
 class StreamDataset(reader: datareader.ExampleVectorReader) extends JSD {
 
@@ -27,10 +22,6 @@ class StreamDataset(reader: datareader.ExampleVectorReader) extends JSD {
 
   override def size(): SizeTOptional = new SizeTOptional(reader.exampleVec.size)
 
-
 }
-
-
-
 
 //  override def position(position: Long): SD = super.position(position)

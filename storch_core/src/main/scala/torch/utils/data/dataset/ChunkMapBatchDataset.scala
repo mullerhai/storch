@@ -16,4 +16,3 @@ class ChunkMapBatchDataset(chunkMapDataset: ChunkMapDataset) extends CMBD(chunkM
 
   override def size(): SizeTOptional = super.size()
 }
-

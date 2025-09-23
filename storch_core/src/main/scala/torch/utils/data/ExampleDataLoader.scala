@@ -1,9 +1,6 @@
-package torch
-package utils
-package data
+package torch.utils.data
 
 import org.bytedeco.pytorch.*
-import org.bytedeco.pytorch.Tensor as TensorNative
 import torch.utils.data.dataloader.{TorchDataLoaderOptions, SequentialDataLoader}
 import torch.utils.data.datareader.ChunkDataReader
 import org.bytedeco.javacpp.chrono.Milliseconds
@@ -14,10 +11,8 @@ import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import torch.utils.data.Dataset as DatasetTrait
 import torch.utils.data.dataset.java.JavaDataset
-import torch.{Tensor, *}
-import torch.internal.NativeConverters.{fromNative, toNative}
 
-class DataLoader[ParamType <: DType: Default](
+class ExampleDataLoader[ParamType <: DType: Default](
     dataset: DatasetTrait | JavaDataset,
     batch_size: Int,
     shuffle: Boolean = false,
@@ -32,7 +27,7 @@ class DataLoader[ParamType <: DType: Default](
     prefetch_factor: Option[Int] = None,
     persistent_workers: Boolean = false,
     pin_memory_device: String = ""
-) extends Iterable[(Tensor[ParamType], Tensor[ParamType])] {
+) extends Iterable[Example] {
 
   private val options = TorchDataLoaderOptions(
     batch_size = batch_size,
@@ -147,27 +142,20 @@ class DataLoader[ParamType <: DType: Default](
   private val nativeDataLoader: ChunkRandomDataLoader =
     createChunkRandomDataLoader(sharedBatchDataset, options)
 
-  private def exampleToTuple(example: Example): (Tensor[ParamType], Tensor[ParamType]) = {
-    val feature = fromNative(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-    val target = fromNative(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
-    (feature, target)
-  }
+  override def iterator: Iterator[Example] = new Iterator[Example] {
 
-  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
-    new Iterator[(Tensor[ParamType], Tensor[ParamType])] {
+    private var current: ExampleIterator = nativeDataLoader.begin
 
-      private var current: ExampleIterator = nativeDataLoader.begin
+    private val endIterator: ExampleIterator = nativeDataLoader.end
 
-      private val endIterator: ExampleIterator = nativeDataLoader.end
+    override def hasNext: Boolean = !current.equals(endIterator)
 
-      override def hasNext: Boolean = !current.equals(endIterator)
-
-      override def next(): (Tensor[ParamType], Tensor[ParamType]) = {
-        val batch = current.access
-        current = current.increment
-        exampleToTuple(batch)
-      }
+    override def next(): Example = {
+      val batch = current.access
+      current = current.increment
+      batch
     }
+  }
 }
 
 //    val prefetch_count = 1

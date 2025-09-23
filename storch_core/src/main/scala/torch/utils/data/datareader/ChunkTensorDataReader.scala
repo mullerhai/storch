@@ -9,11 +9,10 @@ import org.bytedeco.pytorch.{
 
 class ChunkTensorDataReader(batch: Int = 32) extends CTDR with DataReader {
 
-  var tensorExampleVec: TensorExampleVector = new TensorExampleVector( )
+  var tensorExampleVec: TensorExampleVector = new TensorExampleVector()
 
+  override def read_chunk(chunk_index: Long) = tensorExampleVec
 
-  override def read_chunk(chunk_index: Long) = tensorExampleVec 
-  
   override def chunk_count: Long = 1
 
   override def reset(): Unit = {}
@@ -31,9 +30,6 @@ class ChunkTensorDataReader(batch: Int = 32) extends CTDR with DataReader {
   }
 
 }
-
-
-
 
 // new TensorExampleVector(new TensorExample(Tensor.create(10.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(15.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(20.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(35.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(40.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(55.0, 30.0, 50.0, 80.0, 300.0)), new TensorExample(Tensor.create(60.0, 20.0, 50.0, 80.0, 100.0)), new TensorExample(Tensor.create(75.0, 30.0, 50.0, 80.0, 300.0)))
 

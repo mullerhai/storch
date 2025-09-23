@@ -2,22 +2,19 @@ package torch
 package utils
 package data
 
+import org.bytedeco.javacpp.chrono.Milliseconds
 import org.bytedeco.pytorch.*
-import org.bytedeco.pytorch.Tensor as TensorNative
 import torch.utils.data.TensorDataset
 import torch.utils.data.dataloader.{ChunkRandomTensorDataLoader, TorchTensorDataLoaderOptions}
 import torch.utils.data.datareader.ChunkTensorDataReader
-import org.bytedeco.javacpp.chrono.Milliseconds
+import torch.utils.data.dataset.java.NormalTensorDataset
 import torch.utils.data.sampler.RandomSampler as TorchSampler
+
 import java.nio.file.Paths
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
-import torch.utils.data.dataset.java.NormalTensorDataset
-import torch.{Tensor, *}
-import torch.internal.NativeConverters.{fromNative, toNative}
 
-
-class TensorDataLoader[ParamType <: DType: Default](
+class ExampleTensorDataLoader[ParamType <: DType: Default](
     dataset: TensorDataset | NormalTensorDataset,
     batch_size: Int,
     shuffle: Boolean = false,
@@ -32,7 +29,7 @@ class TensorDataLoader[ParamType <: DType: Default](
     prefetch_factor: Option[Int] = None,
     persistent_workers: Boolean = false,
     pin_memory_device: String = ""
-) extends Iterable[Tensor[ParamType]] {
+) extends Iterable[TensorExample] {
 
   private val options = TorchTensorDataLoaderOptions(
     batch_size = batch_size,
@@ -150,7 +147,7 @@ class TensorDataLoader[ParamType <: DType: Default](
   private val nativeDataLoader: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
-  override def iterator: Iterator[Tensor[ParamType]] = new Iterator[Tensor[ParamType]] {
+  override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
     private var current: TensorExampleIterator =
       nativeDataLoader.begin()
     private val endIterator: TensorExampleIterator =
@@ -158,10 +155,10 @@ class TensorDataLoader[ParamType <: DType: Default](
 
     override def hasNext: Boolean = !current.equals(endIterator)
 
-    override def next(): Tensor[ParamType] = {
+    override def next(): TensorExample = {
       val batch = current.access
       current = current.increment
-      fromNative(batch.data)
+      batch
     }
   }
 }

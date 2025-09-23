@@ -18,7 +18,7 @@ class NormalTensorDataset(reader: datareader.TensorExampleVectorReader) extends 
   val ds = new TD() {
     val tex = reader.read_chunk(
       0
-    ) 
+    )
     override def get(index: Long): TensorExample = {
       tex.get(index)
       //                    return super.get(index);
@@ -29,25 +29,19 @@ class NormalTensorDataset(reader: datareader.TensorExampleVectorReader) extends 
     override def size = new SizeTOptional(tex.size)
   }
   override def get(index: Long): TensorExample =
-    ds.get(index) 
-
-
+    ds.get(index)
 
   override def size = new SizeTOptional(tensorExampleVec.size)
 
   def length = tensorExampleVec.size
-  
+
   override def position(position: Long): TD = super.position(position)
 
   override def getPointer(i: Long): TD = super.getPointer(i)
 
   override def get_batch(indices: SizeTArrayRef): TensorExampleVector =
-    ds.get_batch(indices) 
+    ds.get_batch(indices)
 }
-
-
-
-
 
 //  override def get_batch(request: Long): TensorExampleVector = super.get_batch(request)
 

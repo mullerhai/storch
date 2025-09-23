@@ -6,11 +6,7 @@ package java
 package stream
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  SizeTOptional,
-  TensorExampleVector,
-  JavaStreamTensorDataset as STD
-}
+import org.bytedeco.pytorch.{SizeTOptional, TensorExampleVector, JavaStreamTensorDataset as STD}
 import torch.utils.data.datareader.TensorExampleVectorReader
 
 class StreamTensorDataset(reader: datareader.TensorExampleVectorReader) extends STD {

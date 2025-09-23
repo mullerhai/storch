@@ -20,25 +20,43 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 object ChunkRandomTensorDataLoader {
   def apply(dataset: ChunkMapTensorDataset, option: TorchTensorDataLoaderOptions) =
-    new ChunkRandomTensorDataLoader(dataset, option.batch_size, option.shuffle, option.num_workers, option.max_jobs, option.drop_last, option.in_order, option.timeout)
+    new ChunkRandomTensorDataLoader(
+      dataset,
+      option.batch_size,
+      option.shuffle,
+      option.num_workers,
+      option.max_jobs,
+      option.drop_last,
+      option.in_order,
+      option.timeout
+    )
 }
 
-class ChunkRandomTensorDataLoader(dataset: ChunkMapTensorDataset,
-                                  batch_size: Int,
-                                  shuffle: Boolean = false,
-                                  num_workers: Int = 0,
-                                  max_jobs: Long = 0l,
-                                  drop_last: Boolean = false,
-                                  in_order: Boolean = true,
-                                  timeout: Float = 0
-                                 )
-    extends CRTDL(dataset, new DLOP())
-    with TorchDataLoader with Iterable[TensorExample] {
+class ChunkRandomTensorDataLoader(
+    dataset: ChunkMapTensorDataset,
+    batch_size: Int,
+    shuffle: Boolean = false,
+    num_workers: Int = 0,
+    max_jobs: Long = 0L,
+    drop_last: Boolean = false,
+    in_order: Boolean = true,
+    timeout: Float = 0
+) extends CRTDL(dataset, new DLOP())
+    with TorchDataLoader
+    with Iterable[TensorExample] {
 
-  val option = TorchTensorDataLoaderOptions(batch_size = batch_size, shuffle = shuffle, num_workers = num_workers, max_jobs = max_jobs, drop_last = drop_last, in_order = in_order, timeout = timeout)
+  val option = TorchTensorDataLoaderOptions(
+    batch_size = batch_size,
+    shuffle = shuffle,
+    num_workers = num_workers,
+    max_jobs = max_jobs,
+    drop_last = drop_last,
+    in_order = in_order,
+    timeout = timeout
+  )
 
   val nativeDataLoader = new CRTDL(dataset, option.toNative)
-    
+
   override def begin(): TensorExampleIterator = nativeDataLoader.begin()
 
   override def end(): TensorExampleIterator = nativeDataLoader.end()
@@ -47,18 +65,15 @@ class ChunkRandomTensorDataLoader(dataset: ChunkMapTensorDataset,
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
- 
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
-    
+
     private var current: TensorExampleIterator =
       nativeDataLoader.begin()
-      
+
     private val endIterator: TensorExampleIterator =
       nativeDataLoader.end()
 
-  
     override def hasNext: Boolean = !current.equals(endIterator)
-
 
     override def next(): TensorExample = {
       val batch = current.access
@@ -67,4 +82,3 @@ class ChunkRandomTensorDataLoader(dataset: ChunkMapTensorDataset,
     }
   }
 }
-

@@ -10,7 +10,6 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS
 }
 
-
 trait BatchSizeSampler extends BSS {
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)
 

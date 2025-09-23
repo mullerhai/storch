@@ -47,7 +47,7 @@ class TupleDataLoader[D1 <: DType, D2 <: DType](
       collateFn
     )
 
-class ExampleDataLoader[D1 <: DType, D2 <: DType](
+class TorchExampleDataLoader[D1 <: DType, D2 <: DType](
     dataset: IndexedSeq[TorchExample[D1, D2]],
     batchSize: Int = 1,
     shuffle: Boolean = false,

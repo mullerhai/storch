@@ -5,7 +5,7 @@ import org.bytedeco.pytorch.{
   ChunkTensorBatchDataset as CTBD,
   ChunkTensorDataReader,
   SizeTOptional,
-  TensorExampleVectorOptional,
+  TensorExampleVectorOptional
 }
 
 class ChunkTensorBatchDataset(chunkReader: ChunkTensorDataReader) extends CTBD(chunkReader) {

@@ -25,5 +25,4 @@ class ChunkMapTensorBatchDataset(chunkMapTensorDataset: ChunkMapTensorDataset)
   override def size(): SizeTOptional = super.size()
 }
 
-
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
