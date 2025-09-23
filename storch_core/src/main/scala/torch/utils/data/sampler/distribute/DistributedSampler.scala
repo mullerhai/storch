@@ -14,7 +14,7 @@ import org.bytedeco.pytorch.{
   RandomSampler as RS
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.Pointer
+
 class DistributedSampler(epoch: Int) extends DS(epoch.toNative) with Sampler {
 
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)

@@ -19,6 +19,8 @@ package nn
 package modules
 package attention
 
+import org.bytedeco.pytorch.global.torch as torchNative
+
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -73,24 +75,29 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(
       src: Tensor[ParamType],
-      src_mask: Option[Tensor[ParamType]] = None,
-      src_key_padding_mask: Option[Tensor[ParamType]] = None
+      src_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      src_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
-    val fore =
-      if (src_mask.isDefined && src_key_padding_mask.isDefined)
-        nativeModule.forward(src.native, src_mask.get.native, src_key_padding_mask.get.native)
-      else nativeModule.forward(src.native)
-    fromNative(fore)
+    this.forward(src, src_mask, src_key_padding_mask)
   }
   def forward(
       src: Tensor[ParamType],
-      src_mask: Option[Tensor[ParamType]] = None,
-      src_key_padding_mask: Option[Tensor[ParamType]] = None
+      src_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      src_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
+    val srcMask = src_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+
+    val srcKPM = src_key_padding_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
     val fore =
-      if (src_mask.isDefined && src_key_padding_mask.isDefined)
-        nativeModule.forward(src.native, src_mask.get.native, src_key_padding_mask.get.native)
-      else nativeModule.forward(src.native)
+      if (srcMask.equals(torchNative.empty()) && srcKPM.equals(torchNative.empty()))
+        nativeModule.forward(src.native)
+      else nativeModule.forward(src.native, srcMask, srcKPM)
     fromNative(fore)
   }
 

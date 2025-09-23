@@ -6,27 +6,13 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   Example,
   ExampleVector,
-  InputArchive,
-  OutputArchive,
   SizeTArrayRef,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
-  JavaDataset as SD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  JavaDataset as SD
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 trait NormalDataset extends SD {
-
-//  override def get_batch(request: Long): ExampleVector = super.get_batch(request)
-
+  
   override def size(): SizeTOptional = super.size()
 
   override def position(position: Long): SD = super.position(position)

@@ -190,7 +190,7 @@ private[torch] trait RandomSamplingOps {
   }
 
   def rands[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
-    rand(size = size.toSeq, dtype = dtype ,requires_grad = false, layout = Strided, device = CPU)
+    rand(size = size.toSeq, dtype = dtype, requires_grad = false, layout = Strided, device = CPU)
   }
   def rand[D <: FloatNN | ComplexNN](
       size: Seq[Int],
@@ -207,14 +207,15 @@ private[torch] trait RandomSamplingOps {
     )
 
   def rand[D <: FloatNN | ComplexNN](
-                                      size: Int*
-                                    ): Tensor[D] =
+      size: Int*
+  ): Tensor[D] =
     fromNative(
       torchNative.torch_rand(
         size.toArray.map(_.toLong),
         NativeConverters.tensorOptions(float32, Strided, CPU, false)
       )
     )
+
   /** Returns a tensor with the same size as `input` that is filled with random numbers from a
     * uniform distribution on the interval $[0, 1)$.
     *
@@ -293,7 +294,10 @@ private[torch] trait RandomSamplingOps {
     )
   }
 
-  def randints[D <: DType](low: Long, high: Long, sizes: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = {
+  def randints[D <: DType](low: Long, high: Long, sizes: Int*)(implicit
+      dtype: D = float32,
+      requires_grad: Boolean = false
+  ): Tensor[D] = {
     randint(
       low = low,
       high = high,
@@ -352,7 +356,6 @@ private[torch] trait RandomSamplingOps {
     )
   }
 
-
   def randns[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
     randn(
       size = size.toSeq,
@@ -364,8 +367,8 @@ private[torch] trait RandomSamplingOps {
   }
 
   def randn[D <: FloatNN | ComplexNN](
-                                       size: Int*
-                                     ): Tensor[D] =
+      size: Int*
+  ): Tensor[D] =
     fromNative(
       torchNative.torch_randn(
         size.toArray.map(_.toLong),

@@ -5,6 +5,7 @@ import org.bytedeco.javacpp.{BoolPointer, SizeTPointer}
 import org.bytedeco.javacpp.chrono.Milliseconds
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{FullDataLoaderOptions as FDLO, SizeTOptional, DataLoaderOptions as DO}
+
 class DataOptions
 
 class DataLoaderOptions(batchSize: Long) extends DO(batchSize) {

@@ -17,4 +17,4 @@
 package torch
 package utils.data
 
-final case class Example[D1 <: DType, D2 <: DType](feature: Tensor[D1], target: Tensor[D2])
+final case class TorchExample[D1 <: DType, D2 <: DType](feature: Tensor[D1], target: Tensor[D2])

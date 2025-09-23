@@ -18,7 +18,7 @@ package torch
 package nn
 package modules
 package sparse
-
+import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.EmbeddingBagImpl
 import org.bytedeco.pytorch.TransformerImpl
@@ -150,7 +150,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   def apply(
       indices: Tensor[Int64] | Tensor[Int32],
-      weight: Option[Tensor[ParamType]] = None
+      raw_unused_false: Boolean
   ): Tensor[ParamType] = {
     indices.dtype match
       case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
@@ -159,7 +159,7 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   def forward(
       indices: Tensor[Int64] | Tensor[Int32],
-      weight: Option[Tensor[ParamType]] = None
+      raw_unused_false: Boolean
   ): Tensor[ParamType] = {
     indices.dtype match
       case torch.int64 => fromNative(nativeModule.forward(indices.native.to(ScalarType.Long)))
@@ -196,30 +196,42 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   def forward(
       input: Tensor[ParamType],
-      offsets: Tensor[Int64] | Tensor[Int32],
-      per_sample_weights: Tensor[ParamType]
+      offsets: Tensor[Int64] | Tensor[Int32] | Option[Tensor[Int64] | Tensor[Int32]] = None,
+      per_sample_weights: Tensor[ParamType] | Option[Tensor[ParamType]] = None
   ): Tensor[ParamType] = {
+    val offsetsNative = offsets match {
+      case k: Tensor[Int32] => k.native.to(ScalarType.Long)
+      case k: Tensor[Int64] => k.native.to(ScalarType.Long)
+      case k: Option[Tensor[Int64] | Tensor[Int32]] =>
+        if k.isDefined then k.get.native.to(ScalarType.Long)
+        else torchNative.empty().to(ScalarType.Long)
+    }
+    val perSampleWeights = per_sample_weights match {
+      case k: Tensor[ParamType] => k.native.to(ScalarType.Float)
+      case k: Option[Tensor[ParamType]] =>
+        if k.isDefined then k.get.native.to(ScalarType.Float)
+        else torchNative.empty().to(ScalarType.Float)
+    }
     fromNative(
       nativeModule.forward(
         input.native.to(ScalarType.Long),
-        offsets.native.to(ScalarType.Long),
-        per_sample_weights.native.to(ScalarType.Float)
+        offsetsNative,
+        perSampleWeights
       )
     )
   }
 
   def apply(
       input: Tensor[ParamType],
-      offsets: Tensor[Int64] | Tensor[Int32],
-      per_sample_weights: Tensor[ParamType]
+      offsets: Tensor[Int64] | Tensor[Int32] | Option[Tensor[Int64] | Tensor[Int32]] = None,
+      per_sample_weights: Tensor[ParamType] | Option[Tensor[ParamType]] = None
   ): Tensor[ParamType] = {
-    fromNative(
-      nativeModule.forward(
-        input.native.to(ScalarType.Long),
-        offsets.native.to(ScalarType.Long),
-        per_sample_weights.native.to(ScalarType.Float)
-      )
+    this.forward(
+      input,
+      offsets,
+      per_sample_weights
     )
+
   }
 
   override def toString(): String =

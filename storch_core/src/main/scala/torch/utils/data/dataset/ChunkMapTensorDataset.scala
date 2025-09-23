@@ -4,26 +4,15 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   ExampleVectorOptional,
   ChunkTensorDataReader,
-  InputArchive,
-  OutputArchive,
   SizeTArrayRef,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
   TensorExampleOptional,
   TensorExampleStack,
   TensorExampleVector,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
   ChunkMapTensorDataset as CMTD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.Dataset
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkMapTensorDataset(chunkDataset: ChunkSharedTensorBatchDataset)
     extends CMTD(chunkDataset) {

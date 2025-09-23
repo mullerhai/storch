@@ -7,24 +7,12 @@ import org.bytedeco.pytorch.{
   ExampleStack,
   ExampleVector,
   ExampleVectorOptional,
-  InputArchive,
-  OutputArchive,
   SizeTArrayRef,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
-  ChunkMapBatchDataset as CMBD,
   ChunkMapDataset as CMD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.utils.data.Dataset
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset) extends CMD(chunkDataset) {
 
@@ -41,12 +29,8 @@ class ChunkMapDataset(chunkDataset: ChunkSharedBatchDataset) extends CMD(chunkDa
   override def get_batch(request: Long*): ExampleVector = super.get_batch(request: _*)
 }
 
+
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
-//
-//  override def size(): SizeTOptional = super.size()
 
 //  override def get_batch(request: SizeTArrayRef): ExampleVector = super.get_batch(request)
-//
-//  override def get_batch(request: Long*): ExampleVector = super.get_batch(request: _*)
-//
-//  override def size(): SizeTOptional = super.size()
+

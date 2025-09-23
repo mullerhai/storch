@@ -7,17 +7,9 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  TransformerImpl,
-  TransformerOptions,
   RandomSampler as RS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.Dataset
+
 trait Sampler extends SM {
 
 //  override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)

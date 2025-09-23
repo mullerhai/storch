@@ -8,24 +8,11 @@ package stream
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   ExampleVector,
-  InputArchive,
-  OutputArchive,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
   JavaStreamDataset as JSD,
-  RandomSampler as RS,
-  SequentialSampler as SS
 }
-import torch.utils.data.Dataset
-import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.ExampleVectorReader
-import torch.utils.data.datareader
+
 
 class StreamDataset(reader: datareader.ExampleVectorReader) extends JSD {
 
@@ -40,5 +27,10 @@ class StreamDataset(reader: datareader.ExampleVectorReader) extends JSD {
 
   override def size(): SizeTOptional = new SizeTOptional(reader.exampleVec.size)
 
-//  override def position(position: Long): SD = super.position(position)
+
 }
+
+
+
+
+//  override def position(position: Long): SD = super.position(position)

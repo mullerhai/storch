@@ -5,21 +5,8 @@ import org.bytedeco.pytorch.{
   ChunkStatefulDataset as CSD,
   ChunkDataReader,
   ExampleVectorOptional,
-  InputArchive,
-  OutputArchive,
-  SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  SizeTOptional
 }
-import torch.utils.data.Dataset
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkStatefulDataset(chunkReader: ChunkDataReader) extends CSD(chunkReader) {
 

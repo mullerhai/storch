@@ -2,34 +2,45 @@ package torch.utils.data.datareader
 
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.pytorch.{
-  AbstractTensor as Tensors,
-  ExampleOptional,
-  Example,
-  Tensor,
-  ExampleVector,
-  ExampleVectorOptional,
-  InputArchive,
-  OutputArchive,
-  SizeTArrayRef,
-  SizeTOptional,
-  SizeTVectorOptional,
-  ChunkBatchDataset as CBD,
-  ChunkMapBatchDataset as CMBD,
-  ChunkMapDataset as CMD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  ExampleVector, Tensor,Example
 }
 
 trait ExampleVectorReader(batch: Int = 32) extends Pointer with DataReader {
 
-  // new Example(Tensors.create(10.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(200.0)), new Example(Tensors.create(15.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(400.0)), new Example(Tensors.create(20.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(500.0)), new Example(Tensors.create(35.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(600.0)), new Example(Tensors.create(40.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(700.0)), new Example(Tensors.create(55.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(800.0)), new Example(Tensors.create(60.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(900.0)), new Example(Tensors.create(75.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(300.0)))
-  val exampleVec: ExampleVector = new ExampleVector()
+
+  def exampleVec: ExampleVector  //= new ExampleVector()
 
   override def read_chunk(chunk_index: Long): ExampleVector = exampleVec
 
   override def chunk_count: Long = if exampleVec.size() == 0 then 1 else exampleVec.size()
 
   override def reset(): Unit = {}
+
+  def apply(exampleVector: ExampleVector): ExampleVector = {
+    
+      println(s"ExampleVectorReader reader example data size ${exampleVector.size()}")
+      exampleVector
+    }
+
+  def apply(tensorSeq: Seq[(Tensor, Tensor)], raw: Boolean = false): ExampleVector = {
+
+      val exampleVec = new ExampleVector(tensorSeq.map(x => new Example(x._1, x._2)).toArray: _*)
+      exampleVec
+    }
+
+  def apply(exampleSeq: Seq[Example]): ExampleVector = {
+
+    val exampleVec = new ExampleVector(exampleSeq.toArray: _*)
+    exampleVec
+  }
+}
+
+
+
+
+
+
+// new Example(Tensors.create(10.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(200.0)), new Example(Tensors.create(15.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(400.0)), new Example(Tensors.create(20.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(500.0)), new Example(Tensors.create(35.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(600.0)), new Example(Tensors.create(40.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(700.0)), new Example(Tensors.create(55.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(800.0)), new Example(Tensors.create(60.0, 20.0, 50.0, 80.0, 100.0), Tensors.create(900.0)), new Example(Tensors.create(75.0, 30.0, 50.0, 80.0, 300.0), Tensors.create(300.0)))
 
 //  def apply(exampleVector: ExampleVector): ExampleVector = {
 //
@@ -44,7 +55,7 @@ trait ExampleVectorReader(batch: Int = 32) extends Pointer with DataReader {
 //    this.exampleVec
 //  }
 
-}
+
 
 //    val dataTensor = exampleVector.begin().get().data()
 //    val targetTensor = exampleVector.begin().get().target()

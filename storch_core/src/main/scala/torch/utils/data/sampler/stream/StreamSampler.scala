@@ -11,23 +11,10 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   BatchSizeOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  TransformerImpl,
-  TransformerOptions,
-  kCircular,
-  kGELU,
-  kReflect,
-  kReplicate,
-  kZeros,
   RandomSampler as RS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
-import org.bytedeco.javacpp.Pointer
 import torch.utils.data.sampler.BatchSizeSampler
+
 import org.bytedeco.pytorch.StreamSampler as SS
 class StreamSampler(epochSize: Long) extends SS(epochSize) with BatchSizeSampler {
 

@@ -5,18 +5,9 @@ import org.bytedeco.pytorch.{
   DataLoaderOptions,
   ExampleVectorOptional,
   FullDataLoaderOptions,
-  InputArchive,
-  OutputArchive,
-  SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
+  TensorExample,
+  TensorExampleIterator,
   TensorExampleVectorIterator,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
-  ChunkRandomDataLoader as CRDL,
   JavaRandomTensorDataLoader as RTDL,
   RandomSampler as RS,
   SequentialSampler as SS
@@ -26,19 +17,54 @@ import torch.utils.data.sampler.RandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.java
 import torch.utils.data.sampler
+import org.bytedeco.pytorch.DataLoaderOptions as DLOP
+import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
+
+object RandomTensorDataLoader {
+
+  def apply(dataset: java.NormalTensorDataset, sampler: RandomSampler, option: TorchTensorDataLoaderOptions) =
+    new RandomTensorDataLoader(dataset, sampler, option.batch_size, option.shuffle, option.num_workers, option.max_jobs, option.drop_last, option.in_order, option.timeout)
+}
 
 class RandomTensorDataLoader(
     dataset: java.NormalTensorDataset,
     sampler: RandomSampler,
-    option: DataLoaderOptions
-) extends RTDL(dataset, sampler, option)
-    with TorchDataLoader {
+    batch_size: Int,
+    shuffle: Boolean = false,
+    num_workers: Int = 0,
+    max_jobs: Long = 0l,
+    drop_last: Boolean = false,
+    in_order: Boolean = true,
+    timeout: Float = 0
+) extends RTDL(dataset, sampler, new DLOP())
+    with TorchDataLoader with Iterable[TensorExample] {
 
-  override def begin(): TensorExampleVectorIterator = super.begin()
+  val option = TorchTensorDataLoaderOptions(batch_size = batch_size, shuffle = shuffle, num_workers = num_workers, max_jobs = max_jobs, drop_last = drop_last, in_order = in_order, timeout = timeout)
 
-  override def end(): TensorExampleVectorIterator = super.end()
+  val nativeDataLoader = new RTDL(dataset, sampler, option.toNative)
 
-  override def join(): Unit = super.join()
+  override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
-  override def options(): FullDataLoaderOptions = super.options()
+  override def end(): TensorExampleVectorIterator = nativeDataLoader.end()
+
+  override def join(): Unit = nativeDataLoader.join()
+
+  override def options(): FullDataLoaderOptions = nativeDataLoader.options()
+
+  override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+
+    private var current: TensorExampleIterator =
+      nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]
+
+    private val endIterator: TensorExampleIterator =
+      nativeDataLoader.end.asInstanceOf[TensorExampleIterator]
+
+    override def hasNext: Boolean = !current.equals(endIterator)
+
+    override def next(): TensorExample = {
+      val batch = current.access
+      current = current.increment
+      batch
+    }
+  }
 }

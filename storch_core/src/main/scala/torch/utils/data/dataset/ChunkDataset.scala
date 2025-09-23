@@ -10,17 +10,9 @@ import org.bytedeco.pytorch.{
   InputArchive,
   OutputArchive,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
   RandomSampler as RS,
   SequentialSampler as SS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class ChunkDataset(
     chunkReader: ChunkDataReader,
@@ -45,6 +37,4 @@ class ChunkDataset(
   override def load(archive: InputArchive): Unit = super.load(archive)
 }
 
-//  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)
-//
-//  override def size(): SizeTOptional = super.size()
+

@@ -310,6 +310,7 @@ trait HasParams[ParamType <: FloatNN | ComplexNN: Default] extends Module:
     nativeModule.parameters(recurse).get().toSeq.map(fromNative[ParamType])
   override def parameters: Seq[Tensor[ParamType]] = parameters(recurse = true)
   transparent inline def paramType: DType = summon[Default[ParamType]].dtype
+//  def forward(input: Tensor[ParamType]): Tensor[ParamType]
 
 trait HasWeight[ParamType <: FloatNN | ComplexNN]:
   def weight: Tensor[ParamType]

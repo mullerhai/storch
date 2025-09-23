@@ -48,13 +48,13 @@ class TupleDataLoader[D1 <: DType, D2 <: DType](
     )
 
 class ExampleDataLoader[D1 <: DType, D2 <: DType](
-    dataset: IndexedSeq[Example[D1, D2]],
+    dataset: IndexedSeq[TorchExample[D1, D2]],
     batchSize: Int = 1,
     shuffle: Boolean = false,
-    collateFn: Seq[Example[D1, D2]] => (Tensor[D1], Tensor[D2]) =
-      (examples: Seq[Example[D1, D2]]) =>
+    collateFn: Seq[TorchExample[D1, D2]] => (Tensor[D1], Tensor[D2]) =
+      (examples: Seq[TorchExample[D1, D2]]) =>
         (torch.stack(examples.map(_.feature)), torch.stack(examples.map(_.target)))
-) extends NormalDataLoader[Example[D1, D2], (Tensor[D1], Tensor[D2])](
+) extends NormalDataLoader[TorchExample[D1, D2], (Tensor[D1], Tensor[D2])](
       dataset,
       batchSize,
       shuffle,

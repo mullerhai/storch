@@ -9,24 +9,10 @@ import org.bytedeco.pytorch.{
   ChunkMapDataset,
   Example,
   ExampleVector,
-  InputArchive,
-  OutputArchive,
   SizeTArrayRef,
   SizeTOptional,
-  SizeTVectorOptional,
-  T_TensorT_TensorTensor_T_T,
-  T_TensorTensor_T,
-  T_TensorTensor_TOptional,
-  TensorMapper,
-  TensorVector,
-  ChunkBatchDataset as CBD,
-  JavaBatchDataset as BD,
-  JavaDataset as JD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  JavaDataset as JD
 }
-import torch.utils.data.Dataset
-import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.datareader.ExampleVectorReader
 import torch.utils.data.datareader
 import scala.collection.mutable.ArrayBuffer
@@ -36,20 +22,6 @@ import scala.collection.mutable.ListBuffer
 class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
   val exampleVector: ExampleVector = exampleVectorReader.exampleVec // .read_chunk(0)
-  //    {
-  //    val batch = 32 //exampleVectorReader.batch
-  //    val exampleVector = new ExampleVector()
-  //    for (i <- 0 until batch) {
-  //       exampleVector.put( exampleVectorReader.read_chunk(i.toLong).get*)
-  //    }
-  //    exampleVector
-  //  }
-
-  //     val exampleVector = new ExampleVector(exampleSeq.toArray:_*)
-  //    override def get(index: Long): Example = exampleVector.get(index)
-  //
-  //    override def size = new SizeTOptional(exampleVector.size)
-  //
 
   val ds = new JD() {
     val exampleVector = exampleVectorReader.exampleVec // new ExampleVector(exampleSeq.toArray:_*)
@@ -60,17 +32,18 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
 
   }
 
-  //  override def get(index: Long): Example = super.get(index) // 失败
+
   override def get(index: Long): Example = {
     val example = ds.get(index)
     val oldExample = exampleVector.get(index)
-    //   println(s"example shape  ${example.data().print()} oldExample shape ${oldExample.data().print()}")
     val flag = example.equals(oldExample)
     if (flag) oldExample else example
 
   } // ds.get(index) //exampleVector.get(index)
 
   override def size: SizeTOptional = ds.size() // new SizeTOptional(exampleVector.size)
+
+  def length = exampleVector.size
 
   override def get_batch(indices: SizeTArrayRef): ExampleVector =
     super.get_batch(indices) // ds.get_batch(indices) // exampleVector
@@ -91,20 +64,18 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
       indices(j) = temp
     }
 
-    // 分割索引并创建子数据集
+    //split index create dataset 分割索引并创建子数据集
     val splitDatasets = ArrayBuffer[JavaDataset]()
     var current = 0
 
     for (length <- lengths) {
       val end = current + length
       val subsetIndices = indices.slice(current, end)
-      // 创建子数据集读取器
+      val subsetExampleSeq = subsetIndices.map(idx => ds.get(idx.toLong))
+      val exampleVector: ExampleVector = new ExampleVector(subsetExampleSeq.toArray:_*)
+      //create sub dataset reader  创建子数据集读取器
       val subsetReader = new ExampleVectorReader {
-        override val exampleVec: ExampleVector = {
-          val vec = new ExampleVector()
-          subsetIndices.foreach(idx => vec.put(ds.get(idx.toLong)))
-          vec
-        }
+        override def exampleVec: ExampleVector = ExampleVector(subsetExampleSeq.toArray:_*)
       }
 
       splitDatasets += new JavaDataset(subsetReader)
@@ -142,6 +113,30 @@ class JavaDataset(exampleVectorReader: ExampleVectorReader) extends JD {
   }
 
 }
+
+
+
+
+
+
+//  override def get(index: Long): Example = super.get(index) // 失败
+
+//    {
+//    val batch = 32 //exampleVectorReader.batch
+//    val exampleVector = new ExampleVector()
+//    for (i <- 0 until batch) {
+//       exampleVector.put( exampleVectorReader.read_chunk(i.toLong).get*)
+//    }
+//    exampleVector
+//  }
+
+//     val exampleVector = new ExampleVector(exampleSeq.toArray:_*)
+//    override def get(index: Long): Example = exampleVector.get(index)
+//
+//    override def size = new SizeTOptional(exampleVector.size)
+//
+
+
 // def random_split[T](dataset: JavaDataset[T]
 //  def random_split(dataset: JavaDataset,
 //                      lengths: Seq[Double | Int],

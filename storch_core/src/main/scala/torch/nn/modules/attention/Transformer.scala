@@ -19,6 +19,8 @@ package nn
 package modules
 package attention
 
+import org.bytedeco.pytorch.global.torch as torchNative
+
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -101,51 +103,75 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
   def apply(
       src: Tensor[ParamType],
       tgt: Tensor[ParamType],
-      src_mask: Option[Tensor[ParamType]] = None,
-      tgt_mask: Option[Tensor[ParamType]] = None,
-      memory_mask: Option[Tensor[ParamType]] = None,
-      src_key_padding_mask: Option[Tensor[ParamType]] = None,
-      tgt_key_padding_mask: Option[Tensor[ParamType]] = None,
-      memory_key_padding_mask: Option[Tensor[ParamType]] = None
+      src_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      src_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
-    val fore =
-      if (src_mask.isDefined)
-        nativeModule.forward(
-          src.native,
-          tgt.native,
-          src_mask.get.native,
-          tgt_mask.get.native,
-          memory_mask.get.native,
-          src_key_padding_mask.get.native,
-          tgt_key_padding_mask.get.native,
-          memory_key_padding_mask.get.native
-        )
-      else nativeModule.forward(src.native, tgt.native)
-    fromNative(fore)
+    this.forward(
+      src,
+      tgt,
+      src_mask,
+      tgt_mask,
+      memory_mask,
+      src_key_padding_mask,
+      tgt_key_padding_mask,
+      memory_key_padding_mask
+    )
   }
   def forward(
       src: Tensor[ParamType],
       tgt: Tensor[ParamType],
-      src_mask: Option[Tensor[ParamType]] = None,
-      tgt_mask: Option[Tensor[ParamType]] = None,
-      memory_mask: Option[Tensor[ParamType]] = None,
-      src_key_padding_mask: Option[Tensor[ParamType]] = None,
-      tgt_key_padding_mask: Option[Tensor[ParamType]] = None,
-      memory_key_padding_mask: Option[Tensor[ParamType]] = None
+      src_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      src_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
+    val srcMask = src_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val tgtMask = tgt_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
+    val memoryMask = memory_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val srcKPM = src_key_padding_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
+    val tgtKPM = tgt_key_padding_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val memoryKPM = memory_key_padding_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
     val fore =
-      if (src_mask.isDefined)
+      if (srcMask.equals(torchNative.empty()))
+        nativeModule.forward(
+          src.native,
+          tgt.native
+        )
+      else
         nativeModule.forward(
           src.native,
           tgt.native,
-          src_mask.get.native,
-          tgt_mask.get.native,
-          memory_mask.get.native,
-          src_key_padding_mask.get.native,
-          tgt_key_padding_mask.get.native,
-          memory_key_padding_mask.get.native
+          srcMask,
+          tgtMask,
+          memoryMask,
+          srcKPM,
+          tgtKPM,
+          memoryKPM
         )
-      else nativeModule.forward(src.native, tgt.native)
     fromNative(fore)
   }
 

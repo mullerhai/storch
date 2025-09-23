@@ -135,22 +135,37 @@ private[torch] trait CreationOps {
 
   def zeros_raw[D <: DType](
       size: Seq[Int] | Int,
-      dtype: D ,
+      dtype: D,
       requires_grad: Boolean
   ): Tensor[D] = this.zeros(size, dtype, Strided, CPU, requires_grad)
 
   def ones_raw[D <: DType](
       size: Seq[Int] | Int,
-      dtype: D ,
+      dtype: D,
       requires_grad: Boolean
   ): Tensor[D] = this.ones(size, dtype, Strided, CPU, requires_grad)
 
+  def zeross[D <: DType](
+      size: Int*
+  )(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] =
+    this.zeros(size = size, dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
 
-  def zeross[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.zeros(size = size,dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
+  def oness[D <: DType](
+      size: Int*
+  )(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] =
+    this.ones(size = size, dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
 
-  def oness[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.ones(size = size, dtype = dtype, layout = Strided, device = CPU, requires_grad = false)
-
-  def emptys[D <: DType](size: Int*)(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.empty(size = size,dtype = dtype, layout = Strided, device = CPU, requires_grad = false, pinMemory = false, memoryFormat = Contiguous)
+  def emptys[D <: DType](
+      size: Int*
+  )(implicit dtype: D = float32, requires_grad: Boolean = false): Tensor[D] = this.empty(
+    size = size,
+    dtype = dtype,
+    layout = Strided,
+    device = CPU,
+    requires_grad = false,
+    pinMemory = false,
+    memoryFormat = Contiguous
+  )
 
   //  def ones[D <: DType](
 //                         size: Seq[Int] | Int,
@@ -175,8 +190,8 @@ private[torch] trait CreationOps {
     )
 
   def zeros[D <: DType](
-                         size: Int*
-                       ): Tensor[D] =
+      size: Int*
+  ): Tensor[D] =
     val nativeSize = size match
       case s: Seq[Int] => s.map(_.toLong).toArray
     fromNative(
@@ -233,11 +248,11 @@ private[torch] trait CreationOps {
     )
 
   def ones[D <: DType](
-                        size: Int*
-                      ): Tensor[D] =
+      size: Int*
+  ): Tensor[D] =
     val nativeSize = size match
       case s: Seq[Int] => s.map(_.toLong).toArray
-    
+
     fromNative(
       torchNative.torch_ones(
         nativeSize,
@@ -420,8 +435,8 @@ private[torch] trait CreationOps {
 //                       ): Tensor[D] = this.empty[Float32](size, float32, Strided, CPU, requires_grad, false, Contiguous)
 
   def empty[D <: DType](
-                         size: Int*
-                       ): Tensor[D] =
+      size: Int*
+  ): Tensor[D] =
     fromNative(
       torchNative.torch_empty(
         size.toArray.map(_.toLong),

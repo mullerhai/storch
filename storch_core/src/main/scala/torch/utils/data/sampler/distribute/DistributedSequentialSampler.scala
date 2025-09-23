@@ -13,7 +13,6 @@ import org.bytedeco.pytorch.{
   SizeTVectorOptional,
   RandomSampler as RS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class DistributedSequentialSampler(
     size: Long,

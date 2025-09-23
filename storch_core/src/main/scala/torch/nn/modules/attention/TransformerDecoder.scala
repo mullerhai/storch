@@ -19,6 +19,8 @@ package nn
 package modules
 package attention
 
+import org.bytedeco.pytorch.global.torch as torchNative
+
 import org.bytedeco.javacpp.{LongPointer, DoublePointer, BoolPointer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
@@ -86,43 +88,59 @@ final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
   def apply(
       tgt: Tensor[ParamType],
       memory: Tensor[ParamType],
-      tgt_mask: Option[Tensor[ParamType]] = None,
-      memory_mask: Option[Tensor[ParamType]] = None,
-      tgt_key_padding_mask: Option[Tensor[ParamType]] = None,
-      memory_key_padding_mask: Option[Tensor[ParamType]] = None
+      tgt_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
-    val fore =
-      if (tgt_mask.isDefined)
-        nativeModule.forward(
-          tgt.native,
-          memory.native,
-          tgt_mask.get.native,
-          memory_mask.get.native,
-          tgt_key_padding_mask.get.native,
-          memory_key_padding_mask.get.native
-        )
-      else nativeModule.forward(tgt.native, memory.native)
-    fromNative(fore)
+    this.forward(
+      tgt,
+      memory,
+      tgt_mask,
+      memory_mask,
+      tgt_key_padding_mask,
+      memory_key_padding_mask
+    )
   }
   def forward(
       tgt: Tensor[ParamType],
       memory: Tensor[ParamType],
-      tgt_mask: Option[Tensor[ParamType]] = None,
-      memory_mask: Option[Tensor[ParamType]] = None,
-      tgt_key_padding_mask: Option[Tensor[ParamType]] = None,
-      memory_key_padding_mask: Option[Tensor[ParamType]] = None
+      tgt_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      tgt_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None,
+      memory_key_padding_mask: Option[Tensor[ParamType]] | Tensor[ParamType] = None
   ): Tensor[ParamType] = {
+    val tgtMask = tgt_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
+    val memoryMask = memory_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val tgtKPM = tgt_key_padding_mask match {
+      case k: Tensor[ParamType]         => k.native
+      case k: Option[Tensor[ParamType]] => if k.isDefined then k.get.native else torchNative.empty()
+    }
+    val memoryKPM = memory_key_padding_mask match {
+      case a: Tensor[ParamType]         => a.native
+      case a: Option[Tensor[ParamType]] => if a.isDefined then a.get.native else torchNative.empty()
+    }
     val fore =
-      if (tgt_mask.isDefined)
+      if (tgtMask.equals(torchNative.empty()))
+        nativeModule.forward(
+          tgt.native,
+          memory.native
+        )
+      else
         nativeModule.forward(
           tgt.native,
           memory.native,
-          tgt_mask.get.native,
-          memory_mask.get.native,
-          tgt_key_padding_mask.get.native,
-          memory_key_padding_mask.get.native
+          tgtMask,
+          memoryMask,
+          tgtKPM,
+          memoryKPM
         )
-      else nativeModule.forward(tgt.native, memory.native)
     fromNative(fore)
   }
 

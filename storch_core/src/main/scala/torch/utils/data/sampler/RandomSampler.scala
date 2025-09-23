@@ -8,7 +8,6 @@ import org.bytedeco.pytorch.{
   SizeTVectorOptional,
   RandomSampler as RS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
 
 class RandomSampler(size: Long) extends RS(size) with Sampler {
 
