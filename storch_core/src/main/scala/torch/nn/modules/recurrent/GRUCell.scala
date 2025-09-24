@@ -20,11 +20,7 @@ package modules
 package recurrent
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  GRUCellImpl,
-  GRUCellOptions,
-  TensorVector,
-}
+import org.bytedeco.pytorch.{GRUCellImpl, GRUCellOptions, TensorVector}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 import torch.{Default, FloatNN, ComplexNN, Tensor}

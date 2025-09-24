@@ -19,10 +19,7 @@ package nn
 package modules
 package pad
 
-import org.bytedeco.pytorch.{
-  ConstantPad1dImpl,
-  ConstantPad1dOptions
-}
+import org.bytedeco.pytorch.{ConstantPad1dImpl, ConstantPad1dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.

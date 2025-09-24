@@ -38,6 +38,8 @@ trait MNISTBase(
     val download: Boolean
 ) extends NormalTensorDataset[Float32, Int64] {
 
+  override def apply(idx: Int): (Tensor[Float32], Tensor[Int64]) = ds.apply(idx)
+
   private def downloadAndExtractArchive(url: URL, target: Path): Unit =
     println(s"downloading from $url")
     Using.resource(url.openStream()) { inputStream =>
@@ -72,7 +74,7 @@ trait MNISTBase(
       fromNative[Float32](native.images().clone()),
       fromNative[Int64](native.targets().clone())
     )
-  export ds.{apply, length, features, targets}
+  export ds.{length, features, targets}
 
   override def toString(): String = ds.toString()
 }
@@ -112,7 +114,11 @@ class MNIST(root: Path, train: Boolean = true, download: Boolean = false)
       root,
       train,
       download
-    )
+    ) {
+
+//  override def getItem(idx: Int): (Tensor[Input], Tensor[Target]) = (features(idx), targets(idx))
+
+}
 
 /** The [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) Dataset.
   *

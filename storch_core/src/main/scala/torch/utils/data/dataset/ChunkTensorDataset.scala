@@ -15,7 +15,7 @@ import torch.utils.data.datareader.ChunkTensorDataReader
 
 class ChunkTensorDataset(
     chunkReader: datareader.ChunkTensorDataReader,
-    chunkSampler: RS, 
+    chunkSampler: RS,
     batchSampler: RS,
     datasetOptions: ChunkDatasetOptions
 ) extends CTD(chunkReader, chunkSampler, batchSampler, datasetOptions) {
@@ -35,6 +35,5 @@ class ChunkTensorDataset(
 
   override def load(archive: InputArchive): Unit = super.load(archive)
 }
-
 
 //  override def get_batch(request: Long): ExampleVectorOptional = super.get_batch(request)

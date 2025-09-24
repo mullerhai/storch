@@ -35,12 +35,9 @@ import torch.nn.modules.attention.TransformerEncoderLayer
 import torch.nn.modules.attention.Transformer.TransformerActivation
 
 /** Applies a 2D convolution over an input signal composed of several input planes. long input_size,
-  * \@Cast("int64_t") long hidden_size
- * T_TensorT_TensorTensor_T_T,
- * T_TensorTensor_T,
- * T_TensorTensor_TOptional,
- * TensorVector,
- *
+  * \@Cast("int64_t") long hidden_size T_TensorT_TensorTensor_T_T, T_TensorTensor_T,
+  * T_TensorTensor_TOptional, TensorVector,
+  *
   * @group nn_conv
   */
 final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](

@@ -41,22 +41,22 @@ case class TorchDataLoaderOptions(
   def toNative: org.bytedeco.pytorch.DataLoaderOptions = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(batch_size)
     loaderOpts.batch_size.put(batch_size)
-    loaderOpts.timeout().put(new Milliseconds(timeout.toLong))
     loaderOpts.drop_last().put(drop_last)
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     loaderOpts
   }
 
   def toNativeFull: org.bytedeco.pytorch.FullDataLoaderOptions = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(batch_size)
     loaderOpts.batch_size.put(batch_size)
-    loaderOpts.timeout().put(new Milliseconds(timeout.toLong))
     loaderOpts.drop_last().put(drop_last)
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }
 }
@@ -81,22 +81,22 @@ case class TorchTensorDataLoaderOptions(
   def toNative: org.bytedeco.pytorch.DataLoaderOptions = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(batch_size)
     loaderOpts.batch_size.put(batch_size)
-    loaderOpts.timeout().put(new Milliseconds(timeout.toLong))
     loaderOpts.drop_last().put(drop_last)
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer, wait for fix
     loaderOpts
   }
 
   def toNativeFull: org.bytedeco.pytorch.FullDataLoaderOptions = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(batch_size)
     loaderOpts.batch_size.put(batch_size)
-    loaderOpts.timeout().put(new Milliseconds(timeout.toLong))
     loaderOpts.drop_last().put(drop_last)
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer, wait for fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }
 }

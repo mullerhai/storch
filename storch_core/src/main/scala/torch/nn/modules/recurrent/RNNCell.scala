@@ -20,13 +20,7 @@ package modules
 package recurrent
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  RNNCellImpl,
-  RNNCellOptions,
-  kTanh,
-  kReLU,
-  TensorVector,
-}
+import org.bytedeco.pytorch.{RNNCellImpl, RNNCellOptions, kTanh, kReLU, TensorVector}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 import torch.{Default, FloatNN, ComplexNN, Tensor}

@@ -21,11 +21,9 @@ package pad
 
 import org.bytedeco.javacpp.{LongPointer}
 
-import org.bytedeco.pytorch.{
-  ConstantPad3dImpl,
-  ConstantPad3dOptions
-}
+import org.bytedeco.pytorch.{ConstantPad3dImpl, ConstantPad3dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
+
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.
   *
   * The output is of size H x W, for any input size. The number of output features is equal to the

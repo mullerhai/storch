@@ -101,8 +101,7 @@ private[torch] trait Convolution {
     )
 
   /** Applies a 1D transposed convolution operator over an input signal composed of several input
-    * planes, sometimes also called “deconvolution”.
-    * ConvTranspose1dFuncOptions
+    * planes, sometimes also called “deconvolution”. ConvTranspose1dFuncOptions
     * @group nn_conv
     */
   def conv_transpose1d[D <: FloatNN | ComplexNN](
@@ -141,8 +140,7 @@ private[torch] trait Convolution {
     )
 
   /** Applies a 2D transposed convolution operator over an input image composed of several input
-    * planes, sometimes also called “deconvolution”.
-    * ConvTranspose2dFuncOptions
+    * planes, sometimes also called “deconvolution”. ConvTranspose2dFuncOptions
     * @group nn_conv
     */
   def conv_transpose2d[D <: FloatNN | ComplexNN](

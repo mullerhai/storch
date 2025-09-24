@@ -18,7 +18,6 @@ package torch
 package nn
 package functional
 
-
 import org.bytedeco.pytorch.{
   NLLLossOptions,
   MSELossOptions,

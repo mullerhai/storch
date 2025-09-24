@@ -55,7 +55,7 @@ class ChunkRandomTensorDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new CRTDL(dataset, option.toNative)
+  private lazy val nativeDataLoader = new CRTDL(dataset, option.toNative)
 
   override def begin(): TensorExampleIterator = nativeDataLoader.begin()
 
@@ -66,6 +66,8 @@ class ChunkRandomTensorDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+
+    private lazy val nativeDataLoader = new CRTDL(dataset, option.toNative)
 
     private var current: TensorExampleIterator =
       nativeDataLoader.begin()

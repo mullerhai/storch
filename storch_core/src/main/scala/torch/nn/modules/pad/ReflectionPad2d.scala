@@ -21,10 +21,7 @@ package pad
 
 import org.bytedeco.javacpp.{LongPointer}
 
-import org.bytedeco.pytorch.{
-  ReflectionPad2dImpl,
-  ReflectionPad2dOptions
-}
+import org.bytedeco.pytorch.{ReflectionPad2dImpl, ReflectionPad2dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D adaptive average pooling over an input signal composed of several input planes.

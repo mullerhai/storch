@@ -20,8 +20,8 @@ import org.bytedeco.pytorch.{
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.dataset.java
-import torch.utils.data.dataset.java.stream.StreamDataset
+import torch.utils.data.dataset.normal
+import torch.utils.data.dataset.normal.stream.StreamDataset
 import torch.utils.data.sampler
 import torch.utils.data.sampler.stream.StreamSampler
 
@@ -64,7 +64,7 @@ class StreamDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
 
   override def begin(): ExampleVectorIterator = nativeDataLoader.begin()
 
@@ -77,6 +77,8 @@ class StreamDataLoader(
   )
 
   override def iterator: Iterator[ExampleVector] = new Iterator[ExampleVector] {
+
+    private lazy val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
 
     private var current: ExampleVectorIterator = nativeDataLoader.begin()
 

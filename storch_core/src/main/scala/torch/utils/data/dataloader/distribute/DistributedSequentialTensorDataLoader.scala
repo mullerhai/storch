@@ -12,10 +12,10 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   JavaDistributedSequentialTensorDataLoader as DSTDL
 }
-import torch.utils.data.dataset.java.NormalTensorDataset
+import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.sampler.distribute.DistributedSequentialSampler
-import torch.utils.data.dataset.java
+import torch.utils.data.dataset.normal
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 //import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
 
@@ -62,7 +62,7 @@ class DistributedSequentialTensorDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
 
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
@@ -73,6 +73,8 @@ class DistributedSequentialTensorDataLoader(
   override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(option.toNative)
 
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+
+    private lazy val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
 
     private var current: TensorExampleIterator =
       nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]

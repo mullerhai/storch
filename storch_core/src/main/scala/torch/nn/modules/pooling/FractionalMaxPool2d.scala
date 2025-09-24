@@ -21,18 +21,12 @@ package pooling
 
 import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  FractionalMaxPool2dImpl,
-  T_TensorTensor_T,
-  FractionalMaxPool2dOptions,
-
-}
+import org.bytedeco.pytorch.{FractionalMaxPool2dImpl, T_TensorTensor_T, FractionalMaxPool2dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-/** Applies a 2D max pooling over an input signal composed of several input planes. 
- * LongExpandingArrayOptional,
- * DoubleExpandingArrayOptional
- * */
+/** Applies a 2D max pooling over an input signal composed of several input planes.
+  * LongExpandingArrayOptional, DoubleExpandingArrayOptional
+  */
 final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
     kernelSize: Int | (Int, Int),
     outputSize: Option[Int] | Option[(Int, Int)],

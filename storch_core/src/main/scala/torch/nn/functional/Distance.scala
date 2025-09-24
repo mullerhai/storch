@@ -10,10 +10,7 @@ package functional
 //LocalResponseNormOptions,
 //NormalizeFuncOptions,
 //ScalarTypeOptional
-import org.bytedeco.pytorch.{
-  PairwiseDistanceOptions,
-  CosineSimilarityOptions
-}
+import org.bytedeco.pytorch.{PairwiseDistanceOptions, CosineSimilarityOptions}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative
 import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}

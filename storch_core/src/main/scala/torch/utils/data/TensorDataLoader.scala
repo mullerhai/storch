@@ -12,10 +12,9 @@ import torch.utils.data.sampler.RandomSampler as TorchSampler
 import java.nio.file.Paths
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
-import torch.utils.data.dataset.java.NormalTensorDataset
+import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.{Tensor, *}
 import torch.internal.NativeConverters.{fromNative, toNative}
-
 
 class TensorDataLoader[ParamType <: DType: Default](
     dataset: TensorDataset | NormalTensorDataset,
@@ -124,11 +123,11 @@ class TensorDataLoader[ParamType <: DType: Default](
   ): ChunkRandomTensorDataLoader = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(options.batch_size)
     loaderOpts.batch_size.put(options.batch_size)
-    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong))
     loaderOpts.drop_last().put(options.drop_last)
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     ChunkRandomTensorDataLoader(ds, options)
   }
   // 这里需要替换为实际的 ChunkRandomTensorDataLoader 构造函数
@@ -147,10 +146,14 @@ class TensorDataLoader[ParamType <: DType: Default](
   private val chunkSharedTensorBatchDataset: ChunkMapTensorDataset =
     createChunkSharedTensorBatchDataset(chunkTensorDataset)
   //  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
-  private val nativeDataLoader: ChunkRandomTensorDataLoader =
+  private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
   override def iterator: Iterator[Tensor[ParamType]] = new Iterator[Tensor[ParamType]] {
+
+    private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+      createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
+
     private var current: TensorExampleIterator =
       nativeDataLoader.begin()
     private val endIterator: TensorExampleIterator =

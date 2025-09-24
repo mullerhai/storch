@@ -28,14 +28,23 @@ import torch.DType
 trait NormalTensorDataset[Input <: DType, Target <: DType]
     extends IndexedSeq[(Tensor[Input], Tensor[Target])] {
   def features: Tensor[Input]
+
   def targets: Tensor[Target]
+
+//  def length: Long
+
+  def apply(idx: Int): (Tensor[Input], Tensor[Target])
+
+  def getItem(idx: Int): (Tensor[Input], Tensor[Target]) = apply(idx)
+
+  def get_item(idx: Int): (Tensor[Input], Tensor[Target]) = getItem(idx)
 }
 
 object NormalTensorDataset {
   def apply[Input <: DType, Target <: DType](
       _features: Tensor[Input],
       _targets: Tensor[Target]
-  ): NormalTensorDataset[Input, Target] = new NormalTensorDataset {
+  ): NormalTensorDataset[Input, Target] = new NormalTensorDataset[Input, Target] {
     val features = _features
     val targets = _targets
 
@@ -43,6 +52,8 @@ object NormalTensorDataset {
     require(features.size.head == targets.size.head)
 
     override def apply(i: Int): (Tensor[Input], Tensor[Target]) = (features(i), targets(i))
+
+    override def getItem(idx: Int): (Tensor[Input], Tensor[Target]) = (features(idx), targets(idx))
 
     override def length: Int = features.size.head
 

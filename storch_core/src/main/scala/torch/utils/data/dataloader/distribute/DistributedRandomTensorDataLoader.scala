@@ -12,9 +12,9 @@ import org.bytedeco.pytorch.{
   TensorExampleVectorIterator,
   JavaDistributedRandomTensorDataLoader as DRTDL
 }
-import torch.utils.data.dataset.java.NormalTensorDataset
+import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.utils.data.sampler.distribute.DistributedRandomSampler
-import torch.utils.data.dataset.java
+import torch.utils.data.dataset.normal
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 
 object DistributedRandomTensorDataLoader {
@@ -60,7 +60,7 @@ class DistributedRandomTensorDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new DRTDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new DRTDL(dataset, sampler, option.toNative)
 
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
@@ -71,6 +71,8 @@ class DistributedRandomTensorDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+
+    private lazy val nativeDataLoader = new DRTDL(dataset, sampler, option.toNative)
 
     private var current: TensorExampleIterator =
       nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]

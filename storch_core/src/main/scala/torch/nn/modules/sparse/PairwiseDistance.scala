@@ -20,10 +20,7 @@ package modules
 package sparse
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  PairwiseDistanceOptions,
-  PairwiseDistanceImpl,
-}
+import org.bytedeco.pytorch.{PairwiseDistanceOptions, PairwiseDistanceImpl}
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.javacpp.{DoublePointer}
 // format: off

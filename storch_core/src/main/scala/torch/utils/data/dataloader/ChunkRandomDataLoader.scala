@@ -54,7 +54,7 @@ class ChunkRandomDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new CRDL(dataset, option.toNative)
+  private lazy val nativeDataLoader = new CRDL(dataset, option.toNative)
 
   override def begin(): ExampleIterator = nativeDataLoader.begin()
 
@@ -65,6 +65,8 @@ class ChunkRandomDataLoader(
   override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(option.toNative)
 
   override def iterator: Iterator[Example] = new Iterator[Example] {
+
+    private lazy val nativeDataLoader = new CRDL(dataset, option.toNative)
 
     private var current: ExampleIterator = nativeDataLoader.begin()
 

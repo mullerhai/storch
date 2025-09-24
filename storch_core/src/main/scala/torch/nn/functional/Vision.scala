@@ -2,7 +2,6 @@ package torch
 package nn
 package functional
 
-
 import org.bytedeco.pytorch.{
   kZeros,
   kBorder,
@@ -26,7 +25,6 @@ import org.bytedeco.pytorch.{
   InterpolateMode,
   PixelShuffleOptions,
   InterpolateFuncOptions
-
 }
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.fromNative

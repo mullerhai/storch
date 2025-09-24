@@ -32,7 +32,6 @@ import org.bytedeco.pytorch.{
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.nn.modules.attention.Transformer.TransformerActivation
 
-
 final class TransformerEncoderLayer[ParamType <: FloatNN | ComplexNN: Default](
     dModel: Int,
     nHead: Int,

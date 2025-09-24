@@ -1,7 +1,8 @@
 package torch.utils.data
 
 import org.bytedeco.pytorch.*
-import torch.utils.data.dataloader.{TorchDataLoaderOptions, SequentialDataLoader}
+import torch.utils.data.dataloader.sequential.SequentialDataLoader
+import torch.utils.data.dataloader.{TorchDataLoaderOptions}
 import torch.utils.data.datareader.ChunkDataReader
 import org.bytedeco.javacpp.chrono.Milliseconds
 import torch.utils.data.sampler.{RandomSampler as TorchSampler, SequentialSampler}
@@ -10,10 +11,10 @@ import java.nio.file.Paths
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import torch.utils.data.Dataset as DatasetTrait
-import torch.utils.data.dataset.java.JavaDataset
+import torch.utils.data.dataset.normal.JavaDataset
 
 class ExampleDataLoader[ParamType <: DType: Default](
-    dataset: DatasetTrait | JavaDataset,
+    dataset: DatasetTrait[ParamType, ? <: DType] | JavaDataset,
     batch_size: Int,
     shuffle: Boolean = false,
     num_workers: Int = 0,
@@ -46,8 +47,8 @@ class ExampleDataLoader[ParamType <: DType: Default](
 
   private def convertDatasetToExamples(): Seq[Example] = {
     val examples = new ArrayBuffer[Example]()
-    if (dataset.isInstanceOf[DatasetTrait]) {
-      val datasetTrait = dataset.asInstanceOf[DatasetTrait]
+    if (dataset.isInstanceOf[DatasetTrait[ParamType, ? <: DType]]) {
+      val datasetTrait = dataset.asInstanceOf[DatasetTrait[ParamType, ? <: DType]]
       for (i <- 0 until datasetTrait.length.toInt) {
         val (data, target) = datasetTrait.getItem(i)
         val example = new Example(data.native, target.native)
@@ -111,11 +112,11 @@ class ExampleDataLoader[ParamType <: DType: Default](
   ): ChunkRandomDataLoader = {
     val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(options.batch_size)
     loaderOpts.batch_size.put(options.batch_size)
-    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong))
     loaderOpts.drop_last().put(options.drop_last)
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
+//    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) ////todo Javacpp Bug here timeout will make null pointer
     new ChunkRandomDataLoader(ds, loaderOpts)
   }
 
@@ -123,15 +124,8 @@ class ExampleDataLoader[ParamType <: DType: Default](
       ds: JavaDataset,
       sampler: SequentialSampler,
       options: TorchDataLoaderOptions
-  ): SequentialDataLoader = {
-    val loaderOpts = new org.bytedeco.pytorch.DataLoaderOptions(options.batch_size)
-    loaderOpts.batch_size.put(options.batch_size)
-    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong))
-    loaderOpts.drop_last().put(options.drop_last)
-    loaderOpts.enforce_ordering().put(options.in_order)
-    loaderOpts.workers().put(options.num_workers)
-    loaderOpts.max_jobs().put(options.max_jobs)
-    SequentialDataLoader(ds, sampler, options)
+  ): SequentialDataLoader[ParamType] = {
+    SequentialDataLoader[ParamType](ds, sampler, options)
   }
 
   private val examples = convertDatasetToExamples()
@@ -139,10 +133,13 @@ class ExampleDataLoader[ParamType <: DType: Default](
 
   private val nativeDataset: ChunkDataset = createChunkDataset(reader, examples, options)
   private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
-  private val nativeDataLoader: ChunkRandomDataLoader =
+  private lazy val nativeDataLoader: ChunkRandomDataLoader =
     createChunkRandomDataLoader(sharedBatchDataset, options)
 
   override def iterator: Iterator[Example] = new Iterator[Example] {
+
+    private lazy val nativeDataLoader: ChunkRandomDataLoader =
+      createChunkRandomDataLoader(sharedBatchDataset, options)
 
     private var current: ExampleIterator = nativeDataLoader.begin
 

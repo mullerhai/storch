@@ -2,7 +2,6 @@ package torch
 package nn
 package functional
 
-
 import org.bytedeco.pytorch.{UnfoldOptions, FoldOptions}
 import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.*

@@ -19,7 +19,6 @@ package nn
 package modules
 package pooling
 
-
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{MaxPool1dImpl, MaxPool1dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}

@@ -21,21 +21,13 @@ package recurrent
 
 import org.bytedeco.javacpp.{LongPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  LSTMImpl,
-  PackedSequence,
-  LSTMOptions,
-  T_TensorTensor_T,
-}
+import org.bytedeco.pytorch.{LSTMImpl, PackedSequence, LSTMOptions, T_TensorTensor_T}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D convolution over an input signal composed of several input planes. long input_size,
-  * \@Cast("int64_t") long hidden_size
- * T_TensorTensor_TOptional,
- *   T_TensorT_TensorTensor_T_T,
- * TensorVector,
-
- *
+  * \@Cast("int64_t") long hidden_size T_TensorTensor_TOptional, T_TensorT_TensorTensor_T_T,
+  * TensorVector,
+  *
   * @group nn_conv
   */
 final class LSTM[ParamType <: FloatNN | ComplexNN: Default](

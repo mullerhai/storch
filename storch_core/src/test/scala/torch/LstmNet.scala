@@ -216,7 +216,7 @@ object LstmNetApp extends App {
     ChunkStatefulDataset,
     ChunkTensorDataset
   }
-  import torch.utils.data.dataset.java.{
+  import torch.utils.data.dataset.normal.{
     JavaDataset as JD,
     StatefulDataset,
     StatefulTensorDataset,

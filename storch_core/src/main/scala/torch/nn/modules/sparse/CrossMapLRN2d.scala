@@ -20,10 +20,7 @@ package modules
 package sparse
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  CrossMapLRN2dImpl,
-  CrossMapLRN2dOptions,
-}
+import org.bytedeco.pytorch.{CrossMapLRN2dImpl, CrossMapLRN2dOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 import org.bytedeco.javacpp.{LongPointer, DoublePointer}
 // format: off

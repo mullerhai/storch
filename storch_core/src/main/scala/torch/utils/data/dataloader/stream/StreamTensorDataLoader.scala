@@ -19,8 +19,8 @@ import org.bytedeco.pytorch.{
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
-import torch.utils.data.dataset.java
-import torch.utils.data.dataset.java.stream.StreamTensorDataset
+import torch.utils.data.dataset.normal
+import torch.utils.data.dataset.normal.stream.StreamTensorDataset
 import torch.utils.data.sampler
 import torch.utils.data.sampler.stream.StreamSampler
 
@@ -67,7 +67,7 @@ class StreamTensorDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
 
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
@@ -78,6 +78,8 @@ class StreamTensorDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+
+    private lazy val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
 
     private var current: TensorExampleIterator =
       nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]

@@ -20,8 +20,8 @@ import org.bytedeco.pytorch.{
 }
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.dataset.java
-import torch.utils.data.dataset.java.JavaDataset
+import torch.utils.data.dataset.normal
+import torch.utils.data.dataset.normal.JavaDataset
 import torch.utils.data.sampler
 import torch.utils.data.sampler.distribute.DistributedSequentialSampler
 
@@ -69,7 +69,8 @@ class DistributedSequentialDataLoader(
     timeout = timeout
   )
 
-  val nativeDataLoader = new DSDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new DSDL(dataset, sampler, option.toNative)
+
   override def begin(): ExampleVectorIterator = nativeDataLoader.begin()
 
   override def end(): ExampleVectorIterator = nativeDataLoader.end()
@@ -79,6 +80,8 @@ class DistributedSequentialDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   override def iterator: Iterator[ExampleVector] = new Iterator[ExampleVector] {
+
+    private lazy val nativeDataLoader = new DSDL(dataset, sampler, option.toNative)
 
     private var current: ExampleVectorIterator = nativeDataLoader.begin()
 
