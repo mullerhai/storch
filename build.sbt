@@ -100,12 +100,13 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion,
   pushChanges
 )
-libraryDependencies += "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.1" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13")
+//libraryDependencies += "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.1" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13")
 // https://mvnrepository.com/artifact/org.bytedeco/cuda
 libraryDependencies += "org.bytedeco" % "cuda" % "12.9-9.10-1.5.12"
 libraryDependencies += "org.apache.commons" % "commons-pool2" % "2.12.1"
 
-// https://mvnrepository.com/artifact/org.bytedeco/cuda-platform
+libraryDependencies += "ai.djl" % "api" % "0.33.0"
+libraryDependencies += "com.alibaba.fastjson2" % "fastjson2" % "2.0.57"
 libraryDependencies += "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12"
 libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.7"
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.4"
@@ -113,7 +114,9 @@ libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0
 libraryDependencies += "io.github.mullerhai" % "storch-plot_3" % "0.0.3"
 excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
-  "com.thesamet.scalapb" % "scalapb-runtime_2.13"
+  "com.thesamet.scalapb" % "scalapb-runtime_2.13",
+  "io.github.mullerhai" % "storch-safe-tensor_3",
+  "io.github.mullerhai" % "storch-polar_3"
 )
 
 lazy val storch_core = project
@@ -135,19 +138,22 @@ lazy val storch_core = project
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "com.lihaoyi" %% "sourcecode" % "0.3.0",
       "dev.dirs" % "directories" % "26",
+      "ai.djl" % "api" % "0.33.0",
+      "com.alibaba.fastjson2" % "fastjson2" % "2.0.57",
       "org.apache.commons" % "commons-pool2" % "2.12.1",
       "io.github.mullerhai" % "storch-numpy_3" % "0.1.7",
       "io.github.mullerhai" % "storch-pandas_3" % "0.1.5",
       "io.github.mullerhai" % "storch-pickle_3" % "0.1.4",
       "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",
       "io.github.mullerhai" % "storch-plot_3" % "0.0.3",
-//      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
     ),
     excludeDependencies ++= Seq(
       "com.thesamet.scalapb" % "lenses_2.13" ,
-      "com.thesamet.scalapb" % "scalapb-runtime_2.13"
+      "com.thesamet.scalapb" % "scalapb-runtime_2.13",
+      "io.github.mullerhai" % "storch-safe-tensor_3",
+      "io.github.mullerhai" % "storch-polar_3"
     ),
     javaOptions ++= Seq(
       "-XX:+IgnoreUnrecognizedVMOptions",
