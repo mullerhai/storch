@@ -108,6 +108,7 @@ libraryDependencies += "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12"
 libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.7"
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.4"
 libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"
+libraryDependencies += "io.github.mullerhai" % "storch-plot_3" % "0.0.3"
 excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
   "com.thesamet.scalapb" % "scalapb-runtime_2.13"
@@ -136,7 +137,7 @@ lazy val storch_core = project
       "io.github.mullerhai" % "storch-pandas_3" % "0.1.5",
       "io.github.mullerhai" % "storch-pickle_3" % "0.1.4",
       "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",
-
+      "io.github.mullerhai" % "storch-plot_3" % "0.0.3",
 //      "io.github.mullerhai" % "storch-pickle_3" % "0.1.0",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
