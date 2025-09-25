@@ -10,6 +10,7 @@ import org.bytedeco.pytorch.{
   ExampleVectorOptional,
   FullDataLoaderOptions,
   TensorExample,
+  TensorExampleVector,
   TensorExampleIterator,
   TensorExampleVectorIterator,
   JavaRandomTensorDataLoader as RTDL,
@@ -23,6 +24,8 @@ import torch.utils.data.dataset.normal
 import torch.utils.data.sampler
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 object RandomTensorDataLoader {
 
@@ -56,7 +59,7 @@ class RandomTensorDataLoader(
     timeout: Float = 0
 ) extends RTDL(dataset, sampler, new DLOP())
     with TorchDataLoader
-    with Iterable[TensorExample] {
+    with Iterable[TensorExampleVector] {
 
   val option = TorchTensorDataLoaderOptions(
     batch_size = batch_size,
@@ -78,19 +81,34 @@ class RandomTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
-  override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+  def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
+    val iteratorBuffer = new ListBuffer[TensorExampleVector]
+    val nativeDataLoader = new RTDL(dataset, sampler, option.toNative)
+    var current: TensorExampleVectorIterator = nativeDataLoader.begin
+    val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
+    }
+    iteratorBuffer
+  }
+
+  override def iterator: Iterator[TensorExampleVector] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[TensorExampleVector] = getIteratorBuffer.toSeq
+
+  def iterator_raw: Iterator[TensorExampleVector] = new Iterator[TensorExampleVector] {
 
     private lazy val nativeDataLoader = new RTDL(dataset, sampler, option.toNative)
 
-    private var current: TensorExampleIterator =
-      nativeDataLoader.begin.asInstanceOf[TensorExampleIterator]
+    private var current: TensorExampleVectorIterator = nativeDataLoader.begin
 
-    private val endIterator: TensorExampleIterator =
-      nativeDataLoader.end.asInstanceOf[TensorExampleIterator]
+    private val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
 
     override def hasNext: Boolean = !current.equals(endIterator)
 
-    override def next(): TensorExample = {
+    override def next(): TensorExampleVector = {
       val batch = current.access
       current = current.increment
       batch

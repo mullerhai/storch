@@ -34,9 +34,10 @@ trait Trainable[ParamType <: FloatNN: Default, M <: TensorModule[ParamType] with
     */
   def train(
       num_epochs: Int,
-      learning_rate: Float = 0.001f,
+      learning_rate: Double = 1e-3,
       batch_size: Int,
-      eval_interval: Int = 200
+      eval_interval: Int = 200,
+      feature_reshape: Seq[Int]
   ): M
 
   /** * evaluate model performance
@@ -45,4 +46,4 @@ trait Trainable[ParamType <: FloatNN: Default, M <: TensorModule[ParamType] with
     *   torch.noGrad() block or use torch.noGrad() { ... } block to ensure that model is in
     *   evaluation mode
     */
-  def evaluate(): (Float, Float)
+  def evaluate(feature_reshape: Seq[Int]): (Float, Float)

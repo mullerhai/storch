@@ -4,6 +4,8 @@ package data
 package dataloader
 package distribute
 
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
@@ -77,8 +79,24 @@ class DistributedRandomDataLoader(
   override def join(): Unit = nativeDataLoader.join()
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
+  def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
+    val iteratorBuffer = new ListBuffer[ExampleVector]
+    val nativeDataLoader = new DRDL(dataset, sampler, option.toNative)
+    var current: ExampleVectorIterator = nativeDataLoader.begin
+    val endIterator: ExampleVectorIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
+    }
+    iteratorBuffer
+  }
 
-  override def iterator: Iterator[ExampleVector] = new Iterator[ExampleVector] {
+  override def iterator: Iterator[ExampleVector] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[ExampleVector] = getIteratorBuffer.toSeq
+
+  def iterator_raw: Iterator[ExampleVector] = new Iterator[ExampleVector] {
 
     private lazy val nativeDataLoader = new DRDL(dataset, sampler, option.toNative)
 

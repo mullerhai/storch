@@ -24,7 +24,8 @@ import torch.utils.data.dataset.normal
 import torch.utils.data.dataset.normal.stream.StreamDataset
 import torch.utils.data.sampler
 import torch.utils.data.sampler.stream.StreamSampler
-
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 object StreamDataLoader {
   def apply(dataset: StreamDataset, sampler: StreamSampler, option: TorchDataLoaderOptions) =
     new StreamDataLoader(
@@ -76,7 +77,24 @@ class StreamDataLoader(
     option.toNative
   )
 
-  override def iterator: Iterator[ExampleVector] = new Iterator[ExampleVector] {
+  def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
+    val iteratorBuffer = new ListBuffer[ExampleVector]
+    val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
+    var current: ExampleVectorIterator = nativeDataLoader.begin
+    val endIterator: ExampleVectorIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
+    }
+    iteratorBuffer
+  }
+
+  override def iterator: Iterator[ExampleVector] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[ExampleVector] = getIteratorBuffer.toSeq
+
+  def iterator_raw: Iterator[ExampleVector] = new Iterator[ExampleVector] {
 
     private lazy val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
 

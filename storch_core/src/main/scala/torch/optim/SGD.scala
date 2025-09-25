@@ -70,7 +70,7 @@ import scala.collection.immutable.Iterable
 // TODO optionial parameters
 class SGD(
     params: Iterable[Tensor[?]],
-    lr: Float = 0.001,
+    lr: Double = 1e-3,
     momentum: Double = 0,
     dampening: Double = 0,
     weightDecay: Double = 0,
@@ -89,7 +89,7 @@ class SGD(
 object SGD:
   def apply(
       params: Iterable[Tensor[?]],
-      lr: Float = 0.001,
+      lr: Double = 1e-3,
       momentum: Double = 0,
       dampening: Double = 0,
       weight_decay: Double = 0,

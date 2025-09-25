@@ -9,7 +9,7 @@ import torch.utils.data.dataloader.{ChunkRandomTensorDataLoader, TorchTensorData
 import torch.utils.data.datareader.ChunkTensorDataReader
 import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.utils.data.sampler.RandomSampler as TorchSampler
-
+import scala.collection.mutable
 import java.nio.file.Paths
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
@@ -101,14 +101,6 @@ class ExampleTensorDataLoader[ParamType <: DType: Default](
     }
   }
 
-  //    val prefetch_count = 1
-  //    new ChunkTensorDataset(
-  //      reader,
-  //      new RandomSampler(tensorExamples.size),
-  //      new RandomSampler(tensorExamples.size),
-  //      new org.bytedeco.pytorch.ChunkDatasetOptions(prefetch_count, options.batch_size)
-  //    )
-
   private def createChunkSharedTensorBatchDataset(
       chunkTensorDataset: ChunkTensorDataset
   ): ChunkMapTensorDataset = {
@@ -128,13 +120,6 @@ class ExampleTensorDataLoader[ParamType <: DType: Default](
 //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) ////todo Javacpp Bug here timeout will make null pointer
     ChunkRandomTensorDataLoader(ds, options)
   }
-  // 这里需要替换为实际的 ChunkRandomTensorDataLoader 构造函数
-  // 假设存在一个名为 ChunkRandomTensorDataLoader 的类
-  //    new org.bytedeco.pytorch.ChunkRandomTensorDataLoader(ds, loaderOpts)
-
-  //  private def createChunkMapTensorDataset(chunkSharedTensorBatchDataset: ChunkMapTensorBatchDataset): ChunkMapTensorDataset = {
-  //    chunkSharedTensorBatchDataset
-  //  }
 
   private val tensorExamples = convertDatasetToTensorExamples()
   private val tensorExampleVector = createTensorExampleVector(tensorExamples)
@@ -143,26 +128,61 @@ class ExampleTensorDataLoader[ParamType <: DType: Default](
     createChunkTensorDataset(reader, tensorExamples, options)
   private val chunkSharedTensorBatchDataset: ChunkMapTensorDataset =
     createChunkSharedTensorBatchDataset(chunkTensorDataset)
-  //  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
-  private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+
+  private lazy val nativeDataLoaderMain: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
-  override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
-
-    private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+  def getIteratorBuffer: mutable.Buffer[TensorExample] = {
+    val iteratorBuffer = new ListBuffer[TensorExample]
+    val nativeDataLoader: ChunkRandomTensorDataLoader =
       createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
-
-    private var current: TensorExampleIterator =
-      nativeDataLoader.begin()
-    private val endIterator: TensorExampleIterator =
-      nativeDataLoader.end()
-
-    override def hasNext: Boolean = !current.equals(endIterator)
-
-    override def next(): TensorExample = {
-      val batch = current.access
-      current = current.increment
-      batch
+    var current: TensorExampleIterator = nativeDataLoader.begin
+    val endIterator: TensorExampleIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
     }
+    iteratorBuffer
   }
+
+  override def iterator: Iterator[TensorExample] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[TensorExample] = getIteratorBuffer.toSeq
+
 }
+
+//  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
+//    val prefetch_count = 1
+//    new ChunkTensorDataset(
+//      reader,
+//      new RandomSampler(tensorExamples.size),
+//      new RandomSampler(tensorExamples.size),
+//      new org.bytedeco.pytorch.ChunkDatasetOptions(prefetch_count, options.batch_size)
+//    )
+
+//override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+//
+//  private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+//    createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
+//
+//  private var current: TensorExampleIterator =
+//    nativeDataLoader.begin()
+//  private val endIterator: TensorExampleIterator =
+//    nativeDataLoader.end()
+//
+//  override def hasNext: Boolean = !current.equals(endIterator)
+//
+//  override def next(): TensorExample = {
+//    val batch = current.access
+//    current = current.increment
+//    batch
+//  }
+//}
+// 这里需要替换为实际的 ChunkRandomTensorDataLoader 构造函数
+// 假设存在一个名为 ChunkRandomTensorDataLoader 的类
+//    new org.bytedeco.pytorch.ChunkRandomTensorDataLoader(ds, loaderOpts)
+
+//  private def createChunkMapTensorDataset(chunkSharedTensorBatchDataset: ChunkMapTensorBatchDataset): ChunkMapTensorDataset = {
+//    chunkSharedTensorBatchDataset
+//  }

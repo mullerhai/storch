@@ -4,18 +4,17 @@ package data
 
 import org.bytedeco.pytorch.*
 import org.bytedeco.pytorch.Tensor as TensorNative
-import torch.utils.data.dataloader.{TorchDataLoaderOptions}
+import torch.utils.data.dataloader.TorchDataLoaderOptions
 import torch.utils.data.datareader.ChunkDataReader
 import org.bytedeco.javacpp.chrono.{Milliseconds, Seconds}
 import torch.utils.data.dataloader.sequential.SequentialDataLoader
 import torch.utils.data.sampler.{SequentialSampler, RandomSampler as TorchSampler}
-import torch.{DType, Default}
-//import java.nio.file.Paths
+import torch.{DType, Default, Tensor, *}
+import scala.collection.mutable
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import torch.utils.data.Dataset as DatasetTrait
 import torch.utils.data.dataset.normal.JavaDataset
-import torch.{Tensor, *}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class DataLoader[ParamType <: DType: Default](
@@ -129,7 +128,7 @@ class DataLoader[ParamType <: DType: Default](
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
-//    loaderOpts.timeout.put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
+    //    loaderOpts.timeout.put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     new ChunkRandomDataLoader(ds, loaderOpts)
   }
 
@@ -146,34 +145,60 @@ class DataLoader[ParamType <: DType: Default](
 
   private val nativeDataset: ChunkDataset = createChunkDataset(reader, examples, options)
   private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
-  private lazy val nativeDataLoader: ChunkRandomDataLoader =
+  private lazy val nativeDataLoaderMain: ChunkRandomDataLoader =
     createChunkRandomDataLoader(sharedBatchDataset, options)
 
   private def exampleToTuple(example: Example): (Tensor[ParamType], Tensor[ParamType]) = {
     val feature = fromNative(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
     val target = fromNative(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
-    (feature, target)
+    (feature.reshape(feature.shape*), target.reshape(target.shape*))
+  }
+
+  def getIteratorBuffer: mutable.Buffer[(Tensor[ParamType], Tensor[ParamType])] = {
+    val iteratorBuffer = new ListBuffer[(Tensor[ParamType], Tensor[ParamType])]
+    val nativeDataLoader: ChunkRandomDataLoader =
+      createChunkRandomDataLoader(sharedBatchDataset, options)
+    var current: ExampleIterator = nativeDataLoader.begin
+    val endIterator: ExampleIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      val feature =
+        torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+      val target =
+        torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
+      iteratorBuffer.append(
+        (feature.reshape(feature.shape*), target.reshape(target.shape*))
+      ) //      val batchTuple= exampleToTuple(example)
+      current = current.increment()
+    }
+    iteratorBuffer
   }
 
   override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
-    new Iterator[(Tensor[ParamType], Tensor[ParamType])] {
+    getIteratorBuffer.iterator
 
-      private lazy val nativeDataLoader: ChunkRandomDataLoader =
-        createChunkRandomDataLoader(sharedBatchDataset, options)
+  lazy val iteratorSeq: Seq[(Tensor[ParamType], Tensor[ParamType])] = getIteratorBuffer.toSeq
 
-      private var current: ExampleIterator = nativeDataLoader.begin
-
-      private val endIterator: ExampleIterator = nativeDataLoader.end
-
-      override def hasNext: Boolean = !current.equals(endIterator)
-
-      override def next(): (Tensor[ParamType], Tensor[ParamType]) = {
-        val batch = current.access
-        current = current.increment
-        exampleToTuple(batch)
-      }
-    }
 }
+
+//  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
+//    new Iterator[(Tensor[ParamType], Tensor[ParamType])] {
+//
+//      private var nativeDataLoader: ChunkRandomDataLoader =
+//        createChunkRandomDataLoader(sharedBatchDataset, options)
+//
+//      private var current: ExampleIterator = nativeDataLoader.begin
+//
+//      private val endIterator: ExampleIterator = nativeDataLoader.end
+//
+//      override def hasNext: Boolean = !current.equals(endIterator)
+//
+//      override def next(): (Tensor[ParamType], Tensor[ParamType]) = {
+//        val batch = current.access
+//        current = current.increment
+//        exampleToTuple(batch)
+//      }
+//    }
 
 //    val prefetch_count = 1
 //    new ChunkDataset(

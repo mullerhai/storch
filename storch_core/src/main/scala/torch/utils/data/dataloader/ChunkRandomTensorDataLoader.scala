@@ -17,6 +17,8 @@ import org.bytedeco.pytorch.{
 }
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.internal.NativeConverters.{fromNative, toNative}
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 object ChunkRandomTensorDataLoader {
   def apply(dataset: ChunkMapTensorDataset, option: TorchTensorDataLoaderOptions) =
@@ -65,7 +67,24 @@ class ChunkRandomTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
-  override def iterator: Iterator[TensorExample] = new Iterator[TensorExample] {
+  def getIteratorBuffer: mutable.Buffer[TensorExample] = {
+    val iteratorBuffer = new ListBuffer[TensorExample]
+    val nativeDataLoader = new CRTDL(dataset, option.toNative)
+    var current: TensorExampleIterator = nativeDataLoader.begin
+    val endIterator: TensorExampleIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
+    }
+    iteratorBuffer
+  }
+
+  override def iterator: Iterator[TensorExample] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[TensorExample] = getIteratorBuffer.toSeq
+
+  def iterator_raw: Iterator[TensorExample] = new Iterator[TensorExample] {
 
     private lazy val nativeDataLoader = new CRTDL(dataset, option.toNative)
 

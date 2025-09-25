@@ -29,9 +29,10 @@ STorch Tutorial ,see here -> https://github.com/mullerhai/storch-tutorial
 ### How to fetch STorch Library [Extended Version]
 ```scala 3
 
-libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.6.0-1.15.2"
+libraryDependencies +=   "io.github.mullerhai" % "storch_core_3" % "0.6.1-1.15.2"
 
 ```
+
 
 # STorch AI Family:
 ## STorch Numpy

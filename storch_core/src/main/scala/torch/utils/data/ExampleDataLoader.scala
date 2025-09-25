@@ -2,13 +2,14 @@ package torch.utils.data
 
 import org.bytedeco.pytorch.*
 import torch.utils.data.dataloader.sequential.SequentialDataLoader
-import torch.utils.data.dataloader.{TorchDataLoaderOptions}
+import torch.utils.data.dataloader.TorchDataLoaderOptions
 import torch.utils.data.datareader.ChunkDataReader
 import org.bytedeco.javacpp.chrono.Milliseconds
-import torch.utils.data.sampler.{RandomSampler as TorchSampler, SequentialSampler}
+import torch.utils.data.sampler.{SequentialSampler, RandomSampler as TorchSampler}
 import torch.{DType, Default}
+
 import java.nio.file.Paths
-import scala.collection.Iterator
+import scala.collection.{Iterator, mutable}
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import torch.utils.data.Dataset as DatasetTrait
 import torch.utils.data.dataset.normal.JavaDataset
@@ -130,31 +131,48 @@ class ExampleDataLoader[ParamType <: DType: Default](
 
   private val examples = convertDatasetToExamples()
   private val reader = createChunkDataReader(examples)
-
   private val nativeDataset: ChunkDataset = createChunkDataset(reader, examples, options)
   private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
-  private lazy val nativeDataLoader: ChunkRandomDataLoader =
+  private lazy val nativeDataLoaderMain: ChunkRandomDataLoader =
     createChunkRandomDataLoader(sharedBatchDataset, options)
 
-  override def iterator: Iterator[Example] = new Iterator[Example] {
-
-    private lazy val nativeDataLoader: ChunkRandomDataLoader =
+  def getIteratorBuffer: mutable.Buffer[Example] = {
+    val iteratorBuffer = new ListBuffer[Example]
+    val nativeDataLoader: ChunkRandomDataLoader =
       createChunkRandomDataLoader(sharedBatchDataset, options)
-
-    private var current: ExampleIterator = nativeDataLoader.begin
-
-    private val endIterator: ExampleIterator = nativeDataLoader.end
-
-    override def hasNext: Boolean = !current.equals(endIterator)
-
-    override def next(): Example = {
-      val batch = current.access
-      current = current.increment
-      batch
+    var current: ExampleIterator = nativeDataLoader.begin
+    val endIterator: ExampleIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
     }
+    iteratorBuffer
   }
+
+  override def iterator: Iterator[Example] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[Example] = getIteratorBuffer.toSeq
+
 }
 
+//override def iterator: Iterator[Example] = new Iterator[Example] {
+//
+//    private lazy val nativeDataLoader: ChunkRandomDataLoader =
+//      createChunkRandomDataLoader(sharedBatchDataset, options)
+//
+//    private var current: ExampleIterator = nativeDataLoader.begin
+//
+//    private val endIterator: ExampleIterator = nativeDataLoader.end
+//
+//    override def hasNext: Boolean = !current.equals(endIterator)
+//
+//    override def next(): Example = {
+//      val batch = current.access
+//      current = current.increment
+//      batch
+//    }
+//  }
 //    val prefetch_count = 1
 //    new ChunkDataset(
 //      reader,

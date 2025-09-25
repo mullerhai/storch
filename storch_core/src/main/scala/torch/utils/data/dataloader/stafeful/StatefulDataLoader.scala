@@ -5,12 +5,19 @@ package dataloader
 package stafeful
 
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{ExampleVector, ExampleVectorIterator, FullDataLoaderOptions, JavaStatefulDataLoader as SDL}
+import org.bytedeco.pytorch.{
+  ExampleVector,
+  ExampleVectorIterator,
+  FullDataLoaderOptions,
+  JavaStatefulDataLoader as SDL
+}
 import torch.utils.data.dataset.normal.StatefulDataset
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.utils.data.dataloader.{TorchDataLoader, TorchDataLoaderOptions}
 import torch.utils.data.dataloader.TorchDataLoaderOptions
 import torch.utils.data.dataloader.stafeful.StatefulDataLoader
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 object StatefulDataLoader {
 
@@ -60,7 +67,24 @@ class StatefulDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
-  override def iterator: Iterator[ExampleVector] = new Iterator[ExampleVector] {
+  def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
+    val iteratorBuffer = new ListBuffer[ExampleVector]
+    val nativeDataLoader = new SDL(dataset, option.toNative)
+    var current: ExampleVectorIterator = nativeDataLoader.begin
+    val endIterator: ExampleVectorIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      iteratorBuffer.append(example)
+      current = current.increment()
+    }
+    iteratorBuffer
+  }
+
+  override def iterator: Iterator[ExampleVector] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[ExampleVector] = getIteratorBuffer.toSeq
+
+  def iterator_raw: Iterator[ExampleVector] = new Iterator[ExampleVector] {
 
     private lazy val nativeDataLoader = new SDL(dataset, option.toNative)
 

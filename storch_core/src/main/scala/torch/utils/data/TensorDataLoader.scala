@@ -11,6 +11,7 @@ import org.bytedeco.javacpp.chrono.Milliseconds
 import torch.utils.data.sampler.RandomSampler as TorchSampler
 import java.nio.file.Paths
 import scala.collection.Iterator
+import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.{Tensor, *}
@@ -130,13 +131,6 @@ class TensorDataLoader[ParamType <: DType: Default](
 //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     ChunkRandomTensorDataLoader(ds, options)
   }
-  // 这里需要替换为实际的 ChunkRandomTensorDataLoader 构造函数
-  // 假设存在一个名为 ChunkRandomTensorDataLoader 的类
-  //    new org.bytedeco.pytorch.ChunkRandomTensorDataLoader(ds, loaderOpts)
-
-  //  private def createChunkMapTensorDataset(chunkSharedTensorBatchDataset: ChunkMapTensorBatchDataset): ChunkMapTensorDataset = {
-  //    chunkSharedTensorBatchDataset
-  //  }
 
   private val tensorExamples = convertDatasetToTensorExamples()
   private val tensorExampleVector = createTensorExampleVector(tensorExamples)
@@ -145,26 +139,56 @@ class TensorDataLoader[ParamType <: DType: Default](
     createChunkTensorDataset(reader, tensorExamples, options)
   private val chunkSharedTensorBatchDataset: ChunkMapTensorDataset =
     createChunkSharedTensorBatchDataset(chunkTensorDataset)
-  //  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
-  private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+
+  private lazy val nativeDataLoaderMain: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
-  override def iterator: Iterator[Tensor[ParamType]] = new Iterator[Tensor[ParamType]] {
-
-    private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+  def getIteratorBuffer: mutable.Buffer[Tensor[ParamType]] = {
+    val iteratorBuffer = new ListBuffer[Tensor[ParamType]]
+    val nativeDataLoader: ChunkRandomTensorDataLoader =
       createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
-
-    private var current: TensorExampleIterator =
-      nativeDataLoader.begin()
-    private val endIterator: TensorExampleIterator =
-      nativeDataLoader.end()
-
-    override def hasNext: Boolean = !current.equals(endIterator)
-
-    override def next(): Tensor[ParamType] = {
-      val batch = current.access
-      current = current.increment
-      fromNative(batch.data)
+    var current: TensorExampleIterator = nativeDataLoader.begin
+    val endIterator: TensorExampleIterator = nativeDataLoader.end
+    while (!current.equals(endIterator)) {
+      val example = current.access
+      val feature =
+        torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+      iteratorBuffer.append(feature.reshape(feature.shape*))
+      current = current.increment()
     }
+    iteratorBuffer
   }
+
+  override def iterator: Iterator[Tensor[ParamType]] = getIteratorBuffer.iterator
+
+  lazy val iteratorSeq: Seq[Tensor[ParamType]] = getIteratorBuffer.toSeq
+
 }
+
+//  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
+
+//override def iterator: Iterator[Tensor[ParamType]] = new Iterator[Tensor[ParamType]] {
+//
+//  private lazy val nativeDataLoader: ChunkRandomTensorDataLoader =
+//    createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
+//
+//  private var current: TensorExampleIterator =
+//    nativeDataLoader.begin()
+//  private val endIterator: TensorExampleIterator =
+//    nativeDataLoader.end()
+//
+//  override def hasNext: Boolean = !current.equals(endIterator)
+//
+//  override def next(): Tensor[ParamType] = {
+//    val batch = current.access
+//    current = current.increment
+//    fromNative(batch.data)
+//  }
+//}
+// 这里需要替换为实际的 ChunkRandomTensorDataLoader 构造函数
+// 假设存在一个名为 ChunkRandomTensorDataLoader 的类
+//    new org.bytedeco.pytorch.ChunkRandomTensorDataLoader(ds, loaderOpts)
+
+//  private def createChunkMapTensorDataset(chunkSharedTensorBatchDataset: ChunkMapTensorBatchDataset): ChunkMapTensorDataset = {
+//    chunkSharedTensorBatchDataset
+//  }
