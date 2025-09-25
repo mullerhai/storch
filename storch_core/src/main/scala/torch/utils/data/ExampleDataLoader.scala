@@ -136,23 +136,41 @@ class ExampleDataLoader[ParamType <: DType: Default](
   private lazy val nativeDataLoaderMain: ChunkRandomDataLoader =
     createChunkRandomDataLoader(sharedBatchDataset, options)
 
+  private val iteratorBuffer = new ListBuffer[Example]()
+
   def getIteratorBuffer: mutable.Buffer[Example] = {
-    val iteratorBuffer = new ListBuffer[Example]
-    val nativeDataLoader: ChunkRandomDataLoader =
-      createChunkRandomDataLoader(sharedBatchDataset, options)
-    var current: ExampleIterator = nativeDataLoader.begin
-    val endIterator: ExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader: ChunkRandomDataLoader =
+        createChunkRandomDataLoader(sharedBatchDataset, options)
+      var current: ExampleIterator = nativeDataLoader.begin
+      val endIterator: ExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[Example] = getIteratorBuffer.iterator
+  override def iterator: Iterator[Example] = {
 
-  lazy val iteratorSeq: Seq[Example] = getIteratorBuffer.toSeq
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
+
+  lazy val iteratorSeq: Seq[Example] = {
+
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
+  
 
 }
 

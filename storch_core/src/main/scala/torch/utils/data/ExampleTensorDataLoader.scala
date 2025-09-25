@@ -132,23 +132,41 @@ class ExampleTensorDataLoader[ParamType <: DType: Default](
   private lazy val nativeDataLoaderMain: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
+  private val iteratorBuffer = new ListBuffer[TensorExample]()
+
   def getIteratorBuffer: mutable.Buffer[TensorExample] = {
-    val iteratorBuffer = new ListBuffer[TensorExample]
-    val nativeDataLoader: ChunkRandomTensorDataLoader =
-      createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
-    var current: TensorExampleIterator = nativeDataLoader.begin
-    val endIterator: TensorExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader: ChunkRandomTensorDataLoader =
+        createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
+      var current: TensorExampleIterator = nativeDataLoader.begin
+      val endIterator: TensorExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[TensorExample] = getIteratorBuffer.iterator
+  override def iterator: Iterator[TensorExample] = {
+    
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
 
-  lazy val iteratorSeq: Seq[TensorExample] = getIteratorBuffer.toSeq
+  lazy val iteratorSeq: Seq[TensorExample] = {
+  
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
+
 
 }
 

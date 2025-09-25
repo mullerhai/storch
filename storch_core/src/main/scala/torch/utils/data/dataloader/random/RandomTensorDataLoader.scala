@@ -13,17 +13,13 @@ import org.bytedeco.pytorch.{
   TensorExampleVector,
   TensorExampleIterator,
   TensorExampleVectorIterator,
-  JavaRandomTensorDataLoader as RTDL,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  JavaRandomTensorDataLoader as RTDL
 }
 import torch.utils.data.dataset.normal.NormalTensorDataset
 import torch.utils.data.sampler.RandomSampler
 import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.utils.data.dataset.normal
-import torch.utils.data.sampler
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
-import torch.utils.data.dataloader.TorchTensorDataLoaderOptions
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
@@ -81,22 +77,37 @@ class RandomTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
+  private val iteratorBuffer = new ListBuffer[TensorExampleVector]()
+  
   def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
-    val iteratorBuffer = new ListBuffer[TensorExampleVector]
-    val nativeDataLoader = new RTDL(dataset, sampler, option.toNative)
-    var current: TensorExampleVectorIterator = nativeDataLoader.begin
-    val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader = new RTDL(dataset, sampler, option.toNative)
+      var current: TensorExampleVectorIterator = nativeDataLoader.begin
+      val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[TensorExampleVector] = getIteratorBuffer.iterator
+  override def iterator: Iterator[TensorExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
 
-  lazy val iteratorSeq: Seq[TensorExampleVector] = getIteratorBuffer.toSeq
+  lazy val iteratorSeq: Seq[TensorExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
   def iterator_raw: Iterator[TensorExampleVector] = new Iterator[TensorExampleVector] {
 

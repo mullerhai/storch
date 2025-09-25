@@ -154,32 +154,65 @@ class DataLoader[ParamType <: DType: Default](
     (feature.reshape(feature.shape*), target.reshape(target.shape*))
   }
 
+  private val iteratorBuffer = new ListBuffer[(Tensor[ParamType], Tensor[ParamType])]
+
   def getIteratorBuffer: mutable.Buffer[(Tensor[ParamType], Tensor[ParamType])] = {
-    val iteratorBuffer = new ListBuffer[(Tensor[ParamType], Tensor[ParamType])]
-    val nativeDataLoader: ChunkRandomDataLoader =
-      createChunkRandomDataLoader(sharedBatchDataset, options)
-    var current: ExampleIterator = nativeDataLoader.begin
-    val endIterator: ExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      val feature =
-        torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-      val target =
-        torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
-      iteratorBuffer.append(
-        (feature.reshape(feature.shape*), target.reshape(target.shape*))
-      ) //      val batchTuple= exampleToTuple(example)
-      current = current.increment()
+
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader: ChunkRandomDataLoader =
+        createChunkRandomDataLoader(sharedBatchDataset, options)
+      var current: ExampleIterator = nativeDataLoader.begin
+      val endIterator: ExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        val feature =
+          torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+        val target =
+          torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
+        iteratorBuffer.append(
+          (feature.reshape(feature.shape *), target.reshape(target.shape *))
+        )
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
-    getIteratorBuffer.iterator
+  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] = {
 
-  lazy val iteratorSeq: Seq[(Tensor[ParamType], Tensor[ParamType])] = getIteratorBuffer.toSeq
+    if(iteratorBuffer.length == 0){
+      getIteratorBuffer.iterator  //only once ！ do not running twice
+    }else{
+      iteratorBuffer.iterator
+    }
+
+  }
+
+  lazy val iteratorSeq: Seq[(Tensor[ParamType], Tensor[ParamType])] = {
+
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
 //    new Iterator[(Tensor[ParamType], Tensor[ParamType])] {

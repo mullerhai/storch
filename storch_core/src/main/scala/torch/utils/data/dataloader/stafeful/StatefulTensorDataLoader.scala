@@ -66,22 +66,38 @@ class StatefulTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
+  private val iteratorBuffer = new ListBuffer[TensorExampleVector]()
+  
   def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
-    val iteratorBuffer = new ListBuffer[TensorExampleVector]
-    val nativeDataLoader = new STDL(dataset, option.toNative)
-    var current: TensorExampleVectorIterator = nativeDataLoader.begin
-    val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader = new STDL(dataset, option.toNative)
+      var current: TensorExampleVectorIterator = nativeDataLoader.begin
+      val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[TensorExampleVector] = getIteratorBuffer.iterator
+  override def iterator: Iterator[TensorExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
 
-  lazy val iteratorSeq: Seq[TensorExampleVector] = getIteratorBuffer.toSeq
+  lazy val iteratorSeq: Seq[TensorExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
   def iterator_raw: Iterator[TensorExampleVector] = new Iterator[TensorExampleVector] {
 

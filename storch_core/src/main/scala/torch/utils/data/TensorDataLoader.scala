@@ -143,25 +143,44 @@ class TensorDataLoader[ParamType <: DType: Default](
   private lazy val nativeDataLoaderMain: ChunkRandomTensorDataLoader =
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
+  private val iteratorBuffer = new ListBuffer[Tensor[ParamType]]()
+  
   def getIteratorBuffer: mutable.Buffer[Tensor[ParamType]] = {
-    val iteratorBuffer = new ListBuffer[Tensor[ParamType]]
-    val nativeDataLoader: ChunkRandomTensorDataLoader =
-      createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
-    var current: TensorExampleIterator = nativeDataLoader.begin
-    val endIterator: TensorExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      val feature =
-        torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-      iteratorBuffer.append(feature.reshape(feature.shape*))
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader: ChunkRandomTensorDataLoader =
+        createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
+      var current: TensorExampleIterator = nativeDataLoader.begin
+      val endIterator: TensorExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        val feature =
+          torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+        iteratorBuffer.append(feature.reshape(feature.shape *))
+        current = current.increment()
+      }
     }
+
     iteratorBuffer
   }
 
-  override def iterator: Iterator[Tensor[ParamType]] = getIteratorBuffer.iterator
 
-  lazy val iteratorSeq: Seq[Tensor[ParamType]] = getIteratorBuffer.toSeq
+  override def iterator: Iterator[Tensor[ParamType]] = {
+
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
+
+  lazy val iteratorSeq: Seq[Tensor[ParamType]] = {
+    
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
 }
 

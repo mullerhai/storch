@@ -79,22 +79,38 @@ class DistributedRandomDataLoader(
   override def join(): Unit = nativeDataLoader.join()
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
+  
+  private  val iteratorBuffer = new ListBuffer[ExampleVector]()
+  
   def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
-    val iteratorBuffer = new ListBuffer[ExampleVector]
-    val nativeDataLoader = new DRDL(dataset, sampler, option.toNative)
-    var current: ExampleVectorIterator = nativeDataLoader.begin
-    val endIterator: ExampleVectorIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader = new DRDL(dataset, sampler, option.toNative)
+      var current: ExampleVectorIterator = nativeDataLoader.begin
+      val endIterator: ExampleVectorIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[ExampleVector] = getIteratorBuffer.iterator
+  override def iterator: Iterator[ExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
 
-  lazy val iteratorSeq: Seq[ExampleVector] = getIteratorBuffer.toSeq
+  lazy val iteratorSeq: Seq[ExampleVector] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
   def iterator_raw: Iterator[ExampleVector] = new Iterator[ExampleVector] {
 

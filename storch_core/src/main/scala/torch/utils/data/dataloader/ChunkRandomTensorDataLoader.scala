@@ -11,9 +11,7 @@ import org.bytedeco.pytorch.{
   ExampleIterator,
   ExampleVectorOptional,
   FullDataLoaderOptions,
-  ChunkRandomTensorDataLoader as CRTDL,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  ChunkRandomTensorDataLoader as CRTDL
 }
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.internal.NativeConverters.{fromNative, toNative}
@@ -67,22 +65,39 @@ class ChunkRandomTensorDataLoader(
 
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
+  private val iteratorBuffer = new ListBuffer[TensorExample]()
+
   def getIteratorBuffer: mutable.Buffer[TensorExample] = {
-    val iteratorBuffer = new ListBuffer[TensorExample]
-    val nativeDataLoader = new CRTDL(dataset, option.toNative)
-    var current: TensorExampleIterator = nativeDataLoader.begin
-    val endIterator: TensorExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader = new CRTDL(dataset, option.toNative)
+      var current: TensorExampleIterator = nativeDataLoader.begin
+      val endIterator: TensorExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[TensorExample] = getIteratorBuffer.iterator
 
-  lazy val iteratorSeq: Seq[TensorExample] = getIteratorBuffer.toSeq
+
+  override def iterator: Iterator[TensorExample] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
+
+  lazy val iteratorSeq: Seq[TensorExample] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
   def iterator_raw: Iterator[TensorExample] = new Iterator[TensorExample] {
 

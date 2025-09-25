@@ -10,9 +10,7 @@ import org.bytedeco.pytorch.{
   FullDataLoaderOptions,
   Example,
   ChunkBatchDataset as CBD,
-  ChunkRandomDataLoader as CRDL,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  ChunkRandomDataLoader as CRDL
 }
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import torch.internal.NativeConverters.{fromNative, toNative}
@@ -66,22 +64,38 @@ class ChunkRandomDataLoader(
 
   override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(option.toNative)
 
+  private val iteratorBuffer = new ListBuffer[Example]()
+
   def getIteratorBuffer: mutable.Buffer[Example] = {
-    val iteratorBuffer = new ListBuffer[Example]
-    val nativeDataLoader = new CRDL(dataset, option.toNative)
-    var current: ExampleIterator = nativeDataLoader.begin
-    val endIterator: ExampleIterator = nativeDataLoader.end
-    while (!current.equals(endIterator)) {
-      val example = current.access
-      iteratorBuffer.append(example)
-      current = current.increment()
+    
+    if (iteratorBuffer.length == 0) {
+      val nativeDataLoader = new CRDL(dataset, option.toNative)
+      var current: ExampleIterator = nativeDataLoader.begin
+      val endIterator: ExampleIterator = nativeDataLoader.end
+      while (!current.equals(endIterator)) {
+        val example = current.access
+        iteratorBuffer.append(example)
+        current = current.increment()
+      }
     }
     iteratorBuffer
   }
 
-  override def iterator: Iterator[Example] = getIteratorBuffer.iterator
+  override def iterator: Iterator[Example] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator //only once ！ do not running twice
+    } else {
+      iteratorBuffer.iterator
+    }
+  }
 
-  lazy val iteratorSeq: Seq[Example] = getIteratorBuffer.toSeq
+  lazy val iteratorSeq: Seq[Example] = {
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.toSeq //only once ！ do not running twice
+    } else {
+      iteratorBuffer.toSeq
+    }
+  }
 
   def iterator_raw: Iterator[Example] = new Iterator[Example] {
 
