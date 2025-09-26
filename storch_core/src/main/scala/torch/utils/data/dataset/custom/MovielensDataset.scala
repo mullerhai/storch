@@ -27,8 +27,3 @@ class MovielensDataset[Input <: DType, Target <: DType] extends Dataset[Input, T
 
 }
 
-//  override def getItem(idx: Int): (Tensor[? <: DType], Tensor[Int64]) = ???
-//
-//  override def get_batch(request: Seq[Long]): ExampleVector =  super.get_batch(request*)
-//
-//  override def iterator: Iterator[(Tensor[? <: DType], Tensor[? <: DType])] = ???

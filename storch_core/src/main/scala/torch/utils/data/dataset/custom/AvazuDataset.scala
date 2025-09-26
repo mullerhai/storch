@@ -20,19 +20,4 @@ class AvazuDataset[Input <: DType, Target <: DType] extends Dataset[Input, Targe
 
 }
 
-//  override def getItem(idx: Int): (Tensor[? <: DType], Tensor[Int64]) = ???
-//
-//  override def get_batch(request: Seq[Long]): ExampleVector =  super.get_batch(request*)
-//
-//  override def iterator: Iterator[(Tensor[? <: DType], Tensor[? <: DType])] = ???
 
-//  override def get(index: Long): Example = super.get(index)
-
-//  override def get_batch(request: Seq[Long]): ExampleVector = super.get_batch(request)
-
-//  override def get_batch(indices: SizeTArrayRef): ExampleVector = super.get_batch(indices)
-//  override def get_batch(indices: Seq[Int]): (Tensor[ParamType], Tensor[Int64]) = ???
-
-//  override def get_batch(indices: SizeTArrayRef): ExampleVector = super.get_batch(indices)
-
-//= super.iterator

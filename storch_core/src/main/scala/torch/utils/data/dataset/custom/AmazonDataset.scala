@@ -23,8 +23,3 @@ class AmazonDataset[Input <: DType, Target <: DType] extends Dataset[Input, Targ
   override def get_batch(request: Long*): ExampleVector = ??? // super.get_batch(request)
 }
 
-//  override def getItem(idx: Int): (Tensor[? <: DType], Tensor[Int64]) = ???
-//
-//  override def get_batch(request: Seq[Long]): ExampleVector =  super.get_batch(request*)
-//
-//  override def iterator: Iterator[(Tensor[? <: DType], Tensor[? <: DType])] = ???
