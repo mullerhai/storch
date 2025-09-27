@@ -3,13 +3,13 @@ package torch.utils.recommend.layer
 import torch.*
 import torch.nn.modules.{HasParams, TensorModule}
 
-/***
- * 
- * @param reduce_sum
- * @param default$ParamType$0
- * @tparam ParamType
- * ix.mul(x.to(dtype = this.paramType))
- */
+/** *
+  *
+  * @param reduce_sum
+  * @param default$ParamType$0
+  * @tparam ParamType
+  *   ix.mul(x.to(dtype = this.paramType))
+  */
 class FactorizationMachine[ParamType <: FloatNN: Default](reduce_sum: Boolean = true)
     extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -23,7 +23,7 @@ class FactorizationMachine[ParamType <: FloatNN: Default](reduce_sum: Boolean = 
     val ix = squareOfSum.sub(sumOfSquare)
     if (reduceSum) torch.sum(ix) else ix
     val x = torch.Tensor(0.5)
-    val res = ix.multiply(x.to(dtype = this.paramType)) 
+    val res = ix.multiply(x.to(dtype = this.paramType))
     res
 
   }
@@ -34,10 +34,3 @@ object FactorizationMachine:
   def apply[ParamType <: FloatNN: Default](
       reduce_sum: Boolean = true
   ): FactorizationMachine[ParamType] = new FactorizationMachine(reduce_sum)
-
-
-
-
-
-
-

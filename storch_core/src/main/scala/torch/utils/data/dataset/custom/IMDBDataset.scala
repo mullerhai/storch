@@ -1,14 +1,13 @@
-package torch
-package utils
-package data.dataset.custom
+package torch.utils.data.dataset.custom
 
 import org.bytedeco.pytorch.ExampleVector
 import torch.utils.data.Dataset
-import torch.{DType, Default, Int64, Tensor}
+import torch.*
 
 import java.nio.file.Paths
 
-class IMDBDataset[Input <: DType, Target <: DType] extends Dataset[Input, Target] {
+class IMDBDataset[Input <: BFloat16 | FloatNN: Default, Target <: BFloat16 | FloatNN: Default]
+    extends Dataset[Input, Target] {
 
   val DATA_URL = "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
   val DATA_ROOT = "./data"
@@ -28,4 +27,3 @@ class IMDBDataset[Input <: DType, Target <: DType] extends Dataset[Input, Target
   override def get_batch(request: Long*): ExampleVector = ???
 
 }
-

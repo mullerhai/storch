@@ -2,9 +2,15 @@ package torch.utils.data.dataset.custom
 
 import org.bytedeco.pytorch.ExampleVector
 import torch.utils.data.Dataset
-import torch.{DType, Default, Int64, Tensor}
+import torch.*
 
-class YelpDataset[Input <: DType, Target <: DType] extends Dataset[Input, Target] {
+class YelpDataset[Input <: BFloat16 | FloatNN: Default, Target <: BFloat16 | FloatNN: Default]
+    extends Dataset[Input, Target] {
+  val yelpPhotoPath = "https://business.yelp.com/external-assets/files/Yelp-Photos.zip"
+//https://business.yelp.com/data/resources/open-dataset/
+  val yelpJsonPath = "https://business.yelp.com/external-assets/files/Yelp-JSON.zip"
+  val DATA_URL =
+    "https://snap.stanford.edu/data/yelp-dataset/yelp_academic_dataset_review.json.gz"
 
   override def length: Long = ???
 
@@ -19,4 +25,3 @@ class YelpDataset[Input <: DType, Target <: DType] extends Dataset[Input, Target
   override def get_batch(request: Long*): ExampleVector = ???
 
 }
-

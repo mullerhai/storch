@@ -68,7 +68,7 @@ class StatefulDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   private val iteratorBuffer = new ListBuffer[ExampleVector]()
-  
+
   def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
     if (iteratorBuffer.length == 0) {
       val nativeDataLoader = new SDL(dataset, option.toNative)
@@ -85,7 +85,7 @@ class StatefulDataLoader(
 
   override def iterator: Iterator[ExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -93,7 +93,7 @@ class StatefulDataLoader(
 
   lazy val iteratorSeq: Seq[ExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }

@@ -9,14 +9,14 @@ object GGUFImpl {
   private[impl] def toBoxedClass[T](primitiveClass: Class[T]): Class[?] = {
     primitiveClass match
       case cls if cls == classOf[Boolean] => classOf[java.lang.Boolean]
-      case cls if cls == classOf[Byte] => classOf[java.lang.Byte]
-      case cls if cls == classOf[Char] => classOf[java.lang.Character]
-      case cls if cls == classOf[Short] => classOf[java.lang.Short]
-      case cls if cls == classOf[Int] => classOf[java.lang.Integer]
-      case cls if cls == classOf[Long] => classOf[java.lang.Long]
-      case cls if cls == classOf[Float] => classOf[java.lang.Float]
-      case cls if cls == classOf[Double] => classOf[java.lang.Double]
-      case cls if cls == classOf[Unit] => classOf[java.lang.Void]
+      case cls if cls == classOf[Byte]    => classOf[java.lang.Byte]
+      case cls if cls == classOf[Char]    => classOf[java.lang.Character]
+      case cls if cls == classOf[Short]   => classOf[java.lang.Short]
+      case cls if cls == classOf[Int]     => classOf[java.lang.Integer]
+      case cls if cls == classOf[Long]    => classOf[java.lang.Long]
+      case cls if cls == classOf[Float]   => classOf[java.lang.Float]
+      case cls if cls == classOf[Double]  => classOf[java.lang.Double]
+      case cls if cls == classOf[Unit]    => classOf[java.lang.Void]
       case _ => throw new IllegalArgumentException("not a primitive class " + primitiveClass)
 
 //    if (primitiveClass eq classOf[Boolean]) return classOf[Boolean]
@@ -37,11 +37,13 @@ object GGUFImpl {
   }
 }
 
-final class GGUFImpl ( val version: Int, 
-                       val tensorDataOffset: Long, 
-                       metadata: mutable.Map[String, Any], 
-                       metadataTypes: mutable.Map[String, MetadataValueType], 
-                       tensorInfos: mutable.Map[String, TensorInfo]) extends GGUF {
+final class GGUFImpl(
+    val version: Int,
+    val tensorDataOffset: Long,
+    metadata: mutable.Map[String, Any],
+    metadataTypes: mutable.Map[String, MetadataValueType],
+    tensorInfos: mutable.Map[String, TensorInfo]
+) extends GGUF {
 //  this.metadata = Collections.unmodifiableMap(new mutable.LinkedHashMap[String, AnyRef](metadata))
 //  this.metadataTypes = Collections.unmodifiableMap(new mutable.LinkedHashMap[String, MetadataValueType](metadataTypes))
 //  this.tensorInfos = Collections.unmodifiableMap(new mutable.LinkedHashMap[String, TensorInfo](tensorInfos))
@@ -55,25 +57,26 @@ final class GGUFImpl ( val version: Int,
 
   override def getMetadataKeys = this.metadata.keySet.toSet
 
-  @SuppressWarnings(Array("unchecked")) 
+  @SuppressWarnings(Array("unchecked"))
   override def getValue[T](targetClass: Class[T], key: String): T = {
-    val value = this.metadata.getOrElse(key,null)
+    val value = this.metadata.getOrElse(key, null)
     if (value == null) {
       // value not found
-      return  null.asInstanceOf[T]
+      return null.asInstanceOf[T]
     }
     if (targetClass.isPrimitive) GGUFImpl.toBoxedClass(targetClass).cast(value).asInstanceOf[T]
     else targetClass.cast(value)
   }
 
-  override def getType(key: String): MetadataValueType = this.metadataTypes.getOrElse(key,null)
+  override def getType(key: String): MetadataValueType = this.metadataTypes.getOrElse(key, null)
 
   override def getComponentType(key: String): MetadataValueType = {
     if (!this.metadata.contains(key)) return null
-    this.metadataTypes.getOrElse(key + "[]",null)
+    this.metadataTypes.getOrElse(key + "[]", null)
   }
 
-  override def getTensor(tensorName: String): TensorInfo = this.tensorInfos.getOrElse(tensorName,null)
+  override def getTensor(tensorName: String): TensorInfo =
+    this.tensorInfos.getOrElse(tensorName, null)
 
   override def getTensors: Seq[TensorInfo] = this.tensorInfos.values.toSeq
 }

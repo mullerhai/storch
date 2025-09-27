@@ -30,11 +30,6 @@ object LinearBnReluDropBlock:
       dropout: Float
   ): LinearBnReluDropBlock[ParamType] = new LinearBnReluDropBlock(input_dim, embed_dim, dropout)
 
-
-
-
-
-
 //    val out = linear.forward(input)
 //    val out = bn.forward(out)
 //    val out = relu.forward(out)

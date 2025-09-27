@@ -13,12 +13,15 @@ class FieldAwareFactorizationMachine[ParamType <: FloatNN: Default](
     with TensorModule[ParamType] {
 
   val num_fields = field_dims.length
-  val embeddings = nn.ModuleList[ParamType]() // field_dims.map(i => register(nn.Embedding(i, embed_dim))))
+  val embeddings =
+    nn.ModuleList[ParamType]() // field_dims.map(i => register(nn.Embedding(i, embed_dim))))
   val offsets = field_dims.scanLeft(0L)((ep, et) => ep + et).dropRight(1).map(_.toLong).toArray
   val embModule = nn.FMEmbedding(field_dims.sum.toInt, embed_dim.toInt)
-  //todo modulelist append has bigs bug
+  // todo modulelist append has bigs bug
 //  Range(1, this.num_fields).foreach(i => embeddings.append(register(embModule)))
-  Range(1, this.num_fields).foreach(i => embeddings.insert(i,register(embModule,"embeddings[" + i + "]")))
+  Range(1, this.num_fields).foreach(i =>
+    embeddings.insert(i, register(embModule, "embeddings[" + i + "]"))
+  )
 
   def init_weight(): Unit = {}
 

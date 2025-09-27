@@ -24,8 +24,9 @@ object WriterImpl {
   }
 }
 
-final class WriterImpl ( val gguf: GGUF) {
-  final private val BB_8: ByteBuffer = ByteBuffer.allocate(java.lang.Long.BYTES).order(ByteOrder.nativeOrder)
+final class WriterImpl(val gguf: GGUF) {
+  final private val BB_8: ByteBuffer =
+    ByteBuffer.allocate(java.lang.Long.BYTES).order(ByteOrder.nativeOrder)
   private var totalBytesWritten = 0L
 
   @throws[IOException]
@@ -41,7 +42,10 @@ final class WriterImpl ( val gguf: GGUF) {
 
   @throws[IOException]
   private def writeLong(byteChannel: WritableByteChannel, value: Long): Unit = {
-    writeFully(byteChannel, BB_8.clear.asInstanceOf[ByteBuffer].putLong(value).flip.asInstanceOf[ByteBuffer])
+    writeFully(
+      byteChannel,
+      BB_8.clear.asInstanceOf[ByteBuffer].putLong(value).flip.asInstanceOf[ByteBuffer]
+    )
   }
 
   @throws[IOException]
@@ -51,7 +55,10 @@ final class WriterImpl ( val gguf: GGUF) {
 
   @throws[IOException]
   private def writeInt(byteChannel: WritableByteChannel, value: Int): Unit = {
-    writeFully(byteChannel, BB_8.clear.asInstanceOf[ByteBuffer].putInt(value).flip.asInstanceOf[ByteBuffer])
+    writeFully(
+      byteChannel,
+      BB_8.clear.asInstanceOf[ByteBuffer].putInt(value).flip.asInstanceOf[ByteBuffer]
+    )
   }
 
   @throws[IOException]
@@ -61,18 +68,27 @@ final class WriterImpl ( val gguf: GGUF) {
 
   @throws[IOException]
   private def writeByte(byteChannel: WritableByteChannel, value: Byte): Unit = {
-    writeFully(byteChannel, BB_8.clear.asInstanceOf[ByteBuffer].put(value).flip.asInstanceOf[ByteBuffer])
+    writeFully(
+      byteChannel,
+      BB_8.clear.asInstanceOf[ByteBuffer].put(value).flip.asInstanceOf[ByteBuffer]
+    )
   }
 
   @throws[IOException]
   private def writeBoolean(byteChannel: WritableByteChannel, value: Boolean): Unit = {
-    writeByte(byteChannel, if (value) 1.toByte
-    else 0.toByte)
+    writeByte(
+      byteChannel,
+      if (value) 1.toByte
+      else 0.toByte
+    )
   }
 
   @throws[IOException]
   private def writeShort(byteChannel: WritableByteChannel, value: Short): Unit = {
-    writeFully(byteChannel, BB_8.clear.asInstanceOf[ByteBuffer].putShort(value).flip.asInstanceOf[ByteBuffer])
+    writeFully(
+      byteChannel,
+      BB_8.clear.asInstanceOf[ByteBuffer].putShort(value).flip.asInstanceOf[ByteBuffer]
+    )
   }
 
   @throws[IOException]
@@ -165,7 +181,11 @@ final class WriterImpl ( val gguf: GGUF) {
       // - It must be at most 2^16-1/65535 bytes long.
       // Any keys that do not follow these rules are invalid.
       assert(key.length < (1 << 16))
-      assert(key.codePoints.allMatch((cp: Int) => ('a' <= cp && cp <= 'z') || ('0' <= cp && cp <= '9') || cp == '_' || cp == '.'))
+      assert(
+        key.codePoints.allMatch((cp: Int) =>
+          ('a' <= cp && cp <= 'z') || ('0' <= cp && cp <= '9') || cp == '_' || cp == '.'
+        )
+      )
       writeString(byteChannel, key)
       val value = gguf.getValue(classOf[AnyRef], key)
       assert(value != null)
@@ -174,20 +194,23 @@ final class WriterImpl ( val gguf: GGUF) {
       if (valueType eq MetadataValueType.ARRAY) {
         val componentType = gguf.getComponentType(key)
         writeTypedArrayOf(byteChannel, componentType, value)
-      }
-      else writeTypedValue(byteChannel, valueType, value)
+      } else writeTypedValue(byteChannel, valueType, value)
     }
   }
 
   @throws[IOException]
-  private def writeTypedArrayOf(byteChannel: WritableByteChannel, componentType: MetadataValueType, value: AnyRef): Unit = {
+  private def writeTypedArrayOf(
+      byteChannel: WritableByteChannel,
+      componentType: MetadataValueType,
+      value: AnyRef
+  ): Unit = {
     val arrayLength = JArray.getLength(value)
     writeValueType(byteChannel, MetadataValueType.ARRAY)
     writeValueType(byteChannel, componentType)
     writeLong(byteChannel, arrayLength)
     componentType match {
 //      case UINT8 => // fall-through
-      case INT8 | UINT8=>
+      case INT8 | UINT8 =>
         writeBytes(byteChannel, value.asInstanceOf[Array[Byte]])
 //      case UINT16 => // fall-through
       case INT16 | UINT16 =>
@@ -227,8 +250,13 @@ final class WriterImpl ( val gguf: GGUF) {
   }
 
   @throws[IOException]
-  private def writeTypedValue(byteChannel: WritableByteChannel, valueType: MetadataValueType, value: AnyRef): Unit = {
-    if (valueType eq MetadataValueType.ARRAY) throw new IllegalArgumentException("use writeArrayOf instead")
+  private def writeTypedValue(
+      byteChannel: WritableByteChannel,
+      valueType: MetadataValueType,
+      value: AnyRef
+  ): Unit = {
+    if (valueType eq MetadataValueType.ARRAY)
+      throw new IllegalArgumentException("use writeArrayOf instead")
     writeValueType(byteChannel, valueType)
     valueType match {
 //      case UINT8 => // fall-through
@@ -238,7 +266,7 @@ final class WriterImpl ( val gguf: GGUF) {
       case INT16 | UINT16 =>
         writeShort(byteChannel, value.asInstanceOf[Short])
 //      case UINT32 => // fall-through
-      case INT32 | UINT32  =>
+      case INT32 | UINT32 =>
         writeInt(byteChannel, value.asInstanceOf[Int])
       case FLOAT32 =>
         writeFloat(byteChannel, value.asInstanceOf[Float])
@@ -258,7 +286,10 @@ final class WriterImpl ( val gguf: GGUF) {
 
   @SuppressWarnings(Array("EnumOrdinal"))
   @throws[IOException]
-  private def writeValueType(byteChannel: WritableByteChannel, valueType: MetadataValueType): Unit = {
+  private def writeValueType(
+      byteChannel: WritableByteChannel,
+      valueType: MetadataValueType
+  ): Unit = {
     writeInt(byteChannel, valueType.ordinal)
   }
 }

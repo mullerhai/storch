@@ -13,11 +13,12 @@ class MultiLayerPerceptron[ParamType <: FloatNN: Default](
 
   // todo  runtime  layers size is empty  is bug please fixup
   val layers = nn.ModuleList[ParamType]()
-  //todo RuntimeException: Submodule 'MultiLayerPerceptron' already defined asued by ModuleList append has bigs bug
+  // todo RuntimeException: Submodule 'MultiLayerPerceptron' already defined asued by ModuleList append has bigs bug
 
   embed_dims.zipWithIndex.foreach {
     case (embed_dim, index) => {
-      val block = register(LinearBnReluDropBlock(input_dim, embed_dim, dropout),s"block_${index+1}")
+      val block =
+        register(LinearBnReluDropBlock(input_dim, embed_dim, dropout), s"block_${index + 1}")
 //      val block = LinearBnReluDropBlock(input_dim, embed_dim, dropout) //,s"block_${index+1}")
       layers.append(block)
 //      layers.insert(index,register(LinearBnReluDropBlock(input_dim, embed_dim, dropout),s"block_${index+1}"))
@@ -25,7 +26,7 @@ class MultiLayerPerceptron[ParamType <: FloatNN: Default](
   }
   if (output_layer) {
 //    var output_linear = register(nn.Linear(input_dim, 1))
-    layers.insert(embed_dims.length,register(nn.Linear(input_dim, 1)))
+    layers.insert(embed_dims.length, register(nn.Linear(input_dim, 1)))
   }
 
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = {
@@ -44,29 +45,11 @@ object MultiLayerPerceptron:
       output_layer: Boolean = true
   ): MultiLayerPerceptron[ParamType] =
     new MultiLayerPerceptron(input_dim, embed_dims, dropout, output_layer)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 //val mlp = nn.Sequential[ParamType]()
 
 //    val moduleDict = nn.ModuleDict[ParamType]()
 //          moduleDict.insert("block"+index, block)
-
-
-
 
 //  register(LinearBnReluDropBlock(input_dim, 10, dropout), s"block_${1}")
 //  register(LinearBnReluDropBlock(input_dim, 10, dropout), s"block_${2}")

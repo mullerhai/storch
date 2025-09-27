@@ -157,7 +157,7 @@ class ExampleDataLoader[ParamType <: DType: Default](
   override def iterator: Iterator[Example] = {
 
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -166,30 +166,13 @@ class ExampleDataLoader[ParamType <: DType: Default](
   lazy val iteratorSeq: Seq[Example] = {
 
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }
   }
-  
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //override def iterator: Iterator[Example] = new Iterator[Example] {
 //

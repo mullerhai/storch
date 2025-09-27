@@ -9,14 +9,13 @@ import ai.djl.ndarray.types.Shape
 import ai.djl.nn.Parameter
 import torch.utils.safetensors.instance.SafeTensors
 
-
 class DJLSafeTensorsLoader extends ISafeTensorsLoader[Model] {
   override def load(tensorsDef: SafeTensors, model: Model): Unit = {
     val parameterList = model.getBlock.getParameters
     try {
       val fis = new FileInputStream(new File(tensorsDef.filename))
-      //val buffer = new Array[Byte](fis.available())
-      //fis.read(buffer)
+      // val buffer = new Array[Byte](fis.available())
+      // fis.read(buffer)
       try {
         // Replace readNBytes with reading into a buffer for compatibility with older Java versions
         val headerSize = (8 + tensorsDef.sizeOfHeader).toInt
@@ -37,7 +36,7 @@ class DJLSafeTensorsLoader extends ISafeTensorsLoader[Model] {
           val paramTensor = nm.create(
             ByteBuffer.wrap(rawParams),
             new Shape(element.shape*),
-            DataType.fromSafetensors(element.dataType.toString),
+            DataType.fromSafetensors(element.dataType.toString)
           )
           val param = Parameter.builder.optArray(paramTensor).build
           parameterList.add(element.name, param)
@@ -47,25 +46,6 @@ class DJLSafeTensorsLoader extends ISafeTensorsLoader[Model] {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //import ai.djl.ndarray.NDArray
 //import ai.djl.nn.ParameterList

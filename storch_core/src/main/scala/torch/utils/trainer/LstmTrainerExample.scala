@@ -5,7 +5,13 @@ package trainer
 import org.bytedeco.pytorch
 import org.bytedeco.javacpp.{FloatPointer, PointerScope}
 import org.bytedeco.pytorch.{Example, InputArchive, OutputArchive, TensorExampleVectorIterator}
-import org.bytedeco.pytorch.{ChunkDatasetOptions, Example, ExampleIterator, ExampleStack, ExampleVector}
+import org.bytedeco.pytorch.{
+  ChunkDatasetOptions,
+  Example,
+  ExampleIterator,
+  ExampleStack,
+  ExampleVector
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import java.net.URL
 import java.util.zip.GZIPInputStream
@@ -33,7 +39,6 @@ import torch.numpy.matrix.NDArray
 import TorchNumpy.loadNDArrayFromCSV
 import torch.pandas.DataFrame
 
-
 object LstmTrainerExample {
   def main(args: Array[String]): Unit = {
     // defined model parameters
@@ -48,7 +53,7 @@ object LstmTrainerExample {
     val modelPahth = "./data/lstm-net.pt"
     val dataPath = Paths.get("./data//FashionMNIST")
     val device = if torch.cuda.isAvailable then CUDA else CPU
-    
+
     val optimizer_type: String = "adamW"
     val mnistTrain = FashionMNIST(dataPath, train = true, download = true)
     val mnistEval = FashionMNIST(dataPath, train = false)
@@ -57,7 +62,7 @@ object LstmTrainerExample {
     val criterion = torch.nn.loss.CrossEntropyLoss()
     val model = new LstmNet[Float32](inputSize, hiddenSize, numLayers, numClasses).to(device)
     val optimizer = Adam(model.parameters, lr = learningRate, amsgrad = true)
-    
+
     val trainLoader = new DataLoader(
       dataset = mnistTrain,
       batch_size = batchSize,
@@ -74,7 +79,8 @@ object LstmTrainerExample {
       batch_sampler = batchSampler,
       timeout = timeout
     )
-    val trainer = new NormalTrainer(model, trainLoader, evalLoader, criterion, optimizer_type, device)
+    val trainer =
+      new NormalTrainer(model, trainLoader, evalLoader, criterion, optimizer_type, device)
     trainer.train(numEpochs, learningRate, batchSize, feature_reshape = Seq(-1, 28, 28))
   }
 }

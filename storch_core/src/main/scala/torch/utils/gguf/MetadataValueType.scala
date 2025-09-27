@@ -1,20 +1,20 @@
 package torch.utils.gguf
 
-/**
- * Represents the different types of metadata values that can be stored in a GGUF file.
- * Each type has an associated byte size, which can be either positive for fixed-size types
- * or negative to indicate variable-length types with a length prefix.
- */
+/** Represents the different types of metadata values that can be stored in a GGUF file. Each type
+  * has an associated byte size, which can be either positive for fixed-size types or negative to
+  * indicate variable-length types with a length prefix.
+  */
 
 enum MetadataValueType:
-  case UINT8, INT8, UINT16, INT16, UINT32, INT32, FLOAT32, BOOL, STRING, ARRAY, UINT64, INT64, FLOAT64
-  
+  case UINT8, INT8, UINT16, INT16, UINT32, INT32, FLOAT32, BOOL, STRING, ARRAY, UINT64, INT64,
+    FLOAT64
+
   def byteSize(): Int = this match
-    case UINT8 | INT8 | BOOL => 1
-    case UINT16 | INT16 => 2
+    case UINT8 | INT8 | BOOL      => 1
+    case UINT16 | INT16           => 2
     case UINT32 | INT32 | FLOAT32 => 4
     case UINT64 | INT64 | FLOAT64 => 8
-    case STRING | ARRAY => -8
+    case STRING | ARRAY           => -8
 
 //enum MetadataValueType:
 //  case UINT8, INT8, UINT16, INT16, UINT32, INT32, FLOAT32, BOOL, STRING, ARRAY, UINT64, INT64, FLOAT64
@@ -22,26 +22,26 @@ enum MetadataValueType:
 object MetadataValueType:
 
   def fromIndex(index: Int): MetadataValueType = index match {
-    case 0 => UINT8
-    case 1 => INT8
-    case 2 => UINT16
-    case 3 => INT16
-    case 4 => UINT32
-    case 5 => INT32
-    case 6 => FLOAT32
-    case 7 => BOOL
-    case 8 => STRING
-    case 9 => ARRAY
+    case 0  => UINT8
+    case 1  => INT8
+    case 2  => UINT16
+    case 3  => INT16
+    case 4  => UINT32
+    case 5  => INT32
+    case 6  => FLOAT32
+    case 7  => BOOL
+    case 8  => STRING
+    case 9  => ARRAY
     case 10 => UINT64
     case 11 => INT64
     case 12 => FLOAT64
-    case _ => throw new ArrayIndexOutOfBoundsException("Invalid index for MetadataValueType")
+    case _  => throw new ArrayIndexOutOfBoundsException("Invalid index for MetadataValueType")
   }
 
   def byteSize: Int = byteSize
-  /**
-   * The value is a 8-bit unsigned integer.
-   */
+
+  /** The value is a 8-bit unsigned integer.
+    */
 //  case INT8
 //  case UINT16
 //  case INT16
@@ -54,7 +54,6 @@ object MetadataValueType:
 //  case UINT64
 //  case INT64
 //  case FLOAT64
-  
 
 //object MetadataValueType extends Enumeration {
 //  type MetadataValueType = Value
@@ -150,20 +149,20 @@ object MetadataValueType:
 //   */
 //  private val VALUES = values
 
-  /**
-   * Returns the MetadataValueType corresponding to the specified index.
-   * This method is more efficient than valueOf() as it uses a cached array of values.
-   *
-   * @param index the index of the desired MetadataValueType
-   * @return the MetadataValueType at the specified index
-   * @throws ArrayIndexOutOfBoundsException if the index is out of range
-   */
+/** Returns the MetadataValueType corresponding to the specified index. This method is more
+  * efficient than valueOf() as it uses a cached array of values.
+  *
+  * @param index
+  *   the index of the desired MetadataValueType
+  * @return
+  *   the MetadataValueType at the specified index
+  * @throws ArrayIndexOutOfBoundsException
+  *   if the index is out of range
+  */
 
-
-  /**
-   * Returns the byte size of this value type.
-   *
-   * @return for fixed-size types, returns the positive size in bytes;
-   *         for variable-length types, returns the negative size of their length prefix
-   */
-
+/** Returns the byte size of this value type.
+  *
+  * @return
+  *   for fixed-size types, returns the positive size in bytes; for variable-length types, returns
+  *   the negative size of their length prefix
+  */

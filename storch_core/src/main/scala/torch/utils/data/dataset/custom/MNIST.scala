@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package torch
-package utils
-package data
-package dataset
-package custom
+package torch.utils.data.dataset.custom
 
 import org.bytedeco.pytorch
 import torch.*
 import torch.Tensor.fromNative
-import torch.utils.data.{NormalTensorDataset}
+import torch.utils.data.NormalTensorDataset
 //import torch.utils.data.dataset.MNISTBase
 
 import java.net.URL

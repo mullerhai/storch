@@ -14,12 +14,12 @@ import torch.nn.modules.container.Sequential
 
 import scala.collection.mutable.ListBuffer
 
-class LiquidNetWork[ParamType <: FloatNN : Default](
-                                                     inputSize: Int,
-                                                     hiddenSize: Int,
-                                                     numLayers: Int
-                                                                   ) extends HasParams[ParamType]
-  with TensorModule[ParamType] {
+class LiquidNetWork[ParamType <: FloatNN: Default](
+    inputSize: Int,
+    hiddenSize: Int,
+    numLayers: Int
+) extends HasParams[ParamType]
+    with TensorModule[ParamType] {
 // 定义 LNN 类
 //class LNNetwork[](inputSize: Long, hiddenSize: Long, numLayers: Int) extends Module {
   private val hiddenSizeVal = hiddenSize
@@ -28,14 +28,14 @@ class LiquidNetWork[ParamType <: FloatNN : Default](
 
   for (_ <- 0 until numLayers) {
     layers += createLayer(inputSize, hiddenSize)
-    registerModule(layers.last,s"layer_${layers.size - 1}")
+    registerModule(layers.last, s"layer_${layers.size - 1}")
   }
 
   private def createLayer(inputSize: Int, hiddenSize: Int): Sequential[ParamType] = {
     val seq = Sequential(
-      nn.Linear(inputSize,hiddenSize),
+      nn.Linear(inputSize, hiddenSize),
       nn.LeakyReLU(),
-      nn.Linear(hiddenSize,hiddenSize)
+      nn.Linear(hiddenSize, hiddenSize)
     )
     seq
   }
@@ -48,8 +48,9 @@ class LiquidNetWork[ParamType <: FloatNN : Default](
 }
 
 // 定义 ODESolver 类
-class ODESolver[ParamType <: FloatNN : Default](model: LiquidNetWork[ParamType], dt: Float) extends HasParams[ParamType]
-  with TensorModule[ParamType] {
+class ODESolver[ParamType <: FloatNN: Default](model: LiquidNetWork[ParamType], dt: Float)
+    extends HasParams[ParamType]
+    with TensorModule[ParamType] {
   private val modelVal = model
   private val dtVal = dt
 
@@ -79,7 +80,13 @@ class ODESolver[ParamType <: FloatNN : Default](model: LiquidNetWork[ParamType],
     }
   }
 
-  def train(model: ODESolver[ParamType], dataset: Seq[(Tensor[ParamType], Tensor[ParamType])], optimizer: Optimizer, epochs: Int, batchSize: Int): Unit = {
+  def train(
+      model: ODESolver[ParamType],
+      dataset: Seq[(Tensor[ParamType], Tensor[ParamType])],
+      optimizer: Optimizer,
+      epochs: Int,
+      batchSize: Int
+  ): Unit = {
     model.train()
     var totalLoss = 0.0
     for (epoch <- 0 until epochs) {

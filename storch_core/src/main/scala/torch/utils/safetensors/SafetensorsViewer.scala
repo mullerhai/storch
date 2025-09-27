@@ -1,8 +1,12 @@
 package torch.utils.safetensors
 
 import java.io.{
-  BufferedInputStream, DataInputStream, File,
-  FileNotFoundException, FileInputStream, IOException
+  BufferedInputStream,
+  DataInputStream,
+  File,
+  FileNotFoundException,
+  FileInputStream,
+  IOException
 }
 import java.nio.{ByteBuffer, ByteOrder, FloatBuffer, LongBuffer}
 import java.nio.charset.StandardCharsets
@@ -24,8 +28,9 @@ object SafetensorsViewer {
       val shape = new ListBuffer[Int]
       val jsonNodeShape = jsonNode.get("shape")
       assert(jsonNodeShape.isArray)
-      for (i <- 0 until jsonNodeShape.size) shape
-        .append(jsonNodeShape.get(i).asInt)
+      for (i <- 0 until jsonNodeShape.size)
+        shape
+          .append(jsonNodeShape.get(i).asInt)
       assert(jsonNode.has("data_offsets"))
       val jsonNodeDataOffsets = jsonNode.get("data_offsets")
       assert(jsonNodeDataOffsets.isArray)
@@ -41,7 +46,7 @@ object SafetensorsViewer {
   class HeaderValue(
       val dtype: String,
       val shape: Seq[Int],
-      val dataOffsets: (Int, Int),
+      val dataOffsets: (Int, Int)
   ) {
     def getDtype: String = dtype
 
@@ -67,8 +72,10 @@ object SafetensorsViewer {
     val littleEndianBytesHeaderSize = new Array[Byte](8)
     var read = dataInputStream.read(littleEndianBytesHeaderSize)
     assert(8 == read)
-    headerSize = ByteBuffer.wrap(littleEndianBytesHeaderSize)
-      .order(ByteOrder.LITTLE_ENDIAN).getLong
+    headerSize = ByteBuffer
+      .wrap(littleEndianBytesHeaderSize)
+      .order(ByteOrder.LITTLE_ENDIAN)
+      .getLong
 
     var stringHeader: String = null
     assert(headerSize <= Integer.MAX_VALUE)
@@ -111,7 +118,7 @@ object SafetensorsViewer {
 
 class SafetensorsViewer(
     val header: mutable.HashMap[String, SafetensorsViewer.HeaderValue],
-    val byteBuffer: ByteBuffer,
+    val byteBuffer: ByteBuffer
 ) {
   private def checkContains(tensorName: String): Unit = {
     if (header.contains(tensorName)) return
@@ -125,7 +132,8 @@ class SafetensorsViewer(
     val headerValue = header.get(tensorName).get
     val begin = headerValue.dataOffsets._1
     val end = headerValue.getDataOffsets._2
-    ByteBuffer.wrap(byteBuffer.array, begin, end - begin)
+    ByteBuffer
+      .wrap(byteBuffer.array, begin, end - begin)
       .order(ByteOrder.LITTLE_ENDIAN)
   }
 
@@ -134,7 +142,7 @@ class SafetensorsViewer(
     if (header.get(tensorName).get.getDtype == "I64")
       return getByteBuffer(tensorName).asLongBuffer
     throw new IllegalArgumentException(
-      "Unsupported dtype: " + header.get(tensorName).get.getDtype,
+      "Unsupported dtype: " + header.get(tensorName).get.getDtype
     )
   }
 
@@ -143,7 +151,7 @@ class SafetensorsViewer(
     if (header.get(tensorName).get.getDtype == "F32")
       return getByteBuffer(tensorName).asFloatBuffer
     throw new IllegalArgumentException(
-      "Unsupported dtype: " + header.get(tensorName).get.getDtype,
+      "Unsupported dtype: " + header.get(tensorName).get.getDtype
     )
   }
 }

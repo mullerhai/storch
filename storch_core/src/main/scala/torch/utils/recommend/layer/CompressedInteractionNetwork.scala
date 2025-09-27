@@ -15,12 +15,12 @@ class CompressedInteractionNetwork[ParamType <: FloatNN: Default](
 
   val num_layers = cross_layer_sizes.length
   val splitHalf = split_half
-  var prev_dim: Int = 1//0 //todo  why 0 or 1
+  var prev_dim: Int = 1 // 0 //todo  why 0 or 1
   var fc_input_dim: Long = 0
   val conv_layers = nn.ModuleList[ParamType]()
   for (i <- 0 until num_layers) {
     var cross_layer_size = cross_layer_sizes(i)
-    //todo moduleList append has bigs bug
+    // todo moduleList append has bigs bug
     conv_layers.insert(
       i,
       nn.Conv1d(
@@ -76,8 +76,6 @@ object CompressedInteractionNetwork:
       split_half: Boolean = true
   ): CompressedInteractionNetwork[ParamType] =
     new CompressedInteractionNetwork(input_dim, cross_layer_sizes, split_half)
-
-
 
 //    conv_layers.append(
 //      nn.Conv1d(

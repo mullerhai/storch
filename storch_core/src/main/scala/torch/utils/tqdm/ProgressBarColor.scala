@@ -26,32 +26,32 @@ object ProgressBarColor {
   def getColorUnicode(color: ProgressBarColor) = colorCodeMap.getOrElse(color, "\u001B[32m")
 
   def getSystemColor(color: ProgressBarColor) = color match
-    case ProgressBarColor.Pink => Color.PINK
-    case ProgressBarColor.Green => Color.GREEN
+    case ProgressBarColor.Pink   => Color.PINK
+    case ProgressBarColor.Green  => Color.GREEN
     case ProgressBarColor.Purple => new Color(128, 0, 128)
-    case ProgressBarColor.Blue => Color.BLUE
+    case ProgressBarColor.Blue   => Color.BLUE
     case ProgressBarColor.Yellow => Color.YELLOW
-    case ProgressBarColor.Cyan => Color.CYAN
-    case ProgressBarColor.White => Color.WHITE
-    case ProgressBarColor.Red => Color.RED
+    case ProgressBarColor.Cyan   => Color.CYAN
+    case ProgressBarColor.White  => Color.WHITE
+    case ProgressBarColor.Red    => Color.RED
     case ProgressBarColor.Orange => new Color(255, 165, 0)
-    case ProgressBarColor.Gray => Color.GRAY
-    case ProgressBarColor.Black => Color.BLACK
-    case _ => Color.BLUE
+    case ProgressBarColor.Gray   => Color.GRAY
+    case ProgressBarColor.Black  => Color.BLACK
+    case _                       => Color.BLUE
 
   def apply(color: String): ProgressBarColor = {
     color match {
-      case "pink" => ProgressBarColor.Pink
-      case "green" => ProgressBarColor.Green
+      case "pink"   => ProgressBarColor.Pink
+      case "green"  => ProgressBarColor.Green
       case "purple" => ProgressBarColor.Purple
-      case "blue" => ProgressBarColor.Blue
+      case "blue"   => ProgressBarColor.Blue
       case "yellow" => ProgressBarColor.Yellow
-      case "cyan" => ProgressBarColor.Cyan
-      case "white" => ProgressBarColor.White
-      case "red" => ProgressBarColor.Red
+      case "cyan"   => ProgressBarColor.Cyan
+      case "white"  => ProgressBarColor.White
+      case "red"    => ProgressBarColor.Red
       case "orange" => ProgressBarColor.Orange
-      case "gray" => ProgressBarColor.Gray
-      case "black" => ProgressBarColor.Black
+      case "gray"   => ProgressBarColor.Gray
+      case "black"  => ProgressBarColor.Black
     }
   }
 }

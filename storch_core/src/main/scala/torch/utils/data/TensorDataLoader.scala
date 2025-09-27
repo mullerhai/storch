@@ -104,8 +104,6 @@ class TensorDataLoader[ParamType <: DType: Default](
     }
   }
 
-
-
   private def createChunkSharedTensorBatchDataset(
       chunkTensorDataset: ChunkTensorDataset
   ): ChunkMapTensorDataset = {
@@ -139,7 +137,7 @@ class TensorDataLoader[ParamType <: DType: Default](
     createChunkRandomTensorDataLoader(chunkSharedTensorBatchDataset, options)
 
   private val iteratorBuffer = new ListBuffer[Tensor[ParamType]]()
-  
+
   def getIteratorBuffer: mutable.Buffer[Tensor[ParamType]] = {
     if (iteratorBuffer.length == 0) {
       val nativeDataLoader: ChunkRandomTensorDataLoader =
@@ -150,7 +148,7 @@ class TensorDataLoader[ParamType <: DType: Default](
         val example = current.access
         val feature =
           torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-        iteratorBuffer.append(feature.reshape(feature.shape *))
+        iteratorBuffer.append(feature.reshape(feature.shape*))
         current = current.increment()
       }
     }
@@ -158,37 +156,25 @@ class TensorDataLoader[ParamType <: DType: Default](
     iteratorBuffer
   }
 
-
   override def iterator: Iterator[Tensor[ParamType]] = {
 
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
   }
 
   lazy val iteratorSeq: Seq[Tensor[ParamType]] = {
-    
+
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 //    val prefetch_count = 1
 //    new ChunkTensorDataset(

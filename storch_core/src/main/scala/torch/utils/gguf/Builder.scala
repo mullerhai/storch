@@ -88,8 +88,8 @@ trait Builder {
     */
   def containsKey(key: String): Boolean
 
-  /** Gets a metadata value associated with the given key, casting it to the specified target
-    * class, or null if the key is not found.
+  /** Gets a metadata value associated with the given key, casting it to the specified target class,
+    * or null if the key is not found.
     *
     * @see
     *   GGUF#getValue(Class, String)
@@ -170,8 +170,7 @@ trait Builder {
     */
   def putByte(key: String, value: Byte): Builder
 
-  /** Sets an unsigned byte for the given metadata key. Value type:
-    * {@link MetadataValueType# UINT8}
+  /** Sets an unsigned byte for the given metadata key. Value type: {@link MetadataValueType# UINT8}
     *
     * @param key
     *   the key to associate the value with
@@ -193,8 +192,8 @@ trait Builder {
     */
   def putShort(key: String, value: Short): Builder
 
-  /** Sets an unsigned short for the given metadata key. Value type:
-    * {@link MetadataValueType# UINT16}
+  /** Sets an unsigned short for the given metadata key. Value type: {@link MetadataValueType#
+    * UINT16}
     *
     * @param key
     *   the key to associate the value with
@@ -216,8 +215,8 @@ trait Builder {
     */
   def putInteger(key: String, value: Int): Builder
 
-  /** Sets an unsigned integer for the given metadata key. Value type:
-    * {@link MetadataValueType# UINT32}
+  /** Sets an unsigned integer for the given metadata key. Value type: {@link MetadataValueType#
+    * UINT32}
     *
     * @param key
     *   the key to associate the value with
@@ -239,8 +238,8 @@ trait Builder {
     */
   def putLong(key: String, value: Long): Builder
 
-  /** Sets an unsigned long for the given metadata key. Value type:
-    * {@link MetadataValueType# UINT64}
+  /** Sets an unsigned long for the given metadata key. Value type: {@link MetadataValueType#
+    * UINT64}
     *
     * @param key
     *   the key to associate the value with
@@ -273,8 +272,8 @@ trait Builder {
     */
   def putDouble(key: String, value: Double): Builder
 
-  /** Sets a boolean array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# BOOL}
+  /** Sets a boolean array for the given metadata key. Value type: {@link MetadataValueType# ARRAY}
+    * Component type: {@link MetadataValueType# BOOL}
     *
     * @param key
     *   the key to associate the array with
@@ -309,8 +308,8 @@ trait Builder {
     */
   def putArrayOfByte(key: String, value: Array[Byte]): Builder
 
-  /** Sets an unsigned byte array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# UINT8}
+  /** Sets an unsigned byte array for the given metadata key. Value type: {@link MetadataValueType#
+    * ARRAY} Component type: {@link MetadataValueType# UINT8}
     *
     * @param key
     *   the key to associate the array with
@@ -333,8 +332,8 @@ trait Builder {
     */
   def putArrayOfShort(key: String, value: Array[Short]): Builder
 
-  /** Sets an unsigned short array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# UINT16}
+  /** Sets an unsigned short array for the given metadata key. Value type: {@link MetadataValueType#
+    * ARRAY} Component type: {@link MetadataValueType# UINT16}
     *
     * @param key
     *   the key to associate the array with
@@ -345,8 +344,8 @@ trait Builder {
     */
   def putArrayOfUnsignedShort(key: String, value: Array[Short]): Builder
 
-  /** Sets an integer array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# INT32}
+  /** Sets an integer array for the given metadata key. Value type: {@link MetadataValueType# ARRAY}
+    * Component type: {@link MetadataValueType# INT32}
     *
     * @param key
     *   the key to associate the array with
@@ -357,8 +356,8 @@ trait Builder {
     */
   def putArrayOfInteger(key: String, value: Array[Int]): Builder
 
-  /** Sets an unsigned integer array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# UINT32}
+  /** Sets an unsigned integer array for the given metadata key. Value type: {@link
+    * MetadataValueType# ARRAY} Component type: {@link MetadataValueType# UINT32}
     *
     * @param key
     *   the key to associate the array with
@@ -381,8 +380,8 @@ trait Builder {
     */
   def putArrayOfLong(key: String, value: Array[Long]): Builder
 
-  /** Sets an unsigned long array for the given metadata key. Value type:
-    * {@link MetadataValueType# ARRAY} Component type: {@link MetadataValueType# UINT64}
+  /** Sets an unsigned long array for the given metadata key. Value type: {@link MetadataValueType#
+    * ARRAY} Component type: {@link MetadataValueType# UINT64}
     *
     * @param key
     *   the key to associate the array with

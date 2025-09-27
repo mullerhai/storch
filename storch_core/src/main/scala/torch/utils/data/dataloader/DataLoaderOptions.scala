@@ -45,7 +45,7 @@ case class TorchDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
- //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
+    //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     loaderOpts
   }
@@ -57,7 +57,7 @@ case class TorchDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
- //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
+    //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }
@@ -99,7 +99,7 @@ case class TorchTensorDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
- //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
+    //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer, wait for fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }

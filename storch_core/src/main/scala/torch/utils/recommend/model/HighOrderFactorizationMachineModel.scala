@@ -7,10 +7,10 @@ import torch.utils.recommend.layer as nns
 import torch.utils.recommend.layer.IntOrString
 
 class HighOrderFactorizationMachineModel[ParamType <: FloatNN: Default](
-                                                                         fieldDims: Seq[Int],
-                                                                         embedDim: Int,
+    fieldDims: Seq[Int],
+    embedDim: Int,
     order: Int,
-                                                                         mlpDims: Seq[Int],
+    mlpDims: Seq[Int],
     dropout: Float
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -45,7 +45,6 @@ class HighOrderFactorizationMachineModel[ParamType <: FloatNN: Default](
   }
 }
 
-
 object HighOrderFactorizationMachineModel:
   def apply[ParamType <: FloatNN: Default](
       field_dims: Seq[Int],
@@ -55,9 +54,6 @@ object HighOrderFactorizationMachineModel:
       dropout: Float
   ): HighOrderFactorizationMachineModel[ParamType] =
     new HighOrderFactorizationMachineModel(field_dims, embed_dim, order, mlp_dims, dropout)
-
-
-
 
 //    val out = torch.sigmoid(x.squeeze(1).to(dtype = this.paramType))
 //    out.to(dtype = this.paramType)

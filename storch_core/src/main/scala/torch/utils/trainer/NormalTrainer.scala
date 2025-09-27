@@ -12,9 +12,7 @@ import torch.nn.loss.LossFunc
 import torch.optim.Optimizer
 import torch.utils.data.{Dataset, DataLoader}
 
-/** 
- * Normal model Trainer for LSTM model
- * LSTM模型训练器，继承自Trainable trait 使用AdamW优化器和CrossEntropyLoss损失函数
+/** Normal model Trainer for LSTM model LSTM模型训练器，继承自Trainable trait 使用AdamW优化器和CrossEntropyLoss损失函数
   */
 class NormalTrainer[D <: BFloat16 | FloatNN: Default](
     model: LstmNet[D],
@@ -32,15 +30,14 @@ class NormalTrainer[D <: BFloat16 | FloatNN: Default](
       device
     ) {
 
-  /***
-   * trian model
-   * @param num_epochs
-   * @param learning_rate
-   * @param batch_size
-   * @param eval_interval
-   * @param feature_reshape
-   * @return
-   */
+  /** * trian model
+    * @param num_epochs
+    * @param learning_rate
+    * @param batch_size
+    * @param eval_interval
+    * @param feature_reshape
+    * @return
+    */
   override def train(
       num_epochs: Int,
       learning_rate: Double = 1e-3,
@@ -73,7 +70,9 @@ class NormalTrainer[D <: BFloat16 | FloatNN: Default](
           // move data to target device
           val inputsDevice = inputs.to(device)
           val targetsDevice = targets.to(device)
-          val outputs = model(inputsDevice.reshape(feature_reshape*).to(dtype = implicitly[Default[D]].dtype)) // maybe need reshape inputsDevice.reshape(-1, 28, 28).to(torch.float32)
+          val outputs = model(
+            inputsDevice.reshape(feature_reshape*).to(dtype = implicitly[Default[D]].dtype)
+          ) // maybe need reshape inputsDevice.reshape(-1, 28, 28).to(torch.float32)
           val loss = criterion(outputs, targetsDevice)
           // backpropagation and optimization
           optimizer.zeroGrad()
@@ -102,10 +101,10 @@ class NormalTrainer[D <: BFloat16 | FloatNN: Default](
     model
   }
 
-  /***
-   * evaluate model
-   * @param feature_reshape
-   * @return (evalLoss, accuracy)
+  /** * evaluate model
+    * @param feature_reshape
+    * @return
+    *   (evalLoss, accuracy)
     */
   override def evaluate(feature_reshape: Seq[Int] = Seq(-1, 28, 28)): (Float, Float) = {
     model.eval()
@@ -117,7 +116,9 @@ class NormalTrainer[D <: BFloat16 | FloatNN: Default](
       for ((inputs, targets) <- eval_loader) {
         val inputsDevice = inputs.to(device)
         val targetsDevice = targets.to(device)
-        val outputs = model(inputsDevice.reshape(feature_reshape*).to(dtype = implicitly[Default[D]].dtype))  // maybe need reshape
+        val outputs = model(
+          inputsDevice.reshape(feature_reshape*).to(dtype = implicitly[Default[D]].dtype)
+        ) // maybe need reshape
         val loss = criterion(outputs, targetsDevice)
 //        val rec: Float = loss.item
         totalLoss = totalLoss + loss.item.asInstanceOf[Float]

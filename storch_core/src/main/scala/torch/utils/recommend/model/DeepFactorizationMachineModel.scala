@@ -5,9 +5,9 @@ import torch.nn.modules.{HasParams, TensorModule}
 import torch.utils.recommend.layer as nn
 
 class DeepFactorizationMachineModel[ParamType <: FloatNN: Default](
-                                                                    fieldDims: Seq[Int],
-                                                                    embedDim: Int,
-                                                                    mlpDims: Seq[Int],
+    fieldDims: Seq[Int],
+    embedDim: Int,
+    mlpDims: Seq[Int],
     dropout: Float
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
@@ -38,12 +38,6 @@ object DeepFactorizationMachineModel:
       dropout: Float
   ): DeepFactorizationMachineModel[ParamType] =
     new DeepFactorizationMachineModel(field_dims, embed_dim, mlp_dims, dropout)
-
-
-
-
-
-
 
 //    val out = torch.sigmoid(x.squeeze(1).to(dtype = this.paramType))
 //    out.to(dtype = this.paramType)

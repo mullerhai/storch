@@ -92,7 +92,7 @@ class DistributedSequentialTensorDataLoader(
 
   override def iterator: Iterator[TensorExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -100,7 +100,7 @@ class DistributedSequentialTensorDataLoader(
 
   lazy val iteratorSeq: Seq[TensorExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }

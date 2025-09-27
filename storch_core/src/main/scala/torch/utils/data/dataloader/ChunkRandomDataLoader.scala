@@ -67,7 +67,7 @@ class ChunkRandomDataLoader(
   private val iteratorBuffer = new ListBuffer[Example]()
 
   def getIteratorBuffer: mutable.Buffer[Example] = {
-    
+
     if (iteratorBuffer.length == 0) {
       val nativeDataLoader = new CRDL(dataset, option.toNative)
       var current: ExampleIterator = nativeDataLoader.begin
@@ -83,7 +83,7 @@ class ChunkRandomDataLoader(
 
   override def iterator: Iterator[Example] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -91,7 +91,7 @@ class ChunkRandomDataLoader(
 
   lazy val iteratorSeq: Seq[Example] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }

@@ -10,7 +10,6 @@ import java.nio.{Buffer, ByteBuffer, ByteOrder}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-
 object ReaderImpl {
   private[impl] val GGUF_MAGIC = 0x46554747
   private[impl] val ALIGNMENT_DEFAULT_VALUE = 32 // must be a power of 2
@@ -32,7 +31,7 @@ final class ReaderImpl {
     val tensorCount = readHeader(byteChannel) // gguf_header_t header;
     // Tensor infos, which can be used to locate the tensor data.
     // gguf_tensor_info_t tensor_infos[header.tensor_count];
-    val tensorInfos = new mutable.LinkedHashMap[String, TensorInfo] //(tensorCount)
+    val tensorInfos = new mutable.LinkedHashMap[String, TensorInfo] // (tensorCount)
     for (i <- 0 until tensorCount) {
       val ti = readTensorInfo(byteChannel)
       assert(!tensorInfos.contains(ti.name))
@@ -115,7 +114,10 @@ final class ReaderImpl {
     // check for 0x46554747 and letting the endianness cancel out.
     // Consider being *very* explicit about the byte order here.
     val magic = readInt(byteChannel) //    uint32_t magic;
-    if (magic != ReaderImpl.GGUF_MAGIC) throw new IllegalArgumentException("Invalid header.magic: " + magic + " expected: " + ReaderImpl.GGUF_MAGIC)
+    if (magic != ReaderImpl.GGUF_MAGIC)
+      throw new IllegalArgumentException(
+        "Invalid header.magic: " + magic + " expected: " + ReaderImpl.GGUF_MAGIC
+      )
     // The version of the format implemented.
     // Must be `3` for version described in this spec.
     //
@@ -123,18 +125,23 @@ final class ReaderImpl {
     // Changes that do not affect the structure of the file should instead update the metadata
     // to signify the change.
     this.version = readInt(byteChannel) // uint32_t version;
-    if (!ReaderImpl.SUPPORTED_GGUF_VERSIONS.contains(version)) throw new IllegalArgumentException("Unsupported header.version:" + version + " expected: " + ReaderImpl.SUPPORTED_GGUF_VERSIONS)
+    if (!ReaderImpl.SUPPORTED_GGUF_VERSIONS.contains(version))
+      throw new IllegalArgumentException(
+        "Unsupported header.version:" + version + " expected: " + ReaderImpl.SUPPORTED_GGUF_VERSIONS
+      )
     // The number of tensors in the file.
     // This is explicit, instead of being included in the metadata, to ensure it is always present
     // for loading the tensors.
     val tensorCount = Math.toIntExact(readLong(byteChannel)) // uint64_t tensor_count;
     // The number of metadata key-value pairs.
-    val metadataKeyValueCount = Math.toIntExact(readLong(byteChannel)) // uint64_t metadata_kv_count;
+    val metadataKeyValueCount =
+      Math.toIntExact(readLong(byteChannel)) // uint64_t metadata_kv_count;
 
     // The metadata key-value pairs.
     // gguf_metadata_kv_t metadata_kv[metadata_kv_count];
-    this.metadata = new mutable.LinkedHashMap[String, Any]//(metadataKeyValueCount)
-    this.metadataTypes = new mutable.LinkedHashMap[String, MetadataValueType]//(metadataKeyValueCount)
+    this.metadata = new mutable.LinkedHashMap[String, Any] // (metadataKeyValueCount)
+    this.metadataTypes =
+      new mutable.LinkedHashMap[String, MetadataValueType] // (metadataKeyValueCount)
     for (i <- 0 until metadataKeyValueCount) {
       // The key of the metadata. It is a standard GGUF string, with the following caveats:
       // - It must be a valid ASCII string.
@@ -144,7 +151,11 @@ final class ReaderImpl {
       // Any keys that do not follow these rules are invalid.
       val key = readString(byteChannel) // gguf_string_t key;
       assert(key.length < (1 << 16))
-      assert(key.codePoints.allMatch((cp: Int) => ('a' <= cp && cp <= 'z') || ('0' <= cp && cp <= '9') || cp == '_' || cp == '.'))
+      assert(
+        key.codePoints.allMatch((cp: Int) =>
+          ('a' <= cp && cp <= 'z') || ('0' <= cp && cp <= '9') || cp == '_' || cp == '.'
+        )
+      )
       // The type of the value.
       // Must be one of the `gguf_metadata_value_type` values.
       val valueType = readMetadataValueType(byteChannel) // gguf_metadata_value_type value_type;
@@ -179,7 +190,7 @@ final class ReaderImpl {
         }
         bytes
 //      case UINT16 =>
-      case INT16 | UINT16  =>
+      case INT16 | UINT16 =>
         val shorts = new Array[Short](len)
         for (i <- 0 until len) {
           shorts(i) = readShort(byteChannel)
@@ -231,7 +242,11 @@ final class ReaderImpl {
   }
 
   @throws[IOException]
-  private def readMetadataValueOfType(byteChannel: ReadableByteChannel, key: String, valueType: MetadataValueType) = valueType match {
+  private def readMetadataValueOfType(
+      byteChannel: ReadableByteChannel,
+      key: String,
+      valueType: MetadataValueType
+  ) = valueType match {
 //    case UINT8 => // fall-through
     case INT8 | UINT8 =>
       readByte(byteChannel)
@@ -239,7 +254,7 @@ final class ReaderImpl {
     case INT16 | UINT16 =>
       readShort(byteChannel)
 //    case UINT32 => // fall-through
-    case INT32 | UINT32  =>
+    case INT32 | UINT32 =>
       readInt(byteChannel)
     case FLOAT32 =>
       readFloat(byteChannel)
@@ -274,25 +289,31 @@ final class ReaderImpl {
   }
 
   @throws[IOException]
-  private def readByte(byteChannel: ReadableByteChannel) = readFully(byteChannel, BB_8.clear.limit(1).asInstanceOf[ByteBuffer]).get(0)
+  private def readByte(byteChannel: ReadableByteChannel) =
+    readFully(byteChannel, BB_8.clear.limit(1).asInstanceOf[ByteBuffer]).get(0)
 
   @throws[IOException]
   private def readBoolean(byteChannel: ReadableByteChannel) = readByte(byteChannel) != 0
 
   @throws[IOException]
-  private def readShort(byteChannel: ReadableByteChannel) = readFully(byteChannel, BB_8.clear.limit(2).asInstanceOf[ByteBuffer]).getShort(0)
+  private def readShort(byteChannel: ReadableByteChannel) =
+    readFully(byteChannel, BB_8.clear.limit(2).asInstanceOf[ByteBuffer]).getShort(0)
 
   @throws[IOException]
-  private def readInt(byteChannel: ReadableByteChannel) = readFully(byteChannel, BB_8.clear.limit(4).asInstanceOf[ByteBuffer]).getInt(0)
+  private def readInt(byteChannel: ReadableByteChannel) =
+    readFully(byteChannel, BB_8.clear.limit(4).asInstanceOf[ByteBuffer]).getInt(0)
 
   @throws[IOException]
-  private def readLong(byteChannel: ReadableByteChannel) = readFully(byteChannel, BB_8.clear.limit(8).asInstanceOf[ByteBuffer]).getLong(0)
+  private def readLong(byteChannel: ReadableByteChannel) =
+    readFully(byteChannel, BB_8.clear.limit(8).asInstanceOf[ByteBuffer]).getLong(0)
 
   @throws[IOException]
-  private def readFloat(byteChannel: ReadableByteChannel) = java.lang.Float.intBitsToFloat(readInt(byteChannel))
+  private def readFloat(byteChannel: ReadableByteChannel) =
+    java.lang.Float.intBitsToFloat(readInt(byteChannel))
 
   @throws[IOException]
-  private def readDouble(byteChannel: ReadableByteChannel) = java.lang.Double.longBitsToDouble(readLong(byteChannel))
+  private def readDouble(byteChannel: ReadableByteChannel) =
+    java.lang.Double.longBitsToDouble(readLong(byteChannel))
 
   @throws[IOException]
   private def readMetadataValueType(byteChannel: ReadableByteChannel) = {
@@ -302,8 +323,14 @@ final class ReaderImpl {
 
   private def getAlignment: Int = {
     if (alignment != 0) return alignment
-    assert(!metadataTypes.contains(ReaderImpl.ALIGNMENT_KEY) || (metadataTypes.get(ReaderImpl.ALIGNMENT_KEY) eq MetadataValueType.UINT32))
-    alignment = metadata.getOrElse(ReaderImpl.ALIGNMENT_KEY, ReaderImpl.ALIGNMENT_DEFAULT_VALUE).asInstanceOf[Int]
+    assert(
+      !metadataTypes.contains(ReaderImpl.ALIGNMENT_KEY) || (metadataTypes.get(
+        ReaderImpl.ALIGNMENT_KEY
+      ) eq MetadataValueType.UINT32)
+    )
+    alignment = metadata
+      .getOrElse(ReaderImpl.ALIGNMENT_KEY, ReaderImpl.ALIGNMENT_DEFAULT_VALUE)
+      .asInstanceOf[Int]
     assert(Integer.bitCount(alignment) == 1, "alignment must be a power of two")
     assert(alignment > 0)
     alignment

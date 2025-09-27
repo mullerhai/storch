@@ -44,16 +44,15 @@ class SafeTensorsDecoder(filename: String) {
         safeTensors.sizeOfHeader = headerSize
         val elements = new ListBuffer[SafeTensors.HeaderElement]()
         for (name <- headerJson.asScala.keySet) {
-          breakable{
+          breakable {
             if ("__metadata__" == name) {
               val metadata = headerJson.getJSONObject("__metadata__").asScala
 //                .toJavaObject(classOf[mutable.Map[_, _]])
-              safeTensors.metadata = metadata.map((k,v) =>(k,v.toString))
+              safeTensors.metadata = metadata.map((k, v) => (k, v.toString))
 //              continue // todo: continue is not supported
               break
             }
           }
-
 
           val header = headerJson.getJSONObject(name)
           val dataType = header.getString("dtype")
@@ -63,7 +62,7 @@ class SafeTensorsDecoder(filename: String) {
             name = name,
             dataType = SafeTensors.DataType.valueOf(dataType),
             shape = shape,
-            offsets = offsets,
+            offsets = offsets
           )
           elements.append(element)
         }
@@ -73,20 +72,6 @@ class SafeTensorsDecoder(filename: String) {
       finally if (fis != null) fis.close()
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //import com.alibaba.fastjson2.JSONObject
 //import lombok.NonNull

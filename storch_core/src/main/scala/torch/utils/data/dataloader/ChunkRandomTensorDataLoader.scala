@@ -81,11 +81,9 @@ class ChunkRandomTensorDataLoader(
     iteratorBuffer
   }
 
-
-
   override def iterator: Iterator[TensorExample] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -93,7 +91,7 @@ class ChunkRandomTensorDataLoader(
 
   lazy val iteratorSeq: Seq[TensorExample] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }

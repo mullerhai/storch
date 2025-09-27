@@ -9,7 +9,7 @@ object SafetensorsBuilder {
   class HeaderValue(
       val dtype: String,
       val shape: Seq[Int],
-      val dataOffsets: (Int, Int),
+      val dataOffsets: (Int, Int)
   ) {
     def serialize = {
       val shapeBuilder = new StringBuilder
@@ -34,7 +34,7 @@ object SafetensorsBuilder {
     for (i <- shape) expect *= i
     if (expect == length) return
     throw new IllegalArgumentException(
-      "Shape does not match length: " + shape + "," + length,
+      "Shape does not match length: " + shape + "," + length
     )
   }
 }
@@ -130,9 +130,10 @@ class SafetensorsBuilder {
       val dataOffsets = entry._2.dataOffsets
       val begin = dataOffsets._1
       val end = dataOffsets._2
-      bb = ByteBuffer.wrap(byteBuffer.array, begin, end - begin)
+      bb = ByteBuffer
+        .wrap(byteBuffer.array, begin, end - begin)
         .order(ByteOrder.LITTLE_ENDIAN)
-      val instance = bodies.getOrElse(entry._1,"") //.asInstanceOf[Array[Long]]
+      val instance = bodies.getOrElse(entry._1, "") // .asInstanceOf[Array[Long]]
       println(instance.getClass.getTypeName)
       instance match {
         case arr: Array[Long] =>
@@ -173,8 +174,11 @@ class SafetensorsBuilder {
     val stringHeader = serializeHeader
     val littleEndianBytesHeaderSize = new Array[Byte](java.lang.Long.BYTES)
     val headerSize = stringHeader.getBytes(StandardCharsets.UTF_8).length
-    ByteBuffer.wrap(littleEndianBytesHeaderSize).order(ByteOrder.LITTLE_ENDIAN)
-      .asLongBuffer.put(headerSize)
+    ByteBuffer
+      .wrap(littleEndianBytesHeaderSize)
+      .order(ByteOrder.LITTLE_ENDIAN)
+      .asLongBuffer
+      .put(headerSize)
     dataOutputStream.write(littleEndianBytesHeaderSize)
     dataOutputStream.writeBytes(stringHeader)
     dataOutputStream.write(serializeByteBuffer.array)

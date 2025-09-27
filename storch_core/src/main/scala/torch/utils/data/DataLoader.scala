@@ -171,7 +171,7 @@ class DataLoader[ParamType <: DType: Default](
         val target =
           torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
         iteratorBuffer.append(
-          (feature.reshape(feature.shape *), target.reshape(target.shape *))
+          (feature.reshape(feature.shape*), target.reshape(target.shape*))
         )
         current = current.increment()
       }
@@ -181,9 +181,9 @@ class DataLoader[ParamType <: DType: Default](
 
   override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] = {
 
-    if(iteratorBuffer.length == 0){
-      getIteratorBuffer.iterator  //only once ！ do not running twice
-    }else{
+    if (iteratorBuffer.length == 0) {
+      getIteratorBuffer.iterator // only once ！ do not running twice
+    } else {
       iteratorBuffer.iterator
     }
 
@@ -192,28 +192,13 @@ class DataLoader[ParamType <: DType: Default](
   lazy val iteratorSeq: Seq[(Tensor[ParamType], Tensor[ParamType])] = {
 
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] =
 //    new Iterator[(Tensor[ParamType], Tensor[ParamType])] {

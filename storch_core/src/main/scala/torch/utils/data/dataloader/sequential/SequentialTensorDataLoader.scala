@@ -75,7 +75,7 @@ class SequentialTensorDataLoader(
   override def options(): FullDataLoaderOptions = nativeDataLoader.options()
 
   private val iteratorBuffer = new ListBuffer[TensorExampleVector]()
-  
+
   def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
     if (iteratorBuffer.length == 0) {
       val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
@@ -92,7 +92,7 @@ class SequentialTensorDataLoader(
 
   override def iterator: Iterator[TensorExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.iterator //only once ！ do not running twice
+      getIteratorBuffer.iterator // only once ！ do not running twice
     } else {
       iteratorBuffer.iterator
     }
@@ -100,7 +100,7 @@ class SequentialTensorDataLoader(
 
   lazy val iteratorSeq: Seq[TensorExampleVector] = {
     if (iteratorBuffer.length == 0) {
-      getIteratorBuffer.toSeq //only once ！ do not running twice
+      getIteratorBuffer.toSeq // only once ！ do not running twice
     } else {
       iteratorBuffer.toSeq
     }
