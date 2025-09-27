@@ -3,7 +3,7 @@ package utils
 package data
 package dataloader
 
-import org.bytedeco.javacpp.chrono.Milliseconds
+import org.bytedeco.javacpp.chrono.{Milliseconds, Seconds}
 import org.bytedeco.pytorch.{
   ChunkDataset,
   ChunkDatasetOptions,
@@ -45,6 +45,7 @@ case class TorchDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+ //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     loaderOpts
   }
@@ -56,6 +57,7 @@ case class TorchDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+ //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo javacpp bug ,wait to fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }
@@ -85,6 +87,7 @@ case class TorchTensorDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+//    loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer, wait for fix
     loaderOpts
   }
@@ -96,6 +99,7 @@ case class TorchTensorDataLoaderOptions(
     loaderOpts.enforce_ordering().put(in_order)
     loaderOpts.workers().put(num_workers)
     loaderOpts.max_jobs().put(max_jobs)
+ //   loaderOpts.timeout(new Milliseconds(new Seconds(timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer, wait for fix
     new org.bytedeco.pytorch.FullDataLoaderOptions(loaderOpts)
   }

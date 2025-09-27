@@ -40,13 +40,13 @@ ThisBuild / githubWorkflowOSes := Seq("macos-latest", "ubuntu-latest", "windows-
 
 val enableGPU = settingKey[Boolean]("enable or disable GPU support")
 
-ThisBuild / enableGPU := true
+ThisBuild / enableGPU := false // true
 
-//val hasMKL = false
-val hasMKL = {
-  val firstPlatform = org.bytedeco.sbt.javacpp.Platform.current.head
-  firstPlatform == "linux-x86_64" || firstPlatform == "windows-x86_64"
-}
+val hasMKL = false
+//val hasMKL = {
+//  val firstPlatform = org.bytedeco.sbt.javacpp.Platform.current.head
+//  firstPlatform == "linux-x86_64" || firstPlatform == "windows-x86_64"
+//}
 
 lazy val commonSettings = Seq(
   Compile / doc / scalacOptions ++= Seq("-groups","-Xno-duplicate-tasty","-Ycache-macro-class-loader:last-modified" ,"-snippet-compiler:compile","-Ywarn-conflicts","-Ywarn-unused","-Xno-enrich-error-messages","-Ycook-docs","-deprecation", "-feature","-Yresolve-term-conflict:package","--no-warnings"),
@@ -102,23 +102,25 @@ releaseProcess := Seq[ReleaseStep](
 )
 //libraryDependencies += "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.2-1.15.2" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13")
 // https://mvnrepository.com/artifact/org.bytedeco/cuda
-libraryDependencies += "org.bytedeco" % "pytorch-platform-gpu" % "2.7.1-1.5.12"
+//libraryDependencies += "org.bytedeco" % "pytorch-platform-gpu" % "2.7.1-1.5.12"
 libraryDependencies += "org.bytedeco" % "cuda" % "12.9-9.10-1.5.12"
 libraryDependencies += "org.apache.commons" % "commons-pool2" % "2.12.1"
-excludeDependencies += ExclusionRule(organization = "com.lihaoyi", name = "sourcecode_2.13")
+
 libraryDependencies += "ai.djl" % "api" % "0.33.0"
 libraryDependencies += "com.alibaba.fastjson2" % "fastjson2" % "2.0.57"
-libraryDependencies += "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12"
+//libraryDependencies += "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12"
 libraryDependencies += "io.github.mullerhai" % "storch-numpy_3" % "0.1.7"
 libraryDependencies += "io.github.mullerhai" % "storch-pickle_3" % "0.1.4"
 libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1"
 libraryDependencies += "io.github.mullerhai" % "storch-plot_3" % "0.0.3"
-libraryDependencies +=   "io.github.mullerhai" % "storch-scalapy_3" % "0.1.4-1.15.2"
+libraryDependencies +=   "io.github.mullerhai" % "storch-scalapy_3" % "0.1.4-1.15.2" exclude("com.lihaoyi","sourcecode_2.13")
+excludeDependencies += ExclusionRule(organization = "com.lihaoyi", name = "sourcecode_2.13")
 excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
   "com.thesamet.scalapb" % "scalapb-runtime_2.13",
   "io.github.mullerhai" % "storch-safe-tensor_3",
-  "io.github.mullerhai" % "storch-polar_3"
+  "io.github.mullerhai" % "storch-polar_3",
+  "com.lihaoyi" % "sourcecode_2.13"
 )
 
 lazy val storch_core = project
@@ -135,9 +137,9 @@ lazy val storch_core = project
     Test / fork := true,
     libraryDependencies ++= Seq(
       "org.bytedeco" % "pytorch" % s"$pytorchVersion-${javaCppVersion.value}",
-      "org.bytedeco" % "pytorch-platform-gpu" % s"$pytorchVersion-${javaCppVersion.value}",
+//      "org.bytedeco" % "pytorch-platform-gpu" % s"$pytorchVersion-${javaCppVersion.value}",
       "org.bytedeco" % "cuda" % "12.9-9.10-1.5.12",
-      "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12",
+//      "org.bytedeco" % "cuda-platform" % "12.9-9.10-1.5.12",
       "org.typelevel" %% "spire" % "0.18.0",
       "org.typelevel" %% "shapeless3-typeable" % "3.3.0",
       "com.lihaoyi" %% "os-lib" % "0.9.1",
@@ -151,8 +153,8 @@ lazy val storch_core = project
       "io.github.mullerhai" % "storch-pickle_3" % "0.1.4",
       "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0.1.1",
       "io.github.mullerhai" % "storch-plot_3" % "0.0.3",
-      "io.github.mullerhai" % "storch-scalapy_3" % "0.1.4-1.15.2",
-      "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.2-1.15.2" % Test exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13"),
+      "io.github.mullerhai" % "storch-scalapy_3" % "0.1.4-1.15.2" exclude("com.lihaoyi","sourcecode_2.13"),
+      "io.github.mullerhai" % "storch-scikit-learn_3" % "0.1.2-1.15.2"  exclude("org.scala-lang.modules","scala-collection-compat_2.13") exclude("org.typelevel","algebra_2.13")exclude("org.typelevel","cats-kernel_2.13"),
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
     ),
@@ -165,6 +167,7 @@ lazy val storch_core = project
     ),
     javaOptions ++= Seq(
       "-XX:+IgnoreUnrecognizedVMOptions",
+      "--enable-native-access=ALL-UNNAMED",
       "--add-modules=jdk.incubator.vector",
       "--add-opens=java.base/java.lang=ALL-UNNAMED",
       "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",

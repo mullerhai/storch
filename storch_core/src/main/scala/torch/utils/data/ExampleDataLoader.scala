@@ -4,7 +4,7 @@ import org.bytedeco.pytorch.*
 import torch.utils.data.dataloader.sequential.SequentialDataLoader
 import torch.utils.data.dataloader.TorchDataLoaderOptions
 import torch.utils.data.datareader.ChunkDataReader
-import org.bytedeco.javacpp.chrono.Milliseconds
+import org.bytedeco.javacpp.chrono.{Milliseconds, Seconds}
 import torch.utils.data.sampler.{SequentialSampler, RandomSampler as TorchSampler}
 import torch.{DType, Default}
 
@@ -117,6 +117,7 @@ class ExampleDataLoader[ParamType <: DType: Default](
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
+//    loaderOpts.timeout(new Milliseconds(new Seconds(options.timeout.toLong)))
 //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) ////todo Javacpp Bug here timeout will make null pointer
     new ChunkRandomDataLoader(ds, loaderOpts)
   }
@@ -173,6 +174,22 @@ class ExampleDataLoader[ParamType <: DType: Default](
   
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //override def iterator: Iterator[Example] = new Iterator[Example] {
 //

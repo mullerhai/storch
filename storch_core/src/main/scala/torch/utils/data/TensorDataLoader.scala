@@ -7,7 +7,7 @@ import org.bytedeco.pytorch.Tensor as TensorNative
 import torch.utils.data.TensorDataset
 import torch.utils.data.dataloader.{ChunkRandomTensorDataLoader, TorchTensorDataLoaderOptions}
 import torch.utils.data.datareader.ChunkTensorDataReader
-import org.bytedeco.javacpp.chrono.Milliseconds
+import org.bytedeco.javacpp.chrono.{Milliseconds, Seconds}
 import torch.utils.data.sampler.RandomSampler as TorchSampler
 import java.nio.file.Paths
 import scala.collection.Iterator
@@ -104,13 +104,7 @@ class TensorDataLoader[ParamType <: DType: Default](
     }
   }
 
-  //    val prefetch_count = 1
-  //    new ChunkTensorDataset(
-  //      reader,
-  //      new RandomSampler(tensorExamples.size),
-  //      new RandomSampler(tensorExamples.size),
-  //      new org.bytedeco.pytorch.ChunkDatasetOptions(prefetch_count, options.batch_size)
-  //    )
+
 
   private def createChunkSharedTensorBatchDataset(
       chunkTensorDataset: ChunkTensorDataset
@@ -128,7 +122,8 @@ class TensorDataLoader[ParamType <: DType: Default](
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
-//    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
+//    loaderOpts.timeout(new Milliseconds(new Seconds(options.timeout.toLong)))
+    //    loaderOpts.timeout().put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     ChunkRandomTensorDataLoader(ds, options)
   }
 
@@ -184,6 +179,24 @@ class TensorDataLoader[ParamType <: DType: Default](
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+//    val prefetch_count = 1
+//    new ChunkTensorDataset(
+//      reader,
+//      new RandomSampler(tensorExamples.size),
+//      new RandomSampler(tensorExamples.size),
+//      new org.bytedeco.pytorch.ChunkDatasetOptions(prefetch_count, options.batch_size)
+//    )
 //  private val chunkMapTensorDataset = createChunkMapTensorDataset(chunkSharedTensorBatchDataset)
 
 //override def iterator: Iterator[Tensor[ParamType]] = new Iterator[Tensor[ParamType]] {

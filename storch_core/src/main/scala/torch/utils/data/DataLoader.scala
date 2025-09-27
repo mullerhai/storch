@@ -128,6 +128,7 @@ class DataLoader[ParamType <: DType: Default](
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
+//    loaderOpts.timeout(new Milliseconds(new Seconds(options.timeout.toLong)))
     //    loaderOpts.timeout.put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     new ChunkRandomDataLoader(ds, loaderOpts)
   }
