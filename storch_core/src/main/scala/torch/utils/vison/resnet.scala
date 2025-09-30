@@ -304,5 +304,3 @@ object resnet:
 
   private val weightsBaseUrl =
     "https://github.com/sbrunk/storch/releases/download/pretrained-weights/"
-
-

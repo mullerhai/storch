@@ -533,10 +533,6 @@ private[torch] trait BLASOps {
   def combinations[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.combinations(t1.native))
 
-  def concatenate[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
-    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
-    fromNative(torchNative.concatenate(tensorVector))
-
   // convolution //concat
   def copysign_native[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -899,6 +895,9 @@ private[torch] trait BLASOps {
   def gt[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.gt(t1.native, t2.native))
 
+  def gt[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.gt(t1.native, toScalar(other)))
+
   def heaviside[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2]
@@ -1211,8 +1210,8 @@ private[torch] trait BLASOps {
   def logical_not[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.logical_not(t1.native))
 
-//  def logit[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-//    fromNative(torchNative.logit(t1.native))
+  def lt[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.lt(t1.native, toScalar(other)))
 
   def lt[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.lt(t1.native, t2.native))
@@ -1449,14 +1448,23 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.multi_margin_loss(t1.native, t2.native))
 
-//  def mul[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-//    fromNative(torchNative.mul(t1.native, t2.native))
+  def mse_loss[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      target: Tensor[D2],
+      reduction: Long
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.mse_loss(input.native, target.native, reduction))
 
-  def mse_loss[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.mse_loss(t1.native, t2.native))
+  def mse_loss[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      target: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.mse_loss(input.native, target.native))
 
-  def mm[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.mm(t1.native, t2.native))
+  def mm[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] = {
+    if t1.dim > 2 then fromNative(torchNative.matmul(t1.native, t2.native))
+    else fromNative(torchNative.mm(t1.native, t2.native))
+  }
 
   def mkldnn_linear[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -1740,6 +1748,23 @@ private[torch] trait BLASOps {
 
   def norm[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.norm(t1.native))
+
+  def norm[D1 <: DType, S <: ScalaType](t1: Tensor[D1], p: S): Tensor[D1] =
+    fromNative(torchNative.norm(t1.native, toScalar(p)))
+
+//Tensor norm(@Const @ByRef Tensor self, @Const @ByRef ScalarOptional p,
+  // @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") long... dim);
+
+  def norm[D1 <: DType, S <: ScalaType](t1: Tensor[D1], p: S, dim: Long*): Tensor[D1] =
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(p)), dim*))
+
+  def norm[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      p: S,
+      dim: Seq[Long],
+      keepdim: Boolean = false
+  ): Tensor[D1] =
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(p)), dim.toArray, keepdim))
 
   def norm_except_dim[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.norm_except_dim(t1.native))
@@ -2216,8 +2241,80 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.notEquals(t1.native, t2.native))
 
+  def !=[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.notEquals(t1.native, t2.native))
+
+  def bitwise_or[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.bitwise_or(t1.native, toScalar(t2)))
+
+  def bitwise_xor[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.bitwise_xor(t1.native, toScalar(t2)))
+
+  def notEquals[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.notEquals(t1.native, toScalar(t2)))
+
+  def !=[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.notEquals(t1.native, toScalar(t2)))
+
+  def bitwise_or[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.bitwise_or(toScalar(t1), t2.native))
+
+  def bitwise_xor[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.bitwise_xor(toScalar(t1), t2.native))
+
+  def notEquals[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.notEquals(toScalar(t1), t2.native))
+
+  def !=[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.notEquals(toScalar(t1), t2.native))
+
+  def equal[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Boolean =
+    torchNative.equal(t1.native, t2.native)
+
   def equals[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.equals(t1.native, t2.native))
+
+  def equals[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      other: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.equals(t1.native, toScalar(other)))
+
+  def equals[D2 <: DType, S <: ScalaType](
+      t1: S,
+      other: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.equals(toScalar(t1), other.native))
+
+  def eq[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.eq(t1.native, t2.native))
 
   def greaterThanEquals[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
@@ -2252,11 +2349,83 @@ private[torch] trait BLASOps {
   def mod[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.mod(t1.native, t2.native))
 
-  def true_divide[D1 <: DType, D2 <: DType](
-      t1: Tensor[D1],
+//  def eq[S <: ScalaType, D2 <: DType](t1: S, t2: Tensor[D2]): Tensor[Promoted[S, D2]] =
+//    fromNative(torchNative.eq(toScalar(t1), t2.native))
+
+  def greaterThanEquals[S <: ScalaType, D2 <: DType](
+      t1: S,
       t2: Tensor[D2]
-  ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.true_divide(t1.native, t2.native))
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.greaterThanEquals(toScalar(t1), t2.native))
+
+  def greaterThan[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.greaterThan(toScalar(t1), t2.native))
+
+  def lessThanEquals[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.lessThanEquals(toScalar(t1), t2.native))
+
+  def lessThan[S <: ScalaType, D2 <: DType](
+      t1: S,
+      t2: Tensor[D2]
+  ): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.lessThan(toScalar(t1), t2.native))
+
+  def xor[S <: ScalaType, D2 <: DType](t1: S, t2: Tensor[D2]): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.xor(toScalar(t1), t2.native))
+
+  def or[S <: ScalaType, D2 <: DType](t1: S, t2: Tensor[D2]): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.or(toScalar(t1), t2.native))
+
+  def and[S <: ScalaType, D2 <: DType](t1: S, t2: Tensor[D2]): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.and(toScalar(t1), t2.native))
+
+  def mod[S <: ScalaType, D2 <: DType](t1: S, t2: Tensor[D2]): Tensor[Div[D2, ScalaToDType[S]]] =
+    fromNative(torchNative.mod(toScalar(t1), t2.native))
+
+  def eq[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.eq(t1.native, toScalar(other)))
+
+  def greaterThanEquals[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      other: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.greaterThanEquals(t1.native, toScalar(other)))
+
+  def greaterThan[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      other: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.greaterThan(t1.native, toScalar(other)))
+
+  def lessThanEquals[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      other: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.lessThanEquals(t1.native, toScalar(other)))
+
+  def lessThan[D1 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      other: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.lessThan(t1.native, toScalar(other)))
+
+  def xor[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.xor(t1.native, toScalar(other)))
+
+  def or[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.or(t1.native, toScalar(other)))
+
+  def and[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.and(t1.native, toScalar(other)))
+
+  def mod[D1 <: DType, S <: ScalaType](t1: Tensor[D1], other: S): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.mod(t1.native, toScalar(other)))
 
   def trapz[D1 <: DType, D2 <: DType](t1: Tensor[D1], t2: Tensor[D2]): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.trapz(t1.native, t2.native))
@@ -2725,6 +2894,17 @@ private[torch] trait BLASOps {
       t3: Tensor[D1 | D2]
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.baddbmm(t1.native, t2.native, t3.native))
+
+  def baddbmm[D1 <: DType, D2 <: DType, S <: ScalaType](
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      t3: Tensor[D1 | D2],
+      beta: S,
+      alpha: S
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(
+      torchNative.baddbmm(t1.native, t2.native, t3.native, toScalar(beta), toScalar(alpha))
+    )
 
   def addr[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],

@@ -130,6 +130,22 @@ private[torch] trait IndexingSlicingJoiningOps {
     torchNative.cat(toArrayRef(tensors), dim.toLong)
   )
 
+  def concatenate[D1 <: DType](tensorArray: Seq[Tensor[D1]], dim: Int = 0): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    fromNative(torchNative.concatenate(tensorVector, dim.toLong))
+
+  def concatenate[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    fromNative(torchNative.concatenate(tensorVector))
+
+  def concat[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    fromNative(torchNative.concat(tensorVector))
+
+  def concat[D1 <: DType](tensorArray: Seq[Tensor[D1]], dim: Int = 0): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    fromNative(torchNative.concat(tensorVector, dim.toLong))
+
   /** Returns a view of `input` with a flipped conjugate bit. If `input` has a non-complex dtype,
     * this function just returns `input`.
     *

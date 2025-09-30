@@ -17,9 +17,11 @@
 package torch
 package ops
 
+import org.bytedeco.pytorch.TensorVector
 import torch.internal.NativeConverters.fromNative
 import torch.internal.NativeConverters.*
 import org.bytedeco.pytorch.global.torch as torchNative
+
 import scala.annotation.implicitNotFound
 import torch.Int32Tensor
 
@@ -472,6 +474,53 @@ private[torch] trait PointwiseOps {
       .get
       .map(fromNative[D])
 
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+      input: Tensor[D]
+  ): Array[Tensor[D]] =
+    torchNative
+      .gradient(input.native)
+      .get
+      .map(fromNative[D])
+
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+      input: Tensor[D],
+      spacing: Seq[Tensor[D]]
+  ): Array[Tensor[D]] =
+    torchNative
+      .gradient(input.native, new TensorVector(spacing.map(_.native).toArray*))
+      .get
+      .map(fromNative[D])
+
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+      input: Tensor[D],
+      spacing: Seq[Tensor[D]],
+      dim: Seq[Int]
+  ): Array[Tensor[D]] =
+    torchNative
+      .gradient(
+        input.native,
+        new TensorVector(spacing.map(_.native).toArray*),
+        dim.toArray.map(_.toLong)*
+      )
+      .get
+      .map(fromNative[D])
+
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+      input: Tensor[D],
+      spacing: Seq[Tensor[D]],
+      dim: Seq[Int],
+      edgeOrder: Int
+  ): Array[Tensor[D]] =
+    torchNative
+      .gradient(
+        input.native,
+        new TensorVector(spacing.map(_.native).toArray*),
+        dim.toArray.map(_.toLong),
+        edgeOrder
+      )
+      .get
+      .map(fromNative[D])
+
   /** Returns a new tensor containing imaginary values of the `input` tensor. The returned tensor
     * and `input` share the same underlying storage.
     *
@@ -873,7 +922,19 @@ private[torch] trait PointwiseOps {
   ): Tensor[FloatPromoted[Promoted[D, D2]]] =
     fromNative(torchNative.true_divide(input.native, other.native))
 
+  def true_divide[D1 <: DType, D2 <: DType](
+      t1: Tensor[D1],
+      t2: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.true_divide(t1.native, t2.native))
+
   def trueDivide[D <: DType, S <: ScalaType](
+      input: Tensor[D],
+      other: S
+  ): Tensor[FloatPromoted[Promoted[D, ScalaToDType[S]]]] =
+    fromNative(torchNative.true_divide(input.native, toScalar(other)))
+
+  def true_divide[D <: DType, S <: ScalaType](
       input: Tensor[D],
       other: S
   ): Tensor[FloatPromoted[Promoted[D, ScalaToDType[S]]]] =

@@ -115,12 +115,16 @@ libraryDependencies += "io.github.mullerhai" % "storch-tensorboard-proto_3" % "0
 libraryDependencies += "io.github.mullerhai" % "storch-plot_3" % "0.0.3"
 libraryDependencies +=   "io.github.mullerhai" % "storch-scalapy_3" % "0.1.4-1.15.2" exclude("com.lihaoyi","sourcecode_2.13")
 excludeDependencies += ExclusionRule(organization = "com.lihaoyi", name = "sourcecode_2.13")
+excludeDependencies += ExclusionRule(organization = "spire", name = "compat_2.13")
+excludeDependencies += ExclusionRule(organization = "spire", name = "compat_3")
 excludeDependencies ++= Seq(
   "com.thesamet.scalapb" % "lenses_2.13" ,
   "com.thesamet.scalapb" % "scalapb-runtime_2.13",
   "io.github.mullerhai" % "storch-safe-tensor_3",
   "io.github.mullerhai" % "storch-polar_3",
-  "com.lihaoyi" % "sourcecode_2.13"
+  "com.lihaoyi" % "sourcecode_2.13",
+  "spire" %"compat_2.13",
+  "spire" %"compat_3"
 )
 
 lazy val storch_core = project
@@ -163,7 +167,9 @@ lazy val storch_core = project
       "com.lihaoyi" % "sourcecode_2.13",
       "com.thesamet.scalapb" % "scalapb-runtime_2.13",
       "io.github.mullerhai" % "storch-safe-tensor_3",
-      "io.github.mullerhai" % "storch-polar_3"
+      "io.github.mullerhai" % "storch-polar_3",
+      "spire" %"compat_2.13",
+      "spire" %"compat_3"
     ),
     javaOptions ++= Seq(
       "-XX:+IgnoreUnrecognizedVMOptions",

@@ -3,12 +3,14 @@ package ops
 
 import org.bytedeco.javacpp.{BytePointer, Pointer, PointerPointer}
 import org.bytedeco.pytorch.global.torch as torchNative
-import org.bytedeco.pytorch.{Tensor, *}
+import org.bytedeco.pytorch.{Tensor as PytorchTensor, *}
 import torch.nn.modules.TensorModule
 
 import java.io.{ByteArrayOutputStream, InputStream, ObjectOutputStream}
 import java.nio.ByteBuffer
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import torch.internal.NativeConverters.{fromNative, toScalar}
 
 trait JitOps {
 
@@ -272,7 +274,7 @@ trait JitOps {
     torchNative.optimize_for_inference(scriptModule, strVector)
   }
 
-  def getWriteableTensorData(tensor: Tensor, bool: Boolean): WriteableTensorData =
+  def getWriteableTensorData(tensor: PytorchTensor, bool: Boolean): WriteableTensorData =
     torchNative.getWriteableTensorData(tensor, bool)
 
   def findOperatorFor(operatorName: String, overloadName: String): Operator = {
@@ -312,6 +314,94 @@ trait JitOps {
     torchNative.push_one(new IValueVector(ivalueSeq*), tensorOpt)
   }
 
+  //  public static native void
+  //  backward(
+  //  TensorVector var0,
+  //  TensorVector var1,
+  //  BoolOptional var2,
+  //  boolean var3,
+  //  TensorVector var4);
+
+  def tensorVectorToSeqTensor2[D1 <: DType](vec: TensorVector): Seq[Tensor[D1]] = {
+    var it = vec.begin()
+    val tensorSeq = new ListBuffer[Tensor[D1]]()
+    while (!it.equals(vec.end())) {
+      val tensor = fromNative(it.get()).asInstanceOf[Tensor[D1]]
+      tensorSeq.append(tensor)
+      it = it.increment()
+    }
+    tensorSeq.toSeq
+  }
+
+  object autograd {
+    def backward[D <: DType](tensors: Seq[Tensor[D]]): Unit = {
+      torchNative.backward(
+        new TensorVector(tensors.map(_.native)*)
+      ) // new TensorVector(gradSeq.map(_.native)*))
+    }
+
+    def backward[D <: DType](
+        tensors: Seq[Tensor[D]],
+        grad_tensors: Seq[Tensor[D]],
+        retain_graph: BoolOptional,
+        create_graph: Boolean = false,
+        inputs: Seq[Tensor[D]]
+    ): Unit = {
+      val tensorVector = torchNative.backward(
+        new TensorVector(tensors.map(_.native)*),
+        new TensorVector(grad_tensors.map(_.native)*),
+        retain_graph,
+        create_graph,
+        new TensorVector(inputs.map(_.native)*)
+      )
+    }
+
+    //    TensorVector grad(
+    //    TensorVector var0,  TensorVector var1,
+    //     TensorVector var2,
+    //    BoolOptional var3, boolean var4,boolean var5);
+    //
+    //
+    //    public static native TensorVector grad(TensorVector var0,
+    //    TensorVector var1);
+    def grad[D <: DType](outputs: Seq[Tensor[D]], inputs: Seq[Tensor[D]]): Seq[Tensor[D]] = {
+      val vec = torchNative.grad(
+        new TensorVector(outputs.map(_.native)*),
+        new TensorVector(inputs.map(_.native)*)
+      )
+      tensorVectorToSeqTensor2(vec)
+    }
+
+    def grad[D <: DType](
+        outputs: Seq[Tensor[D]],
+        inputs: Seq[Tensor[D]],
+        grad_outputs: Seq[Tensor[D]],
+        retain_graph: Option[BoolOptional] = None,
+        create_graph: Boolean = false,
+        allow_unused: Boolean = false
+    ): Seq[Tensor[D]] = {
+      val nativeRetainGraph =
+        if (retain_graph.isDefined) new BoolOptional(retain_graph.get) else new BoolOptional()
+      val tensorVector = torchNative.grad(
+        new TensorVector(outputs.map(_.native)*),
+        new TensorVector(inputs.map(_.native)*),
+        new TensorVector(grad_outputs.map(_.native)*),
+        nativeRetainGraph,
+        create_graph,
+        allow_unused
+      )
+      tensorVectorToSeqTensor2(tensorVector)
+    }
+
+    def enter_dual_level(): Long = {
+      torchNative.enter_dual_level()
+    }
+
+    def exit_dual_level(level: Long): Unit = {
+      torchNative.exit_dual_level(level)
+    }
+
+  }
 }
 //object ModelSerializer {
 //  // 将 Module 序列化为 BytePointer

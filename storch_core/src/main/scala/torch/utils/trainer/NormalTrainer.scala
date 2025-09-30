@@ -124,7 +124,7 @@ class NormalTrainer[D <: BFloat16 | FloatNN: Default](
         totalLoss = totalLoss + loss.item.asInstanceOf[Float]
         // compute accuracy
         val predictions = outputs.argmax(dim = 1)
-        correct += predictions.eq(targetsDevice).sum().item
+        correct += predictions.eq(targetsDevice).sum.item
         total += targetsDevice.numel
       }
     }

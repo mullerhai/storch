@@ -122,46 +122,6 @@ private[torch] trait RandomSamplingOps {
     fromNative(torchNative.normal(mean, std, size, generator.toOptional, options))
   }
 
-//  def normal[D1 <: DType, D2 <: DType](mean: Double,
-//                                       std: Double, size: Array[Long],
-//                                       generator: Option[Generator] = None): Tensor[Promoted[D1, D2]] =
-//    if generator.isDefined then  fromNative(torchNative.normal(mean, std, size*))
-
-  //    public static native Tensor normal(double var0, double var2,
-  //     long[] var4,
-  //     GeneratorOptional var5,
-  //    TensorOptions var6);
-
-  //    public static native Tensor normal(double var0, double var2, long... var4);
-
-  //    public static native Tensor normal(double var0, double var2,  long[] var4,
-  //    @ByVal GeneratorOptional var5,
-  //    @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8,
-  //    @ByVal BoolOptional var9);
-
-  //    public static native Tensor torch_normal(double var0, double var2, @ByVal LongArrayRef var4, @ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var5, @ByVal(nullValue = "at::TensorOptions{}") TensorOptions var6);
-
-  //    public static native Tensor torch_normal(double var0, double var2, @ByVal LongArrayRef var4);
-
-  //    public static native Tensor torch_normal(double var0, double var2, @ByVal @Cast
-  //    ({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") long[] var4,
-  //    @ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var5,
-  //    @ByVal(nullValue = "at::TensorOptions{}") TensorOptions var6);
-  //
-  //    public static native Tensor torch_normal(double var0, double var2, @ByVal @Cast({"int64_t*",
-  //    "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") long... var4);
-
-  //    public static native Tensor normal(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1, @
-  //    ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var2);
-  //    public static native Tensor normal(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1);
-
-  //    public static native Tensor normal(double var0, double var2, @ByVal LongArrayRef var4);
-  //    public static native Tensor normal(double var0, double var2, @ByVal LongArrayRef var4,
-  //    @ByVal(nullValue = "std::optional<at::Generator>(::std::nullopt)") GeneratorOptional var5,
-  //    @ByVal(nullValue = "at::TensorOptions{}") TensorOptions var6);
-  //    public static native Tensor normal(double var0, double var2, @ByVal LongArrayRef var4,
-  //    @ByVal GeneratorOptional var5, @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7,
-  //    @ByVal DeviceOptional var8, @ByVal BoolOptional var9);
   // TODO normal Returns a tensor of random numbers drawn from separate normal distributions whose mean and standard deviation are given.
 // TODO poisson Returns a tensor of the same size as input with each element sampled from a Poisson distribution with rate parameter given by the corresponding element in input i.e.,
 
@@ -191,6 +151,80 @@ private[torch] trait RandomSamplingOps {
 
   def rands[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
     rand(size = size.toSeq, dtype = dtype, requires_grad = false, layout = Strided, device = CPU)
+  }
+
+  def rand[D <: FloatNN | ComplexNN](
+      s1: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_rand(
+        Seq(s1).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
+  def rand[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_rand(
+        Seq(s1, s2).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
+  def rand[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_rand(
+        Seq(s1, s2, s3).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
+  def rand[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+
+    fromNative(
+      torchNative.torch_rand(
+        Seq(s1, s2, s3, s4).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
+
+  def rand[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int,
+      s5: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+
+    fromNative(
+      torchNative.torch_rand(
+        Seq(s1, s2, s3, s4, s5).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
   }
   def rand[D <: FloatNN | ComplexNN](
       size: Seq[Int],
@@ -329,7 +363,7 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
-  def randint_raws[D <: DType](low: Long = 0, high: Long, size: Int*): Tensor[D] =
+  def randint_raws[D <: DType](low: Long, high: Long, size: Int*): Tensor[D] =
     val generator = new Generator(CPU)
     fromNative(
       torchNative.torch_randint(
@@ -367,14 +401,79 @@ private[torch] trait RandomSamplingOps {
   }
 
   def randn[D <: FloatNN | ComplexNN](
-      size: Int*
-  ): Tensor[D] =
+      s1: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
     fromNative(
       torchNative.torch_randn(
-        size.toArray.map(_.toLong),
-        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+        Seq(s1).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
       )
     )
+  }
+
+  def randn[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_randn(
+        Seq(s1, s2).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
+
+  def randn[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      requires_grads: Boolean
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_randn(
+        Seq(s1, s2, s3).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grads)
+      )
+    )
+  }
+
+  def randn[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int,
+      requires_grads: Boolean
+  ): Tensor[D] = {
+
+    fromNative(
+      torchNative.torch_randn(
+        Seq(s1, s2, s3, s4).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grads)
+      )
+    )
+  }
+
+  def randn[D <: FloatNN | ComplexNN](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int,
+      s5: Int,
+      requires_grads: Boolean,
+      dtype: D
+  ): Tensor[D] = {
+
+    fromNative(
+      torchNative.torch_randn(
+        Seq(s1, s2, s3, s4, s5).toArray.map(_.toLong),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+      )
+    )
+  }
 
   def randn[D <: FloatNN | ComplexNN](
       size: Seq[Int],
@@ -390,6 +489,15 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
+  def randn[D <: FloatNN | ComplexNN](
+      size: Int*
+  ): Tensor[D] =
+    fromNative(
+      torchNative.torch_randn(
+        size.toArray.map(_.toLong),
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
 // TODO randn_like Returns a tensor with the same size as input that is filled with random numbers from a normal distribution with mean 0 and variance 1.
 
   /** Returns a random permutation of integers from 0 to n - 1.

@@ -66,6 +66,7 @@ private[torch] trait CreationOps {
       device: Device = CPU,
       requires_grad: Boolean = false
   ): Tensor[ScalaToDType[U]] = Tensor.apply(data, layout, device, requires_grad)
+
   def tensor[U <: ScalaType: ClassTag](
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
       requires_grad: Boolean
@@ -76,6 +77,49 @@ private[torch] trait CreationOps {
       requires_grad: Boolean,
       device: Device
   ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad, device)
+
+  def intTensor(
+      data: Int | Seq[Int] | Seq[Seq[Int]] | Seq[Seq[Seq[Int]]],
+      requires_grad: Boolean = false
+  ): Tensor[Int32] = Tensor.apply(data, requires_grad)
+
+  def floatTensor(
+      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]],
+      requires_grad: Boolean = false
+  ): Tensor[Float32] = Tensor.apply(data, requires_grad)
+
+  def bfloat16Tensor(
+      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]],
+      requires_grad: Boolean = false
+  ): Tensor[BFloat16] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.to(dtype = torch.bfloat16)
+  }
+
+  def boolTensor(
+      data: Boolean | Seq[Boolean] | Seq[Seq[Boolean]] | Seq[Seq[Seq[Boolean]]],
+      requires_grad: Boolean = false
+  ): Tensor[Bool] = Tensor.apply(data, requires_grad)
+
+  def byteTensor(
+      data: Byte | Seq[Byte] | Seq[Seq[Byte]] | Seq[Seq[Seq[Byte]]],
+      requires_grad: Boolean = false
+  ): Tensor[Int8] = Tensor.apply(data, requires_grad)
+
+  def shortTensor(
+      data: Short | Seq[Short] | Seq[Seq[Short]] | Seq[Seq[Seq[Short]]],
+      requires_grad: Boolean = false
+  ): Tensor[Int16] = Tensor.apply(data, requires_grad)
+
+  def longTensor(
+      data: Long | Seq[Long] | Seq[Seq[Long]] | Seq[Seq[Seq[Long]]],
+      requires_grad: Boolean = false
+  ): Tensor[Int64] = Tensor.apply(data, requires_grad)
+
+  def doubleTensor(
+      data: Double | Seq[Double] | Seq[Seq[Double]] | Seq[Seq[Seq[Double]]],
+      requires_grad: Boolean = false
+  ): Tensor[Float64] = Tensor.apply(data, requires_grad)
 
   def as_strided[D <: DType](
       input: Tensor[D],
@@ -201,6 +245,57 @@ private[torch] trait CreationOps {
       )
     )
 
+  def zeros[D <: DType](
+      s1: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1).map(_.toLong).toArray
+    fromNative(
+      torchNative.torch_zeros(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
+  def zeros[D <: DType](
+      s1: Int,
+      s2: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2).map(_.toLong).toArray
+    fromNative(
+      torchNative.torch_zeros(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+  def zeros[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2, s3).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_zeros(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
+  def zeros[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2, s3, s4).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_zeros(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
   def zeros_like[D <: DType, D2 <: DType | Derive](
       input: Tensor[D],
       dtype: D2 = derive,
@@ -247,6 +342,58 @@ private[torch] trait CreationOps {
       )
     )
 
+  def ones[D <: DType](
+      s1: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_ones(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+  def ones[D <: DType](
+      s1: Int,
+      s2: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_ones(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
+  def ones[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2, s3).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_ones(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+
+  def ones[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int
+  ): Tensor[D] =
+    val nativeSize = Seq(s1, s2, s3, s4).map(_.toLong).toArray
+
+    fromNative(
+      torchNative.torch_ones(
+        nativeSize,
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
   def ones[D <: DType](
       size: Int*
   ): Tensor[D] =
@@ -304,6 +451,22 @@ private[torch] trait CreationOps {
   * @group creation_ops
   */
 // format: on
+
+  def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
+      end: End,
+      step: Step,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_arange(
+        toScalar(0),
+        toScalar(end),
+        toScalar(step),
+        NativeConverters.tensorOptions(int32, Strided, CPU, requires_grad)
+      )
+    )
+  }
 
   def arange[D <: DType | Derive, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
       start: Start = 0,
@@ -405,14 +568,36 @@ private[torch] trait CreationOps {
     */
   def eye[D <: DType](
       n: Int,
-      m: Option[Int] = None,
+      m: Option[Int] | Int = None,
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
       requires_grad: Boolean = false
-  ): Tensor[D] = fromNative(
-    torchNative.torch_eye(n, NativeConverters.tensorOptions(dtype, layout, device, requires_grad))
-  )
+  ): Tensor[D] = m match
+    case None =>
+      fromNative(
+        torchNative.torch_eye(
+          n,
+          NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+        )
+      )
+    case Some(m) =>
+      fromNative(
+        torchNative.torch_eye(
+          n,
+          m,
+          NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+        )
+      )
+    case m: Int =>
+      fromNative(
+        torchNative.torch_eye(
+          n,
+          m.toLong,
+          NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
+        )
+      )
+
 // def empty(size: Long*): Tensor[D] = fromNative(torchNative.torch_empty(size*))
 
   /** Returns a tensor filled with uninitialized data.
@@ -429,11 +614,52 @@ private[torch] trait CreationOps {
       requires_grad: Boolean = false
   ): Tensor[D] = this.empty(size, dtype, Strided, CPU, requires_grad, false, Contiguous)
 
-  //  def empty[D <: DType](
-//                         size: Seq[Int],
-//                         requires_grad: Boolean
-//                       ): Tensor[D] = this.empty[Float32](size, float32, Strided, CPU, requires_grad, false, Contiguous)
+  def empty[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int
+  ): Tensor[D] =
+    val size = Seq(s1, s2, s3, s4)
+    fromNative(
+      torchNative.torch_empty(
+        size.toArray.map(_.toLong),
+        NativeConverters
+          .tensorOptions(float32, Strided, CPU, false)
+          .pinned_memory(BoolOptional(false)),
+        new MemoryFormatOptional(Contiguous.toNative)
+      )
+    )
+  def empty[D <: DType](
+      s1: Int,
+      s2: Int,
+      s3: Int
+  ): Tensor[D] =
+    val size = Seq(s1, s2, s3)
+    fromNative(
+      torchNative.torch_empty(
+        size.toArray.map(_.toLong),
+        NativeConverters
+          .tensorOptions(float32, Strided, CPU, false)
+          .pinned_memory(BoolOptional(false)),
+        new MemoryFormatOptional(Contiguous.toNative)
+      )
+    )
 
+  def empty[D <: DType](
+      s1: Int,
+      s2: Int
+  ): Tensor[D] =
+    val size = Seq(s1, s2)
+    fromNative(
+      torchNative.torch_empty(
+        size.toArray.map(_.toLong),
+        NativeConverters
+          .tensorOptions(float32, Strided, CPU, false)
+          .pinned_memory(BoolOptional(false)),
+        new MemoryFormatOptional(Contiguous.toNative)
+      )
+    )
   def empty[D <: DType](
       size: Int*
   ): Tensor[D] =
@@ -538,6 +764,58 @@ private[torch] trait CreationOps {
       )
     )
 
+  def full[D <: DType, U <: ScalaType](
+      s1: Int,
+      s2: Int,
+      fillValue: U,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
+    val size = Seq(s1, s2)
+    fromNative(
+      torchNative.torch_full(
+        size.toArray.map(_.toLong),
+        toScalar(fillValue),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
+      )
+    )
+
+  def full[D <: DType, U <: ScalaType](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      fillValue: U,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
+
+    val size = Seq(s1, s2, s3)
+    fromNative(
+      torchNative.torch_full(
+        size.toArray.map(_.toLong),
+        toScalar(fillValue),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
+      )
+    )
+
+  def full[D <: DType, U <: ScalaType](
+      s1: Int,
+      s2: Int,
+      s3: Int,
+      s4: Int,
+      fillValue: U,
+      dtype: D,
+      requires_grad: Boolean
+  ): Tensor[DTypeOrDeriveFromScalar[D, U]] =
+
+    val size = Seq(s1, s2, s3, s4)
+    fromNative(
+      torchNative.torch_full(
+        size.toArray.map(_.toLong),
+        toScalar(fillValue),
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
+      )
+    )
     // input (Tensor) – float tensor to quantize
     // scales (Tensor) – float 1D tensor of scales to use, size should match input.size(axis)
     // zero_points (int) – integer 1D tensor of offset to use, size should match input.size(axis)

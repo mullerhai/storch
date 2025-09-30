@@ -154,6 +154,43 @@ trait FftOps {
     torchNative.istft(input.native, n_fft)
   )
 
+  def istft[D <: DType](
+      input: Tensor[D],
+      n_fft: Long,
+      hop_length: Option[Long] = None,
+      win_length: Option[Long] = None,
+      window: Option[Tensor[D]] = None,
+      center: Boolean = true,
+      normalized: Boolean = false,
+      onesided: Option[Boolean] = None,
+      length: Option[Long] = None,
+      return_complex: Boolean = false
+  ): Tensor[D] =
+    val nativeHopLength =
+      if (hop_length.isDefined) new LongOptional(hop_length.get.toLong) else new LongOptional()
+    val nativeWinLength =
+      if (win_length.isDefined) new LongOptional(win_length.get.toLong) else new LongOptional()
+    val nativeWindow =
+      if (window.isDefined) new TensorOptional(window.get.native) else new TensorOptional()
+    val nativeOnesided =
+      if (onesided.isDefined) new BoolOptional(onesided.get) else new BoolOptional()
+    val nativeLength =
+      if (length.isDefined) new LongOptional(length.get.toLong) else new LongOptional()
+    fromNative(
+      torchNative.istft(
+        input.native,
+        n_fft,
+        nativeHopLength,
+        nativeWinLength,
+        nativeWindow,
+        center,
+        normalized,
+        nativeOnesided,
+        nativeLength,
+        return_complex
+      )
+    )
+
   def stft[D <: DType](
       input: Tensor[D],
       n_fft: Long,

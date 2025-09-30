@@ -43,6 +43,7 @@ import org.bytedeco.pytorch.{
   TripletMarginLossOptions,
   TripletMarginWithDistanceLossOptions,
   CTCLossOptions,
+  TensorOptional,
   MarginRankingLossOptions,
   CrossEntropyLossOptions
 }
@@ -164,7 +165,7 @@ private[torch] trait Loss {
 
   def cross_entropy[
       I <: BFloat16 | Float32 | Float64,
-      O <: NumericRealNN
+      O <: NumericRealNN // not be Int , must long
   ](
       input: Tensor[I],
       target: Tensor[O]
@@ -172,13 +173,13 @@ private[torch] trait Loss {
     fromNative(
       torchNative.cross_entropy(
         input.native,
-        target.native
+        target.to(dtype = torch.int64).native
       )
     )
 
   def cross_entropy[
-      I <: BFloat16 | Float32 | Float64,
-      O <: NumericRealNN
+      I <: BFloat16 | FloatNN,
+      O <: NumericRealNN // not be Int , must long
   ](
       input: Tensor[I],
       target: Tensor[O],
@@ -192,9 +193,9 @@ private[torch] trait Loss {
     options.ignore_index().put(ignore_index)
     options.weight().put(weight.native)
     val reductionNative = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
 
     options.reduction().put(LossReduction(reductionNative))
@@ -202,14 +203,15 @@ private[torch] trait Loss {
     fromNative(
       torchNative.cross_entropy(
         input.native,
-        target.native,
+        target.to(dtype = torch.int64).native,
         options
       )
     )
 
   }
+
   def binary_cross_entropy_with_logits[
-      I <: BFloat16 | Float32 | Float64,
+      I <: BFloat16 | FloatNN,
       O <: BFloat16 | Float16 | Float32 | Float64
   ](
       input: Tensor[I],
@@ -224,17 +226,28 @@ private[torch] trait Loss {
     options.weight().put(weight.native)
     options.pos_weight().put(pos_weight.native)
     val reductionNative = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(reductionNative))
 
     fromNative(torchNative.binary_cross_entropy_with_logits(input.native, target.native, options))
   }
 
+  def binary_cross_entropy[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.binary_cross_entropy(
+        input.native,
+        target.native
+      )
+    )
+  }
   def binary_cross_entropy[
-      I <: BFloat16 | Float32 | Float64,
+      I <: BFloat16 | FloatNN,
       O <: BFloat16 | Float16 | Float32 | Float64
   ](
       input: Tensor[I],
@@ -248,12 +261,14 @@ private[torch] trait Loss {
     val options = BCELossOptions()
     options.weight().put(weight.native)
     val reductionNative = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(reductionNative))
-    fromNative(torchNative.binary_cross_entropy(input.native, target.native, options))
+    fromNative(
+      torchNative.binary_cross_entropy(input.native, target.to(dtype = torch.int64).native, options)
+    )
   }
 
   // torch.nn.functional.ctc_loss(log_probs, targets,
@@ -261,8 +276,25 @@ private[torch] trait Loss {
   // Tensor ctc_loss(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1, @Const @ByRef Tensor var2,
   // @Const @ByRef Tensor var3, @Cast({"const torch::nn::functional::CTCLossFuncOptions*"})
   // @ByRef(nullValue = "torch::nn::functional::CTCLossFuncOptions{}") CTCLossOptions var4);
+  // Tensor ctc_loss(@Const @ByRef Tensor log_probs, @Const @ByRef Tensor targets,
+  // @Const @ByRef Tensor input_lengths, @Const @ByRef Tensor target_lengths);
+  def ctc_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D],
+      input_lengths: Tensor[Int64],
+      target_lengths: Tensor[Int64]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.ctc_loss(
+        input.native,
+        target.native,
+        input_lengths.native,
+        target_lengths.native
+      )
+    )
+  }
   def ctc_loss[
-      I <: BFloat16 | Float32 | Float64,
+      I <: BFloat16 | FloatNN,
       O <: BFloat16 | Float16 | Float32 | Float64
   ](
       log_probs: Tensor[I],
@@ -274,9 +306,9 @@ private[torch] trait Loss {
       zero_infinity: Boolean = false
   ): Tensor[O] = {
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     val options = new CTCLossOptions()
     options.blank().put(blank.toLong)
@@ -293,6 +325,17 @@ private[torch] trait Loss {
     )
   }
 
+  def poisson_nll_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.poisson_nll_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
   def poisson_nll_loss[
       I <: BFloat16 | Float32 | Float64,
       O <: BFloat16 | Float16 | Float32 | Float64
@@ -309,9 +352,9 @@ private[torch] trait Loss {
     options.full().put(full)
     options.eps().put(eps)
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
     fromNative(
@@ -324,6 +367,19 @@ private[torch] trait Loss {
 
   }
 
+  def cosine_embedding_loss[D <: DType](
+      input1: Tensor[D],
+      input2: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.cosine_embedding_loss(
+        input1.native,
+        input2.native,
+        target.native
+      )
+    )
+  }
   def cosine_embedding_loss[
       I <: BFloat16 | Float32 | Float64,
       O <: BFloat16 | Float16 | Float32 | Float64
@@ -340,9 +396,9 @@ private[torch] trait Loss {
     options.margin().put(margin)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -375,9 +431,9 @@ private[torch] trait Loss {
     options.ignore_index().put(ignore_index)
     options.label_smoothing().put(label_smoothing)
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -406,7 +462,17 @@ private[torch] trait Loss {
   //      reduction
   //    )
   //  )
-
+  def hinge_embedding_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.hinge_embedding_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
   def hinge_embedding_loss[D <: DType](
       input: Tensor[D],
       target: Tensor[D],
@@ -420,9 +486,9 @@ private[torch] trait Loss {
     val options = HingeEmbeddingLossOptions()
     options.margin().put(margin)
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
     fromNative(
@@ -436,6 +502,17 @@ private[torch] trait Loss {
 
   def kl_div[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.kl_div(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def kl_div[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       log_target: Boolean,
       reduction: String = "mean",
@@ -447,10 +524,10 @@ private[torch] trait Loss {
     options.log_target().put(log_target)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean"                         => new kMean
-      case "sum" | "Sum"                           => new kSum
-      case "none" | "None"                         => new kNone
-      case "batchMean" | "BatchMean" | "batchmean" => new kBatchMean
+      case "mean" | "Mean" | "MEAN"                                            => new kMean()
+      case "sum" | "Sum" | "SUM"                                               => new kSum()
+      case "none" | "None" | "NONE"                                            => new kNone()
+      case "batchMean" | "BatchMean" | "batchmean" | "BATCHMEAN" | "BatchMean" => new kBatchMean()
     }
     options.reduction().put(KLDivLossReduction(nativeReduction))
 
@@ -466,6 +543,17 @@ private[torch] trait Loss {
 
   def l1_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.l1_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def l1_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       reduction: String = "mean",
       size_average: Option[Boolean] = None,
@@ -474,9 +562,9 @@ private[torch] trait Loss {
     val options = L1LossOptions()
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -492,6 +580,17 @@ private[torch] trait Loss {
 
   def mse_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.mse_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def mse_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       reduction: String = "mean",
       size_average: Option[Boolean] = None,
@@ -499,9 +598,9 @@ private[torch] trait Loss {
   ): Tensor[D] = {
     val options = MSELossOptions()
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -518,6 +617,19 @@ private[torch] trait Loss {
   def margin_ranking_loss[D <: DType](
       input1: Tensor[D],
       input2: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.margin_ranking_loss(
+        input1.native,
+        input2.native,
+        target.native
+      )
+    )
+  }
+  def margin_ranking_loss[D <: DType](
+      input1: Tensor[D],
+      input2: Tensor[D],
       target: Tensor[D],
       margin: Double,
       reduction: String = "mean",
@@ -528,9 +640,9 @@ private[torch] trait Loss {
     options.margin().put(margin)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -547,6 +659,17 @@ private[torch] trait Loss {
 
   def multilabel_margin_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.multilabel_margin_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def multilabel_margin_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       margin: Double,
       reduction: String = "mean",
@@ -557,9 +680,9 @@ private[torch] trait Loss {
     //    options.margin().put(margin)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -575,6 +698,17 @@ private[torch] trait Loss {
 
   def multilabel_soft_margin_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.multilabel_soft_margin_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def multilabel_soft_margin_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       weight: Tensor[D],
       margin: Double,
@@ -585,9 +719,9 @@ private[torch] trait Loss {
     val options = MultiLabelSoftMarginLossOptions()
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
     options.weight().put(weight.native)
@@ -600,6 +734,17 @@ private[torch] trait Loss {
     )
   }
 
+  def multi_margin_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.multi_margin_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
   def multi_margin_loss[D <: DType](
       input: Tensor[D],
       target: Tensor[D],
@@ -615,9 +760,9 @@ private[torch] trait Loss {
     options.margin().put(margin)
     options.weight().put(weight.native)
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -641,9 +786,9 @@ private[torch] trait Loss {
   ): Tensor[D] = {
     val options = NLLLossOptions()
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
 
     options.reduction().put(LossReduction(nativeReduction))
@@ -658,6 +803,48 @@ private[torch] trait Loss {
     )
   }
 
+  def nll_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.nll_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+//long reduction/*=at::Reduction::Mean*/, @Cast("int64_t") long ignore_index/*=-100*/
+  def nll_loss[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D],
+      weight: Option[Tensor[D]],
+      reduction: Int,
+      ignore_index: Int
+  ): Tensor[D] = {
+    val nativeWeight = if (weight.isDefined) TensorOptional(weight.get.native) else TensorOptional()
+    fromNative(
+      torchNative.nll_loss(
+        input.native,
+        target.native,
+        nativeWeight,
+        reduction.toLong,
+        ignore_index.toLong
+      )
+    )
+  }
+
+  def nll_loss2d[D <: DType](
+      input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.nll_loss2d(
+        input.native,
+        target.native
+      )
+    )
+  }
   def nll_loss2d[D <: DType](
       input: Tensor[D],
       target: Tensor[D],
@@ -683,6 +870,17 @@ private[torch] trait Loss {
     )
   }
 
+//  def poisson_nll_loss[D <: DType](
+//                              input: Tensor[D],
+//                              target: Tensor[D],
+//                            ): Tensor[D] = {
+//    fromNative(
+//      torchNative.poisson_nll_loss(
+//        input.native,
+//        target.native
+//      )
+//    )
+//  }
   def poisson_nll_loss[D <: DType](
       input: Tensor[D],
       target: Tensor[D],
@@ -696,9 +894,9 @@ private[torch] trait Loss {
     val options = PoissonNLLLossOptions()
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
     options.eps().put(eps)
@@ -715,6 +913,17 @@ private[torch] trait Loss {
 
   def huber_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.huber_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def huber_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       delta: Double,
       reduction: String = "mean"
@@ -723,9 +932,9 @@ private[torch] trait Loss {
     options.delta().put(delta)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -740,6 +949,17 @@ private[torch] trait Loss {
 
   def smooth_l1_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.smooth_l1_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def smooth_l1_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       beta: Double,
       reduction: String = "mean",
@@ -750,9 +970,9 @@ private[torch] trait Loss {
     options.beta().put(beta)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -767,15 +987,26 @@ private[torch] trait Loss {
 
   def soft_margin_loss[D <: DType](
       input: Tensor[D],
+      target: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.soft_margin_loss(
+        input.native,
+        target.native
+      )
+    )
+  }
+  def soft_margin_loss[D <: DType](
+      input: Tensor[D],
       target: Tensor[D],
       reduction: String = "mean"
   ): Tensor[D] = {
     val options = SoftMarginLossOptions()
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
@@ -789,9 +1020,22 @@ private[torch] trait Loss {
   }
 
   def triplet_margin_loss[D <: DType](
-      input1: Tensor[D],
-      input2: Tensor[D],
-      input3: Tensor[D],
+      anchor: Tensor[D],
+      positive: Tensor[D],
+      negative: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.triplet_margin_loss(
+        anchor.native,
+        positive.native,
+        negative.native
+      )
+    )
+  }
+  def triplet_margin_loss[D <: DType](
+      anchor: Tensor[D],
+      positive: Tensor[D],
+      negative: Tensor[D],
       margin: Double,
       p: Double,
       eps: Double,
@@ -807,21 +1051,34 @@ private[torch] trait Loss {
     options.margin().put(margin)
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
 
     fromNative(
-      torchNative.triplet_margin_loss(input1.native, input2.native, input3.native, options)
+      torchNative.triplet_margin_loss(anchor.native, positive.native, negative.native, options)
     )
   }
 
+  def triplet_margin_with_distance_loss[D <: DType](
+      anchor: Tensor[D],
+      positive: Tensor[D],
+      negative: Tensor[D]
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.triplet_margin_with_distance_loss(
+        anchor.native,
+        positive.native,
+        negative.native
+      )
+    )
+  }
   def tripletMarginWithDistanceLoss[D <: DType](
-      input1: Tensor[D],
-      input2: Tensor[D],
-      input3: Tensor[D],
+      anchor: Tensor[D],
+      positive: Tensor[D],
+      negative: Tensor[D],
       margin: Double,
       p: Double,
       eps: Double,
@@ -831,9 +1088,9 @@ private[torch] trait Loss {
       size_average: Option[Boolean] = None,
       reduce: Option[Boolean] = None
   ): Tensor[D] = triplet_margin_with_distance_loss(
-    input1,
-    input2,
-    input3,
+    anchor,
+    positive,
+    negative,
     margin,
     p,
     eps,
@@ -860,9 +1117,9 @@ private[torch] trait Loss {
     val options = TripletMarginWithDistanceLossOptions()
 
     val nativeReduction = reduction match {
-      case "mean" | "Mean" => new kMean
-      case "sum" | "Sum"   => new kSum
-      case "none" | "None" => new kNone
+      case "mean" | "Mean" | "MEAN" => new kMean()
+      case "sum" | "Sum" | "SUM"    => new kSum()
+      case "none" | "None" | "NONE" => new kNone()
     }
     options.reduction().put(LossReduction(nativeReduction))
     options.swap().put(swap)
