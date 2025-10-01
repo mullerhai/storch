@@ -4692,19 +4692,36 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.nextafter(other.native)
   )
 
+  def %=[D1 <: DType, S <: ScalaType](other: S): this.type = {
+    native.remainder_(toScalar(other))
+    this
+  }
+
   def remainder_[D1 <: DType, S <: ScalaType](other: S): this.type = {
     native.remainder_(toScalar(other))
     this
   }
 
+  def %[D1 <: DType, S <: ScalaType](other: S): Tensor[D1] = fromNative(
+    native.remainder(toScalar(other))
+  )
   def remainder[D1 <: DType, S <: ScalaType](other: S): Tensor[D1] = fromNative(
     native.remainder(toScalar(other))
   )
+
+  def %=[D1 <: DType](other: Tensor[D1]): this.type = {
+    native.remainder_(other.native)
+    this
+  }
+
   def remainder_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.remainder_(other.native)
     this
   }
 
+  def %[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
+    native.remainder(other.native)
+  )
   def remainder[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.remainder(other.native)
   )

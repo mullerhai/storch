@@ -17,9 +17,9 @@
 package torch
 package ops
 
-import Layout.Strided
-import Device.CPU
-import internal.NativeConverters
+import torch.Layout.Strided
+import torch.Device.CPU
+import torch.internal.NativeConverters
 import NativeConverters.*
 import org.bytedeco.pytorch.TensorOptions
 import org.bytedeco.pytorch.global.torch as torchNative

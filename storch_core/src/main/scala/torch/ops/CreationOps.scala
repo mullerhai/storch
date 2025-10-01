@@ -453,6 +453,33 @@ private[torch] trait CreationOps {
 // format: on
 
   def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
+      end: End
+  ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_arange(
+        toScalar(0),
+        toScalar(end),
+        toScalar(1),
+        NativeConverters.tensorOptions(int32, Strided, CPU, false)
+      )
+    )
+  }
+
+  def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
+                                                                                   end: End,
+                                                                                   step: Step
+                                                                                 ): Tensor[D] = {
+    fromNative(
+      torchNative.torch_arange(
+        toScalar(0),
+        toScalar(end),
+        toScalar(step),
+        NativeConverters.tensorOptions(float32, Strided, CPU, false)
+      )
+    )
+  }
+  
+  def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
       end: End,
       step: Step,
       dtype: D,
@@ -463,9 +490,9 @@ private[torch] trait CreationOps {
         toScalar(0),
         toScalar(end),
         toScalar(step),
-        NativeConverters.tensorOptions(int32, Strided, CPU, requires_grad)
+        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grad)
       )
-    )
+    ).to(dtype = implicitly[Default[D]].dtype)
   }
 
   def arange[D <: DType | Derive, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
