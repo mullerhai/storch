@@ -145,7 +145,6 @@ trait SparseOps {
   ): Tensor[Promoted[D1, D2]] = {
 
     val derivedDType = dtype match
-//      case _: Derive => values.dtype
       case None             => values.dtype
       case d: Option[DType] => d.get
       case d: DType         => d
@@ -185,7 +184,6 @@ trait SparseOps {
     val deviceNative: DeviceOptional = DeviceOptional(device.toNative)
     val boolOption = BoolOptional(requires_grad)
     val derivedDType = dtype match
-//      case _: Derive => values.dtype
       case None             => values.dtype
       case d: Option[DType] => d.get
       case d: DType         => d
@@ -218,7 +216,6 @@ trait SparseOps {
       requires_grad: Boolean = false
   ): Tensor[Promoted[D1, D2]] = {
     val derivedDType = dtype match
-//      case _: Derive => values.dtype
       case None             => values.dtype
       case d: Option[DType] => d.get
       case d: DType         => d

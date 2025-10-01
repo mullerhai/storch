@@ -465,8 +465,8 @@ private[torch] trait PointwiseOps {
     */
   def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
       input: Tensor[D],
-      spacing: Float,
-      dim: Seq[Int],
+      spacing: Float = 1.0f,
+      dim: Seq[Int] = Seq.empty,
       edgeOrder: Int = 1
   ): Array[Tensor[D]] =
     torchNative
@@ -482,44 +482,60 @@ private[torch] trait PointwiseOps {
       .get
       .map(fromNative[D])
 
-  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN, D1 <: DType](
       input: Tensor[D],
-      spacing: Seq[Tensor[D]]
-  ): Array[Tensor[D]] =
-    torchNative
-      .gradient(input.native, new TensorVector(spacing.map(_.native).toArray*))
-      .get
-      .map(fromNative[D])
+      spacing: Seq[Tensor[D1]] | Tensor[D1]
+  ): Array[Tensor[Promoted[D, D1]]] = {
 
-  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+    val spacingSeq = spacing match
+      case spacing: Tensor[D1]      => Seq(spacing)
+      case spacing: Seq[Tensor[D1]] => spacing
+
+    torchNative
+      .gradient(input.native, new TensorVector(spacingSeq.map(_.native).toArray*))
+      .get
+      .map(fromNative[Promoted[D, D1]])
+  }
+
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN, D1 <: DType](
       input: Tensor[D],
-      spacing: Seq[Tensor[D]],
+      spacing: Seq[Tensor[D1]] | Tensor[D1],
       dim: Seq[Int]
-  ): Array[Tensor[D]] =
+  ): Array[Tensor[Promoted[D, D1]]] =
+
+    val spacingSeq = spacing match
+      case spacing: Tensor[D1]      => Seq(spacing)
+      case spacing: Seq[Tensor[D1]] => spacing
+
     torchNative
       .gradient(
         input.native,
-        new TensorVector(spacing.map(_.native).toArray*),
+        new TensorVector(spacingSeq.map(_.native).toArray*),
         dim.toArray.map(_.toLong)*
       )
       .get
-      .map(fromNative[D])
+      .map(fromNative[Promoted[D, D1]])
 
-  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN](
+  def gradient[D <: Int8 | Int16 | Int32 | Int64 | FloatNN | ComplexNN, D1 <: DType](
       input: Tensor[D],
-      spacing: Seq[Tensor[D]],
+      spacing: Seq[Tensor[D1]] | Tensor[D1],
       dim: Seq[Int],
       edgeOrder: Int
-  ): Array[Tensor[D]] =
+  ): Array[Tensor[Promoted[D, D1]]] =
+
+    val spacingSeq = spacing match
+      case spacing: Tensor[D1]      => Seq(spacing)
+      case spacing: Seq[Tensor[D1]] => spacing
+
     torchNative
       .gradient(
         input.native,
-        new TensorVector(spacing.map(_.native).toArray*),
+        new TensorVector(spacingSeq.map(_.native).toArray*),
         dim.toArray.map(_.toLong),
         edgeOrder
       )
       .get
-      .map(fromNative[D])
+      .map(fromNative[Promoted[D, D1]])
 
   /** Returns a new tensor containing imaginary values of the `input` tensor. The returned tensor
     * and `input` share the same underlying storage.

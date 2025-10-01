@@ -876,7 +876,6 @@ private[torch] trait CreationOps {
     fromNative(torchNative.quantize_per_tensor(input.native, scale, axis.toLong, dtype))
   }
 
-
   def full_like[D <: DType, D1 <: Derive, U <: ScalaType](
       input: Tensor[D],
       fillValue: U,

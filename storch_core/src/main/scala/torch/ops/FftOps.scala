@@ -46,7 +46,6 @@ trait FftOps {
     torchNative.blackman_window(window_length)
   )
 
-
   def hamming_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
     torchNative.hamming_window(window_length, periodic)
   )

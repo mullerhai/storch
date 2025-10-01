@@ -25,7 +25,9 @@ import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 trait ProfilerOPs {
 
   def in_parallel_region = torchNative.in_parallel_region()
+
   def lazy_init_num_threads = torchNative.lazy_init_num_threads()
+
   def set_thread_num(num_threads: Int) = torchNative.set_thread_num(num_threads)
 
   def get_parallel_info = torchNative.get_parallel_info()

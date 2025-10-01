@@ -106,8 +106,6 @@ private[torch] trait BatchNorm {
 //  TensorOptional var2, @ByVal(nullValue = "std::optional<double>(::std::nullopt)")
 //  DoubleOptional var3);
 
-
-
 //  @Namespace("torch::nn::functional")  125
 //  @Namespace("torch::nn::init") 28
 // @Namespace("torch::special") 136

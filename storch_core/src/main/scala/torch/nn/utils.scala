@@ -126,4 +126,3 @@ object utils:
       vec.native,
       TensorVector(parameters.map(_.native).toArray*)
     )
-

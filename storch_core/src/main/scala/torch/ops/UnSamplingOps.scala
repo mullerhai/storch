@@ -70,7 +70,6 @@ trait UnSamplingOps {
     fromNative(result)
   }
 
-  //
   def upsample_bilinear2d[D <: DType](
       x: Tensor[D],
       output_size: List[Long],

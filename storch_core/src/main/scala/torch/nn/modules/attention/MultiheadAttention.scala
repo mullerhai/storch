@@ -209,4 +209,3 @@ object MultiheadAttention:
   )
   enum TransformerActivation:
     case kReLU, kGELU, TensorMapper
-

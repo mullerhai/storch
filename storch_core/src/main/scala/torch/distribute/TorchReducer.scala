@@ -29,7 +29,6 @@ abstract class TorchReducer {
 
   val native: Reducer
 
-
   def getReducer(
       params: Array[Tensor[?]],
       bucket_indices: Array[Long],

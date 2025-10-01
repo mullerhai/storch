@@ -229,7 +229,6 @@ private[torch] trait Activations {
 
 }
 
-
 //  def relu[TT <: DType](@Const @ByRef input: Tensor[TT]): Tensor[TT] = fromNative(torchNative.relu(input.native))
 
 //  def rrelu_[D <: DType](input: Tensor[D], lower: Double, upper: Double): Tensor[D] = {

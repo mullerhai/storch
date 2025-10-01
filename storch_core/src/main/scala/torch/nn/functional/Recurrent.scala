@@ -483,7 +483,6 @@ private[torch] trait Recurrent {
     fromNative[TT](native)
   }
 
-
 }
 
 case class TensorTuple2[T <: FloatNN | ComplexNN](output: Tensor[T], hx: Tensor[T])
@@ -493,4 +492,3 @@ case class TensorTriple[T <: FloatNN | ComplexNN](
     indices: Tensor[T],
     values: Tensor[T]
 )
-

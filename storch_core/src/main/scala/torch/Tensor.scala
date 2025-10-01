@@ -1352,10 +1352,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       case DType.bool                     => torch.numpy.enums.DType.Bool
       case DType.complex64                => torch.numpy.enums.DType.Float64
       case DType.complex128               => torch.numpy.enums.DType.Float64
-      // 添加其他需要支持的dtype映射
       case _ => throw new UnsupportedOperationException(s"Unsupported dtype: ${this.dtype}")
     }
-    // 创建NDArray实例
+
 //    NDArray(ndArray)
     NDArray(dataArray, shape, ndim, this.toNumpyDType).reshape(shape*)
   }
@@ -3069,7 +3068,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     fromNative(native.sspaddmm(mat1.native, mat2.native))
 
   def istft(n_fft: Long): Tensor[D] = fromNative(native.istft(n_fft))
-
 
   def istft(
       n_fft: Long,

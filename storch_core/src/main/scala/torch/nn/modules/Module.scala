@@ -67,8 +67,10 @@ abstract class Module {
     tensorsToLoad
   }
   def state_dict() = stateDict()
+
   // TODO make strict a parameter
   // TODO improve error handling
+
   def load_state_dict(stateDict: Map[String, Tensor[DType]]): Unit =
     val tensorsToLoad = named_parameters() ++ named_buffers()
     // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
@@ -76,6 +78,7 @@ abstract class Module {
       noGrad {
         param.copy_(stateDict(key))
       }
+
   def loadStateDict(stateDict: Map[String, Tensor[DType]]): Unit =
     val tensorsToLoad = named_parameters() ++ named_buffers()
     // assert(stateDict.keySet -- tensorsToLoad.keySet == Set.empty, s"keys missing in state dict: ${tensorsToLoad.keySet -- stateDict.keySet}")
@@ -90,6 +93,8 @@ abstract class Module {
   def modules: Seq[Module] = modules(recurse = true)
 
   def namedChildren: SeqMap[String, Module] = childModules
+
+  def named_children: SeqMap[String, Module] = childModules
 
   def children(): Seq[Module] = modules(true)
 
@@ -106,7 +111,7 @@ abstract class Module {
 
   def register[M <: Module](child: M, n: String = "")(using name: sourcecode.Name): M =
     val name_ = if n.trim().isEmpty() then name.value else n.trim()
-    // println(s"registering ${name_}:$child")
+
     childModules = childModules.updated(name_, child)
     nativeModule.register_module(name_, child.nativeModule)
     child
@@ -189,103 +194,201 @@ abstract class Module {
   def asMultiheadAttention = nativeModule.asMultiheadAttention()
 
   def asTransformerEncoderLayer = nativeModule.asTransformerEncoderLayer()
+
   def asTransformerDecoderLayer = nativeModule.asTransformerDecoderLayer()
+
   def asGroupNorm = nativeModule.asGroupNorm()
+
   def asCrossMapLRN2d = nativeModule.asCrossMapLRN2d()
+
   def asLocalResponseNorm = nativeModule.asLocalResponseNorm()
+
   def asLayerNorm = nativeModule.asLayerNorm()
+
   def asUpsample = nativeModule.asUpsample()
+
   def asPixelUnshuffle = nativeModule.asPixelUnshuffle()
+
   def asPixelShuffle = nativeModule.asPixelShuffle()
+
   def asGRUCell = nativeModule.asGRUCell()
+
   def asLSTMCell = nativeModule.asLSTMCell()
+
   def asRNNCell = nativeModule.asRNNCell()
+
   def asGRU = nativeModule.asGRU()
+
   def asLSTM = nativeModule.asLSTM()
+
   def asRNN = nativeModule.asRNN()
+
   def asLPPool3d = nativeModule.asLPPool3d()
+
   def asFractionalMaxPool3d = nativeModule.asFractionalMaxPool3d()
+
   def asMaxUnpool3d = nativeModule.asMaxUnpool3d()
+
   def asAdaptiveMaxPool3d = nativeModule.asAdaptiveMaxPool3d()
+
   def asAdaptiveAvgPool3d = nativeModule.asAdaptiveAvgPool3d()
+
   def asMaxPool3d = nativeModule.asMaxPool3d()
+
   def asAvgPool3d = nativeModule.asAvgPool3d()
+
   def asZeroPad3d = nativeModule.asZeroPad3d()
+
   def asConstantPad3d = nativeModule.asConstantPad3d()
+
   def asReplicationPad3d = nativeModule.asReplicationPad3d()
+
   def asReflectionPad3d = nativeModule.asReflectionPad3d()
+
   def asLPPool2d = nativeModule.asLPPool2d()
+
   def asFractionalMaxPool2d = nativeModule.asFractionalMaxPool2d()
+
   def asMaxUnpool2d = nativeModule.asMaxUnpool2d()
+
   def asAdaptiveMaxPool2d = nativeModule.asAdaptiveMaxPool2d()
+
   def asAdaptiveAvgPool2d = nativeModule.asAdaptiveAvgPool2d()
+
   def asMaxPool2d = nativeModule.asMaxPool2d()
+
   def asAvgPool2d = nativeModule.asAvgPool2d()
+
   def asZeroPad2d = nativeModule.asZeroPad2d()
+
   def asConstantPad2d = nativeModule.asConstantPad2d()
+
   def asReplicationPad2d = nativeModule.asReplicationPad2d()
+
   def asReflectionPad2d = nativeModule.asReflectionPad2d()
+
   def asLPPool1d = nativeModule.asLPPool1d()
+
   def asMaxUnpool1d = nativeModule.asMaxUnpool1d()
+
   def asAdaptiveMaxPool1d = nativeModule.asAdaptiveMaxPool1d()
+
   def asAdaptiveAvgPool1d = nativeModule.asAdaptiveAvgPool1d()
+
   def asMaxPool1d = nativeModule.asMaxPool1d()
+
   def asAvgPool1d = nativeModule.asAvgPool1d()
+
   def asZeroPad1d = nativeModule.asZeroPad1d()
+
   def asConstantPad1d = nativeModule.asConstantPad1d()
+
   def asReplicationPad1d = nativeModule.asReplicationPad1d()
+
   def asReflectionPad1d = nativeModule.asReflectionPad1d()
+
   def asUnflatten = nativeModule.asUnflatten()
+
   def asFlatten = nativeModule.asFlatten()
+
   def asBilinear = nativeModule.asBilinear()
+
   def asLinear = nativeModule.asLinear()
+
   def asIdentity = nativeModule.asIdentity()
+
   def asUnfold = nativeModule.asUnfold()
+
   def asFold = nativeModule.asFold()
+
   def asEmbeddingBag = nativeModule.asEmbeddingBag()
+
   def asEmbedding = nativeModule.asEmbedding()
+
   def asPairwiseDistance = nativeModule.asPairwiseDistance()
+
   def asCosineSimilarity = nativeModule.asCosineSimilarity()
+
   def asFeatureAlphaDropout = nativeModule.asFeatureAlphaDropout()
+
   def asAlphaDropout = nativeModule.asAlphaDropout()
+
   def asDropout3d = nativeModule.asDropout3d()
+
   def asConvTranspose3d = nativeModule.asConvTranspose3d()
+
   def asConv3d = nativeModule.asConv3d()
+
   def asInstanceNorm3d = nativeModule.asInstanceNorm3d()
+
   def asBatchNorm3d = nativeModule.asBatchNorm3d()
+
   def asDropout2d = nativeModule.asDropout2d()
+
   def asConvTranspose2d = nativeModule.asConvTranspose2d()
+
   def asConv2d = nativeModule.asConv2d()
+
   def asInstanceNorm2d = nativeModule.asInstanceNorm2d()
+
   def asBatchNorm2d = nativeModule.asBatchNorm2d()
+
   def asDropout = nativeModule.asDropout()
+
   def asConvTranspose1d = nativeModule.asConvTranspose1d()
+
   def asConv1d = nativeModule.asConv1d()
+
   def asAdaptiveLogSoftmaxWithLoss = nativeModule.asAdaptiveLogSoftmaxWithLoss()
+
   def asParameterList = nativeModule.asParameterList()
+
   def asParameterDict = nativeModule.asParameterDict()
+
   def asSequential = nativeModule.asSequential()
+
   def asModuleList = nativeModule.asModuleList()
+
   def asModuleDict = nativeModule.asModuleDict()
+
   def asL1Loss = nativeModule.asL1Loss()
+
   def asKLDivLoss = nativeModule.asKLDivLoss()
+
   def asMSELoss = nativeModule.asMSELoss()
+
   def asBCELoss = nativeModule.asBCELoss()
+
   def asHingeEmbeddingLoss = nativeModule.asHingeEmbeddingLoss()
+
   def asMultiMarginLoss = nativeModule.asMultiMarginLoss()
+
   def asCosineEmbeddingLoss = nativeModule.asCosineEmbeddingLoss()
+
   def asSmoothL1Loss = nativeModule.asSmoothL1Loss()
+
   def asHuberLoss = nativeModule.asHuberLoss()
+
   def asMultiLabelMarginLoss = nativeModule.asMultiLabelMarginLoss()
+
   def asSoftMarginLoss = nativeModule.asSoftMarginLoss()
+
   def asMultiLabelSoftMarginLoss = nativeModule.asMultiLabelSoftMarginLoss()
+
   def asTripletMarginLoss = nativeModule.asTripletMarginLoss()
+
   def asTripletMarginWithDistanceLoss = nativeModule.asTripletMarginWithDistanceLoss()
+
   def asCTCLoss = nativeModule.asCTCLoss()
+
   def asPoissonNLLLoss = nativeModule.asPoissonNLLLoss()
+
   def asMarginRankingLoss = nativeModule.asMarginRankingLoss()
+
   def asNLLLoss = nativeModule.asNLLLoss()
+
   def asCrossEntropyLoss = nativeModule.asCrossEntropyLoss()
+
   def asBCEWithLogitsLoss = nativeModule.asBCEWithLogitsLoss()
 
   override def toString(): String = {

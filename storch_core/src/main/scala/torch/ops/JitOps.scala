@@ -323,53 +323,94 @@ trait JitOps {
   }
 
   object autograd {
-    def backward[D <: DType](tensors: Seq[Tensor[D]]): Unit = {
+    def backward[D <: DType](tensors: Seq[Tensor[D]] | Tensor[D]): Unit = {
+      val tensorsSeq = tensors match {
+        case t: Tensor[D]       => Seq(t)
+        case ts: Seq[Tensor[D]] => ts
+      }
       torchNative.backward(
-        new TensorVector(tensors.map(_.native)*)
-      ) // new TensorVector(gradSeq.map(_.native)*))
+        new TensorVector(tensorsSeq.map(_.native)*)
+      )
     }
 
     def backward[D1 <: DType, D2 <: DType](
-        tensors: Seq[Tensor[D1]],
-        grad_tensors: Seq[Tensor[D2]],
-        retain_graph: BoolOptional,
+        tensors: Seq[Tensor[D1]] | Tensor[D1],
+        grad_tensors: Seq[Tensor[D2]] | Tensor[D2],
+        retain_graph: Option[Boolean] | Boolean = None,
         create_graph: Boolean = false,
         inputs: Seq[Tensor[Promoted[D1, D2]]]
     ): Unit = {
+      val tensorsSeq = tensors match {
+        case t: Tensor[D1]       => Seq(t)
+        case ts: Seq[Tensor[D1]] => ts
+      }
+      val grad_tensorsSeq = grad_tensors match {
+        case t: Tensor[D2]       => Seq(t)
+        case ts: Seq[Tensor[D2]] => ts
+      }
       val tensorVector = torchNative.backward(
-        new TensorVector(tensors.map(_.native)*),
-        new TensorVector(grad_tensors.map(_.native)*),
-        retain_graph,
+        new TensorVector(tensorsSeq.map(_.native)*),
+        new TensorVector(grad_tensorsSeq.map(_.native)*),
+        retain_graph match {
+          case Some(b: Boolean) => new BoolOptional(b)
+          case None             => new BoolOptional()
+          case b: Boolean       => new BoolOptional(b)
+        },
         create_graph,
         new TensorVector(inputs.map(_.native)*)
       )
     }
 
     def grad[D1 <: DType, D2 <: DType](
-        outputs: Seq[Tensor[D1]],
-        inputs: Seq[Tensor[D2]]
+        outputs: Seq[Tensor[D1]] | Tensor[D1],
+        inputs: Seq[Tensor[D2]] | Tensor[D2]
     ): Seq[Tensor[Promoted[D1, D2]]] = {
+      val outputsSeq = outputs match {
+        case t: Tensor[D1]       => Seq(t)
+        case ts: Seq[Tensor[D1]] => ts
+      }
+      val inputsSeq = inputs match {
+        case t: Tensor[D2]       => Seq(t)
+        case ts: Seq[Tensor[D2]] => ts
+      }
       val vec = torchNative.grad(
-        new TensorVector(outputs.map(_.native)*),
-        new TensorVector(inputs.map(_.native)*)
+        new TensorVector(outputsSeq.map(_.native)*),
+        new TensorVector(inputsSeq.map(_.native)*)
       )
       tensorVectorToSeqTensor2(vec)
     }
 
     def grad[D1 <: DType, D2 <: DType, D3 <: DType](
-        outputs: Seq[Tensor[D1]],
-        inputs: Seq[Tensor[D2]],
-        grad_outputs: Seq[Tensor[D3]],
-        retain_graph: Option[BoolOptional] = None,
+        outputs: Seq[Tensor[D1]] | Tensor[D1],
+        inputs: Seq[Tensor[D2]] | Tensor[D2],
+        grad_outputs: Seq[Tensor[D3]] | Tensor[D3] | Option[Tensor[D3]] = None,
+        retain_graph: Option[Boolean] | Boolean = None,
         create_graph: Boolean = false,
         allow_unused: Boolean = false
     ): Seq[Tensor[Promoted[D3, D2]]] = {
-      val nativeRetainGraph =
-        if (retain_graph.isDefined) new BoolOptional(retain_graph.get) else new BoolOptional()
+      val outputsSeq = outputs match {
+        case t: Tensor[D1]       => Seq(t)
+        case ts: Seq[Tensor[D1]] => ts
+      }
+      val inputsSeq = inputs match {
+        case t: Tensor[D2]       => Seq(t)
+        case ts: Seq[Tensor[D2]] => ts
+      }
+      val grad_outputsSeq = grad_outputs match {
+        case Some(t: Tensor[D3]) => Seq(t)
+        case ts: Seq[Tensor[D3]] => ts
+        case t: Tensor[D3]       => Seq(t)
+        case None                => Seq.empty[Tensor[D3]]
+      }
+      val nativeRetainGraph = retain_graph match {
+        case Some(b: Boolean) => new BoolOptional(b)
+        case None             => new BoolOptional()
+        case b: Boolean       => new BoolOptional(b)
+      }
       val tensorVector = torchNative.grad(
-        new TensorVector(outputs.map(_.native)*),
-        new TensorVector(inputs.map(_.native)*),
-        new TensorVector(grad_outputs.map(_.native)*),
+        new TensorVector(outputsSeq.map(_.native)*),
+        new TensorVector(inputsSeq.map(_.native)*),
+        new TensorVector(grad_outputsSeq.map(_.native)*),
         nativeRetainGraph,
         create_graph,
         allow_unused
@@ -387,6 +428,7 @@ trait JitOps {
 
   }
 }
+
 //object ModelSerializer {
 //  // 将 Module 序列化为 BytePointer
 //  def serializeModel[ParamType <: FloatNN | ComplexNN: Default](model: TensorModule[ParamType],tmpSavePath: String = "net.pt"): BytePointer = {

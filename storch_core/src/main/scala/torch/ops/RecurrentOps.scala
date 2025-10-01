@@ -4,24 +4,29 @@ package ops
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   DoubleOptional,
-  LongOptional,
   MultiheadAttentionForwardFuncOptions,
-  PackedSequence,
-  TensorArrayRef,
   TensorOptional,
-  TensorVector,
-  Tensor as TensorNative
+  TensorVector
 }
 import org.bytedeco.pytorch.global.torch as torchNative
-import torch.internal.NativeConverters.{fromNative, toArrayRef}
-import org.bytedeco.pytorch.ScalarTypeOptional
-import org.bytedeco.javacpp.{CLongPointer, Pointer}
-import org.bytedeco.javacpp.annotation.{ByRef, ByVal, Const, Namespace}
 import torch.internal.NativeConverters.*
 import torch.nn.functional.{TensorTuple2, TensorTriple}
 
+
 private[torch] trait RecurrentOps {
 
+  /***
+   *
+   * @param input
+   * @param hx
+   * @param w_ih
+   * @param w_hh
+   * @param b_ih
+   * @param b_hh
+   * @tparam T
+   * @tparam TT
+   * @return
+   */
   def gru_cell[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Tensor[TT],
@@ -32,7 +37,7 @@ private[torch] trait RecurrentOps {
   ): Tensor[TT] = {
 
     val inputNative = input.native
-    val hxNative = hx.native // TensorVector(hx.map(_.native) *)
+    val hxNative = hx.native
     val w_ihNative = w_ih.native
     val w_hhNative = w_hh.native
     val b_ihNative = TensorOptional(b_ih.native)
@@ -43,11 +48,16 @@ private[torch] trait RecurrentOps {
 
   }
 
-  //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
-  //    TensorTuple2(output = fromNative[TT](native.get0()), hx = fromNative(native.get1))
-  //    val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
-  //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
-
+  /***
+   *
+   * @param sequences
+   * @param batch_first
+   * @param padding_value
+   * @param padding_side
+   * @tparam T
+   * @tparam TT
+   * @return
+   */
   def pad_sequence[T, TT <: FloatNN | ComplexNN](
       sequences: Seq[Tensor[TT]],
       batch_first: Boolean,
@@ -59,7 +69,26 @@ private[torch] trait RecurrentOps {
     fromNative(native)
   }
 
-  //
+  /** * Applies a multi-layer gated recurrent unit (GRU) RNN to an input sequence.
+    *
+    * @param input
+    * @param hx
+    * @param batch_sizes
+    * @param params
+    * @param has_biases
+    * @param num_layers
+    * @param dropout
+    * @param train
+    * @param bidirectional
+    * @param batch_first
+    *   // val hxNative = toArrayRef(hx) // val numLayersNative = CLongPointer(
+    *   numLayers.toArray:_*) // TensorTuple(values = fromNative[TT](native.get0()), indices =
+    *   fromNative(native.get1)) // fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive,
+    *   has_biases, num_layers, dropout, train, bidirectional, batch_first))
+    * @tparam T
+    * @tparam TT
+    * @return
+    */
   def gru[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Tensor[TT],
@@ -74,9 +103,7 @@ private[torch] trait RecurrentOps {
   ): TensorTuple2[TT] = {
 
     val inputNative = input.native
-    //    val hxNative = toArrayRef(hx)
     val paramsNtive = toArrayRef(params.get)
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native = torchNative.gru(
       inputNative,
       hx.native,
@@ -88,15 +115,26 @@ private[torch] trait RecurrentOps {
       bidirectional,
       batch_first
     )
-    //    TensorTuple(values = fromNative[TT](native.get0()), indices = fromNative(native.get1))
-
     val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
     tensorTuple
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
 
   }
 
-  //
+  /** * Applies a single-layer long short-term memory (LSTM) RNN cell to an input sequence.
+    *
+    * @param input
+    * @param hx
+    * @param w_ih
+    * @param w_hh
+    * @param b_ih
+    * @param b_hh
+    * @tparam T
+    * @tparam TT
+    *   // val numLayersNative = CLongPointer( numLayers.toArray:_*) //
+    *   fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers,
+    *   dropout, train, bidirectional, batch_first))
+    * @return
+    */
   def lstm_cell[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Seq[Tensor[TT]],
@@ -112,17 +150,27 @@ private[torch] trait RecurrentOps {
     val w_hhNative = w_hh.native
     val b_ihNative = TensorOptional(b_ih.native)
     val b_hhNative = TensorOptional(b_hh.native)
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native =
       torchNative.lstm_cell(inputNative, hxNative, w_ihNative, w_hhNative, b_ihNative, b_hhNative)
     TensorTuple2(output = fromNative[TT](native.get0()), hx = fromNative(native.get1))
-
     val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
     tensorTuple
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
 
   }
 
+  /** * Applies a single-layer long short-term memory (LSTM) RNN cell to an input sequence.
+    *
+    * @param input
+    * @param hx
+    * @param w_ih
+    * @param w_hh
+    * @tparam T
+    * @tparam TT
+    * @return
+    *   // val numLayersNative = CLongPointer( numLayers.toArray:_*) //
+    *   fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers,
+    *   dropout, train, bidirectional, batch_first))
+    */
   def lstm_cell[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Seq[Tensor[TT]],
@@ -134,16 +182,34 @@ private[torch] trait RecurrentOps {
     val hxNative = toArrayRef(hx)
     val w_ihNative = w_ih.native
     val w_hhNative = w_hh.native
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
+
     val native = torchNative.lstm_cell(inputNative, hxNative, w_ihNative, w_hhNative)
     TensorTuple2(output = fromNative[TT](native.get0()), hx = fromNative(native.get1))
 
     val tensorTuple = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
     tensorTuple
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
 
   }
 
+  /** * Applies a multi-layer long short-term memory (LSTM) RNN to an input sequence.
+    *
+    * @param input
+    * @param hx
+    * @param params
+    * @param has_biases
+    * @param num_layers
+    * @param dropout
+    * @param train
+    * @param bidirectional
+    * @param batch_first
+    * @tparam T
+    * @tparam TT
+    * @return
+    *   // val numLayersNative = CLongPointer( numLayers.toArray:_*) // TensorTuple(values =
+    *   fromNative[TT](native.get0()), indices = fromNative(native.get1)) //
+    *   fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers,
+    *   dropout, train, bidirectional, batch_first))
+    */
   def lstm[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Seq[Tensor[TT]],
@@ -159,7 +225,6 @@ private[torch] trait RecurrentOps {
     val inputNative = input.native
     val hxNative = toArrayRef(hx)
     val paramsNtive = toArrayRef(params.get)
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native = torchNative.lstm(
       inputNative,
       hxNative,
@@ -171,18 +236,35 @@ private[torch] trait RecurrentOps {
       bidirectional,
       batch_first
     )
-    //    TensorTuple(values = fromNative[TT](native.get0()), indices = fromNative(native.get1))
-
     val tensorTriple = TensorTriple(
       fromNative[TT](native.get0()),
       fromNative[TT](native.get1()),
       fromNative[TT](native.get2())
     )
     tensorTriple
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
-
   }
 
+  /** * Applies a multi-layer long short-term memory (LSTM) RNN to an input sequence.
+    *
+    * @param data
+    * @param batch_size
+    * @param hx
+    * @param params
+    * @param has_biases
+    * @param num_layers
+    * @param dropout
+    * @param train
+    * @param bidirectional
+    * @param batch_first
+    * @tparam T
+    * @tparam TT
+    * @return
+    *
+    * // val numLayersNative = CLongPointer( numLayers.toArray:_*) // TensorTuple(values =
+    * fromNative[TT](native.get0()), indices = fromNative(native.get1)) //
+    * fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers,
+    * dropout, train, bidirectional, batch_first))
+    */
   def lstm[T, TT <: FloatNN | ComplexNN](
       data: Tensor[TT],
       batch_size: Int,
@@ -200,7 +282,6 @@ private[torch] trait RecurrentOps {
     val hxNative = toArrayRef(hx)
     val batchSizeNative = torchNative.tensor(batch_size)
     val paramsNtive = toArrayRef(params.get)
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native = torchNative.lstm(
       dataNative,
       batchSizeNative,
@@ -212,16 +293,12 @@ private[torch] trait RecurrentOps {
       train,
       bidirectional
     )
-    //  TensorTuple(values = fromNative[TT](native.get0()), indices = fromNative(native.get1))
-
     val tensorTriple = TensorTriple(
       fromNative[TT](native.get0()),
       fromNative[TT](native.get1()),
       fromNative[TT](native.get2())
     )
     tensorTriple
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
-
   }
 
   def scaled_dot_product_attention[D <: DType](
@@ -236,8 +313,21 @@ private[torch] trait RecurrentOps {
   ): Tensor[D] =
     scaledDotProductAttention(query, key, value, attn_mask, dropout_p, is_causal, scale, enable_gqa)
 
-  //  scaled_dot_product_attention(query, key, value, attn_mask = None, dropout_p = 0.0,
-  //    is_causal = False, scale = None, enable_gqa = False) -> Tensor:
+  /** *
+    *
+    * @param query
+    * @param key
+    * @param value
+    * @param attn_mask
+    * @param dropout_p
+    * @param is_causal
+    * @param scale
+    * @param enable_gqa
+    *   // scaled_dot_product_attention(query, key, value, attn_mask = None, dropout_p = 0.0, //
+    *   is_causal = False, scale = None, enable_gqa = False) -> Tensor:
+    * @tparam D
+    * @return
+    */
   def scaledDotProductAttention[D <: DType](
       query: Tensor[D],
       key: Tensor[D],
@@ -266,6 +356,37 @@ private[torch] trait RecurrentOps {
     )
   }
 
+  /** *
+    *
+    * @param query
+    * @param key
+    * @param value
+    * @param embed_dim_to_check
+    * @param num_heads
+    * @param in_proj_weight
+    * @param in_proj_bias
+    * @param bias_k
+    * @param bias_v
+    * @param add_zero_attn
+    * @param dropout_p
+    * @param out_proj_weight
+    * @param out_proj_bias
+    * @param training
+    * @param key_padding_mask
+    * @param need_weights
+    * @param attn_mask
+    * @param use_separate_proj_weight
+    * @param q_proj_weight
+    * @param k_proj_weight
+    * @param v_proj_weight
+    * @param static_k
+    * @param static_v
+    * @param average_attn_weights
+    * @tparam T
+    * @tparam D
+    * @tparam TT
+    * @return
+    */
   def multi_head_attention_forward[T, D, TT <: FloatNN | ComplexNN](
       query: Tensor[TT],
       key: Tensor[TT],
@@ -320,16 +441,10 @@ private[torch] trait RecurrentOps {
     options.q_proj_weight().put(q_proj_weight.native)
     options.k_proj_weight().put(k_proj_weight.native)
     options.v_proj_weight().put(v_proj_weight.native)
-
-    //    val numLayersNative = CLongPointer( numLayers.toArray:_*)
     val native =
       torchNative.multi_head_attention_forward(queryNative, keyNative, valueNative, options)
-    //    TensorTuple(values = fromNative[TT](native.get0()), indices = fromNative(native.get1))
-
     val tensorTuple2 = TensorTuple2(fromNative[TT](native.get0()), fromNative[TT](native.get1()))
     tensorTuple2
-    //    fromNative(torchNative.lstm(inputNative, hxNative, paramsNtive, has_biases, num_layers, dropout, train, bidirectional, batch_first))
-
   }
 
   def rnn_tanh[T, TT <: FloatNN | ComplexNN](
@@ -479,20 +594,8 @@ private[torch] trait RecurrentOps {
     )
     fromNative[TT](native)
   }
-  
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 //case class TensorTuple2[T <: FloatNN | ComplexNN](output: Tensor[T], hx: Tensor[T])
 //
@@ -528,4 +631,3 @@ private[torch] trait RecurrentOps {
 //  (ArrayRef<Tensor> sequences,
 //    bool batch_first = false, double padding_value = 0,
 //    std::string_view padding_side = "right")
-

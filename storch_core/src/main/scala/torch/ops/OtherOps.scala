@@ -190,9 +190,6 @@ private[torch] trait OtherOps {
   def block_diag[D <: DType](tensorList: Seq[Tensor[D]]): Tensor[D] =
     fromNative(torchNative.block_diag(new TensorVector(tensorList.map(_.native)*)))
 
-//  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
-//    fromNative(torchNative.dist(tensor.native, tensor2.native))
-
   def isclose[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
     fromNative(torchNative.isclose(tensor.native, tensor2.native))
 
@@ -225,7 +222,6 @@ private[torch] trait OtherOps {
 
   def is_inference[D <: DType](tensor: Tensor[D]): Boolean = torchNative.is_inference(tensor.native)
 
-  // is_vulkan_available
   def is_vulkan_available(): Boolean = torchNative.is_vulkan_available()
 
   def interpolate[D <: DType](
@@ -298,8 +294,6 @@ private[torch] trait OtherOps {
       case Some(s) => torchNative.affine_grid(theta.native, longVecRef, s)
       case None    => torchNative.affine_grid(theta.native, longVecRef)
     }
-
-    // val result = torchNative.affine_grid(theta.native, longVecRef)
     fromNative(result)
   }
 
@@ -329,8 +323,6 @@ private[torch] trait OtherOps {
   def get_command_buffer = torchNative.get_command_buffer()
 
   def get_dispatch_queue = torchNative.get_dispatch_queue()
-
-  // long numel(@Const @ByRef Tensor var0);
 
   def numel[D <: DType](tensor: Tensor[D]): Long = torchNative.numel(tensor.native)
 
@@ -386,8 +378,6 @@ private[torch] trait OtherOps {
       size
     )
 
-//  def unique_consecutive[D <: DType](tensor: Tensor[D]) = torchNative.unique_consecutive(tensor.native)
-
   def deviceCount = torchNative.deviceCount()
 
   def getDeviceIndex = torchNative.getDeviceIndex()
@@ -401,9 +391,6 @@ private[torch] trait OtherOps {
 
   def getCurrentStream(b: Byte): Stream = torchNative.getCurrentStream(b)
 
-//  def isAccelerator(deviceType: torch.DeviceType):Boolean = torchNative.isAccelerator(deviceType.toNative)
-//  def isAcceleratorExcluded(deviceType: torch.DeviceType, deviceType2: torch.DeviceType):Boolean = torchNative.isAcceleratorExcluded(deviceType, deviceType2)
-//
   def getAccelerator(acc: Option[Boolean] = None) =
     if acc.isDefined then torchNative.getAccelerator(acc.get) else torchNative.getAccelerator()
 
@@ -448,21 +435,32 @@ private[torch] trait OtherOps {
 
   def dispatch_mode_enabled: Boolean = torchNative.dispatch_mode_enabled()
 
-  // def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
-  // def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
-  // def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
-
   def enter_dual_level = torchNative.enter_dual_level()
 
   def exit_dual_level(level: Long) = torchNative.exit_dual_level(level)
 
-  def backward[D <: DType](tensors: Seq[Tensor[D]]) =
-    torchNative.backward(new TensorVector(tensors.map(_.native)*))
+  def backward[D <: DType](tensors: Seq[Tensor[D]] | Tensor[D]) =
+    val tensorsSeq = tensors match {
+      case t: Tensor[D]       => Seq(t)
+      case ts: Seq[Tensor[D]] => ts
+    }
+    torchNative.backward(new TensorVector(tensorsSeq.map(_.native)*))
 
-  def grad[D1 <: DType, D2 <: DType](tensors: Seq[Tensor[D1]], tensors2: Seq[Tensor[D2]]) =
+  def grad[D1 <: DType, D2 <: DType](
+      tensors: Seq[Tensor[D1]] | Tensor[D1],
+      tensors2: Seq[Tensor[D2]] | Tensor[D2]
+  ) =
+    val tensorsSeq = tensors match {
+      case t: Tensor[D1]       => Seq(t)
+      case ts: Seq[Tensor[D1]] => ts
+    }
+    val tensors2Seq = tensors2 match {
+      case t: Tensor[D2]       => Seq(t)
+      case ts: Seq[Tensor[D2]] => ts
+    }
     torchNative.grad(
-      new TensorVector(tensors.map(_.native)*),
-      new TensorVector(tensors2.map(_.native)*)
+      new TensorVector(tensorsSeq.map(_.native)*),
+      new TensorVector(tensors2Seq.map(_.native)*)
     )
 
   def SetVariableHooks(hooks: VariableHooksInterface) = torchNative.SetVariableHooks(hooks)
@@ -488,6 +486,19 @@ private[torch] trait OtherOps {
 
   def get_work_registry_size(): Long = torchNative.get_work_registry_size()
 }
+
+//  def unique_consecutive[D <: DType](tensor: Tensor[D]) = torchNative.unique_consecutive(tensor.native)
+
+//  def isAccelerator(deviceType: torch.DeviceType):Boolean = torchNative.isAccelerator(deviceType.toNative)
+//  def isAcceleratorExcluded(deviceType: torch.DeviceType, deviceType2: torch.DeviceType):Boolean = torchNative.isAcceleratorExcluded(deviceType, deviceType2)
+//
+
+// def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
+// def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
+//   def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
+
+//  def dist[D <: DType](tensor: Tensor[D], tensor2: Tensor[D]): Tensor[D] =
+//    fromNative(torchNative.dist(tensor.native, tensor2.native))
 
 //    def einsum[D <:DType](
 //        equation: String,

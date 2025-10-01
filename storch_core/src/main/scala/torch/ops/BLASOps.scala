@@ -22,7 +22,6 @@ import Layout.Strided
 import Device.CPU
 import internal.NativeConverters
 import NativeConverters.*
-import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.{
   DoubleOptional,
@@ -172,12 +171,7 @@ private[torch] trait BLASOps {
     fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
   /*
   // dim (int) – the axis along which to index
-  //
   // index (LongTensor) – the indices of elements to scatter and add, can be either empty or of the same dimensionality as src. When empty, the operation returns self unchanged.
-  // Tensor scatter_add(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1,
-  // @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
-  // src (Tensor) – the source elements to scatter and add
-  ///Tensor index_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4, @StringView String var5
   // torch.index_reduce(input: Tensor, dim: int, index: Tensor, source: Tensor, reduce: str, *, include_self: bool = True, out: Optional[Tensor]) → Tensor
    */
   def index_reduce[D <: DType](
@@ -244,7 +238,6 @@ private[torch] trait BLASOps {
   // index (LongTensor) – indices of self tensor to fill in
   // value (float) – the value to fill with
   // Tensor.index_fill_(dim, index, value) → Tensor
-  // index_fill(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
    */
   def index_fill[D1 <: DType, D2 <: DType](
       input: Tensor[D1],
@@ -268,12 +261,9 @@ private[torch] trait BLASOps {
 
   /*
   // dim (int) – dimension along which to index
-  //
   // index (LongTensor) – indices of tensor to select from
-  //
   // tensor (Tensor) – the tensor containing values to copy
   // Tensor.index_copy_(dim, index, tensor) → Tensor
-  // index_copy(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1, @Const @ByRef Tensor var3, @Const @ByRef Tensor var4);
    */
   def index_copy[D1 <: DType, D2 <: DType](
       input: Tensor[D1],
@@ -299,7 +289,6 @@ private[torch] trait BLASOps {
   }
 
   /*
-  // index_put(@Const @ByRef Tensor var0, @Const @ByRef TensorOptionalList var1, @Const @ByRef Tensor var2, @Cast({"bool"}) boolean var3);
   // indices (tuple of LongTensor) – tensors used to index into self.
   // values (Tensor) – tensor of same dtype as self.
   // accumulate (bool) – whether to accumulate into self
@@ -459,7 +448,6 @@ private[torch] trait BLASOps {
       )
     )
 
-  // Tensor renorm(@Const @ByRef Tensor var0, @Const @ByRef Scalar var1, @Cast({"int64_t"}) long var2, @Const @ByRef Scalar var4);
   def renorm[D1 <: DType](t1: Tensor[D1], p: Double, maxNorm: Double, dim: Long): Tensor[D1] =
     fromNative(torchNative.renorm(t1.native, toScalar(p), dim, toScalar(maxNorm)))
 
@@ -735,6 +723,7 @@ private[torch] trait BLASOps {
     val tensorVec =
       torchNative.pad_packed_sequence(packedSequence, batch_first, padding_value, native_length)
     (fromNative(tensorVec.get0()), fromNative(tensorVec.get1()))
+
 //  def permute[D1 <: DType](t1: Tensor[D1], sliceSeq: Seq[Long]): Tensor[D1] =
 //    fromNative(torchNative.permute(t1.native, sliceSeq *))
 
@@ -1520,8 +1509,12 @@ private[torch] trait BLASOps {
       error_if_nonfinite
     )
 
-  //    public static native void clip_grad_value_(@Const @ByRef TensorVector var0, double var1);
-  //    public static native void clip_grad_value_(@ByVal Tensor var0, double var1);
+  /** *
+    *
+    * @param parameters
+    * @param clip_value
+    * @return
+    */
   // torch.nn.utils.clip_grad_value_(parameters, clip_value, foreach=None)
   def clip_grad_value_(
       parameters: Seq[Tensor[?]],
@@ -1666,16 +1659,12 @@ private[torch] trait BLASOps {
     val packSeq = torchNative.pack_sequence(tensorVector, enforce_sorted)
     packSeq
 
-  //    public static native PackedSequence pack_sequence(@ByVal TensorVector var0, @Cast({"bool"}) boolean var1);
-  //    public static native PackedSequence pack_sequence(@ByVal TensorVector var0);
-
-//     public static native PackedSequence pack_padded_sequence(@ByVal Tensor var0, @ByVal Tensor var1, @Cast({"bool"}) boolean var2, @Cast({"bool"}) boolean var3);
-
-  //    public static native PackedSequence pack_padded_sequence(@ByVal Tensor var0, @ByVal Tensor var1);
-  //
-  //   public static native T_TensorTensor_T pad_packed_sequence(@ByVal PackedSequence var0);
-
-  //    public static native T_TensorTensor_T pad_packed_sequence(@ByVal PackedSequence var0, @Cast({"bool"}) boolean var1, double var2, @ByVal(nullValue = "std::optional<int64_t>(torch::nullopt)") LongOptional var4);
+  /** *
+    *
+    * @param input
+    * @param lengths
+    * @return
+    */
   // torch.nn.utils.rnn.pack_padded_sequence(input, lengths, batch_first=False, enforce_sorted=True)
   def pack_padded_sequence[D1 <: DType, D2 <: DType](
       input: Tensor[D1],
@@ -1969,15 +1958,12 @@ private[torch] trait BLASOps {
       torchNative.repeat_interleave(t1.native, repeats, new LongOptional(dim), new LongOptional())
     )
 
-  //    public static native Tensor repeat_interleave( Tensor var0,  long var1);
   def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Long): Tensor[D1] =
     fromNative(torchNative.repeat_interleave(t1.native, repeats))
 
-  //    public static native Tensor repeat_interleave( Tensor var0,  Tensor var1);
   def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Tensor[Int64]): Tensor[D1] =
     fromNative(torchNative.repeat_interleave(t1.native, repeats.native))
 
-  //    public static native Tensor repeat_interleave( Tensor var0);
   def repeat_interleave[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.repeat_interleave(t1.native))
 
@@ -2478,20 +2464,6 @@ private[torch] trait BLASOps {
 //  def trace[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trace(t1.native))
 
-//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal(nullValue = "at::TensorOptions(at::kLong)") TensorOptions var6);
-//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2);
-//
-//      torch.tril_indices(row, col, offset=0, *, dtype=torch.long, device='cpu', layout=torch.strided)
-
-//    public static native Tensor tril_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8, @ByVal BoolOptional var9);
-
-//    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2, @Cast({"int64_t"}) long var4, @ByVal(nullValue = "at::TensorOptions(at::kLong)") TensorOptions var6);
-  //    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2);
-  //    torch.triu_indices(row, col, offset=0, *, dtype=torch.long, device='cpu', layout=torch.strided) →
-  //    public static native Tensor triu_indices(@Cast({"int64_t"}) long var0, @Cast({"int64_t"}) long var2,
-  //    @Cast({"int64_t"}) long var4,
-  //    @ByVal ScalarTypeOptional var6, @ByVal LayoutOptional var7, @ByVal DeviceOptional var8, @ByVal BoolOptional var9);
-
   def tril_indices[D1 <: DType](
       row: Long,
       col: Long,
@@ -2536,7 +2508,7 @@ private[torch] trait BLASOps {
       invert: Boolean = false
   ): Tensor[D1] =
     fromNative(torchNative.isin(elements.native, test_elements.native, assume_unique, invert))
-//isFloatingType
+
   def isFloatingType[D1 <: DType](t1: D1): Boolean =
     torchNative.isFloatingType(t1.toScalarType)
 

@@ -23,8 +23,11 @@ import org.bytedeco.pytorch.{
 
 trait GradOps {
 
+  /** Creates a new GradCallback. // PostAccumulateGradHook
+    * @return
+    */
   def gradCallback(): GradCallback = {
-    // PostAccumulateGradHook
+
     val gradCallback = new GradCallback(new Pointer())
     gradCallback
   }
@@ -56,6 +59,15 @@ trait GradOps {
     gradBucket
   }
 
+  /** Creates a new AutogradState with the given flags.
+    *
+    * @param gradMode
+    * @param inferenceMode
+    * @param fwGradMode
+    * @param multiThreadingEnabled
+    * @return
+    *   // AutogradState.get_tls_state() // AutoFwGradMode
+    */
   def autogradState(
       gradMode: Boolean,
       inferenceMode: Boolean,
@@ -64,25 +76,27 @@ trait GradOps {
   ): AutogradState = {
     val auto = new AutogradState(gradMode, inferenceMode, fwGradMode, multiThreadingEnabled)
     auto
-//    AutogradState.get_tls_state()
-//    AutoFwGradMode
   }
 
+  /** Creates a new ForwardGrad.
+    *
+    * @return
+    *   // ForwardGrad.undef_grad()
+    */
   def forwardGrad(): ForwardGrad = {
     val forwardGrad = new ForwardGrad()
     forwardGrad
-//    ForwardGrad.undef_grad()
   }
-  
+
   def undef_grad() = {
     ForwardGrad.undef_grad()
   }
-  
+
   def autogradContext(): AutogradContext = {
     val autogradContext = new AutogradContext()
     autogradContext
   }
-  
+
   def require_grad(flag: Boolean) = TorchNative.requires_grad(flag)
 
   def no_grad_raw(): NoGradGuard = {

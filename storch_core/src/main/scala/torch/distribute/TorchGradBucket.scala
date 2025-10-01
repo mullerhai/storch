@@ -61,7 +61,6 @@ abstract class TorchGradBucket {
 
   def setBuffer(tensor: Tensor[?]) = native.setBuffer(tensor.native)
 
- 
   def getGradientBucket(
       index: Long,
       bucket_count: Long,

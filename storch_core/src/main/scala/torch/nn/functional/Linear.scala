@@ -56,7 +56,6 @@ private[torch] trait Linear {
       torchNative.linear(input.native, weight.native, toOptional(bias))
     )
 
-
   /** Applies a bilinear transformation to the incoming data: $y = x_1^T A x_2 + b$
     *
     * Shape:
