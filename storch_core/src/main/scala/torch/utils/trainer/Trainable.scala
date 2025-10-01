@@ -2,13 +2,13 @@ package torch
 package utils
 package trainer
 
-import torch.nn
+//import torch.nn
 import torch.*
 import torch.nn.modules.{HasParams, TensorModule}
 import torch.nn.loss.LossFunc
-import torch.nn.{Dropout, Embedding, Linear, Transformer, functional as F}
-import torch.::
-import torch.optim.Optimizer
+//import torch.nn.{Dropout, Embedding, Linear, Transformer, functional as F}
+//import torch.::
+//import torch.optim.Optimizer
 import torch.utils.data.{Dataset, DataLoader}
 import java.nio.file.Paths
 import scala.math.*

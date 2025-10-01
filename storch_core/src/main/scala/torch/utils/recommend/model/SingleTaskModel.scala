@@ -4,7 +4,6 @@ import torch.*
 import torch.nn.modules.container.{ModuleDict, ModuleList, Sequential}
 import torch.nn.modules.{HasParams, TensorModule}
 import torch.utils.recommend.layer as nns
-import torch.utils.recommend.layer.IntOrString
 
 import scala.collection.mutable.ListBuffer
 

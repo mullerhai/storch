@@ -1,10 +1,10 @@
 package torch.utils.speech.transformerASR
 
-import org.apache.commons.math3.transform.{DftNormalization, FastFourierTransformer, TransformType}
-import org.apache.commons.math3.util.FastMath
+//import org.apache.commons.math3.transform.{DftNormalization, FastFourierTransformer, TransformType}
+//import org.apache.commons.math3.util.FastMath
 import torch.*
-import torch.nn.modules.{HasParams, TensorModule}
-import torch.nn.{Dropout, Embedding, Linear, Transformer, functional as F}
+//import torch.nn.modules.{HasParams, TensorModule}
+//import torch.nn.{Dropout, Embedding, Linear, Transformer, functional as F}
 
 import java.io.File
 import java.nio.file.Paths
