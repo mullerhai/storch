@@ -52,14 +52,14 @@ final class BCEWithLogitsLoss(
   override def apply[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head
     fromNative(
-      nativeModule.forward(input.native, target.native) // .output()
+      nativeModule.forward(input.native, target.native) 
     )
   }
 
   def forward[D <: DType](inputs: Tensor[D]*)(target: Tensor[?]): Tensor[D] = {
     val input = inputs.toSeq.head
     fromNative(
-      nativeModule.forward(input.native, target.native) // .output()
+      nativeModule.forward(input.native, target.native) 
     )
   }
 
@@ -74,7 +74,3 @@ object BCEWithLogitsLoss {
   ): BCEWithLogitsLoss = new BCEWithLogitsLoss(weight, reduction, pos_weight, size_average, reduce)
 }
 
-//  public native @ByRef Tensor weight(); public native BCEWithLogitsLossImpl weight(Tensor setter);
-//
-//  /** A weight of positive examples. */
-//  public native @ByRef Tensor pos_weight(); public native BCEWithLogitsLossImpl pos_weight(Tensor setter);

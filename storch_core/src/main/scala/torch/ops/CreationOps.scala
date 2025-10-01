@@ -822,9 +822,7 @@ private[torch] trait CreationOps {
     // axis (int) – dimension on which apply per-channel quantization
     // dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
   // torch.quantize_per_channel(input, scales, zero_points, axis, dtype) → Tensor
-///  public static native Tensor quantize_per_channel(
-  // @Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
-  // @Const @ByRef Tensor var2, @Cast({"int64_t"}) long var3, ScalarType var5);
+
   // dtypes: torch.quint8, torch.qint8, torch.qint32
   def quantize_per_channel[D <: DType, U <: ScalaType](
       input: Tensor[D],
@@ -853,8 +851,7 @@ private[torch] trait CreationOps {
 //zero_point (int or Tensor) – offset in integer value that maps to float zero
 //
 //dtype (torch.dtype) – the desired data type of returned tensor. Has to be one of the quantized dtypes: torch.quint8, torch.qint8, torch.qint32
-//    public static native Tensor quantize_per_tensor(@Const @ByRef Tensor var0,
-//    @Const @ByRef Tensor var1, @Const @ByRef Tensor var2, ScalarType var3);
+
   //// dtypes: torch.quint8, torch.qint8, torch.qint32
   def quantize_per_tensor[D <: DType, U <: ScalaType](
       input: Tensor[D],
@@ -879,27 +876,7 @@ private[torch] trait CreationOps {
     fromNative(torchNative.quantize_per_tensor(input.native, scale, axis.toLong, dtype))
   }
 
-  //  public static native Tensor full_like(
-  //  @Const @ByRef Tensor var0,
-  //  @Const @ByRef Scalar var1, @ByVal(nullValue = "at::TensorOptions{}") T
-  //  ensorOptions var2, @ByVal(nullValue = "std::optional<at::MemoryFormat>(::std::nullopt)")
-  //  MemoryFormatOptional var3);
 
-  //    public static native Tensor full_like(
-  //    @Const @ByRef Tensor var0, @Const @ByRef Scalar var1);
-
-  //    public static native Tensor full_like(
-  //    @Const @ByRef Tensor var0, @Const @ByRef Scalar var1,
-  //    @ByVal ScalarTypeOptional var2, @ByVal LayoutOptional var3,
-  //    @ByVal DeviceOptional var4, @ByVal BoolOptional var5,
-  //    @ByVal MemoryFormatOptional var6);
-//torch.full_like(input, fill_value, \*, dtype=None, layout=torch.strided,
-  // device=None, requires_grad=False, memory_format=torch.preserve_format) → Tensor
-//Tensor torch_full_like(@Const
-  // @ByRef Tensor var0,
-  // @Const @ByRef Scalar var1,
-  // @ByVal(TensorOptions var2,
-  // " MemoryFormatOptional var3);
   def full_like[D <: DType, D1 <: Derive, U <: ScalaType](
       input: Tensor[D],
       fillValue: U,

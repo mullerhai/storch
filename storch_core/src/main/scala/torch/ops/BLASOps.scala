@@ -54,17 +54,7 @@ private[torch] trait BLASOps {
     fromNative(
       torchNative.nan_to_num(input.native, toOptional(nan), toOptional(posinf), toOptional(neginf))
     )
-  /*
-   *Tensor scatter_reduce(@Const @ByRef Tensor var0, @Cast({"int64_t"}) long var1,
-  // @Const @ByRef Tensor var3, @Const @ByRef Tensor var4,
-  // @StringView String var5, @Cast({"bool"}) boolean var6);
-  // torch.scatter_reduce(input, dim, index, src, reduce, *, include_self=True
-  // dim (int) – the axis along which to index
-  // index (LongTensor) – the indices of elements to scatter and reduce.
-  // src (Tensor) – the source elements to scatter and reduce
-  // reduce (str) – the reduction operation to apply for non-unique indices ("sum", "prod", "mean", "amax", "amin")
-  // include_self (bool) – whether elements from the self tensor are included in the reduction
-   */
+
   def scatter_reduce[D <: DType](
       input: Tensor[D],
       dim: Int,

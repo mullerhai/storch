@@ -55,11 +55,6 @@ import scala.collection.immutable.Iterable
  *   &\rule{110mm}{0.4pt}                                                          \\[-1.ex]
  * \end{aligned}
  *  $$
- * public native @ByRef @NoException(true) DoublePointer lr();
- * public native @ByRef @NoException(true) DoublePointer momentum();
- * public native @ByRef @NoException(true) DoublePointer dampening();
- * public native @ByRef @NoException(true) DoublePointer weight_decay();
- * public native @Cast("bool*") @ByRef @NoException(true) BoolPointer nesterov();
  * torch.optim.SGD(params, lr=0.001, momentum=0, dampening=0, 
  * weight_decay=0, nesterov=False, *,
  * maximize=False, foreach=None, differentiable=False, fused=None)

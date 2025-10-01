@@ -29,16 +29,6 @@ abstract class TorchReducer {
 
   val native: Reducer
 
-//  def  Reducer(
-//        @ByVal TensorVector params,
-//        @ByVal SizeTVectorVector bucket_indices,
-//        @IntrusivePtr("c10d::ProcessGroup") @Cast({"", "c10::intrusive_ptr<c10d::ProcessGroup>&"}) ProcessGroup process_group,
-//        @ByVal BoolVector expect_sparse_gradients,
-//        @Cast("int64_t") long bucket_bytes_cap,
-//        @Cast("bool") boolean find_unused_parameters,
-//        @Cast("bool") boolean gradient_as_bucket_view,
-//        @ByVal SizeTStringMap param_names,
-//        @Cast("int64_t") long first_bucket_bytes_cap)
 
   def getReducer(
       params: Array[Tensor[?]],

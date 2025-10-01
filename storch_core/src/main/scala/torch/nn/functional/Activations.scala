@@ -63,7 +63,6 @@ private[torch] trait Activations {
       dtype: Out = derive
   ) = logSoftmax(input, dim, dtype)
 
-  ////    public static native Tensor log_softmax(@Const @ByRef Tensor var0, @Const @ByRef LogSoftmaxFuncOptions var1);
   /** Applies the rectified linear unit function element-wise.
     *
     * See [[torch.nn.ReLU]] for more details.
@@ -230,9 +229,7 @@ private[torch] trait Activations {
 
 }
 
-//  @native
-//  @Namespace("at::native")
-//  @ByVal
+
 //  def relu[TT <: DType](@Const @ByRef input: Tensor[TT]): Tensor[TT] = fromNative(torchNative.relu(input.native))
 
 //  def rrelu_[D <: DType](input: Tensor[D], lower: Double, upper: Double): Tensor[D] = {

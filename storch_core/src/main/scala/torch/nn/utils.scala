@@ -127,22 +127,3 @@ object utils:
       TensorVector(parameters.map(_.native).toArray*)
     )
 
-//    public static native void clip_grad_value_(@Const @ByRef TensorVector var0, double var1);
-//    public static native void clip_grad_value_(@ByVal Tensor var0, double var1);
-//torch.nn.utils.clip_grad_value_(parameters, clip_value, foreach=None)
-
-//  public static native Tensor parameters_to_vector(@Const @ByRef TensorVector var0);
-
-//    public static native void vector_to_parameters(@Const @ByRef Tensor var0, @Const @ByRef TensorVector var1);
-
-//  public static native double clip_grad_norm_(@Const @ByRef TensorVector var0, double var1, double var3, @Cast({"bool"}) boolean var5);
-//
-//    @Namespace("torch::nn::utils")
-//    public static native double clip_grad_norm_(@Const @ByRef TensorVector var0, double var1);
-//
-//    @Namespace("torch::nn::utils")
-//    public static native double clip_grad_norm_(@ByVal Tensor var0, double var1, double var3, @Cast({"bool"}) boolean var5);
-//
-//    @Namespace("torch::nn::utils")
-//    public static native double clip_grad_norm_(@ByVal Tensor var0, double var1);
-//torch.nn.utils.clip_grad_norm_(parameters, max_norm, norm_type=2.0, error_if_nonfinite=False, foreach=None)[source]

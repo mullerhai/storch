@@ -61,14 +61,7 @@ abstract class TorchGradBucket {
 
   def setBuffer(tensor: Tensor[?]) = native.setBuffer(tensor.native)
 
-  //      @Cast("size_t") long index,
-  //        @Cast("size_t") long bucket_count,
-  //        @ByVal Tensor tensor,
-  //        @ByVal @Cast("std::vector<size_t>*") SizeTVector offsets,
-  //        @ByVal @Cast("std::vector<size_t>*") SizeTVector lengths,
-  //        @ByVal LongArrayRefVector sizes_vec,
-  //        @ByVal TensorVector parameters,
-  //        @ByVal TensorOptional sparse_grad_indice
+ 
   def getGradientBucket(
       index: Long,
       bucket_count: Long,

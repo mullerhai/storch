@@ -56,16 +56,6 @@ import org.bytedeco.pytorch.global.torch.ScalarType
  * @see See [[https://pytorch.org/cppdocs/api/classtorch_1_1nn_1_1_embedding.html#class-embedding Pytorch C++ Embedding]]
  * @see See [[https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html Pytorch Python Embedding]]
  * @native private def allocate(@Cast(Array("int64_t"))  num_embeddings: Long, @Cast(Array("int64_t"))  embedding_dim: Long): Unit
- * @Cast(Array("int64_t*")) @ByRef  @NoException(true)  @native  def num_embeddings: LongPointer
- * @Cast(Array("int64_t*")) @ByRef  @NoException(true)  @native  def embedding_dim: LongPointer
- * @ByRef @NoException(true)  @native  def max_norm: DoubleOptional
- * @ByRef @NoException(true)  @native  def norm_type: DoublePointer
- * @Cast(Array("bool*")) @ByRef  @NoException(true)  @native  def scale_grad_by_freq: BoolPointer
- * @ByRef @NoException(true)  @native  def mode: EmbeddingBagMode
- * @Cast(Array("bool*")) @ByRef  @NoException(true)  @native  def sparse: BoolPointer
- * @ByRef @NoException(true)  @native  def _weight: Tensor
- * @Cast(Array("bool*")) @ByRef  @NoException(true)  @native  def include_last_offset: BoolPointer
- * @ByRef @NoException(true)  @native  def padding_idx: LongOptional
  *        }
  *        torch.nn.EmbeddingBag(num_embeddings, embedding_dim, max_norm=None,
  *        norm_type=2.0, scale_grad_by_freq=False, mode='mean', sparse=False,
@@ -121,9 +111,9 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
   if needWeight.isDefined then options._weight().put(needWeight.get.native)
 
   mode match
-    case EmbeddingBagMode.kMean | "mean" | "Mean" => options.mode().put(new kMean)
-    case EmbeddingBagMode.kMax | "max" | "Max"    => options.mode().put(new kMax)
-    case EmbeddingBagMode.kSum | "sum" | "Sum"    => options.mode().put(new kSum)
+    case EmbeddingBagMode.kMean | "mean" | "Mean" | "MEAN" => options.mode().put(new kMean)
+    case EmbeddingBagMode.kMax | "max" | "Max" | "MAX"   => options.mode().put(new kMax)
+    case EmbeddingBagMode.kSum | "sum" | "Sum" | "SUM"    => options.mode().put(new kSum)
 
   override val nativeModule: EmbeddingBagImpl = EmbeddingBagImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -302,6 +292,26 @@ object EmbeddingBag:
 
   enum EmbeddingBagMode:
     case kSum, kMean, kMax
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //embeddings (Tensor) – FloatTensor containing weights for the EmbeddingBag. First dimension is being passed to EmbeddingBag as ‘num_embeddings’, second as ‘embedding_dim’.
 //

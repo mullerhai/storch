@@ -155,14 +155,12 @@ trait JitOps {
       size: Long,
       extraFilesMap: ExtraFilesMap
   ): JitModule = {
-    // public static native JitModule parse_and_initialize_jit_module(@Cast({"char*"}) @SharedPtr ByteBuffer var0, @Cast({"size_t"}) long var1, @ByRef ExtraFilesMap var3, @ByVal(nullValue = "std::optional<at::Device>(std::nullopt)") DeviceOptional var4);
     torchNative.parse_and_initialize_jit_module(modelStream, size, extraFilesMap)
 
   }
 
   def load_jit_module_from_file(fileName: String, extraFilesMap: ExtraFilesMap): JitModule = {
-    //   public static native JitModule load_jit_module_from_file(@StdString String var0, @ByRef ExtraFilesMap var1, @ByVal(nullValue = "std::optional<at::Device>(std::nullopt)") DeviceOptional var2);
-    ///    public static native JitModule load_jit_module_from_file(@StdString String var0, @ByRef ExtraFilesMap var1);
+
     torchNative.load_jit_module_from_file(fileName, extraFilesMap)
 
   }
@@ -172,8 +170,7 @@ trait JitOps {
       extraFilesMap: ExtraFilesMap,
       device: Option[String] = None
   ): JitModule = {
-    //  public static native JitModule load_jit_module_from_stream(@Cast({"std::istream*"}) @ByRef Pointer var0, @ByRef ExtraFilesMap var1, @ByVal(nullValue = "std::optional<at::Device>(std::nullopt)") DeviceOptional var2);
-    //    public static native JitModule load_jit_module_from_stream(@Cast({"std::istream*"}) @ByRef Pointer var0, @ByRef ExtraFilesMap var1);
+
     //    val streamPointer: Pointer = None
     //    device match {
     //      case None => torchNative.load_jit_module_from_stream(streamPointer ,extraFilesMap)

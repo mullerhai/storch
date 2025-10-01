@@ -479,63 +479,20 @@ private[torch] trait RecurrentOps {
     )
     fromNative[TT](native)
   }
-
-  //	@native @Namespace("at::native") @ByVal def rnn_tanh_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT],
-  //	@Const @ByRef hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT],
-  //	@Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT]): Tensor[T, TT]
-
-  //	@native @Namespace("at::native") @ByVal def rnn_tanh_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef
-  //	hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT]): Tensor[T, TT]
-
-  //	@native @Namespace("at::native") @ByVal def rnn_relu_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT], @Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT]): Tensor[T, TT]
-  //	@native @Namespace("at::native") @ByVal def rnn_relu_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT]): Tensor[T, TT]
-  //	@native @Namespace("at::native") @ByVal def quantized_lstm_cell[T, TT <: DType](@Const @ByRef
-  //	input: Tensor[T, TT], @ByVal hx: TensorList[T, TT], @Const @ByRef w_ih: Tensor[T, TT],
-  //	@Const @ByRef w_hh: Tensor[T, TT], @Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT],
-  //	@Const @ByRef packed_ih: Tensor[T, TT], @Const @ByRef packed_hh: Tensor[T, TT],
-  //	@Const @ByRef col_offsets_ih: Tensor[T, TT], @Const @ByRef col_offsets_hh: Tensor[T, TT],
-  //	@ByVal scale_ih: Scalar[T], @ByVal scale_hh: Scalar[T], @ByVal zero_point_ih: Scalar[T],
-  //	@ByVal zero_point_hh: Scalar[T]): TensorTuple[T,T,TT]
-  //	@native @Namespace("at::native") @ByVal def quantized_gru_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT], @Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT], @Const @ByRef packed_ih: Tensor[T, TT], @Const @ByRef packed_hh: Tensor[T, TT], @Const @ByRef col_offsets_ih: Tensor[T, TT], @Const @ByRef col_offsets_hh: Tensor[T, TT], @ByVal scale_ih: Scalar[T], @ByVal scale_hh: Scalar[T], @ByVal zero_point_ih: Scalar[T], @ByVal zero_point_hh: Scalar[T]): Tensor[T, TT]
-  //	@native @Namespace("at::native") @ByVal def quantized_rnn_relu_cell[T, TT <: DType](@Const @ByRef input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT],
-  //	@Const @ByRef w_ih: Tensor[T, TT], @Const @ByRef w_hh: Tensor[T, TT],
-  //	@Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT],
-  //	@Const @ByRef packed_ih: Tensor[T, TT], @Const @ByRef packed_hh: Tensor[T, TT],
-  //	@Const @ByRef col_offsets_ih: Tensor[T, TT], @Const @ByRef col_offsets_hh: Tensor[T, TT],
-  //	@ByVal scale_ih: Scalar[T], @ByVal scale_hh: Scalar[T], @ByVal zero_point_ih: Scalar[T],
-  //	@ByVal zero_point_hh: Scalar[T]): Tensor[T, TT]
-  //	@native @Namespace("at::native") @ByVal def quantized_rnn_tanh_cell[T, TT <: DType](@Const @ByRef
-  //	input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @Const @ByRef w_ih: Tensor[T, TT],
-  //	@Const @ByRef w_hh: Tensor[T, TT], @Const @ByRef b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT],
-  //	@Const @ByRef packed_ih: Tensor[T, TT], @Const @ByRef packed_hh: Tensor[T, TT],
-  //	@Const @ByRef col_offsets_ih: Tensor[T, TT], @Const @ByRef col_offsets_hh: Tensor[T, TT],
-  //	@ByVal scale_ih: Scalar[T], @ByVal scale_hh: Scalar[T],
-  //	@ByVal zero_point_ih: Scalar[T], @ByVal zero_point_hh: Scalar[T]): Tensor[T, TT]
-  //
-//  public static native T_TensorTensor_T rnn_tanh(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
-  //  @ByVal TensorVector var2, @Cast({"bool"}) boolean var3, @Cast({"int64_t"}) long var4,
-  //  double var6, @Cast({"bool"}) boolean var8, @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-
-  //	@native @Namespace("at::native") @ByVal def rnn_tanh[T, TT <: DType](@Const @ByRef input: Tensor[T, TT],
-  //	@Const @ByRef hx: Tensor[T, TT],
-  //	params: Seq[TensorList[TT]],  has_biases: Boolean, num_layers: Long,
-  //	dropout: Double, train: Boolean, bidirectional: Boolean,  batch_first: Boolean): TensorTuple[T,T,TT]
-
-  //	@native @Namespace("at::native") @ByVal def rnn_tanh[T, TT <: DType](@Const @ByRef data: Tensor[T, TT], @Const @ByRef batch_sizes: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @ByVal params: TensorList[T, TT], @Cast(Array("bool")) has_biases: Boolean, @Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double, @Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean): TensorTuple[T,T,TT]
-
-  //   public static native T_TensorTensor_T rnn_relu(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1,
-  //   @ByVal TensorVector var2, @Cast({"bool"}) boolean var3, @Cast({"int64_t"}) long var4, double var6,
-  //   @Cast({"bool"}) boolean var8, @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-
-  //	@native @Namespace("at::native") @ByVal def rnn_relu[T, TT <: DType](@Const @ByRef
-  //	input: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT],
-  //	@ByVal params: TensorList[T, TT], @Cast(Array("bool")) has_biases: Boolean,
-  //	@Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double,
-  //	@Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean,
-  //	@Cast(Array("bool")) batch_first: Boolean): TensorTuple[T,T,TT]
-  //	@native @Namespace("at::native") @ByVal def rnn_relu[T, TT <: DType](@Const @ByRef data: Tensor[T, TT], @Const @ByRef batch_sizes: Tensor[T, TT], @Const @ByRef hx: Tensor[T, TT], @ByVal params: TensorList[T, TT], @Cast(Array("bool")) has_biases: Boolean, @Cast(Array("int64_t")) num_layers: CLongPointer, dropout: Double, @Cast(Array("bool")) train: Boolean, @Cast(Array("bool")) bidirectional: Boolean): TensorTuple[T,T,TT]
-
+  
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 //case class TensorTuple2[T <: FloatNN | ComplexNN](output: Tensor[T], hx: Tensor[T])
 //
@@ -572,42 +529,3 @@ private[torch] trait RecurrentOps {
 //    bool batch_first = false, double padding_value = 0,
 //    std::string_view padding_side = "right")
 
-//  public static native T_TensorTensorTensor_T lstm(
-// @Const @ByRef Tensor var0,
-//  @ByVal TensorArrayRef var1, @ByVal TensorArrayRef var2,
-
-//  @Cast({"bool"}) boolean var3, @Cast({"int64_t"}) long var4,
-//  double var6, @Cast({"bool"}) boolean var8,
-//  @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-//
-//  @Namespace("at")
-//  @ByVal
-//  public static native T_TensorTensorTensor_T lstm(@Const @ByRef
-//  Tensor var0, @ByVal TensorVector var1, @ByVal TensorVector var2, @Cast({"bool"})
-//  boolean var3, @Cast({"int64_t"}) long var4, double var6, @Cast({"bool"})
-//  boolean var8, @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-//
-//  @Namespace("at")
-//  @ByVal
-//  public static native T_TensorTensorTensor_T lstm(@Const @ByRef Tensor var0,
-//  @Const @ByRef Tensor var1, @ByVal TensorArrayRef var2, @ByVal TensorArrayRef var3,
-//  @Cast({"bool"}) boolean var4, @Cast({"int64_t"}) long var5, double var7,
-//  @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-//
-//  @Namespace("at")
-//  @ByVal
-//  public static native T_TensorTensorTensor_T lstm(@Const @ByRef
-//  Tensor var0, @Const @ByRef Tensor var1, @ByVal TensorVector var2,
-//  @ByVal TensorVector var3, @Cast({"bool"}) boolean var4, @Cast({"int64_t"})
-//  long var5, double var7, @Cast({"bool"}) boolean var9, @Cast({"bool"}) boolean var10);
-
-// TensorArrayRef(@Const Tensor data, @Cast("size_t") long length)
-
-//  lstm_cell[T, TT <: DType](@Const @ByRef
-//  input: Tensor[T, TT], @ByVal hx: TensorList[T, TT], @Const @ByRef w_ih: Tensor[T, TT],
-//  @Const @ByRef w_hh: Tensor[T, TT]): TensorTuple[T,T,TT]
-
-//	@native @Namespace("at::native") @ByVal def lstm_cell[T, TT <: DType](@Const @ByRef
-//	input: Tensor[T, TT], @ByVal hx: TensorList[T, TT], @Const @ByRef w_ih: Tensor[T, TT],
-//	@Const @ByRef w_hh: Tensor[T, TT], @Const @ByRef
-//	b_ih: Tensor[T, TT], @Const @ByRef b_hh: Tensor[T, TT]): TensorTuple[T,T,TT]

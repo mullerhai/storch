@@ -88,26 +88,18 @@ object AdaptiveLogSoftmaxWithLoss:
 //  /** Given input tensor, and output of {@code head}, computes the log of the full
 //   *  distribution */
 
-//  public native @ByVal Tensor _get_full_log_prob(@Const @ByRef Tensor input, @Const @ByRef Tensor head_output);
 //
 //  /** Computes log probabilities for all n_classes */
-//  public native @ByVal Tensor log_prob(@Const @ByRef Tensor input);
 //
 //  /** This is equivalent to {@code log_pob(input).argmax(1)} but is more efficient in
 //   *  some cases */
-//  public native @ByVal Tensor predict(@Const @ByRef Tensor input);
 //
 //  /** The options with which this {@code Module} was constructed */
-//  public native @ByRef AdaptiveLogSoftmaxWithLossOptions options(); public native AdaptiveLogSoftmaxWithLossImpl options(AdaptiveLogSoftmaxWithLossOptions setter);
 //
 //  /** Cutoffs used to assign targets to their buckets. It should be an ordered
 //   *  Sequence of integers sorted in the increasing order */
-//  public native @ByRef @Cast("std::vector<int64_t>*") LongVector cutoffs(); public native AdaptiveLogSoftmaxWithLossImpl cutoffs(LongVector setter);
 //
-//  public native @Cast("int64_t") long shortlist_size(); public native AdaptiveLogSoftmaxWithLossImpl shortlist_size(long setter);
 //
 //  /** Number of clusters */
-//  public native @Cast("int64_t") long n_clusters(); public native AdaptiveLogSoftmaxWithLossImpl n_clusters(long setter);
 //
 //  /** Output size of head classifier */
-//  public native @Cast("int64_t") long head_size(); public native AdaptiveLogSoftmaxWithLossImpl head_size(long setter);

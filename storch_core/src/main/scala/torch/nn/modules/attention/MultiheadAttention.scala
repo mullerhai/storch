@@ -210,14 +210,3 @@ object MultiheadAttention:
   enum TransformerActivation:
     case kReLU, kGELU, TensorMapper
 
-//  options.kdim().put(LongPointer(1).put(kDim.toLong))
-//  options.vdim().put(LongPointer(1).put(vDim.toLong))
-//  public native @Cast("bool") boolean _qkv_same_embed_dim(); public native MultiheadAttentionImpl _qkv_same_embed_dim(boolean setter);
-//  public native @ByRef Tensor in_proj_weight(); public native MultiheadAttentionImpl in_proj_weight(Tensor setter);
-//  public native @ByRef Tensor in_proj_bias(); public native MultiheadAttentionImpl in_proj_bias(Tensor setter);
-//  public native @ByRef Tensor bias_k(); public native MultiheadAttentionImpl bias_k(Tensor setter);
-//  public native @ByRef Tensor bias_v(); public native MultiheadAttentionImpl bias_v(Tensor setter);
-//  public native @ByRef Tensor q_proj_weight(); public native MultiheadAttentionImpl q_proj_weight(Tensor setter);
-//  public native @ByRef Tensor k_proj_weight(); public native MultiheadAttentionImpl k_proj_weight(Tensor setter);
-//  public native @ByRef Tensor v_proj_weight(); public native MultiheadAttentionImpl v_proj_weight(Tensor setter);
-//  public native @Cast("int64_t") long head_dim(); public native MultiheadAttentionImpl head_dim(long setter);

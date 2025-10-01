@@ -46,15 +46,6 @@ trait FftOps {
     torchNative.blackman_window(window_length)
   )
 
-  //    public static native Tensor bartlett_window( long var0,
-  //    @ByVal ScalarTypeOptional var2, @ByVal LayoutOptional var3, @ByVal
-  //    DeviceOptional var4, @ByVal BoolOptional var5);
-
-//  def hamming_window[D <: DType](window_length: Long, dtype: DType, layout: Layout, device: Device, requires_grad: Boolean): Tensor[D] = fromNative(torchNative.bartlett_window(window_length))
-  //  def hann_window[D <: DType](window_length: Long, dtype: DType, layout: Layout, device: Device, requires_grad: Boolean): Tensor[D] = fromNative(torchNative.bartlett_window(window_length))
-  //  def kaiser_window[D <: DType](window_length: Long, dtype: DType, layout: Layout, device: Device, requires_grad: Boolean): Tensor[D] = fromNative(torchNative.bartlett_window(window_length))
-  //  def blackman_window[D <: DType](window_length: Long, dtype: DType, layout: Layout, device: Device, requires_grad: Boolean): Tensor[D] = fromNative(torchNative.bartlett_window(window_length))
-  //  def bartlett_window[D <: DType](window_length: Long, dtype: DType, layout: Layout, device: Device, requires_grad: Boolean): Tensor[D] = fromNative(torchNative.bartlett_window(window_length))
 
   def hamming_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
     torchNative.hamming_window(window_length, periodic)

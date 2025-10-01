@@ -106,29 +106,11 @@ private[torch] trait BatchNorm {
 //  TensorOptional var2, @ByVal(nullValue = "std::optional<double>(::std::nullopt)")
 //  DoubleOptional var3);
 
-//public native
-//@ByRef @NoException(true) Tensor weight();
-//public native
-//@ByRef @NoException(true) Tensor bias();
-//public native
-//@Cast("bool*") @ByRef @NoException(true) BoolPointer training();
-//public native
-//@ByRef @NoException(true) DoubleOptional momentum();
-//public native
-//@ByRef @NoException(true) DoublePointer eps();
+
 
 //  @Namespace("torch::nn::functional")  125
 //  @Namespace("torch::nn::init") 28
 // @Namespace("torch::special") 136
-//  @Namespace("torch::nn::functional") public static native @ByVal Tensor batch_norm(
-//  @Const @ByRef Tensor input,
-//  @Const @ByRef Tensor running_mean,
-//  @Const @ByRef Tensor running_var,
-//  @Const @ByRef(nullValue = "torch::nn::functional::BatchNormFuncOptions{}") BatchNormFuncOptions options);
-//  @Namespace("torch::nn::functional") public static native @ByVal Tensor batch_norm(
-//  @Const @ByRef Tensor input,
-//  @Const @ByRef Tensor running_mean,
-//  @Const @ByRef Tensor running_var);
 
 //  @Namespace("torch::linalg") public static native @ByVal Tensor norm(
 //  @Const @ByRef Tensor self,

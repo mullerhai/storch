@@ -1865,7 +1865,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.index_put(list, value.native, accumulate)
     this
   }
-  // index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
   def index_put_(indices: Seq[Tensor[Int64]], value: Tensor[D]): this.type = {
     val list = new TensorOptionalList()
     indices.map(tensor => list.push_back(new TensorOptional(tensor.native)))
@@ -1889,7 +1888,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 //    this
 //  }
 
-  // index_put_(@ByVal TensorIndexVector indices, @Const @ByRef Tensor rhs);
   def index_put_[S <: ScalaType](indices: Seq[Tensor[Int64]], value: S): this.type = {
     val list = new TensorIndexVector()
     indices.map(tensor => list.push_back(new TensorIndex(tensor.native)))
@@ -3057,7 +3055,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     this
   }
 
-  // Tensor sspaddmm(@Const @ByRef Tensor mat1, @Const @ByRef Tensor mat2, @Const @ByRef(nullValue = "at::Scalar(1)") Scalar beta, @Const @ByRef(nullValue = "at::Scalar(1)") Scalar alpha);
   // beta 是一个标量，默认值为 1.0
   // alpha 是一个标量，默认值为 1.0
   def sspaddmm[D1 <: DType, S <: ScalaType](
@@ -3073,9 +3070,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def istft(n_fft: Long): Tensor[D] = fromNative(native.istft(n_fft))
 
-  // public native @ByVal Tensor istft(long n_fft, LongOptional hop_length,  LongOptional win_length,
-  // TensorOptional window,  boolean center/*=true*/, boolean normalized/*=false*/, BoolOptional onesided,
-  // LongOptional length,  boolean return_complex/*=false*/);
+
   def istft(
       n_fft: Long,
       hop_length: Option[Long] = None,

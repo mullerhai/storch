@@ -273,11 +273,7 @@ private[torch] trait Loss {
 
   // torch.nn.functional.ctc_loss(log_probs, targets,
   // input_lengths, target_lengths, blank=0, reduction='mean', zero_infinity=False)[source]
-  // Tensor ctc_loss(@Const @ByRef Tensor var0, @Const @ByRef Tensor var1, @Const @ByRef Tensor var2,
-  // @Const @ByRef Tensor var3, @Cast({"const torch::nn::functional::CTCLossFuncOptions*"})
-  // @ByRef(nullValue = "torch::nn::functional::CTCLossFuncOptions{}") CTCLossOptions var4);
-  // Tensor ctc_loss(@Const @ByRef Tensor log_probs, @Const @ByRef Tensor targets,
-  // @Const @ByRef Tensor input_lengths, @Const @ByRef Tensor target_lengths);
+
   def ctc_loss[I <: BFloat16 | FloatNN, O <: NumericRealNN](
       input: Tensor[I],
       target: Tensor[O],
@@ -872,7 +868,7 @@ private[torch] trait Loss {
       target: Tensor[O],
       weight: Option[Tensor[O]] = None,
       reduction: String = "mean",
-      ignore_index: Int,
+      ignore_index: Int = 100,
       size_average: Option[Boolean] = None,
       reduce: Option[Boolean] = None
   ): Tensor[O] = {
