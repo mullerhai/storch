@@ -145,8 +145,8 @@ private[torch] trait RandomSamplingOps {
     */
   def rand_raw[D <: FloatNN | ComplexNN](
       size: Int*
-  )(using requires_grads: Boolean = false)(using dtypes: D = float32): Tensor[D] = {
-    rand(size.toSeq, dtypes, requires_grads, Strided, CPU)
+  )(using requires_grad: Boolean = false)(using dtypes: D = float32): Tensor[D] = {
+    rand(size.toSeq, dtypes, requires_grad, Strided, CPU)
   }
 
   def rands[D <: FloatNN | ComplexNN](size: Int*)(implicit dtype: D = float32): Tensor[D] = {
@@ -155,26 +155,26 @@ private[torch] trait RandomSamplingOps {
 
   def rand[D <: FloatNN | ComplexNN](
       s1: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_rand(
         Seq(s1).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
   def rand[D <: FloatNN | ComplexNN](
       s1: Int,
       s2: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_rand(
         Seq(s1, s2).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -182,13 +182,13 @@ private[torch] trait RandomSamplingOps {
       s1: Int,
       s2: Int,
       s3: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_rand(
         Seq(s1, s2, s3).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -197,14 +197,14 @@ private[torch] trait RandomSamplingOps {
       s2: Int,
       s3: Int,
       s4: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
 
     fromNative(
       torchNative.torch_rand(
         Seq(s1, s2, s3, s4).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -215,14 +215,14 @@ private[torch] trait RandomSamplingOps {
       s3: Int,
       s4: Int,
       s5: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
 
     fromNative(
       torchNative.torch_rand(
         Seq(s1, s2, s3, s4, s5).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -402,13 +402,13 @@ private[torch] trait RandomSamplingOps {
 
   def randn[D <: FloatNN | ComplexNN](
       s1: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_randn(
         Seq(s1).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -416,13 +416,13 @@ private[torch] trait RandomSamplingOps {
   def randn[D <: FloatNN | ComplexNN](
       s1: Int,
       s2: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_randn(
         Seq(s1, s2).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }
@@ -431,12 +431,12 @@ private[torch] trait RandomSamplingOps {
       s1: Int,
       s2: Int,
       s3: Int,
-      requires_grads: Boolean
+      requires_grad: Boolean
   ): Tensor[D] = {
     fromNative(
       torchNative.torch_randn(
         Seq(s1, s2, s3).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grad)
       )
     )
   }
@@ -446,13 +446,13 @@ private[torch] trait RandomSamplingOps {
       s2: Int,
       s3: Int,
       s4: Int,
-      requires_grads: Boolean
+      requires_grad: Boolean
   ): Tensor[D] = {
 
     fromNative(
       torchNative.torch_randn(
         Seq(s1, s2, s3, s4).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(float32, Strided, CPU, requires_grad)
       )
     )
   }
@@ -463,14 +463,14 @@ private[torch] trait RandomSamplingOps {
       s3: Int,
       s4: Int,
       s5: Int,
-      requires_grads: Boolean,
+      requires_grad: Boolean,
       dtype: D
   ): Tensor[D] = {
 
     fromNative(
       torchNative.torch_randn(
         Seq(s1, s2, s3, s4, s5).toArray.map(_.toLong),
-        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grads)
+        NativeConverters.tensorOptions(dtype, Strided, CPU, requires_grad)
       )
     )
   }

@@ -6,9 +6,7 @@ import org.bytedeco.pytorch.{
   SizeTOptional,
   TensorExampleStack,
   TensorExampleVectorOptional,
-  ChunkSharedTensorBatchDataset as CSTBD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  ChunkSharedTensorBatchDataset as CSTBD
 }
 import torch.utils.data.dataset.ChunkTensorDataset
 

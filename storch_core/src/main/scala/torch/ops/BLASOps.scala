@@ -1746,25 +1746,47 @@ private[torch] trait BLASOps {
     val tensorArr: TensorVector = torchNative.dequantize(tensorVector)
     tensorVectorToSeqTensor(tensorArr)
 
-  def norm[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+  def norm[D1 <: FloatNN | BFloat16](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.norm(t1.native))
 
-  def norm[D1 <: DType, S <: ScalaType](t1: Tensor[D1], p: S): Tensor[D1] =
-    fromNative(torchNative.norm(t1.native, toScalar(p)))
+  def norm[D1 <: FloatNN | BFloat16, S <: ScalaType](t1: Tensor[D1], p: S): Tensor[D1] = {
+    val pFloat = p match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(pFloat))))
+  }
 
-//Tensor norm(@Const @ByRef Tensor self, @Const @ByRef ScalarOptional p,
-  // @ByVal @Cast({"int64_t*", "c10::ArrayRef<int64_t>", "std::vector<int64_t>&"}) @StdVector("int64_t") long... dim);
+  def norm[D1 <: FloatNN | BFloat16, S <: ScalaType](
+      t1: Tensor[D1],
+      p: S,
+      dim: Long*
+  ): Tensor[D1] = {
+    val pFloat = p match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(pFloat)), dim*))
+  }
 
-  def norm[D1 <: DType, S <: ScalaType](t1: Tensor[D1], p: S, dim: Long*): Tensor[D1] =
-    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(p)), dim*))
-
-  def norm[D1 <: DType, S <: ScalaType](
+  def norm[D1 <: FloatNN | BFloat16, S <: ScalaType](
       t1: Tensor[D1],
       p: S,
       dim: Seq[Long],
       keepdim: Boolean = false
-  ): Tensor[D1] =
-    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(p)), dim.toArray, keepdim))
+  ): Tensor[D1] = {
+    val pFloat = p match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(pFloat)), dim.toArray, keepdim))
+  }
 
   def norm_except_dim[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.norm_except_dim(t1.native))

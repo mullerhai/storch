@@ -3,14 +3,13 @@ package utils
 package trainer
 
 import torch.nn.loss.CrossEntropyLoss
-import torch.optim.AdamW
 import org.bytedeco.javacpp.PointerScope
 import scala.util.Using
 import torch.*
-import torch.nn.modules.{HasParams, TensorModule}
-import torch.nn.loss.LossFunc
-import torch.optim.Optimizer
-import torch.utils.data.{Dataset, DataLoader}
+//import torch.nn.modules.{HasParams, TensorModule}
+//import torch.nn.loss.LossFunc
+//import torch.optim.Optimizer
+import torch.utils.data.{DataLoader}
 
 /** Normal model Trainer for LSTM model LSTM模型训练器，继承自Trainable trait 使用AdamW优化器和CrossEntropyLoss损失函数
   */

@@ -58,18 +58,31 @@ object indexing:
       // So step and start are reversed here
       Slice(start, end, Some(1))
 
+    def ::^(end: Int | Option[Int]): Slice =
+      // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+      // So step and start are reversed here
+      Slice(start, end, Some(1))
+    def :&(end: Int | Option[Int]): Slice =
+      // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+      // So step and start are reversed here
+      Slice(start, end, Some(1))
+
   // python tensor[s:e:t] [have start end step ], use as :-> s.&#(e,t)   slice(s,e,t)
-  extension (start: Int | Option[Int]) def &#(end: Int, step: Int): Slice = Slice(start, end, step)
+  extension (start: Int | Option[Int])
+    def &#(end: Int, step: Int): Slice = Slice(start, end, step)
+    def :::*(end: Int, step: Int): Slice = Slice(start, end, step)
 
   // python tensor[ :e:t] [only end step] , use as : ->  e.&^(0.::(t))  -> slice(0,e,t)
   extension (end: Int | Option[Int])
     def &^(slice: Slice): Slice = Slice(slice.start, end, slice.step)
+    def ^:^(slice: Slice): Slice = Slice(slice.start, end, slice.step)
     // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
     // So step and start are reversed here
 
   // python tensor[ :e:t] [only end step] , use as : ->  0.#&(e.::(t))  -> slice(0,e,t)
   extension (start: Int | Option[Int])
     def #&(slice: Slice): Slice = Slice(start, slice.start, slice.step)
+    def :^^(slice: Slice): Slice = Slice(start, slice.start, slice.step)
     // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
     // So step and start are reversed here
 

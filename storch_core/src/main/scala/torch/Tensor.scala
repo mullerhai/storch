@@ -317,6 +317,42 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def /[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = div(s)
 
+  def !=&[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.not_equal(toScalar(s))
+  )
+
+  def !=&[D2 <: DType](other: Tensor[D2]): Tensor[Div[D, D2]] = fromNative(
+    native.not_equal(other.native)
+  )
+
+  def !==&[S <: ScalaType](s: S): this.type =
+    native.not_equal_(toScalar(s))
+    this
+
+  def !==&[D2 <: DType](other: Tensor[D2]): this.type =
+    native.not_equal_(other.native)
+    this
+
+  def !=[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.ne(toScalar(s))
+  )
+
+  def !=[D2 <: DType](other: Tensor[D2]): Tensor[Div[D, D2]] = fromNative(native.ne(other.native))
+
+  def !==[S <: ScalaType](s: S): this.type =
+    native.ne_(toScalar(s))
+    this
+
+  def !==[D2 <: DType](other: Tensor[D2]): this.type =
+    native.ne_(other.native)
+    this
+  def !==^[S <: ScalaType](s: S)(using D <:< FloatNN): this.type =
+    native.ne_(toScalar(s))
+    this
+  def !==^[D2 <: DType](other: Tensor[D2])(using D <:< FloatNN): this.type =
+    native.ne_(other.native)
+    this
+
   /** Divides each element of this tensor by the corresponding element of `other`. * */
   def div[D2 <: DType](other: Tensor[D2]): Tensor[Div[D, D2]] = fromNative(native.div(other.native))
 
@@ -491,6 +527,28 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def eq(other: Tensor[?]): Tensor[Bool] = fromNative(native.eq(other.native))
 
   def ==(other: Tensor[?]): Tensor[Bool] = eq(other)
+
+  def ==#[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
+    native.eq(toScalar(s))
+  )
+
+  def ==#[D2 <: DType](other: Tensor[D2]): Tensor[Div[D, D2]] = fromNative(native.eq(other.native))
+
+  def ===[S <: ScalaType](s: S): this.type =
+    native.eq_(toScalar(s))
+    this
+
+  def ===[D2 <: DType](other: Tensor[D2]): this.type =
+    native.eq_(other.native)
+    this
+
+  def ===&[S <: ScalaType](s: S)(using D <:< FloatNN): this.type =
+    native.eq_(toScalar(s))
+    this
+
+  def ===&[D2 <: DType](other: Tensor[D2])(using D <:< FloatNN): this.type =
+    native.eq_(other.native)
+    this
 
   override def equals(that: Any): Boolean =
     that match
@@ -755,19 +813,42 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def norm(un_used: Int*): Tensor[D] = fromNative(native.norm())
 
-  def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
-    native.norm(toScalar(s))
-  )
+  def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = {
+    val sFloat = s match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(
+      native.norm(toScalar(sFloat))
+    )
+  }
 
-  def norm[D1 <: DType, S <: ScalaType](p: S, dim: Long*): Tensor[D1] =
-    fromNative(native.norm(ScalarOptional(toScalar(p)), dim*))
+  def norm[D1 <: DType, S <: ScalaType](p: S, dim: Long*): Tensor[D1] = {
+
+    val pFloat = p match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(native.norm(ScalarOptional(toScalar(pFloat)), dim*))
+  }
 
   def norm[D1 <: DType, S <: ScalaType](
       p: S,
       dim: Seq[Long],
       keepdim: Boolean = false
-  ): Tensor[D1] =
-    fromNative(native.norm(ScalarOptional(toScalar(p)), dim.toArray, keepdim))
+  ): Tensor[D1] = {
+    val pFloat = p match {
+      case m: Float  => m
+      case m: Double => m.toFloat
+      case m: Int    => m.toFloat
+      case m: Long   => m.toFloat
+    }
+    fromNative(native.norm(ScalarOptional(toScalar(pFloat)), dim.toArray, keepdim))
+  }
 
   /** Fills elements of self tensor with value where mask is `true`. The shape of mask must be
     * [broadcastable](https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics)

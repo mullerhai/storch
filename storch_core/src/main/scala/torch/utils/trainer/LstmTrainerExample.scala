@@ -2,42 +2,42 @@ package torch
 package utils
 package trainer
 
-import org.bytedeco.pytorch
-import org.bytedeco.javacpp.{FloatPointer, PointerScope}
-import org.bytedeco.pytorch.{Example, InputArchive, OutputArchive, TensorExampleVectorIterator}
-import org.bytedeco.pytorch.{
-  ChunkDatasetOptions,
-  Example,
-  ExampleIterator,
-  ExampleStack,
-  ExampleVector
-}
-import org.bytedeco.pytorch.global.torch as torchNative
-import java.net.URL
-import java.util.zip.GZIPInputStream
+//import org.bytedeco.pytorch
+//import org.bytedeco.javacpp.{FloatPointer, PointerScope}
+//import org.bytedeco.pytorch.{Example, InputArchive, OutputArchive, TensorExampleVectorIterator}
+//import org.bytedeco.pytorch.{
+//  ChunkDatasetOptions,
+//  Example,
+//  ExampleIterator,
+//  ExampleStack,
+//  ExampleVector
+//}
+//import org.bytedeco.pytorch.global.torch as torchNative
+//import java.net.URL
+//import java.util.zip.GZIPInputStream
 import java.nio.file.{Paths, Files, Path}
-import scala.collection.{mutable, Set as KeySet}
-import scala.util.{Try, Success, Failure, Using, Random}
+//import scala.collection.{mutable, Set as KeySet}
+//import scala.util.{Try, Success, Failure, Using, Random}
 import torch.Device.{CPU, CUDA}
-import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.{---, ::, &&, Slice}
-import torch.nn.functional as F
-import torch.nn.modules.{HasParams, TensorModule}
+//import torch.internal.NativeConverters.{fromNative, toNative}
+//import torch.{---, ::, &&, Slice}
+//import torch.nn.functional as F
+//import torch.nn.modules.{HasParams, TensorModule}
 import torch.optim.Adam
-import torch.{BFloat16, Float32, Int64, Default, Tensor}
-import torch.nn as nn
-import torch.utils.data.{NormalTensorDataset, DataLoaderOptions, Dataset, DataLoader}
-import torch.utils.data.dataset.custom.{MNIST, FashionMNIST}
+//import torch.{BFloat16, Float32, Int64, Default, Tensor}
+//import torch.nn as nn
+//import torch.utils.data.{NormalTensorDataset, DataLoaderOptions, Dataset, DataLoader}
+import torch.utils.data.dataset.custom.{FashionMNIST}
 import torch.utils.data.*
-import torch.utils.data.dataloader.*
-import torch.utils.data.datareader.ChunkDataReader
+//import torch.utils.data.dataloader.*
+//import torch.utils.data.datareader.ChunkDataReader
 import torch.utils.data.dataset.*
 import torch.utils.data.sampler.RandomSampler
-import torch.numpy.TorchNumpy
-import torch.numpy.enums.DType.Float32 as NPFloat32
-import torch.numpy.matrix.NDArray
-import TorchNumpy.loadNDArrayFromCSV
-import torch.pandas.DataFrame
+//import torch.numpy.TorchNumpy
+//import torch.numpy.enums.DType.Float32 as NPFloat32
+//import torch.numpy.matrix.NDArray
+//import TorchNumpy.loadNDArrayFromCSV
+//import torch.pandas.DataFrame
 
 object LstmTrainerExample {
   def main(args: Array[String]): Unit = {

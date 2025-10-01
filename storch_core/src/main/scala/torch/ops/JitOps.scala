@@ -314,14 +314,6 @@ trait JitOps {
     torchNative.push_one(new IValueVector(ivalueSeq*), tensorOpt)
   }
 
-  //  public static native void
-  //  backward(
-  //  TensorVector var0,
-  //  TensorVector var1,
-  //  BoolOptional var2,
-  //  boolean var3,
-  //  TensorVector var4);
-
   def tensorVectorToSeqTensor2[D1 <: DType](vec: TensorVector): Seq[Tensor[D1]] = {
     var it = vec.begin()
     val tensorSeq = new ListBuffer[Tensor[D1]]()
@@ -340,12 +332,12 @@ trait JitOps {
       ) // new TensorVector(gradSeq.map(_.native)*))
     }
 
-    def backward[D <: DType](
-        tensors: Seq[Tensor[D]],
-        grad_tensors: Seq[Tensor[D]],
+    def backward[D1 <: DType, D2 <: DType](
+        tensors: Seq[Tensor[D1]],
+        grad_tensors: Seq[Tensor[D2]],
         retain_graph: BoolOptional,
         create_graph: Boolean = false,
-        inputs: Seq[Tensor[D]]
+        inputs: Seq[Tensor[Promoted[D1, D2]]]
     ): Unit = {
       val tensorVector = torchNative.backward(
         new TensorVector(tensors.map(_.native)*),
@@ -356,15 +348,10 @@ trait JitOps {
       )
     }
 
-    //    TensorVector grad(
-    //    TensorVector var0,  TensorVector var1,
-    //     TensorVector var2,
-    //    BoolOptional var3, boolean var4,boolean var5);
-    //
-    //
-    //    public static native TensorVector grad(TensorVector var0,
-    //    TensorVector var1);
-    def grad[D <: DType](outputs: Seq[Tensor[D]], inputs: Seq[Tensor[D]]): Seq[Tensor[D]] = {
+    def grad[D1 <: DType, D2 <: DType](
+        outputs: Seq[Tensor[D1]],
+        inputs: Seq[Tensor[D2]]
+    ): Seq[Tensor[Promoted[D1, D2]]] = {
       val vec = torchNative.grad(
         new TensorVector(outputs.map(_.native)*),
         new TensorVector(inputs.map(_.native)*)
@@ -372,14 +359,14 @@ trait JitOps {
       tensorVectorToSeqTensor2(vec)
     }
 
-    def grad[D <: DType](
-        outputs: Seq[Tensor[D]],
-        inputs: Seq[Tensor[D]],
-        grad_outputs: Seq[Tensor[D]],
+    def grad[D1 <: DType, D2 <: DType, D3 <: DType](
+        outputs: Seq[Tensor[D1]],
+        inputs: Seq[Tensor[D2]],
+        grad_outputs: Seq[Tensor[D3]],
         retain_graph: Option[BoolOptional] = None,
         create_graph: Boolean = false,
         allow_unused: Boolean = false
-    ): Seq[Tensor[D]] = {
+    ): Seq[Tensor[Promoted[D3, D2]]] = {
       val nativeRetainGraph =
         if (retain_graph.isDefined) new BoolOptional(retain_graph.get) else new BoolOptional()
       val tensorVector = torchNative.grad(

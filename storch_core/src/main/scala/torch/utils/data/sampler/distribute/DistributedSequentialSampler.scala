@@ -10,8 +10,7 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  DistributedSequentialSampler as DSS,
-  RandomSampler as RS
+  DistributedSequentialSampler as DSS
 }
 
 class DistributedSequentialSampler(

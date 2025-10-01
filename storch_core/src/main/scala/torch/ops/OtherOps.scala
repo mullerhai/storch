@@ -365,11 +365,7 @@ private[torch] trait OtherOps {
       )
     }
   }
-//    public static native void broadcast_coalesced(@IntrusivePtr("c10d::ProcessGroup") @Cast({"", "c10::intrusive_ptr<c10d::ProcessGroup>&"}) ProcessGroup var0, @ByVal TensorVector var1, @Cast({"size_t"}) long var2, int var4);
-  //
-  //    @Namespace("c10d")
-  //    public static native void broadcast_coalesced(@IntrusivePtr("c10d::ProcessGroup") @Cast({"", "c10::intrusive_ptr<c10d::ProcessGroup>&"})
-//    ProcessGroup var0, @ByVal TensorVector var1, @Cast({"size_t"}) long var2);
+
   def broadcast_coalesced[D <: DType](
       process: ProcessGroup,
       tensors: Seq[Tensor[D]],
@@ -390,52 +386,15 @@ private[torch] trait OtherOps {
       size
     )
 
-  //    public static native void setDebugLevel(DebugLevel var0);
-  //
-  //    @Namespace("c10d")
-  //    public static native void setDebugLevel(@Cast({"c10d::DebugLevel"}) int var0);
-  //
-  //    @Namespace("c10d")
-  //    public static native void setDebugLevelFromEnvironment();
-  //
-  //    @Namespace("c10d")
-  //    @NoException(true)
-  //    public static native DebugLevel debug_level();
-  //
-  //    @Namespace("c10d")
-  //    public static native void register_work(@Const @ByRef Tensor var0, @IntrusivePtr("c10d::Work") @Cast({"", "c10::intrusive_ptr<c10d::Work>&"}) Work var1);
-  //
-  //    @Namespace("c10d")
-  //    @ByVal
-  //    public static native Tensor wait_tensor(@Const @ByRef Tensor var0);
-  //
-  //    @Namespace("c10d")
-  //    public static native void unregister_work(@IntrusivePtr("c10d::Work") @Cast({"",
-  //    "c10::intrusive_ptr<c10d::Work>&"}) Work var0);
-  //
-  //    @Namespace("c10d")(
-  //    @Cast({"size_t"})
-  //    public static native long get_work_registry_size();
-//    public static native void SetVariableHooks(VariableHooksInterface var0);
-  //
-  //    @Namespace("at::impl")
-  //    public static native VariableHooksInterface GetVariableHooks();
-  //
-  //       public static native TensorVector grad(@Const @ByRef TensorVector var0, @Const @ByRef TensorVector var1);
-  //   void backward(@Const @ByRef TensorVector var0);
-  //       public static native boolean isProfilerEnabledInMainThread();
-  //
-  //    @Namespace("torch::autograd::profiler")
-  //    public static native void enableProfilerInChildThread();
-  //
-  //    @Namespace("torch::autograd::profiler")
-  //    public static native void disableProfilerInChildThread();
 //  def unique_consecutive[D <: DType](tensor: Tensor[D]) = torchNative.unique_consecutive(tensor.native)
+
   def deviceCount = torchNative.deviceCount()
+
   def getDeviceIndex = torchNative.getDeviceIndex()
 
   def storage_copy(storage: Storage, storage2: Storage) =
     torchNative.storage_copy(storage, storage2)
+
   def share_memory_[D <: DType](tensor: Tensor[D]) = torchNative.share_memory_(tensor.native)
 
   def setCurrentStream(stream: Stream) = torchNative.setCurrentStream(stream)
@@ -451,52 +410,82 @@ private[torch] trait OtherOps {
   def register_privateuse1_backend(name: String) = torchNative.register_privateuse1_backend(name)
 
   def ExcludeFileExtension(ext: String) = torchNative.ExcludeFileExtension(ext)
+
   def StripBasename(name: String) = torchNative.StripBasename(name)
+
   def set_warning_handler(handler: WarningHandler) = torchNative.set_warning_handler(handler)
+
   def get_warnAlways: Boolean = torchNative.get_warnAlways()
+
   def set_warnAlways(always: Boolean) = torchNative.set_warnAlways(always)
+
   def get_warning_handler = torchNative.get_warning_handler()
+
   def schema(func: FunctionSchema) = torchNative.schema(func)
+
   def schema(schema: String, bool: Boolean) = torchNative.schema(schema, bool)
+
   def schema(schema: String) = torchNative.schema(schema)
+
   def setAutogradFallbackMode(mode: Int) = torchNative.setAutogradFallbackMode(mode)
+
   def autogradNotImplementedFallback = torchNative.autogradNotImplementedFallback()
 
   def autogradNotImplementedInplaceOrViewFallback =
     torchNative.autogradNotImplementedInplaceOrViewFallback()
+
   def basicAutogradNotImplementedFallback = torchNative.basicAutogradNotImplementedFallback()
+
   def getAutogradFallbackMode = torchNative.getAutogradFallbackMode()
+
   def getCopyOfFuncTorchTLS = torchNative.getCopyOfFuncTorchTLS()
+
   def functorchTLSAccessor = torchNative.functorchTLSAccessor()
+
   def torch_function_mode_enabled: Boolean = torchNative.torch_function_mode_enabled()
+
   def torch_function_all_disabled: Boolean = torchNative.torch_function_all_disabled()
+
   def dispatch_mode_enabled: Boolean = torchNative.dispatch_mode_enabled()
+
   // def isProfilerEnabledInMainThread: Boolean = torchNative.isProfilerEnabledInMainThread()
   // def enableProfilerInChildThread = torchNative.enableProfilerInChildThread()
   // def disableProfilerInChildThread = torchNative.disableProfilerInChildThread()
+
   def enter_dual_level = torchNative.enter_dual_level()
+
   def exit_dual_level(level: Long) = torchNative.exit_dual_level(level)
+
   def backward[D <: DType](tensors: Seq[Tensor[D]]) =
     torchNative.backward(new TensorVector(tensors.map(_.native)*))
+
   def grad[D1 <: DType, D2 <: DType](tensors: Seq[Tensor[D1]], tensors2: Seq[Tensor[D2]]) =
     torchNative.grad(
       new TensorVector(tensors.map(_.native)*),
       new TensorVector(tensors2.map(_.native)*)
     )
+
   def SetVariableHooks(hooks: VariableHooksInterface) = torchNative.SetVariableHooks(hooks)
+
   def GetVariableHooks = torchNative.GetVariableHooks()
+
   def HasVariableHooks: Boolean = torchNative.HasVariableHooks()
+
   def setDebugLevel(level: Int) = torchNative.setDebugLevel(level)
 
   def setDebugLevelFromEnvironment = torchNative.setDebugLevelFromEnvironment()
 
   def debug_level = torchNative.debug_level()
+
   def wait_tensor[D <: DType](tensor: Tensor[D]) = fromNative(
     torchNative.wait_tensor(tensor.native)
   )
+
   def register_work[D <: DType](tensor: Tensor[D], work: Work) =
     torchNative.register_work(tensor.native, work)
+
   def unregister_work(work: Work): Unit = torchNative.unregister_work(work)
+
   def get_work_registry_size(): Long = torchNative.get_work_registry_size()
 }
 

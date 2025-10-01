@@ -3,14 +3,11 @@ package torch.utils.data.dataset.chunk
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   ChunkTensorDataReader,
-  ExampleVectorOptional,
   InputArchive,
   OutputArchive,
   SizeTOptional,
   TensorExampleVectorOptional,
-  ChunkStatefulTensorDataset as CSTD,
-  RandomSampler as RS,
-  SequentialSampler as SS
+  ChunkStatefulTensorDataset as CSTD
 }
 
 class ChunkStatefulTensorDataset(chunkReader: ChunkTensorDataReader) extends CSTD(chunkReader) {

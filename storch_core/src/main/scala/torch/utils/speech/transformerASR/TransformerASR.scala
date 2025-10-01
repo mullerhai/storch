@@ -1,12 +1,9 @@
 package torch.utils.speech.transformerASR
 
-import org.apache.commons.math3.transform.{DftNormalization, FastFourierTransformer, TransformType}
+//import org.apache.commons.math3.transform.{DftNormalization, FastFourierTransformer, TransformType}
 import torch.*
 import torch.nn.modules.{HasParams, TensorModule}
-import torch.nn.{Dropout, Embedding, Linear, Transformer, functional as F}
-
-import java.nio.file.Paths
-import scala.math.*
+import torch.nn.{Dropout, Embedding, Linear, Transformer}
 
 // 位置编码层实现
 class PositionalEncoding[ParamType <: FloatNN: Default](

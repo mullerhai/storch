@@ -2,11 +2,11 @@ package torch.utils.data.sampler
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
-  InputArchive,
-  OutputArchive,
-  SizeTOptional,
-  SizeTVectorOptional,
-  RandomSampler as RS,
+//  InputArchive,
+//  OutputArchive,
+//  SizeTOptional,
+//  SizeTVectorOptional,
+//  RandomSampler as RS,
   Sampler as SM
 }
 

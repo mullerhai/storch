@@ -10,7 +10,6 @@ import java.io.File
 import java.nio.file.Paths
 import javax.sound.sampled.AudioSystem
 import scala.collection.mutable.ArrayBuffer
-import scala.math.*
 
 // MFCC特征提取工具类
 object AudioUtils:

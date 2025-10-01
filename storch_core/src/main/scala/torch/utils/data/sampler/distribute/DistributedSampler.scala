@@ -10,10 +10,9 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  DistributedSampler as DS,
-  RandomSampler as RS
+  DistributedSampler as DS
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
+import torch.internal.NativeConverters.{toNative}
 
 class DistributedSampler(epoch: Int) extends DS(epoch.toNative) with Sampler {
 

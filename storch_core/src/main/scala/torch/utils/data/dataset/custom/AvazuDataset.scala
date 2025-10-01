@@ -1,8 +1,8 @@
 package torch.utils.data.dataset.custom
 
 import org.bytedeco.pytorch.ExampleVector
-import torch.Device.CPU
-import torch.numpy.enums.DType.Float32 as NPFloat32
+//import torch.Device.CPU
+//import torch.numpy.enums.DType.Float32 as NPFloat32
 import torch.numpy.matrix.NDArray
 import torch.pandas.DataFrame
 import torch.utils.data.Dataset
