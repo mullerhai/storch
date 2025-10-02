@@ -17,7 +17,7 @@
 package torch
 package ops
 
-import internal.NativeConverters
+import torch.internal.NativeConverters
 import NativeConverters.*
 import Layout.Strided
 import Device.CPU
@@ -466,9 +466,9 @@ private[torch] trait CreationOps {
   }
 
   def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
-                                                                                   end: End,
-                                                                                   step: Step
-                                                                                 ): Tensor[D] = {
+      end: End,
+      step: Step
+  ): Tensor[D] = {
     fromNative(
       torchNative.torch_arange(
         toScalar(0),
@@ -478,8 +478,13 @@ private[torch] trait CreationOps {
       )
     )
   }
-  
-  def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
+
+  def arange[
+      D <: BFloat16 | FloatNN: Default,
+      Start <: ScalaType,
+      End <: ScalaType,
+      Step <: ScalaType
+  ](
       end: End,
       step: Step,
       dtype: D,

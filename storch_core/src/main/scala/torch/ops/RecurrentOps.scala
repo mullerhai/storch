@@ -12,21 +12,20 @@ import org.bytedeco.pytorch.global.torch as torchNative
 import torch.internal.NativeConverters.*
 import torch.nn.functional.{TensorTuple2, TensorTriple}
 
-
 private[torch] trait RecurrentOps {
 
-  /***
-   *
-   * @param input
-   * @param hx
-   * @param w_ih
-   * @param w_hh
-   * @param b_ih
-   * @param b_hh
-   * @tparam T
-   * @tparam TT
-   * @return
-   */
+  /** *
+    *
+    * @param input
+    * @param hx
+    * @param w_ih
+    * @param w_hh
+    * @param b_ih
+    * @param b_hh
+    * @tparam T
+    * @tparam TT
+    * @return
+    */
   def gru_cell[T, TT <: FloatNN | ComplexNN](
       input: Tensor[TT],
       hx: Tensor[TT],
@@ -48,16 +47,16 @@ private[torch] trait RecurrentOps {
 
   }
 
-  /***
-   *
-   * @param sequences
-   * @param batch_first
-   * @param padding_value
-   * @param padding_side
-   * @tparam T
-   * @tparam TT
-   * @return
-   */
+  /** *
+    *
+    * @param sequences
+    * @param batch_first
+    * @param padding_value
+    * @param padding_side
+    * @tparam T
+    * @tparam TT
+    * @return
+    */
   def pad_sequence[T, TT <: FloatNN | ComplexNN](
       sequences: Seq[Tensor[TT]],
       batch_first: Boolean,

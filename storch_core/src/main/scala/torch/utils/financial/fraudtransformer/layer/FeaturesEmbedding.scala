@@ -27,7 +27,7 @@ class FeaturesEmbedding[ParamType <: FloatNN: Default](fieldDims: Array[Int], em
   }
 
   // 初始化权重
-  embedding.weight.data().normal_(0.0d, 0.01d, new GeneratorOptional())
+  embedding.weight.data().normal_(0.0d, 0.01d) // , new GeneratorOptional()
 
   def forward(x: Tensor[ParamType]): Tensor[ParamType] = {
     val xWithOffsets = x + torch.tensor(offsets).unsqueeze(0).to(this.paramType)
