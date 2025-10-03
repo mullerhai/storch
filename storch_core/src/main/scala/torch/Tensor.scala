@@ -17,9 +17,44 @@
 package torch
 
 import torch.numpy.matrix.NDArray
-import org.bytedeco.javacpp.{Pointer,BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
+import org.bytedeco.javacpp.{
+  Pointer,
+  BoolPointer,
+  BytePointer,
+  DoublePointer,
+  FloatPointer,
+  IntPointer,
+  LongPointer,
+  ShortPointer
+}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{BoolOptional,TensorOptions,TensorBase, DoubleOptional, EllipsisIndexType, Generator, GeneratorOptional, LongOptional, NamedTensorMeta, Node, Quantizer, ScalarOptional, ScalarTypeOptional, Storage, SymInt, SymIntOptional, TensorArrayRefOptional, TensorIndex, TensorIndexArrayRef, TensorIndexVector, TensorOptional, TensorOptionalList, TensorTensorHook, TensorVector, VoidTensorHook}
+import org.bytedeco.pytorch.{
+  BoolOptional,
+  TensorOptions,
+  TensorBase,
+  DoubleOptional,
+  EllipsisIndexType,
+  Generator,
+  GeneratorOptional,
+  LongOptional,
+  NamedTensorMeta,
+  Node,
+  Quantizer,
+  ScalarOptional,
+  ScalarTypeOptional,
+  Storage,
+  SymInt,
+  SymIntOptional,
+  TensorArrayRefOptional,
+  TensorIndex,
+  TensorIndexArrayRef,
+  TensorIndexVector,
+  TensorOptional,
+  TensorOptionalList,
+  TensorTensorHook,
+  TensorVector,
+  VoidTensorHook
+}
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch.ScalarType
 
@@ -80,7 +115,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def retain_grad = native.retain_grad()
 
-  def retains_grad : Boolean = native.retains_grad
+  def retains_grad: Boolean = native.retains_grad
 
   def grad_fn: Node = grad_fn()
 
@@ -140,7 +175,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def weak_use_count = native.weak_use_count()
 
   def use_count = native.use_count()
-
 
   def remove_hook(pos: Int): Unit = native.remove_hook(pos)
 
@@ -235,15 +269,28 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def reset = native.reset()
 
-  def data_element = native.scalar_type() match {
-    case ScalarType.Bool => native.data_ptr_bool().get()
-    case ScalarType.Byte => native.data_ptr_byte().get()
-    case ScalarType.Char => native.data_ptr_char().get()
-    case ScalarType.Double => native.data_ptr_double().get()
-    case ScalarType.Float => native.data_ptr_float().get()
-    case ScalarType.Int => native.data_ptr_int().get()
-    case ScalarType.Long => native.data_ptr_long().get()
-    case ScalarType.Short => native.data_ptr_short().get()
+  def data_element = this match {
+    case i: Tensor[Int32]   => this.data_ptr_int
+    case f: Tensor[Float32] => this.data_ptr_float
+    case d: Tensor[Float64] => this.data_ptr_double
+    case l: Tensor[Int64]   => this.data_ptr_long
+    case b: Tensor[Bool]    => this.data_ptr_bool
+    case byte: Tensor[Byte] => this.data_ptr_byte
+    case s: Tensor[Short]   => this.data_ptr_short
+    case _                  => throw new IllegalArgumentException("Unsupported scalar type")
+  }
+
+  def data_element(un_used: Int*) = this.scalar_type.value match {
+    case 11 => this.data_ptr_bool()
+    case 0  => this.data_ptr_byte()
+    case 1  => this.data_ptr_char()
+    case 2  => this.data_ptr_short()
+    case 3  => this.data_ptr_int()
+    case 4  => this.data_ptr_long()
+    case 5  => this.data_ptr_float()
+    case 6  => this.data_ptr_float()
+    case 7  => this.data_ptr_double()
+    case _  => throw new IllegalArgumentException("Unsupported scalar type")
   }
 
   def mutable_data_ptr: Pointer = native.mutable_data_ptr()
@@ -252,8 +299,23 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def options: TensorOptions = native.options()
 
-
   def quantizer: Quantizer = native.quantizer()
+
+  def data_ptr_bool(un_used: Int*): Boolean = native.data_ptr_bool().get()
+
+  def data_ptr_char(un_used: Int*): Byte = native.data_ptr_char().get()
+
+  def data_ptr_byte(un_used: Int*): Byte = native.data_ptr_byte().get()
+
+  def data_ptr_double(un_used: Int*): Double = native.data_ptr_double().get()
+
+  def data_ptr_float(un_used: Int*): Float = native.data_ptr_float().get()
+
+  def data_ptr_int(un_used: Int*): Int = native.data_ptr_int().get()
+
+  def data_ptr_long(un_used: Int*): Long = native.data_ptr_long().get()
+
+  def data_ptr_short(un_used: Int*): Short = native.data_ptr_short().get()
 
   def data_ptr_bool: Boolean = native.data_ptr_bool().get()
 
@@ -2233,7 +2295,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     tensorList.toSeq
   }
 
-
   def logical_xor[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.logical_xor(other.native)
   )
@@ -2261,7 +2322,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def &&[D1 <: DType](other: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.logical_and(other.native)
   )
-
 
   def logical_xor_[D1 <: DType](other: Tensor[D1]): this.type = {
     native.logical_xor_(other.native)

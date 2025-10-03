@@ -25,8 +25,8 @@ class TensorDataLoader[ParamType <: DType: Default](
     max_jobs: Long = 0L,
     drop_last: Boolean = false,
     in_order: Boolean = true,
-    sampler: TorchSampler,
-    batch_sampler: TorchSampler,
+    sampler: TorchSampler | Option[TorchSampler] = None,
+    batch_sampler: TorchSampler | Option[TorchSampler] = None,
     timeout: Float = 0,
     pin_memory: Boolean = false,
     prefetch_factor: Option[Int] = None,
@@ -34,11 +34,26 @@ class TensorDataLoader[ParamType <: DType: Default](
     pin_memory_device: String = ""
 ) extends Iterable[Tensor[ParamType]] {
 
+  val dataLength = dataset match {
+    case d: TensorDataset => d.length
+    case d: NormalTensorDataset => d.length
+  }
+  val chunkSampler = sampler match {
+    case Some(sampler) => sampler
+    case None => new TorchSampler(dataLength)
+    case s: TorchSampler => s
+  }
+
+  val batchSampler = batch_sampler match {
+    case Some(sampler) => sampler
+    case None => new TorchSampler(dataLength)
+    case s: TorchSampler => s
+  }
   private val options = TorchTensorDataLoaderOptions(
     batch_size = batch_size,
     shuffle = shuffle,
-    sampler = sampler,
-    batch_sampler = batch_sampler,
+    sampler = chunkSampler,
+    batch_sampler = batchSampler,
     num_workers = num_workers,
     max_jobs = max_jobs,
     drop_last = drop_last,
@@ -89,16 +104,16 @@ class TensorDataLoader[ParamType <: DType: Default](
       // for random sampler
       new ChunkTensorDataset(
         reader,
-        sampler,
-        batch_sampler,
+        chunkSampler,
+        batchSampler,
         new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
       )
     } else {
       // for sequential sampler
       new ChunkTensorDataset(
         reader,
-        sampler,
-        batch_sampler,
+        chunkSampler,
+        batchSampler,
         new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
       )
     }

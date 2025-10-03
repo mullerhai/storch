@@ -171,6 +171,7 @@ private[torch] trait ReductionOps {
   def aminmax[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
     val tup = torchNative.aminmax(t1.native)
     (fromNative(tup.get0), fromNative(tup.get1))
+
   /** Tests if all elements of this tensor evaluate to `true`.
     *
     * @group reduction_ops

@@ -52,9 +52,9 @@ private[torch] trait Recurrent {
   }
 
   def pad_sequence[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
-    val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
     fromNative(torchNative.pad_sequence(tensorVector))
-    
+
   def pad_sequence[T, TT <: FloatNN | ComplexNN](
       sequences: Seq[Tensor[TT]],
       batch_first: Boolean,

@@ -26,8 +26,8 @@ class DataLoader[ParamType <: DType: Default](
     max_jobs: Long = 0L,
     drop_last: Boolean = false,
     in_order: Boolean = true,
-    sampler: TorchSampler,
-    batch_sampler: TorchSampler,
+    sampler: TorchSampler | Option[TorchSampler] = None,
+    batch_sampler: TorchSampler | Option[TorchSampler] = None,
     timeout: Float = 0.0f,
     pin_memory: Boolean = false,
     prefetch_factor: Option[Int] = None,
@@ -35,11 +35,27 @@ class DataLoader[ParamType <: DType: Default](
     pin_memory_device: String = ""
 ) extends Iterable[(Tensor[ParamType], Tensor[ParamType])] {
 
+  val dataLength: Long = dataset match {
+    case d : DatasetTrait[ParamType, ? <: DType] => d.length
+    case d : JavaDataset => d.length
+    case d : NormalTensorDataset[ParamType, ? <: DType] => d.length
+  }
+  val chunkSampler = sampler match {
+    case Some(sampler) => sampler
+    case None => new TorchSampler(dataLength)
+    case s : TorchSampler => s
+  }
+  
+  val batchSampler =  batch_sampler match {
+    case Some(sampler) => sampler
+    case None => new TorchSampler(dataLength)
+    case s : TorchSampler => s
+  }
   private val options = TorchDataLoaderOptions(
     batch_size = batch_size,
     shuffle = shuffle,
-    sampler = sampler,
-    batch_sampler = batch_sampler,
+    sampler = chunkSampler,
+    batch_sampler = batchSampler,
     num_workers = num_workers,
     max_jobs = max_jobs,
     pin_memory = pin_memory,
@@ -98,16 +114,16 @@ class DataLoader[ParamType <: DType: Default](
       // for random sampler
       new ChunkDataset(
         reader,
-        sampler,
-        batch_sampler,
+        chunkSampler,
+        batchSampler,
         new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
       )
     } else {
       // for sequential sampler
       new ChunkDataset(
         reader,
-        sampler,
-        batch_sampler,
+        chunkSampler,
+        batchSampler,
         new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
       )
     }

@@ -69,19 +69,18 @@ private[torch] trait PointwiseOps {
   ): Tensor[Promoted[D, ScalaToDType[S]]] =
     fromNative(torchNative.add(input.native, toScalar(other)))
 
-
   def addcmul[D1 <: DType, D2 <: DType](
-                                             t1: Tensor[D1],
-                                             t2: Tensor[D2],
-                                             t3: Tensor[D1 | D2]
-                                           ): Tensor[Promoted[D1, D2]] =
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      t3: Tensor[D1 | D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.addcmul(t1.native, t2.native, t3.native))
 
   def addcdiv[D1 <: DType, D2 <: DType](
-                                             t1: Tensor[D1],
-                                             t2: Tensor[D2],
-                                             t3: Tensor[D1 | D2]
-                                           ): Tensor[Promoted[D1, D2]] =
+      t1: Tensor[D1],
+      t2: Tensor[D2],
+      t3: Tensor[D1 | D2]
+  ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.addcdiv(t1.native, t2.native, t3.native))
 
   /** Performs the element-wise division of tensor1 by tensor2, multiplies the result by the scalar
@@ -740,7 +739,6 @@ private[torch] trait PointwiseOps {
       other: Tensor[D2]
   )(using AtLeastOneFloat[D, D2]): Tensor[FloatPromoted[Promoted[D, D2]]] =
     fromNative(torchNative.nextafter(input.native, other.native))
-  
 
   export torch.special.polygamma
 
