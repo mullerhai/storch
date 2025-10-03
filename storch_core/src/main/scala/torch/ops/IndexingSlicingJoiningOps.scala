@@ -1035,6 +1035,12 @@ private[torch] trait IndexingSlicingJoiningOps {
         )
   }
 
+  def diagonal_scatter[D1 <: DType, D2 <: DType](
+                                                      t1: Tensor[D1],
+                                                      t2: Tensor[D2]
+                                                    ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.diagonal_scatter(t1.native, t2.native))
+
   // TODO Add docs diagonalScatter
   def diagonalScatter[D <: DType](
       input: Tensor[D],
@@ -1101,6 +1107,12 @@ private[torch] trait IndexingSlicingJoiningOps {
         step.toLong
       )
     )
+
+  def slice_scatter[D1 <: DType, D2 <: DType](
+                                                   input: Tensor[D1],
+                                                   src: Tensor[D2]
+                                                 ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.slice_scatter(input.native, src.native))
 
   def slice_scatter[D <: DType](
       input: Tensor[D],

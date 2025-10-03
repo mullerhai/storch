@@ -17,39 +17,9 @@
 package torch
 
 import torch.numpy.matrix.NDArray
-import org.bytedeco.javacpp.{
-  BoolPointer,
-  BytePointer,
-  DoublePointer,
-  FloatPointer,
-  IntPointer,
-  LongPointer,
-  ShortPointer
-}
+import org.bytedeco.javacpp.{Pointer,BoolPointer, BytePointer, DoublePointer, FloatPointer, IntPointer, LongPointer, ShortPointer}
 import org.bytedeco.pytorch
-import org.bytedeco.pytorch.{
-  BoolOptional,
-  TensorIndexVector,
-  TensorIndex,
-  DoubleOptional,
-  EllipsisIndexType,
-  Generator,
-  GeneratorOptional,
-  LongOptional,
-  Node,
-  ScalarOptional,
-  ScalarTypeOptional,
-  Storage,
-  SymInt,
-  SymIntOptional,
-  TensorArrayRefOptional,
-  TensorIndexArrayRef,
-  TensorOptional,
-  TensorOptionalList,
-  TensorTensorHook,
-  TensorVector,
-  VoidTensorHook
-}
+import org.bytedeco.pytorch.{BoolOptional,TensorOptions,TensorBase, DoubleOptional, EllipsisIndexType, Generator, GeneratorOptional, LongOptional, NamedTensorMeta, Node, Quantizer, ScalarOptional, ScalarTypeOptional, Storage, SymInt, SymIntOptional, TensorArrayRefOptional, TensorIndex, TensorIndexArrayRef, TensorIndexVector, TensorOptional, TensorOptionalList, TensorTensorHook, TensorVector, VoidTensorHook}
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch.ScalarType
 
@@ -108,6 +78,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.add(toScalar(s))
   )
 
+  def retain_grad = native.retain_grad()
+
+  def retains_grad : Boolean = native.retains_grad
+
   def grad_fn: Node = grad_fn()
 
   def grad_fn(un_used: Int*): Node = {
@@ -155,13 +129,18 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def output_nr: Long = native.output_nr()
 
-  def retains_grad: Boolean = native.retains_grad()
+  def tensorBase = native._base()
 
   def _version: Long = native._version()
 
   def is_view: Boolean = native.is_view()
 
   def name: String = native.name().toString()
+
+  def weak_use_count = native.weak_use_count()
+
+  def use_count = native.use_count()
+
 
   def remove_hook(pos: Int): Unit = native.remove_hook(pos)
 
@@ -206,6 +185,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def data = fromNative(native.data())
 
+  def share_memory = native.share_memory_()
+
   def ndimension: Long = native.ndimension()
 
   def nbytes: Long = native.nbytes()
@@ -218,25 +199,77 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def has_names: Boolean = native.has_names()
 
+  def is_alias_of(base: TensorBase): Boolean = native.is_alias_of(base)
+
   def get_named_tensor_meta = native.get_named_tensor_meta()
 
   def storage(un_used: Int*) = native.storage()
 
-  def variable_data(un_used: Int*) = native.variable_data()
+  def variable_data(un_used: Int*) = fromNative(native.variable_data())
 
-  def tensor_data(un_used: Int*) = native.tensor_data()
+  def tensor_data(un_used: Int*) = fromNative(native.tensor_data())
 
   def storage = native.storage()
 
-  def variable_data = native.variable_data()
+  def variable_data = fromNative(native.variable_data())
 
-  def tensor_data = native.tensor_data()
+  def tensor_data = fromNative(native.tensor_data())
 
   def register_hook(hook: VoidTensorHook) = native.register_hook(hook)
 
   def register_hook(hook: TensorTensorHook) = native.register_hook(hook)
 
   def key_set() = native.key_set()
+
+  def data_ptr: Pointer = native.data_ptr()
+
+  def scalar_type = native.scalar_type()
+
+  def scalar_type(un_used: Int*) = native.scalar_type()
+
+  def stride(dim: Long) = native.stride(dim)
+
+  def size(dim: Long) = native.size(dim)
+
+  def defined = native.defined()
+
+  def reset = native.reset()
+
+  def data_element = native.scalar_type() match {
+    case ScalarType.Bool => native.data_ptr_bool().get()
+    case ScalarType.Byte => native.data_ptr_byte().get()
+    case ScalarType.Char => native.data_ptr_char().get()
+    case ScalarType.Double => native.data_ptr_double().get()
+    case ScalarType.Float => native.data_ptr_float().get()
+    case ScalarType.Int => native.data_ptr_int().get()
+    case ScalarType.Long => native.data_ptr_long().get()
+    case ScalarType.Short => native.data_ptr_short().get()
+  }
+
+  def mutable_data_ptr: Pointer = native.mutable_data_ptr()
+
+  def const_data_ptr: Pointer = native.const_data_ptr()
+
+  def options: TensorOptions = native.options()
+
+
+  def quantizer: Quantizer = native.quantizer()
+
+  def data_ptr_bool: Boolean = native.data_ptr_bool().get()
+
+  def data_ptr_char: Byte = native.data_ptr_char().get()
+
+  def data_ptr_byte: Byte = native.data_ptr_byte().get()
+
+  def data_ptr_double: Double = native.data_ptr_double().get()
+
+  def data_ptr_float: Float = native.data_ptr_float().get()
+
+  def data_ptr_int: Int = native.data_ptr_int().get()
+
+  def data_ptr_long: Long = native.data_ptr_long().get()
+
+  def data_ptr_short: Short = native.data_ptr_short().get()
 
   def +[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = add(s)
 
@@ -257,6 +290,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.add_(toScalar(s))
     this
 
+  def add_[S <: ScalaType](s: S): this.type =
+    native.add_(toScalar(s))
+    this
+
   def sub[S <: ScalaType](s: S): Tensor[Promoted[D, ScalaToDType[S]]] = fromNative(
     native.sub(toScalar(s))
   )
@@ -272,6 +309,14 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def -=[D2 <: DType](other: Tensor[D2]): this.type =
     native.sub_(other.native)
     this
+
+//  def sub_[D2 <: DType](other: Tensor[D2]): this.type =
+//    native.sub_(other.native)
+//    this
+//
+//  def sub_[S <: ScalaType](s: S): this.type =
+//    native.sub_(toScalar(s))
+//    this
 
   def -=[S <: ScalaType](s: S): this.type =
     native.sub_(toScalar(s))
@@ -703,7 +748,19 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def >(other: ScalaType): Tensor[Bool] = gt(other)
 
+  def sym_nbytes = native.sym_nbytes()
+
+  def sym_numel = native.sym_numel()
+
+  def sym_storage_offset = native.sym_storage_offset()
+
+  def suggest_memory_format = native.suggest_memory_format()
+
   def isContiguous: Boolean = native.is_contiguous()
+
+  def is_contiguous = native.is_contiguous()
+
+  def is_contiguous(memoryFormat: MemoryFormat) = native.is_contiguous(memoryFormat.toNative)
 
   def cuda(un_used: Int*): Tensor[D] = fromNative(native.cuda())
 

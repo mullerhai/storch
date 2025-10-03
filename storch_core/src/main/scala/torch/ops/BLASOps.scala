@@ -575,8 +575,8 @@ private[torch] trait BLASOps {
 //  def expm1[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.expm1(t1.native))
 
-  def exponential_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-    fromNative(torchNative.exponential(t1.native))
+//  def exponential_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+//    fromNative(torchNative.exponential(t1.native))
 
   def fft_fft[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.fft_fft(t1.native))
@@ -2568,8 +2568,8 @@ private[torch] trait BLASOps {
 //  def trunc[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trunc(t1.native))
 
-  def unsqueeze_raw[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
-    fromNative(torchNative.unsqueeze(t1.native, dim))
+//  def unsqueeze_raw[D1 <: DType](t1: Tensor[D1], dim: Long): Tensor[D1] =
+//    fromNative(torchNative.unsqueeze(t1.native, dim))
 
   def vander[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.vander(t1.native))
@@ -2911,19 +2911,19 @@ private[torch] trait BLASOps {
   ): Tensor[Promoted[D1, D2]] =
     fromNative(torchNative.addmm(t1.native, t2.native, t3.native))
 
-  def addcmul_raw[D1 <: DType, D2 <: DType](
-      t1: Tensor[D1],
-      t2: Tensor[D2],
-      t3: Tensor[D1 | D2]
-  ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.addcmul(t1.native, t2.native, t3.native))
-
-  def addcdiv_raw[D1 <: DType, D2 <: DType](
-      t1: Tensor[D1],
-      t2: Tensor[D2],
-      t3: Tensor[D1 | D2]
-  ): Tensor[Promoted[D1, D2]] =
-    fromNative(torchNative.addcdiv(t1.native, t2.native, t3.native))
+//  def addcmul_raw[D1 <: DType, D2 <: DType](
+//      t1: Tensor[D1],
+//      t2: Tensor[D2],
+//      t3: Tensor[D1 | D2]
+//  ): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.addcmul(t1.native, t2.native, t3.native))
+//
+//  def addcdiv_raw[D1 <: DType, D2 <: DType](
+//      t1: Tensor[D1],
+//      t2: Tensor[D2],
+//      t3: Tensor[D1 | D2]
+//  ): Tensor[Promoted[D1, D2]] =
+//    fromNative(torchNative.addcdiv(t1.native, t2.native, t3.native))
 
   def addbmm[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],

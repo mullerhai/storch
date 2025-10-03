@@ -91,6 +91,9 @@ private[torch] trait RandomSamplingOps {
     fromNative(torchNative.torch_normal(mean, std, size, generator.toOptional, options))
   }
 
+  def log_normal[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.log_normal(t1.native))
+
   def log_normal[D1 <: DType](
       mean: Double,
       std: Double,
@@ -536,6 +539,9 @@ private[torch] trait RandomSamplingOps {
       )
     )
 
+  def bernoulli[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.bernoulli(t1.native))
+    
   def bernoulli[D1 <: DType, D2 <: DType](
       t1: Tensor[D1],
       t2: Tensor[D2] | Long,
@@ -589,6 +595,10 @@ private[torch] trait RandomSamplingOps {
 
   }
 
+  def exponential[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.exponential(t1.native))
+
+
   def exponential[D1 <: DType](
       t1: Tensor[D1],
       lambd: Double = 1,
@@ -617,6 +627,12 @@ private[torch] trait RandomSamplingOps {
     fromNative(
       torchNative.rrelu(t1.native, toScalar(lower), toScalar(upper), train, generator.toOptional)
     )
+
+  def rrelu_with_noise[D1 <: DType, D2 <: DType](
+                                                      t1: Tensor[D1],
+                                                      t2: Tensor[D2]
+                                                    ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.rrelu_with_noise(t1.native, t2.native))
 
   def rrelu_with_noise[D1 <: DType, D2 <: DType, S <: ScalaType](
       t1: Tensor[D1],

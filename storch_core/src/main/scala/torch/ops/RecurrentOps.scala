@@ -68,6 +68,10 @@ private[torch] trait RecurrentOps {
     fromNative(native)
   }
 
+  def pad_sequence[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray *)
+    fromNative(torchNative.pad_sequence(tensorVector))
+
   /** * Applies a multi-layer gated recurrent unit (GRU) RNN to an input sequence.
     *
     * @param input
@@ -299,6 +303,14 @@ private[torch] trait RecurrentOps {
     )
     tensorTriple
   }
+
+  def scaled_dot_product_attention[D1 <: DType, D2 <: DType](
+                                                                  query: Tensor[D1],
+                                                                  key: Tensor[D2],
+                                                                  value: Tensor[D1 | D2]
+                                                                ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.scaled_dot_product_attention(query.native, key.native, value.native))
+
 
   def scaled_dot_product_attention[D <: DType](
       query: Tensor[D],

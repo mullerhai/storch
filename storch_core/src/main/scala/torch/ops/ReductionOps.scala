@@ -168,6 +168,9 @@ private[torch] trait ReductionOps {
     val native = torchNative.aminmax(input.native, dim.toOptional, keepdim)
     (fromNative(native.get0()), fromNative(native.get1()))
 
+  def aminmax[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+    val tup = torchNative.aminmax(t1.native)
+    (fromNative(tup.get0), fromNative(tup.get1))
   /** Tests if all elements of this tensor evaluate to `true`.
     *
     * @group reduction_ops
@@ -739,6 +742,10 @@ private[torch] trait ReductionOps {
       )
     (fromNative[D](nativeTuple.get0), fromNative[D](nativeTuple.get1))
 
+  def std_mean[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+    val tup = torchNative.std_mean(t1.native)
+    (fromNative(tup.get0), fromNative(tup.get1))
+
   def std_mean[D <: FloatNN | ComplexNN](
       input: Tensor[D],
       dim: Int | Seq[Int] = Seq.empty,
@@ -961,6 +968,10 @@ private[torch] trait ReductionOps {
         keepdim
       )
     (fromNative[D](nativeTuple.get0), fromNative[D](nativeTuple.get1))
+
+  def var_mean[D1 <: DType](t1: Tensor[D1]): (Tensor[D1], Tensor[D1]) =
+    val tup = torchNative.var_mean(t1.native)
+    (fromNative(tup.get0), fromNative(tup.get1))
 
   def var_mean[D <: FloatNN | ComplexNN](
       input: Tensor[D],
