@@ -15,17 +15,17 @@ trait JitOps {
 
   object jit {
 
-    def compile[ParamType <: FloatNN | ComplexNN : Default](
-                                                             model: TensorModule[ParamType]
-                                                           ): CompilationUnit =
+    def compile[ParamType <: FloatNN | ComplexNN: Default](
+        model: TensorModule[ParamType]
+    ): CompilationUnit =
       val bytes = modelToBytes(model)
       val bytePointer = new BytePointer(ByteBuffer.wrap(bytes))
       torchNative.compile(bytePointer)
 
-    def compile[ParamType <: FloatNN | ComplexNN : Default](
-                                                             model: TensorModule[ParamType],
-                                                             modelPath: String
-                                                           ): CompilationUnit =
+    def compile[ParamType <: FloatNN | ComplexNN: Default](
+        model: TensorModule[ParamType],
+        modelPath: String
+    ): CompilationUnit =
       val archive = new OutputArchive
       model.save(archive)
       archive.save_to(modelPath)
@@ -35,32 +35,31 @@ trait JitOps {
     def freeze(scriptModule: JitModule): JitModule = torchNative.freeze(scriptModule)
 
     def freeze(
-                scriptModule: JitModule,
-                preservedAttrs: Seq[String],
-                optimizeNumerics: Boolean = true
-              ): JitModule = {
-      val strVector = new StringVector(preservedAttrs *)
+        scriptModule: JitModule,
+        preservedAttrs: Seq[String],
+        optimizeNumerics: Boolean = true
+    ): JitModule = {
+      val strVector = new StringVector(preservedAttrs*)
       val opt = new StringVectorOptional(strVector)
       torchNative.freeze(scriptModule, opt, optimizeNumerics)
     }
 
-
     def load(
-              modelPath: String,
-              device: String,
-              extrafilesMap: ExtraFilesMap,
-              weightsOnly: Boolean
-            ): JitModule = {
+        modelPath: String,
+        device: String,
+        extrafilesMap: ExtraFilesMap,
+        weightsOnly: Boolean
+    ): JitModule = {
       val deviceOpt: DeviceOptional = new DeviceOptional(new Device(device))
       torchNative.load(modelPath, deviceOpt, extrafilesMap, weightsOnly)
     }
 
     def load(
-              modelStream: ReadAdapterInterface,
-              device: String,
-              extrafilesMap: ExtraFilesMap,
-              weightsOnly: Boolean
-            ): JitModule = {
+        modelStream: ReadAdapterInterface,
+        device: String,
+        extrafilesMap: ExtraFilesMap,
+        weightsOnly: Boolean
+    ): JitModule = {
       val deviceOpt: DeviceOptional = new DeviceOptional(new Device(device))
       torchNative.load(modelStream, deviceOpt, extrafilesMap, weightsOnly)
     }
@@ -73,11 +72,11 @@ trait JitOps {
     }
 
     def from_pretrain_model(
-                             modelPath: String,
-                             device: String,
-                             extrafilesMap: ExtraFilesMap,
-                             weightsOnly: Boolean
-                           ): JitModule = {
+        modelPath: String,
+        device: String,
+        extrafilesMap: ExtraFilesMap,
+        weightsOnly: Boolean
+    ): JitModule = {
       val deviceOpt: DeviceOptional = new DeviceOptional(new Device(device))
       torchNative.load(modelPath, deviceOpt, extrafilesMap, weightsOnly)
     }
@@ -118,10 +117,10 @@ trait JitOps {
     }
 
     def parse_and_initialize_jit_module(
-                                         modelStream: ByteBuffer,
-                                         size: Long,
-                                         extraFilesMap: ExtraFilesMap
-                                       ): JitModule = {
+        modelStream: ByteBuffer,
+        size: Long,
+        extraFilesMap: ExtraFilesMap
+    ): JitModule = {
       torchNative.parse_and_initialize_jit_module(modelStream, size, extraFilesMap)
 
     }
@@ -133,10 +132,10 @@ trait JitOps {
     }
 
     def load_jit_module_from_stream(
-                                     inputStream: Pointer,
-                                     extraFilesMap: ExtraFilesMap,
-                                     device: Option[String] = None
-                                   ): JitModule = {
+        inputStream: Pointer,
+        extraFilesMap: ExtraFilesMap,
+        device: Option[String] = None
+    ): JitModule = {
 
       //    val streamPointer: Pointer = None
       //    device match {
@@ -149,11 +148,11 @@ trait JitOps {
     def LintGraph(graph: Graph): Unit = torchNative.LintGraph(graph)
 
     def insertGraph(
-                     graph: Graph,
-                     insertGraph: Graph,
-                     vec: ValueVector,
-                     map: ValueValueMap
-                   ): ValueVector = {
+        graph: Graph,
+        insertGraph: Graph,
+        vec: ValueVector,
+        map: ValueValueMap
+    ): ValueVector = {
       torchNative.insertGraph(graph, insertGraph, vec)
     }
 
@@ -172,12 +171,12 @@ trait JitOps {
     }
 
     def matchSchema(
-                     funcSchema: FunctionSchema,
-                     sourceRange: SourceRange,
-                     graph: Graph,
-                     nameValueSeq: Seq[NamedValue],
-                     nameValueSeq2: Seq[NamedValue]
-                   ): MatchedSchema = {
+        funcSchema: FunctionSchema,
+        sourceRange: SourceRange,
+        graph: Graph,
+        nameValueSeq: Seq[NamedValue],
+        nameValueSeq2: Seq[NamedValue]
+    ): MatchedSchema = {
       val ref = new NamedValueArrayRef()
       nameValueSeq.foreach(nv => ref.put(nv))
       val ref2 = new NamedValueArrayRef()
@@ -186,12 +185,12 @@ trait JitOps {
     }
 
     def matchSchemas(
-                      funcSchemaSeq: Seq[FunctionSchema],
-                      sourceRange: SourceRange,
-                      graph: Graph,
-                      nameValueSeq: Seq[NamedValue],
-                      nameValueSeq2: Seq[NamedValue]
-                    ): SizeTMatchedSchemaPair = {
+        funcSchemaSeq: Seq[FunctionSchema],
+        sourceRange: SourceRange,
+        graph: Graph,
+        nameValueSeq: Seq[NamedValue],
+        nameValueSeq2: Seq[NamedValue]
+    ): SizeTMatchedSchemaPair = {
       val fsVec = new FunctionSchemaVector()
       for (elem <- funcSchemaSeq) {
         fsVec.put(elem)
@@ -204,12 +203,12 @@ trait JitOps {
     }
 
     def emitBuiltinCall(
-                         sourceRange: SourceRange,
-                         graph: Graph,
-                         symbol: Symbol,
-                         nameValueSeq: Seq[NamedValue],
-                         nameValueSeq2: Seq[NamedValue]
-                       ): Value = {
+        sourceRange: SourceRange,
+        graph: Graph,
+        symbol: Symbol,
+        nameValueSeq: Seq[NamedValue],
+        nameValueSeq2: Seq[NamedValue]
+    ): Value = {
       val ref = new NamedValueArrayRef()
       nameValueSeq.foreach(nv => ref.put(nv))
       val ref2 = new NamedValueArrayRef()
@@ -218,7 +217,7 @@ trait JitOps {
     }
 
     def optimize_for_inference(scriptModule: JitModule, parameterSeq: Seq[String]): JitModule = {
-      val strVector = new StringVector(parameterSeq *)
+      val strVector = new StringVector(parameterSeq*)
       torchNative.optimize_for_inference(scriptModule, strVector)
     }
 
@@ -234,8 +233,8 @@ trait JitOps {
       operator
     }
 
-
   }
+
   def compile[ParamType <: FloatNN | ComplexNN: Default](
       model: TensorModule[ParamType]
   ): CompilationUnit =
@@ -543,113 +542,9 @@ trait JitOps {
     }
     tensorSeq.toSeq
   }
-
-  object autograd {
-    def backward[D <: DType](tensors: Seq[Tensor[D]] | Tensor[D]): Unit = {
-      val tensorsSeq = tensors match {
-        case t: Tensor[D]       => Seq(t)
-        case ts: Seq[Tensor[D]] => ts
-      }
-      torchNative.backward(
-        new TensorVector(tensorsSeq.map(_.native)*)
-      )
-    }
-
-    def backward[D1 <: DType, D2 <: DType](
-        tensors: Seq[Tensor[D1]] | Tensor[D1],
-        grad_tensors: Seq[Tensor[D2]] | Tensor[D2],
-        retain_graph: Option[Boolean] | Boolean = None,
-        create_graph: Boolean = false,
-        inputs: Seq[Tensor[Promoted[D1, D2]]]
-    ): Unit = {
-      val tensorsSeq = tensors match {
-        case t: Tensor[D1]       => Seq(t)
-        case ts: Seq[Tensor[D1]] => ts
-      }
-      val grad_tensorsSeq = grad_tensors match {
-        case t: Tensor[D2]       => Seq(t)
-        case ts: Seq[Tensor[D2]] => ts
-      }
-      val tensorVector = torchNative.backward(
-        new TensorVector(tensorsSeq.map(_.native)*),
-        new TensorVector(grad_tensorsSeq.map(_.native)*),
-        retain_graph match {
-          case Some(b: Boolean) => new BoolOptional(b)
-          case None             => new BoolOptional()
-          case b: Boolean       => new BoolOptional(b)
-        },
-        create_graph,
-        new TensorVector(inputs.map(_.native)*)
-      )
-    }
-
-    def grad[D1 <: DType, D2 <: DType](
-        outputs: Seq[Tensor[D1]] | Tensor[D1],
-        inputs: Seq[Tensor[D2]] | Tensor[D2]
-    ): Seq[Tensor[Promoted[D1, D2]]] = {
-      val outputsSeq = outputs match {
-        case t: Tensor[D1]       => Seq(t)
-        case ts: Seq[Tensor[D1]] => ts
-      }
-      val inputsSeq = inputs match {
-        case t: Tensor[D2]       => Seq(t)
-        case ts: Seq[Tensor[D2]] => ts
-      }
-      val vec = torchNative.grad(
-        new TensorVector(outputsSeq.map(_.native)*),
-        new TensorVector(inputsSeq.map(_.native)*)
-      )
-      tensorVectorToSeqTensor2(vec)
-    }
-
-    def grad[D1 <: DType, D2 <: DType, D3 <: DType](
-        outputs: Seq[Tensor[D1]] | Tensor[D1],
-        inputs: Seq[Tensor[D2]] | Tensor[D2],
-        grad_outputs: Seq[Tensor[D3]] | Tensor[D3] | Option[Tensor[D3]] = None,
-        retain_graph: Option[Boolean] | Boolean = None,
-        create_graph: Boolean = false,
-        allow_unused: Boolean = false
-    ): Seq[Tensor[Promoted[D3, D2]]] = {
-      val outputsSeq = outputs match {
-        case t: Tensor[D1]       => Seq(t)
-        case ts: Seq[Tensor[D1]] => ts
-      }
-      val inputsSeq = inputs match {
-        case t: Tensor[D2]       => Seq(t)
-        case ts: Seq[Tensor[D2]] => ts
-      }
-      val grad_outputsSeq = grad_outputs match {
-        case Some(t: Tensor[D3]) => Seq(t)
-        case ts: Seq[Tensor[D3]] => ts
-        case t: Tensor[D3]       => Seq(t)
-        case None                => Seq.empty[Tensor[D3]]
-      }
-      val nativeRetainGraph = retain_graph match {
-        case Some(b: Boolean) => new BoolOptional(b)
-        case None             => new BoolOptional()
-        case b: Boolean       => new BoolOptional(b)
-      }
-      val tensorVector = torchNative.grad(
-        new TensorVector(outputsSeq.map(_.native)*),
-        new TensorVector(inputsSeq.map(_.native)*),
-        new TensorVector(grad_outputsSeq.map(_.native)*),
-        nativeRetainGraph,
-        create_graph,
-        allow_unused
-      )
-      tensorVectorToSeqTensor2(tensorVector)
-    }
-
-    def enter_dual_level(): Long = {
-      torchNative.enter_dual_level()
-    }
-
-    def exit_dual_level(level: Long): Unit = {
-      torchNative.exit_dual_level(level)
-    }
-
-  }
 }
+
+
 
 //object ModelSerializer {
 //  // 将 Module 序列化为 BytePointer
