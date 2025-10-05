@@ -36,20 +36,20 @@ class DataLoader[ParamType <: DType: Default](
 ) extends Iterable[(Tensor[ParamType], Tensor[ParamType])] {
 
   val dataLength: Long = dataset match {
-    case d : DatasetTrait[ParamType, ? <: DType] => d.length
-    case d : JavaDataset => d.length
-    case d : NormalTensorDataset[ParamType, ? <: DType] => d.length
+    case d: DatasetTrait[ParamType, ? <: DType]        => d.length
+    case d: JavaDataset                                => d.length
+    case d: NormalTensorDataset[ParamType, ? <: DType] => d.length
   }
   val chunkSampler = sampler match {
-    case Some(sampler) => sampler
-    case None => new TorchSampler(dataLength)
-    case s : TorchSampler => s
+    case Some(sampler)   => sampler
+    case None            => new TorchSampler(dataLength)
+    case s: TorchSampler => s
   }
-  
-  val batchSampler =  batch_sampler match {
-    case Some(sampler) => sampler
-    case None => new TorchSampler(dataLength)
-    case s : TorchSampler => s
+
+  val batchSampler = batch_sampler match {
+    case Some(sampler)   => sampler
+    case None            => new TorchSampler(dataLength)
+    case s: TorchSampler => s
   }
   private val options = TorchDataLoaderOptions(
     batch_size = batch_size,
