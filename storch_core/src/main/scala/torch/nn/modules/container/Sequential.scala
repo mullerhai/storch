@@ -21,22 +21,49 @@ package container
 
 import scala.annotation.varargs
 import sourcecode.Name
+import scala.collection.mutable.ArrayBuffer
 
+/** A sequential container. Modules will be added to it in the order they are passed in the
+  * constructor. Alternatively, you can also add modules with add_module. if add_module is used,
+  * modules must be passed in the order they are to be added.
+  * @param modules
+  *   Any number of TensorModule[D] arguments.
+  */
 @varargs
 final class Sequential[D <: DType](@varargs override val modules: TensorModule[D]*)
     extends Module
     with TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
+  val moduleList = ArrayBuffer[TensorModule[D]]()
   modules.zipWithIndex.foreach((module, index) =>
     this.register(module)(using Name(index.toString()))
+    moduleList += module
   )
 
-  override def hasBias(): Boolean = modules.exists(_.hasBias())
+  def iterator: Iterator[TensorModule[D]] = moduleList.iterator
+
+  def size(): Int = moduleList.length
+
+  override def hasBias(): Boolean = moduleList.exists(_.hasBias())
 
   override def apply(input: Tensor[D]): Tensor[D] =
-    modules.foldLeft(input)((i, module) => module(i))
+    moduleList.foldLeft(input)((i, module) => module(i))
 
   def forward(input: Tensor[D]): Tensor[D] = apply(input)
+
+  def add_module(module: TensorModule[D]): Sequential[D] =
+
+    val index = moduleList.length
+    println(
+      "Sequential add_module: module index: " + index
+        .toString() + " modules length: " + moduleList.length.toString()
+    )
+    this.register(module)(using Name(index.toString()))
+    moduleList += (module)
+    this
+    // TODO: make modules list mutable?
+//    modules.append(module)
+//    new Sequential(all: _*)
 
   override def toString = getClass().getSimpleName()
 

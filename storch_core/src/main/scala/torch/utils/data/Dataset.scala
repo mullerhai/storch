@@ -25,6 +25,7 @@ trait Dataset[Input <: DType, Target <: DType] extends NormalDataset {
 }
 
 object Dataset {
+
   def apply[Input <: DType, Target <: DType](
       _features: Tensor[Input],
       _targets: Tensor[Target]
