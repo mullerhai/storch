@@ -33,7 +33,7 @@ import torch.nn.modules.recurrent.RNN.RNNNonlinearity
 final class RNN[ParamType <: FloatNN | ComplexNN: Default](
     inputSize: Int,
     hiddenSize: Int,
-    numLayers: Int,
+    numLayers: Int = 1,
     nonLinearity: String | RNNNonlinearity = "tanh",
     bias: Boolean = true,
     batchFirst: Boolean = false,
@@ -157,7 +157,7 @@ object RNN:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       input_size: Int,
       hidden_size: Int,
-      num_layers: Int,
+      num_layers: Int = 1,
       non_linearity: String | RNNNonlinearity = "tanh",
       bias: Boolean = true,
       batch_first: Boolean = false,

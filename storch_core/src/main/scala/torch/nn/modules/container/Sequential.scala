@@ -22,6 +22,7 @@ package container
 import scala.annotation.varargs
 import sourcecode.Name
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SortedMap
 
 /** A sequential container. Modules will be added to it in the order they are passed in the
   * constructor. Alternatively, you can also add modules with add_module. if add_module is used,

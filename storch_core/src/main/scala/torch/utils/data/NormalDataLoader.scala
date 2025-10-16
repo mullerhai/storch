@@ -21,10 +21,10 @@ import scala.util.Random
 
 /** Provides an iterable over batches of a given dataset. */
 class NormalDataLoader[Input, Batch](
-    dataset: IndexedSeq[Input],
-    batchSize: Int = 1,
-    shuffle: Boolean = false,
-    collateFn: Seq[Input] => Batch
+    val dataset: IndexedSeq[Input],
+    val batchSize: Int = 1,
+    val shuffle: Boolean = false,
+    val collateFn: Seq[Input] => Batch
 ) extends Iterable[Batch] {
 
   override def iterator =

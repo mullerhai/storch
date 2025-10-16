@@ -806,9 +806,17 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def >=(other: ScalaType): Tensor[Bool] = ge(other)
 
+//  def ge[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.ge(other.native))
+
+  def >=[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.ge(other.native))
+
   def gt(other: ScalaType): Tensor[Bool] = fromNative(native.gt(toScalar(other)))
 
   def >(other: ScalaType): Tensor[Bool] = gt(other)
+
+//  def gt[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.gt(other.native))
+
+  def >[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.gt(other.native))
 
   def sym_nbytes = native.sym_nbytes()
 
@@ -821,6 +829,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def isContiguous: Boolean = native.is_contiguous()
 
   def is_contiguous = native.is_contiguous()
+
+  def is_contiguous(un_used: Int*): Boolean = native.is_contiguous()
 
   def is_contiguous(memoryFormat: MemoryFormat) = native.is_contiguous(memoryFormat.toNative)
 
@@ -916,6 +926,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def clamp: Tensor[D] = fromNative(native.clamp())
 
+  def item(un_used: Int*): DTypeToScala[D] = item
+
   // TODO override in subclasses instead?
   def item: DTypeToScala[D] =
     import ScalarType.*
@@ -963,9 +975,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def <=(other: ScalaType): Tensor[Bool] = le(other)
 
+  def <=[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.le(other.native))
+
   def lt(other: ScalaType): Tensor[Bool] = fromNative(native.lt(toScalar(other)))
 
   def <(other: ScalaType): Tensor[Bool] = lt(other)
+
+  def <[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.lt(other.native))
 
   def clip[S <: ScalaType](min: S): Tensor[Div[D, ScalaToDType[S]]] = fromNative(
     native.clip(new ScalarOptional(toScalar(min)))
@@ -5750,7 +5766,11 @@ object Tensor:
         Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean,
       device: Device
-  ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, device, requires_grad)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = this.apply(data, Strided, device, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
 //  def apply[U <: ScalaType : ClassTag](
 //                                        NdArray: NDArray[U],
@@ -5839,7 +5859,11 @@ object Tensor:
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
         Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean
-  ): Tensor[ScalaToDType[U]] = this.apply(data, Strided, CPU, requires_grad)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = this.apply(data, Strided, CPU, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   /** Constructs a tensor with no autograd history (also known as a “leaf tensor”) by copying data.
     */
@@ -5869,23 +5893,27 @@ object Tensor:
             data.head.head.head.length,
             data.head.head.head.head.length
           )
-        tensor.set_requires_grad(requiresGrad)
+//        tensor.set_requires_grad(requiresGrad)
+        tensor.requires_grad_(requiresGrad)
         tensor
       case quadSeq(data) =>
         val tensor =
           apply(data.flatten.flatten.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
             .view(data.length, data.head.length, data.head.head.length, data.head.head.head.length)
-        tensor.set_requires_grad(requiresGrad)
+//        tensor.set_requires_grad(requiresGrad)
+        tensor.requires_grad_(requiresGrad)
         tensor
       case tripleSeq(data) =>
         val tensor = apply(data.flatten.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
           .view(data.length, data.head.length, data.head.head.length)
-        tensor.set_requires_grad(requiresGrad)
+//        tensor.set_requires_grad(requiresGrad)
+        tensor.requires_grad_(requiresGrad)
         tensor
       case doubleSeq(data) =>
         val tensor = apply(data.flatten.asInstanceOf[Seq[U]], layout, device, requiresGrad)
           .view(data.length, data.head.length)
-        tensor.set_requires_grad(requiresGrad)
+//        tensor.set_requires_grad(requiresGrad)
+        tensor.requires_grad_(requiresGrad)
         tensor
       case singleSeq(data) =>
         val (pointer, inputDType) =
@@ -5937,7 +5965,8 @@ object Tensor:
 //        tensor
       case data: U =>
         val tensor = fromScalar(data)
-        tensor.set_requires_grad(requiresGrad)
+//        tensor.set_requires_grad(requiresGrad)
+        tensor.requires_grad_(requiresGrad)
         tensor.to(device = device)
       case _ => throw new IllegalArgumentException("Unsupported type")
 

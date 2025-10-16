@@ -18,20 +18,20 @@ import torch.{Tensor, *}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 class TensorDataLoader[ParamType <: DType: Default](
-    dataset: TensorDataset | NormalTensorDataset,
-    batch_size: Int,
-    shuffle: Boolean = false,
-    num_workers: Int = 0,
-    max_jobs: Long = 0L,
-    drop_last: Boolean = false,
-    in_order: Boolean = true,
-    sampler: TorchSampler | Option[TorchSampler] = None,
-    batch_sampler: TorchSampler | Option[TorchSampler] = None,
-    timeout: Float = 0,
-    pin_memory: Boolean = false,
-    prefetch_factor: Option[Int] = None,
-    persistent_workers: Boolean = false,
-    pin_memory_device: String = ""
+    val dataset: TensorDataset | NormalTensorDataset,
+    val batch_size: Int,
+    val shuffle: Boolean = false,
+    val num_workers: Int = 0,
+    val max_jobs: Long = 0L,
+    val drop_last: Boolean = false,
+    val in_order: Boolean = true,
+    val sampler: TorchSampler | Option[TorchSampler] = None,
+    val batch_sampler: TorchSampler | Option[TorchSampler] = None,
+    val timeout: Float = 0,
+    val pin_memory: Boolean = false,
+    val prefetch_factor: Option[Int] = None,
+    val persistent_workers: Boolean = false,
+    val pin_memory_device: String = ""
 ) extends Iterable[Tensor[ParamType]] {
 
   val dataLength = dataset match {

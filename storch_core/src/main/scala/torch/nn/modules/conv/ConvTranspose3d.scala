@@ -137,6 +137,7 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
   nativeModule.to(paramType.toScalarType, false)
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] = fromNative(nativeModule.forward(t.native))
+
   def forward(input: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(input.native)
   )
@@ -155,6 +156,8 @@ final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
 
   def bias_(): Tensor[ParamType] = fromNative(nativeModule.bias)
+
+  def bias(un_used: Int*): Tensor[ParamType] = fromNative(nativeModule.bias)
 
   def reset(): Unit = nativeModule.reset()
 

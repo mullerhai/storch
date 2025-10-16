@@ -31,6 +31,10 @@ package object cuda {
   /** Returns a Boolean indicating if CUDA is currently available. */
   def isAvailable: Boolean = torchNative.cuda_is_available()
 
+  def is_available: Boolean = torchNative.cuda_is_available()
+
+  def is_available(un_used: Int*): Boolean = torchNative.cuda_is_available()
+
   def device_count = torchNative.cuda_device_count()
 
   def cudnn_is_available: Boolean = torchNative.cudnn_is_available()

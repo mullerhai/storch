@@ -37,7 +37,7 @@ import org.bytedeco.pytorch.{
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch.ScalarType
 import torch.nn.modules.Module as ModelModule
-
+import torch.numpy.matrix.NDArray
 import java.nio.file.{Files, Path, Paths}
 import scala.collection.immutable.{SeqMap, VectorMap}
 import torch.internal.NativeConverters.fromNative
@@ -56,70 +56,155 @@ private[torch] trait CreationOps {
 // TODO frombuffer
 
   def as_tensor[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean = false
-  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
-  def tensor[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+  def tensors[U <: ScalaType: ClassTag, D <: DType | Derive](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false,
+      dtype: D = derive // torch.float32
+  ): Tensor[DTypeOrDeriveFromScalar[D, U]] = {
+
+    val derivedDType = dtype match
+//      case _: Derive => scalaToDType(fillValue)
+      case t: DType => t
+    val tensor = Tensor.apply(data, layout, device, requires_grad).to(dtype = derivedDType)
+//    dtype match {
+//      case t: D => tensor.to(dtype = t)
+//      case t: Option[D] => if (t.isDefined) tensor.to(dtype = t.get) else tensor
+//      case None => tensor
+//    }
+    tensor.requires_grad_(requires_grad)
+    fromNative(tensor.native)
+  }
+
+  def tensor[U <: ScalaType: ClassTag, D <: DType](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       layout: Layout = Strided,
       device: Device = CPU,
       requires_grad: Boolean = false
-  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, layout, device, requires_grad)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = Tensor.apply(data, layout, device, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def tensor[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean
-  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
+
+//  def tensor[U <: ScalaType: ClassTag](
+//      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+//        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
+//      requires_grad: Boolean
+//  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad)
 
   def tensor[U <: ScalaType: ClassTag](
-      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]],
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
       requires_grad: Boolean,
       device: Device
-  ): Tensor[ScalaToDType[U]] = Tensor.apply(data, requires_grad, device)
+  ): Tensor[ScalaToDType[U]] = {
+    val tensor = Tensor.apply(data, requires_grad, device)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def intTensor(
-      data: Int | Seq[Int] | Seq[Seq[Int]] | Seq[Seq[Seq[Int]]],
+      data: Int | Seq[Int] | Seq[Seq[Int]] | Seq[Seq[Seq[Int]]] | Seq[Seq[Seq[Seq[Int]]]] |
+        Seq[Seq[Seq[Seq[Seq[Int]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Int32] = Tensor.apply(data, requires_grad)
+  ): Tensor[Int32] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def floatTensor(
-      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]],
+      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]] |
+        Seq[Seq[Seq[Seq[Float]]]] | Seq[Seq[Seq[Seq[Seq[Float]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Float32] = Tensor.apply(data, requires_grad)
+  ): Tensor[Float32] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def bfloat16Tensor(
-      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]],
+      data: Float | Seq[Float] | Seq[Seq[Float]] | Seq[Seq[Seq[Float]]] |
+        Seq[Seq[Seq[Seq[Float]]]] | Seq[Seq[Seq[Seq[Seq[Float]]]]],
       requires_grad: Boolean = false
   ): Tensor[BFloat16] = {
     val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
     tensor.to(dtype = torch.bfloat16)
   }
 
   def boolTensor(
-      data: Boolean | Seq[Boolean] | Seq[Seq[Boolean]] | Seq[Seq[Seq[Boolean]]],
+      data: Boolean | Seq[Boolean] | Seq[Seq[Boolean]] | Seq[Seq[Seq[Boolean]]] |
+        Seq[Seq[Seq[Seq[Boolean]]]] | Seq[Seq[Seq[Seq[Seq[Boolean]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Bool] = Tensor.apply(data, requires_grad)
+  ): Tensor[Bool] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def byteTensor(
-      data: Byte | Seq[Byte] | Seq[Seq[Byte]] | Seq[Seq[Seq[Byte]]],
+      data: Byte | Seq[Byte] | Seq[Seq[Byte]] | Seq[Seq[Seq[Byte]]] | Seq[Seq[Seq[Seq[Byte]]]] |
+        Seq[Seq[Seq[Seq[Seq[Byte]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Int8] = Tensor.apply(data, requires_grad)
+  ): Tensor[Int8] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def shortTensor(
-      data: Short | Seq[Short] | Seq[Seq[Short]] | Seq[Seq[Seq[Short]]],
+      data: Short | Seq[Short] | Seq[Seq[Short]] | Seq[Seq[Seq[Short]]] |
+        Seq[Seq[Seq[Seq[Short]]]] | Seq[Seq[Seq[Seq[Seq[Short]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Int16] = Tensor.apply(data, requires_grad)
+  ): Tensor[Int16] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def longTensor(
-      data: Long | Seq[Long] | Seq[Seq[Long]] | Seq[Seq[Seq[Long]]],
+      data: Long | Seq[Long] | Seq[Seq[Long]] | Seq[Seq[Seq[Long]]] | Seq[Seq[Seq[Seq[Long]]]] |
+        Seq[Seq[Seq[Seq[Seq[Long]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Int64] = Tensor.apply(data, requires_grad)
+  ): Tensor[Int64] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def doubleTensor(
-      data: Double | Seq[Double] | Seq[Seq[Double]] | Seq[Seq[Seq[Double]]],
+      data: Double | Seq[Double] | Seq[Seq[Double]] | Seq[Seq[Seq[Double]]] |
+        Seq[Seq[Seq[Seq[Double]]]] | Seq[Seq[Seq[Seq[Seq[Double]]]]],
       requires_grad: Boolean = false
-  ): Tensor[Float64] = Tensor.apply(data, requires_grad)
+  ): Tensor[Float64] = {
+    val tensor = Tensor.apply(data, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    tensor
+  }
 
   def as_strided[D <: DType](
       input: Tensor[D],

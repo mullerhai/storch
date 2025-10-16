@@ -122,6 +122,8 @@ final class ConvTranspose1d[ParamType <: FloatNN | ComplexNN: Default](
 
   def bias_(): Tensor[ParamType] = fromNative(nativeModule.bias)
 
+  def bias(un_used: Int*): Tensor[ParamType] = fromNative(nativeModule.bias)
+
   def reset(): Unit = nativeModule.reset()
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()

@@ -33,11 +33,12 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
     inputSize: Int,
     hiddenSize: Int,
-    numLayers: Int,
+    numLayers: Int = 1,
     bias: Boolean = true,
     batchFirst: Boolean = false,
     dropout: Float | Double = 0.1f,
-    bidirectional: Boolean = false
+    bidirectional: Boolean = false,
+    proj_size: Int = 0
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensorTensor =
@@ -225,13 +226,23 @@ object LSTM:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       input_size: Int,
       hidden_size: Int,
-      num_layers: Int,
+      num_layers: Int = 1,
       bias: Boolean = true,
       batch_first: Boolean = false,
       dropout: Float | Double = 0.1f,
-      bidirectional: Boolean = false
+      bidirectional: Boolean = false,
+      proj_size: Int = 0
   ): LSTM[ParamType] =
-    new LSTM(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)
+    new LSTM(
+      input_size,
+      hidden_size,
+      num_layers,
+      bias,
+      batch_first,
+      dropout,
+      bidirectional,
+      proj_size
+    )
 
 //options.hidden_size().put(hiddenSize.toLong)
 //options.num_layers().put(numLayers)

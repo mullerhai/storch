@@ -33,7 +33,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 final class GRU[ParamType <: FloatNN | ComplexNN: Default](
     inputSize: Int,
     hiddenSize: Int,
-    numLayers: Int,
+    numLayers: Int = 1,
     bias: Boolean = true,
     batchFirst: Boolean = false,
     dropout: Float | Double = 0f,
@@ -153,7 +153,7 @@ object GRU:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       input_size: Int,
       hidden_size: Int,
-      num_layers: Int,
+      num_layers: Int = 1,
       bias: Boolean = true,
       batch_first: Boolean = false,
       dropout: Float | Double = 0f,
