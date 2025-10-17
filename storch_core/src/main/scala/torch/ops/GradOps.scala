@@ -228,7 +228,7 @@ trait GradOps {
 
     def backward[D1 <: DType, D2 <: DType](
         tensors: Seq[Tensor[D1]] | Tensor[D1],
-        grad_tensors: Seq[Tensor[D2]] | Tensor[D2],
+        grad_tensors: Seq[Tensor[D2]] | Tensor[D2] | Option[Tensor[D2]] = None,
         retain_graph: Option[Boolean] | Boolean = None,
         create_graph: Boolean = false,
         inputs: Seq[Tensor[Promoted[D1, D2]]]
@@ -238,8 +238,9 @@ trait GradOps {
         case ts: Seq[Tensor[D1]] => ts
       }
       val grad_tensorsSeq = grad_tensors match {
-        case t: Tensor[D2]       => Seq(t)
-        case ts: Seq[Tensor[D2]] => ts
+        case Some(t: Tensor[D2])       => Seq(t)
+        case Some(ts: Seq[Tensor[D2]]) => ts
+        case None                      => Seq.empty
       }
       val tensorVector = torchNative.backward(
         new TensorVector(tensorsSeq.map(_.native)*),

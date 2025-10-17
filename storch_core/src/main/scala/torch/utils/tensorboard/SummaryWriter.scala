@@ -29,6 +29,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
   writeFileVersionEvent("brain.Event:2")
 //  writeSessionLogEvent("brain.Event:2")
 
+  def add_scalar(tag: String, scalarValue: Double, globalStep: Long): Unit = addScalar(tag, scalarValue, globalStep)
+  
   def addScalar(tag: String, scalarValue: Double, globalStep: Long): Unit = {
 //    val tensorProto = TensorProto(
 //      dtype = DataType.DT_FLOAT,
@@ -62,6 +64,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
+  def add_scalar(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit = addScalars(mainTag, tagScalarsDict, globalStep)
+
   def addScalars(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit = {
     val values = tagScalarsDict.map { case (tag, value) =>
       val tensorProto = TensorProto(
@@ -93,6 +97,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
+  def add_tensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit = addTensors(tag, tensors, globalStep)
+  
   def addTensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit = {
     val tensorProto = TensorProto(
       dtype = DataType.DT_FLOAT,
@@ -126,6 +132,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
+  def add_audio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Long): Unit = addAudio(tag, audioData, sampleRate, globalStep)
+
   def addAudio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Long): Unit = {
     val audioByteString = ByteString.copyFrom(audioData)
     val audioSummary = Audio(
@@ -157,6 +165,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
+  def add_image(tag: String, imageData: Array[Byte], width: Int, height: Int, globalStep: Long): Unit = addImage(tag, imageData, width, height, globalStep)
+  
   def addImage(
       tag: String,
       imageData: Array[Byte],
@@ -193,6 +203,9 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
 
     writeEvent(summary, globalStep)
   }
+  
+  
+  def add_histogram(tag: String, values: Seq[Double], globalStep: Long): Unit = addHistogram(tag, values, globalStep)
 
   def addHistogram(tag: String, values: Seq[Double], globalStep: Long): Unit = {
     val minVal = values.min
@@ -233,7 +246,9 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
 
     writeEvent(summary, globalStep)
   }
-
+  
+  def write_file_version_event(tag: String, fileVersion: String = "brain.Event:2"): Unit = writeFileVersionEvent(tag, fileVersion)
+  
   def writeFileVersionEvent(tag: String, fileVersion: String = "brain.Event:2"): Unit = {
     val sourceMetadata = SourceMetadata(
       writer =
@@ -247,6 +262,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writer.write(eventMeta.toByteArray)
   }
 
+  def write_session_log_event(tag: String, sessionStatus: SessionStatus = SessionStatus.START): Unit = writeSessionLogEvent(tag, sessionStatus)
+  
   def writeSessionLogEvent(
       tag: String,
       sessionStatus: SessionStatus = SessionStatus.START
@@ -263,6 +280,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writer.write(eventSession.toByteArray)
   }
 
+  def write_log_message_event(message: String, logLevel: Level = INFO): Unit = writeLogMessageEvent(message, logLevel)
+  
   def writeLogMessageEvent(message: String, logLevel: Level = INFO): Unit = {
     val sourceMetadata = SourceMetadata(
       writer =
@@ -289,6 +308,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writer.write(eventLogger.toByteArray)
   }
 
+  def write_event(summary: Summary, globalStep: Long): Unit = writeEvent(summary, globalStep)
+  
   private def writeEvent(summary: Summary, globalStep: Long): Unit = {
     val event = Event(
       wallTime = System.currentTimeMillis() / 1000.0,
@@ -302,6 +323,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
 //    writeTFRecord(serializedEvent)
   }
 
+  def write_tfrecord(data: Array[Byte]): Unit = writeTFRecord(data)
+  
   private def writeTFRecord(data: Array[Byte]): Unit = {
     val length = data.length.toLong
     val lengthBytes = ByteBuffer.allocate(8).putLong(length).array()
@@ -316,6 +339,8 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     dataOutputStream.writeInt(dataCrc)
   }
 
+  def calculate_crc(data: Array[Byte]): Int = calculateCrc(data)
+  
   private def calculateCrc(data: Array[Byte]): Int = {
     val crc32 = new CRC32()
     crc32.update(data)

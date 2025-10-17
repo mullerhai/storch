@@ -20,6 +20,9 @@ class SummaryReader(logDir: String, tfEventFilePath: String = "train.tfevents") 
   private val fileInputStream = new FileInputStream(logFilePath)
   private val dataInputStream = new DataInputStream(fileInputStream)
   private val reader = new TFEventReader(dataInputStream, false)
+  
+  def read_event(eventType: String = ""): Unit = readEvent(eventType)
+  
   def readEvent(eventType: String = ""): Unit = {
     try {
       var record: Array[Byte] = reader.read
