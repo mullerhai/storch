@@ -58,7 +58,8 @@ class DeepIRTLayer[ParamType <: FloatNN: Default](
     val eraseMult = eraseReshape * writeWeightReshape
     val addMult = addReshape * writeWeightReshape
 
-    memory * (torch.tensor(1) - eraseMult) + addMult
+    val newMemory = memory * (torch.tensor(1) - eraseMult) + addMult
+    newMemory.to(this.paramType)
   }
 
   override def parameters: List[Tensor[ParamType]] = {

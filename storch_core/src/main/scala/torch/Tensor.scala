@@ -29,6 +29,7 @@ import org.bytedeco.javacpp.{
 }
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
+  Tensor as NativeTensor,
   BoolOptional,
   TensorOptions,
   TensorBase,
@@ -250,6 +251,36 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def tensor_data = fromNative(native.tensor_data())
 
   def register_hook(hook: VoidTensorHook) = native.register_hook(hook)
+
+  import scala.annotation.targetName
+
+  @targetName("register_void_hook")
+  def register_hook[D<: DType](voidFunc: Tensor[D] => Unit) = {
+
+    val voidHook = new VoidTensorHook {
+
+      override def call(grad: TensorBase): Unit = {
+
+        voidFunc(fromNative(NativeTensor(grad)))
+      }
+    }
+    native.register_hook(voidHook)
+  }
+
+
+  @targetName("register_tensor_hook")
+  def register_hook[D <: DType](tensorFunc: Tensor[D] => Tensor[D]) = {
+
+    val scaleGradHook = new TensorTensorHook{
+
+      override def call(grad: TensorBase): TensorBase = {
+
+        tensorFunc(fromNative(NativeTensor(grad))).native
+      }
+    }
+    native.register_hook(scaleGradHook)
+  }
+
 
   def register_hook(hook: TensorTensorHook) = native.register_hook(hook)
 
@@ -591,13 +622,18 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     if !this.requiresGrad then this.requiresGrad_=(true)
     native.backward()
   }
+
   def backward(un_used: Int*): Unit = {
     if !this.requiresGrad then this.requiresGrad_=(true)
     native.backward()
   }
 
+//  def backward(retain_graph: Boolean = true, create_graph: Boolean = false): Unit = {
+//    if !this.requiresGrad then this.requiresGrad_=(true)
+//    native.backward()
+//  }
   def backward(
-      gradient: Tensor[D],
+      gradient: Tensor[D] | Option[Tensor[D]] = None,
       retain_graph: Option[Boolean] | Boolean = Some(true),
       create_graph: Boolean = false,
       inputs: Option[Seq[Tensor[D]]] = None
@@ -606,6 +642,11 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 //    val nativeRetainGraph =
 //      if retain_graph.isDefined then new BoolOptional(retain_graph.get) else new BoolOptional()
 //
+    val nativeGradient = gradient match {
+      case t: Tensor[D] => t.native
+      case Some(t) => t.native
+      case None    => torch.empty(0).native
+    }
     val nativeRetainGraph = retain_graph match {
       case Some(b)    => new BoolOptional(b)
       case None       => new BoolOptional()
@@ -615,7 +656,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       val tensorVector = new TensorVector(inputs.get.map(_.native)*)
       new TensorArrayRefOptional(tensorVector)
     else new TensorArrayRefOptional()
-    native.backward(gradient.native, nativeRetainGraph, create_graph, nativeInputsRef)
+    native.backward(nativeGradient, nativeRetainGraph, create_graph, nativeInputsRef)
   }
 
   /** Returns a new Tensor, detached from the current graph.
@@ -1636,6 +1677,14 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
   def toBuffer: TypedBuffer[DTypeToScala[D]] =
     to(device = CPU).native.createBuffer[TypedBuffer[DTypeToScala[D]]]()
+
+  def tolist(un_used: Int*) = this.toArray.toList
+
+  def tolist = this.toArray.toList
+
+  def toList = this.tolist
+
+  def toList(un_used: Int*) = this.toArray.toList
 
   def toArray: Array[DTypeToScala[D]] =
 
@@ -3601,7 +3650,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
 //  def square(): Tensor[D] = fromNative(native.square())
 
-//  def sin(): Tensor[D] = fromNative(native.sin())
+  def sin(un_used: Int*): Tensor[D] = fromNative(native.sin())
 
   def sin_(): this.type = {
     native.sin_()

@@ -30,15 +30,22 @@ import scala.collection.mutable.SortedMap
   * @param modules
   *   Any number of TensorModule[D] arguments.
   */
-@varargs
-final class Sequential[D <: DType](@varargs override val modules: TensorModule[D]*)
+@varargs //override
+final class Sequential[D <: FloatNN | ComplexNN: Default](val moduleSeq: SortedMap[String, TensorModule[D]] | TensorModule[D]*)
     extends Module
     with TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val moduleList = ArrayBuffer[TensorModule[D]]()
-  modules.zipWithIndex.foreach((module, index) =>
-    this.register(module)(using Name(index.toString()))
-    moduleList += module
+  moduleSeq.zipWithIndex.foreach((module, index) =>
+    module match
+      case m: SortedMap[String, TensorModule[D]] =>
+        m.foreach((name, moduleLayer) =>
+          this.register(moduleLayer)(using Name(name.toString()))
+          moduleList += moduleLayer
+        )
+      case m: TensorModule[D] =>
+        this.register(m)(using Name(index.toString()))
+        moduleList += m
   )
 
   def iterator: Iterator[TensorModule[D]] = moduleList.iterator
@@ -70,6 +77,9 @@ final class Sequential[D <: DType](@varargs override val modules: TensorModule[D
 
 object Sequential {
 
-  @varargs
-  def apply[D <: DType](modules: TensorModule[D]*): Sequential[D] = new Sequential(modules*)
+//  @varargs
+  def apply[D <: FloatNN | ComplexNN: Default](modules: TensorModule[D]*): Sequential[D] = new Sequential(modules*)
+
+//  @varargs
+  def apply[D <: FloatNN | ComplexNN: Default](modules: SortedMap[String, TensorModule[D]]): Sequential[D] = new Sequential(modules)
 }

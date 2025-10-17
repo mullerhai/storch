@@ -57,6 +57,8 @@ abstract class Module {
       (item.key().getString(), fromNative[DType](item.access()))
     })
 
+  def parameters(un_used: Int*): Seq[Tensor[?]] = parameters(recurse = true)
+
   def parameters: Seq[Tensor[?]] = parameters(recurse = true)
 
   def parameters(recurse: Boolean): Seq[Tensor[?]] =
@@ -125,6 +127,9 @@ abstract class Module {
   def register_module[M <: Module](name: String, child: M): M =
     register(child = child)(using name)
 
+  def unregister_module[M <: Module](name: String): Unit =
+    unregister_module(name)
+
   def registerParameter[D <: DType](t: Tensor[D], requiresGrad: Boolean = true, n: String = "")(
       using name: sourcecode.Name
   ): Tensor[D] =
@@ -175,11 +180,23 @@ abstract class Module {
 
   def is_training: Boolean = nativeModule.is_training
 
+  def is_training(un_used: Int*): Boolean = nativeModule.is_training
+  
   def train(on: Boolean = true): Unit = nativeModule.train(on)
+
+  def is_serializable: Boolean = nativeModule.is_serializable
+
+  def is_serializable(un_used: Int*): Boolean = nativeModule.is_serializable
 
   def to(device: Device): this.type =
     nativeModule.to(device.toNative, false)
     this
+
+  def to(device: Device, non_blocking: Boolean = false): this.type =
+    nativeModule.to(device.toNative, non_blocking)
+    this
+    
+  def zero_grad(set_to_none: Boolean = false): Unit = nativeModule.zero_grad(set_to_none)
 
   def save(outputArchive: OutputArchive) = nativeModule.save(outputArchive)
 

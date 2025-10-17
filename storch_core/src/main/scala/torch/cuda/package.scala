@@ -45,6 +45,10 @@ package object cuda {
 
   def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
 
+  def manual_seed(seed: Long) = torchNative.cuda_manual_seed(seed)
+
+  def manual_seed_all(seed: Long) = torchNative.cuda_manual_seed_all(seed)
+
   def cuda_manual_seed(seed: Long) = torchNative.cuda_manual_seed(seed)
 
   def cuda_manual_seed_all(seed: Long) = torchNative.cuda_manual_seed_all(seed)

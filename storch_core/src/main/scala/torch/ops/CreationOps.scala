@@ -78,21 +78,29 @@ private[torch] trait CreationOps {
 //      case _: Derive => scalaToDType(fillValue)
       case t: DType => t
     val tensor = Tensor.apply(data, layout, device, requires_grad).to(dtype = derivedDType)
-//    dtype match {
-//      case t: D => tensor.to(dtype = t)
-//      case t: Option[D] => if (t.isDefined) tensor.to(dtype = t.get) else tensor
-//      case None => tensor
-//    }
     tensor.requires_grad_(requires_grad)
     fromNative(tensor.native)
   }
 
-  def tensor[U <: ScalaType: ClassTag, D <: DType](
+  def tensor[U <: ScalaType : ClassTag, D <: DType](
+                                                               data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+                                                                 Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
+                                                               layout: Layout = Strided,
+                                                               device: Device = CPU,
+                                                               requires_grad: Boolean = false,
+                                                               dtype: D = torch.float32
+                                                             ): Tensor[D] = {
+    val tensor = Tensor.apply(data, layout, device, requires_grad)
+    tensor.requires_grad_(requires_grad)
+    fromNative(tensor.native).to(dtype = dtype)
+  }
+
+  def tensorz[U <: ScalaType: ClassTag, D <: DType](
       data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
         Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
+      requires_grad: Boolean = false,
       layout: Layout = Strided,
-      device: Device = CPU,
-      requires_grad: Boolean = false
+      device: Device = CPU
   ): Tensor[ScalaToDType[U]] = {
     val tensor = Tensor.apply(data, layout, device, requires_grad)
     tensor.requires_grad_(requires_grad)
@@ -109,6 +117,11 @@ private[torch] trait CreationOps {
     tensor
   }
 
+  //    dtype match {
+  //      case t: D => tensor.to(dtype = t)
+  //      case t: Option[D] => if (t.isDefined) tensor.to(dtype = t.get) else tensor
+  //      case None => tensor
+  //    }
 //  def tensor[U <: ScalaType: ClassTag](
 //      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
 //        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
@@ -539,7 +552,7 @@ private[torch] trait CreationOps {
 
   def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
       end: End
-  ): Tensor[D] = {
+  ): Tensor[DTypeOrDeriveArange[D, Start, End, Step]] = {
     fromNative(
       torchNative.torch_arange(
         toScalar(0),
@@ -553,7 +566,7 @@ private[torch] trait CreationOps {
   def arange[D <: DType, Start <: ScalaType, End <: ScalaType, Step <: ScalaType](
       end: End,
       step: Step
-  ): Tensor[D] = {
+  ): Tensor[DTypeOrDeriveArange[D, Start, End, Step]] = {
     fromNative(
       torchNative.torch_arange(
         toScalar(0),
