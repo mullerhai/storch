@@ -27,7 +27,7 @@ import torch.internal.NativeConverters.fromNative
   *
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class ReLU6[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None)
+final class ReLU6[D <: DType: Default](val inplace: Boolean = false, val size: Option[Int] = None)
     extends TensorModule[D]:
 
   private val options = if size.isDefined then ReLU6Options(size.get) else new ReLU6Options()

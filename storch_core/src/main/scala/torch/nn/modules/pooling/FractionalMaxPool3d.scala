@@ -28,11 +28,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * T_TensorTensor_T, LongExpandingArrayOptional, DoubleExpandingArrayOptional,
   */
 final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
-    kernelSize: Int | (Int, Int, Int),
-    outputSize: Option[Int] | Option[(Int, Int, Int)],
-    outputRatio: Option[Float] | Option[(Float, Float, Float)],
-    returnIndices: Boolean = false,
-    randomSamples: Option[Seq[Float] | Tensor[D]] = None
+    val kernelSize: Int | (Int, Int, Int),
+    val outputSize: Option[Int] | Option[(Int, Int, Int)] = None,
+    val outputRatio: Option[Float] | Option[(Float, Float, Float)] = None,
+    val returnIndices: Boolean = false,
+    val randomSamples: Option[Seq[Float] | Tensor[D]] = None
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: FractionalMaxPool3dOptions = FractionalMaxPool3dOptions(toNative(kernelSize))

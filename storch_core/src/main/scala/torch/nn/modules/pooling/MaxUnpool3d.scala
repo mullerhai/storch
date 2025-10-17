@@ -27,9 +27,9 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * torch.nn.MaxUnpool3d(kernel_size, stride=None, padding=0)
   */
 final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
-    kernelSize: Int | (Int, Int) | (Int, Int, Int),
-    stride: Int | (Int, Int) | (Int, Int, Int),
-    padding: Int | (Int, Int) | (Int, Int, Int) = 0
+    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] = None,
+    val padding: Int | (Int, Int) | (Int, Int, Int) = 0
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: MaxUnpool3dOptions = kernelSize match {
@@ -42,6 +42,7 @@ final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
     case s: Int             => options.stride().put(toNative((s, s, s)))
     case s: (Int, Int)      => options.stride().put(toNative(s))
     case s: (Int, Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+    case None               => {}
   }
   padding match {
     case s: Int             => options.padding().put(toNative((s, s, s)))
@@ -85,7 +86,7 @@ final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
 object MaxUnpool3d:
   def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int) | (Int, Int, Int),
-      stride: Int | (Int, Int) | (Int, Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] = None,
       padding: Int | (Int, Int) | (Int, Int, Int) = 0
   ): MaxUnpool3d[D] =
     new MaxUnpool3d(kernel_size, stride, padding)

@@ -67,8 +67,8 @@ import torch.internal.NativeConverters.fromNative
  */
 // format: on
 final class Dropout2d[ParamType <: FloatNN | ComplexNN: Default](
-    p: Float | Double = 0.5,
-    inplace: Boolean = false
+    val p: Float | Double = 0.5,
+    val inplace: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

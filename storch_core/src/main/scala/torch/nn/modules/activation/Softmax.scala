@@ -34,7 +34,7 @@ import torch.internal.NativeConverters.fromNative
   * org.bytedeco.pytorch.SoftmaxOptions When the input Tensor is a sparse tensor then the unspecifed
   * values are treated as ``-inf``.
   */
-final class Softmax[D <: DType: Default](dim: Int = 1) extends TensorModule[D]:
+final class Softmax[D <: DType: Default](val dim: Int = 1) extends TensorModule[D]:
 
   private val options = new SoftmaxOptions(dim)
 

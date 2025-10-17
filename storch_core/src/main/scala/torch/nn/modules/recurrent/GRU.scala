@@ -31,13 +31,13 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * @group nn_conv
   */
 final class GRU[ParamType <: FloatNN | ComplexNN: Default](
-    inputSize: Int,
-    hiddenSize: Int,
-    numLayers: Int = 1,
-    bias: Boolean = true,
-    batchFirst: Boolean = false,
-    dropout: Float | Double = 0f,
-    bidirectional: Boolean = false
+    val inputSize: Int,
+    val hiddenSize: Int,
+    val numLayers: Int = 1,
+    val bias: Boolean = true,
+    val batchFirst: Boolean = false,
+    val dropout: Float | Double = 0f,
+    val bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensor = (PackedSequence, Tensor[ParamType]) // T_PackedSequenceTensor_T

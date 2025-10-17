@@ -27,10 +27,10 @@ import torch.internal.NativeConverters.fromNative
   * upper=0.3333333333333333, inplace=False)[source] $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class RReLU[D <: DType: Default](
-    lower: Float = 0.125f,
-    upper: Float = 0.3333333333333333f,
-    inplace: Boolean = false,
-    size: Option[Int] = None
+    val lower: Float = 0.125f,
+    val upper: Float = 0.3333333333333333f,
+    val inplace: Boolean = false,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   private val options = if size.isDefined then RReLUOptions(size.get) else RReLUOptions()

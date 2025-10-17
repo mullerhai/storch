@@ -43,6 +43,12 @@ package object cuda {
 //
 //  def getCudnnHandle = torchCuda.getCudnnHandle()
 
+//  def empty_cache(un_used: Int*): Unit = torchCuda.empty_cache()
+//
+//  def memory_allocated(device: Device) = torchCuda.memory_allocated(device)
+//
+//  def memory_reserved(device: Device) = torchCuda.memory_reserved(device)
+
   def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
 
   def manual_seed(seed: Long) = torchNative.cuda_manual_seed(seed)

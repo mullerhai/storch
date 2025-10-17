@@ -18,10 +18,10 @@ import org.bytedeco.pytorch.MarginRankingLossImpl
 //class torch.nn.MarginRankingLoss(margin=0.0, size_average=None, reduce=None, reduction='mean')[source]
 
 final class MarginRankingLoss(
-    margin: Double = 0.0,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val margin: Double = 0.0,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: MarginRankingLossOptions = new MarginRankingLossOptions()

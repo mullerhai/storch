@@ -28,18 +28,19 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * ceil_mode=False)
   */
 final class MaxPool1d[D <: FloatNN | ComplexNN: Default](
-    kernelSize: Int | (Int, Int),
-    stride: Int | (Int, Int),
-    padding: Int | (Int, Int) = 0,
-    dilation: Int | (Int, Int) = 1,
-    returnIndices: Boolean = false,
-    ceilMode: Boolean = false
+    val kernelSize: Int | (Int, Int),
+    val stride: Int | (Int, Int) | Option[Int] = None,
+    val padding: Int | (Int, Int) = 0,
+    val dilation: Int | (Int, Int) = 1,
+    val returnIndices: Boolean = false,
+    val ceilMode: Boolean = false
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: MaxPool1dOptions = MaxPool1dOptions(toNative(kernelSize))
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
+    case None          => {}
   }
   kernelSize match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
@@ -73,7 +74,7 @@ final class MaxPool1d[D <: FloatNN | ComplexNN: Default](
 object MaxPool1d:
   def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int),
-      stride: Int | (Int, Int),
+      stride: Int | (Int, Int) | Option[Int] = None,
       padding: Int | (Int, Int) = 0,
       dilation: Int | (Int, Int) = 1,
       return_indices: Boolean = false,

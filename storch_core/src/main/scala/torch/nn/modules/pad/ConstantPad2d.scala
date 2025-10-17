@@ -30,8 +30,8 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * number of input planes.
   */
 final class ConstantPad2d[ParamType <: FloatNN | ComplexNN: Default](
-    padding: Int | (Int, Int) | (Int, Int, Int, Int),
-    value: Float | Double
+    val padding: Int | (Int, Int) | (Int, Int, Int, Int),
+    val value: Float | Double
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

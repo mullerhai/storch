@@ -65,16 +65,16 @@ import org.bytedeco.pytorch.global.torch.ScalarType
  */
 // format: on
 final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
-    numEmbeddings: Int,
-    embeddingDim: Int,
-    maxNorm: Option[Float] | Float = None,
-    normType: Option[Float] | Float = Some(2.0f),
-    scaleGradByFreq: Boolean | Option[Boolean] = false,
-    mode: EmbeddingBagMode | String = EmbeddingBagMode.kMean,
-    sparse: Boolean | Option[Boolean] = false,
-    includeLastOffset: Boolean | Option[Boolean] = false,
-    paddingIdx: Option[Int] | Int = None,
-    needWeight: Option[Tensor[ParamType]] = None
+    val numEmbeddings: Int,
+    val embeddingDim: Int,
+    val maxNorm: Option[Float] | Float = None,
+    val normType: Option[Float] | Float = Some(2.0f),
+    val scaleGradByFreq: Boolean | Option[Boolean] = false,
+    val mode: EmbeddingBagMode | String = EmbeddingBagMode.kMean,
+    val sparse: Boolean | Option[Boolean] = false,
+    val includeLastOffset: Boolean | Option[Boolean] = false,
+    val paddingIdx: Option[Int] | Int = None,
+    val needWeight: Option[Tensor[ParamType]] = None
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

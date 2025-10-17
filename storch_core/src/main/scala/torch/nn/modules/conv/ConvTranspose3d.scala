@@ -37,20 +37,20 @@ import torch.nn.modules.conv.ConvTranspose3d.PaddingMode
   * @group nn_conv
   */
 final class ConvTranspose3d[ParamType <: FloatNN | ComplexNN: Default](
-    inChannels: Int,
-    outChannels: Int,
-    kernelSize: Int | (Int, Int) | (Int, Int, Int),
-    stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val inChannels: Int,
+    val outChannels: Int,
+    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 1,
-    padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 0,
-    outputPadding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val outputPadding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 0,
-    groups: Int | Option[Int] = 1,
-    bias: Boolean | Option[Boolean] = true,
-    dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val groups: Int | Option[Int] = 1,
+    val bias: Boolean | Option[Boolean] = true,
+    val dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 1,
-    paddingMode: PaddingMode | String | Option[String] = PaddingMode.Zeros
+    val paddingMode: PaddingMode | String | Option[String] = PaddingMode.Zeros
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

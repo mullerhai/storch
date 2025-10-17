@@ -18,7 +18,7 @@ import scala.collection.mutable.ListBuffer
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class GEGLU[D <: FloatNN: Default](dim: Int = -1) extends TensorModule[D]:
+final class GEGLU[D <: FloatNN: Default](val dim: Int = -1) extends TensorModule[D]:
 
   val linearLayer = register(nn.Linear(dim, dim * 2))
 

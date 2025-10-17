@@ -16,9 +16,9 @@ import torch.nn.modules.Module
 
 //class torch.nn.SoftMarginLoss(size_average=None, reduce=None, reduction='mean')[source]
 final class SoftMarginLoss(
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 //  override private[torch] val nativeModule: SoftMarginLossImpl = SoftMarginLossImpl()
   private[torch] val options: SoftMarginLossOptions = new SoftMarginLossOptions()

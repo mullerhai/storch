@@ -38,11 +38,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   *   parameters initialized to ones (for weights) and zeros (for biases)
   */
 final class InstanceNorm1d[ParamType <: FloatNN | ComplexNN: Default](
-    numFeatures: Int,
-    eps: Float | Double = 1e-05f,
-    momentum: Float | Option[Float] = 0.1f,
-    affine: Boolean = false,
-    trackRunningStats: Boolean = false
+    val numFeatures: Int,
+    val eps: Float | Double = 1e-05f,
+    val momentum: Float | Option[Float] = 0.1f,
+    val affine: Boolean = false,
+    val trackRunningStats: Boolean = false
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

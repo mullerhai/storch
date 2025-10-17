@@ -39,15 +39,15 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv
   */
 final class TransformerDecoderLayer[ParamType <: FloatNN | ComplexNN: Default](
-    dModel: Int,
-    nHead: Int,
-    dimFeedforward: Int = 2048,
-    dropout: Float | Double = 0.1,
-    activation: TransformerActivation | String = TransformerActivation.kReLU,
-    layerNormEps: Float = 1e-5,
-    batchFirst: Boolean = false,
-    normFirst: Boolean = false,
-    bias: Boolean = true
+    val dModel: Int,
+    val nHead: Int,
+    val dimFeedforward: Int = 2048,
+    val dropout: Float | Double = 0.1,
+    val activation: TransformerActivation | String = TransformerActivation.kReLU,
+    val layerNormEps: Float = 1e-5,
+    val batchFirst: Boolean = false,
+    val normFirst: Boolean = false,
+    val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   override def toString =

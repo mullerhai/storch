@@ -31,15 +31,15 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * @group nn_conv
   */
 final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
-    embedDim: Int,
-    numHeads: Int,
-    dropout: Float | Double = 0.0f,
-    bias: Boolean = true,
-    addBiasKV: Boolean = false,
-    addZeroAttn: Boolean = false,
-    kDim: Int | Option[Int] = None,
-    vDim: Int | Option[Int] = None,
-    batchFirst: Boolean = false
+    val embedDim: Int,
+    val numHeads: Int,
+    val dropout: Float | Double = 0.0f,
+    val bias: Boolean = true,
+    val addBiasKV: Boolean = false,
+    val addZeroAttn: Boolean = false,
+    val kDim: Int | Option[Int] = None,
+    val vDim: Int | Option[Int] = None,
+    val batchFirst: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

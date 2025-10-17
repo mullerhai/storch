@@ -40,14 +40,14 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv
   */
 final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
-    decoderLayer: TransformerDecoderLayer[ParamType],
-    numLayers: Int,
-    norm: Option[AnyModule] = None,
-    layerNormEps: Float = 1e-5,
-    batchFirst: Boolean = false,
-    normFirst: Boolean = false,
-    activation: TransformerActivation | String = TransformerActivation.kReLU,
-    bias: Boolean = true
+    val decoderLayer: TransformerDecoderLayer[ParamType],
+    val numLayers: Int,
+    val norm: Option[AnyModule] = None,
+    val layerNormEps: Float = 1e-5,
+    val batchFirst: Boolean = false,
+    val normFirst: Boolean = false,
+    val activation: TransformerActivation | String = TransformerActivation.kReLU,
+    val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

@@ -57,9 +57,9 @@ import org.bytedeco.javacpp.{DoublePointer}
  */
 // format: on
 final class PairwiseDistance[ParamType <: FloatNN | ComplexNN: Default](
-    p: Int | Option[Int] = 2,
-    eps: Double | Option[Double] = 1e-6,
-    keepdim: Boolean | Option[Boolean] = false
+    val p: Int | Option[Int] = 2,
+    val eps: Double | Option[Double] = 1e-6,
+    val keepdim: Boolean | Option[Boolean] = false
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

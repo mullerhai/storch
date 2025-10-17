@@ -32,12 +32,12 @@ import org.bytedeco.pytorch.LongOptional
   * number of input planes.
   */
 final class AvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
-    kernelSize: Int | (Int, Int) | (Int, Int, Int),
-    stride: Int | (Int, Int) | (Int, Int, Int),
-    padding: Int | (Int, Int, Int) = 0,
-    ceilMode: Boolean = false,
-    countIncludePad: Boolean = true,
-    divisorOverride: Option[Int] = None
+    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] = None,
+    val padding: Int | (Int, Int, Int) = 0,
+    val ceilMode: Boolean = false,
+    val countIncludePad: Boolean = true,
+    val divisorOverride: Option[Int] = None
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
@@ -47,6 +47,7 @@ final class AvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
     case s: Int             => options.stride().put(Array(s.toLong, s.toLong, s.toLong)*)
     case s: (Int, Int)      => options.stride().put(toNative(s))
     case s: (Int, Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+    case None               => {}
   }
   kernelSize match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong, s.toLong)*)
@@ -87,7 +88,7 @@ final class AvgPool3d[ParamType <: FloatNN | ComplexNN: Default](
 object AvgPool3d:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int) | (Int, Int, Int),
-      stride: Int | (Int, Int) | (Int, Int, Int),
+      stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] = None,
       padding: Int | (Int, Int, Int) = 0,
       ceil_mode: Boolean = false,
       count_include_pad: Boolean = true,

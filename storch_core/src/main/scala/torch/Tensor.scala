@@ -255,7 +255,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   import scala.annotation.targetName
 
   @targetName("register_void_hook")
-  def register_hook[D<: DType](voidFunc: Tensor[D] => Unit) = {
+  def register_hook[D <: DType](voidFunc: Tensor[D] => Unit) = {
 
     val voidHook = new VoidTensorHook {
 
@@ -267,11 +267,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.register_hook(voidHook)
   }
 
-
   @targetName("register_tensor_hook")
   def register_hook[D <: DType](tensorFunc: Tensor[D] => Tensor[D]) = {
 
-    val scaleGradHook = new TensorTensorHook{
+    val scaleGradHook = new TensorTensorHook {
 
       override def call(grad: TensorBase): TensorBase = {
 
@@ -280,7 +279,6 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     }
     native.register_hook(scaleGradHook)
   }
-
 
   def register_hook(hook: TensorTensorHook) = native.register_hook(hook)
 
@@ -644,8 +642,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 //
     val nativeGradient = gradient match {
       case t: Tensor[D] => t.native
-      case Some(t) => t.native
-      case None    => torch.empty(0).native
+      case Some(t)      => t.native
+      case None         => torch.empty(0).native
     }
     val nativeRetainGraph = retain_graph match {
       case Some(b)    => new BoolOptional(b)

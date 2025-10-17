@@ -26,7 +26,7 @@ import torch.internal.NativeConverters.fromNative
 /** Applies the rectified linear unit function element-wise: // private val options = new
   * SigmoidOptions() // options.inplace().put(inplace) $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
-final class Sigmoid[D <: DType: Default](inplace: Boolean = false) extends TensorModule[D]:
+final class Sigmoid[D <: DType: Default](val inplace: Boolean = false) extends TensorModule[D]:
 
   override protected[torch] val nativeModule: SigmoidImpl = SigmoidImpl()
 

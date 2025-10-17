@@ -26,10 +26,10 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class LPPool1d[D <: FloatNN | ComplexNN: Default](
-    nornType: Float,
-    kernelSize: Int | (Int, Int),
-    stride: Int | (Int, Int),
-    ceilMode: Boolean = false
+    val normType: Float,
+    val kernelSize: Int | (Int, Int),
+    val stride: Int | (Int, Int) | Option[Int] = None,
+    val ceilMode: Boolean = false
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: LPPool1dOptions = LPPool1dOptions(toNative(kernelSize))
@@ -37,6 +37,7 @@ final class LPPool1d[D <: FloatNN | ComplexNN: Default](
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
+    case None          => {}
   }
   kernelSize match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
@@ -44,7 +45,7 @@ final class LPPool1d[D <: FloatNN | ComplexNN: Default](
   }
 
   options.ceil_mode().put(ceilMode)
-  options.norm_type().put(DoublePointer(1).put(nornType.toDouble))
+  options.norm_type().put(DoublePointer(1).put(normType.toDouble))
   override private[torch] val nativeModule: LPPool1dImpl = LPPool1dImpl(options)
 
   override def hasBias(): Boolean = false
@@ -52,7 +53,7 @@ final class LPPool1d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, nornType=$nornType, ceilMode=$ceilMode)"
+    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, normType=$normType, ceilMode=$ceilMode)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
@@ -61,7 +62,7 @@ object LPPool1d:
   def apply[D <: FloatNN | ComplexNN: Default](
       norm_type: Float,
       kernel_size: Int | (Int),
-      stride: Int | (Int),
+      stride: Int | (Int) | Option[Int] = None,
       ceil_mode: Boolean = false
   ): LPPool1d[D] =
     new LPPool1d[D](norm_type, kernel_size, stride, ceil_mode)

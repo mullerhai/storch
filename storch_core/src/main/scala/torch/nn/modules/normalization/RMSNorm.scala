@@ -9,9 +9,9 @@ import org.bytedeco.pytorch.{LayerNormImpl, LayerNormOptions, LongVector}
 import internal.NativeConverters.fromNative
 
 final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
-    normalizedShape: Seq[Int],
-    eps: Double = 1e-05,
-    elementWiseAffine: Boolean = true
+    val normalizedShape: Seq[Int],
+    val eps: Double = 1e-05,
+    val elementWiseAffine: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

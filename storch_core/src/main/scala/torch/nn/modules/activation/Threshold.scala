@@ -26,8 +26,11 @@ import torch.nn.modules
   * val output = m(input)
   * ```
   */
-final class Threshold[D <: DType: Default](threshold: Float, value: Float, inplace: Boolean = false)
-    extends TensorModule[D]:
+final class Threshold[D <: DType: Default](
+    val threshold: Float,
+    val value: Float,
+    val inplace: Boolean = false
+) extends TensorModule[D]:
 
   val options = ThresholdOptions(threshold.toDouble, value.toDouble)
   options.inplace().put(inplace)

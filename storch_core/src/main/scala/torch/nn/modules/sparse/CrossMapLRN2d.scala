@@ -57,10 +57,10 @@ import org.bytedeco.javacpp.{LongPointer, DoublePointer}
  */
 // format: on
 final class CrossMapLRN2d[ParamType <: FloatNN | ComplexNN: Default](
-    size: Int,
-    alpha: Float,
-    beta: Float,
-    k: Int
+    val size: Int,
+    val alpha: Float,
+    val beta: Float,
+    val k: Int
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModuleBase[Int64, ParamType]:

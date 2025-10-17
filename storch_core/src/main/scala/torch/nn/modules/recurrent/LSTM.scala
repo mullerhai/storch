@@ -31,14 +31,14 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * @group nn_conv
   */
 final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
-    inputSize: Int,
-    hiddenSize: Int,
-    numLayers: Int = 1,
-    bias: Boolean = true,
-    batchFirst: Boolean = false,
-    dropout: Float | Double = 0.1f,
-    bidirectional: Boolean = false,
-    proj_size: Int = 0
+    val inputSize: Int,
+    val hiddenSize: Int,
+    val numLayers: Int = 1,
+    val bias: Boolean = true,
+    val batchFirst: Boolean = false,
+    val dropout: Float | Double = 0.1f,
+    val bidirectional: Boolean = false,
+    val proj_size: Int = 0
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensorTensor =

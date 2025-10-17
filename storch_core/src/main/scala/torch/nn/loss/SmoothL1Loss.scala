@@ -14,12 +14,12 @@ import org.bytedeco.pytorch.{
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
-//class torch.nn.SmoothL1Loss(size_average=None, reduce=None, reduction='mean', beta=1.0)[source]
+//class torchd.nn.SmoothL1Loss(size_average=None, reduce=None, reduction='mean', beta=1.0)[source]
 final class SmoothL1Loss(
-    reduction: String = "mean",
-    beta: Double = 1.0,
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val reduction: String = "mean",
+    val beta: Double = 1.0,
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: SmoothL1LossOptions = new SmoothL1LossOptions()

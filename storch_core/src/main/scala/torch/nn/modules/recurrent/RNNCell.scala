@@ -31,10 +31,10 @@ import torch.nn.modules.recurrent.RNNCell.RNNNonlinearity
   * @group nn_conv
   */
 final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
-    inputSize: Int,
-    hiddenSize: Int,
-    bias: Boolean = true,
-    nonLinearity: String | RNNNonlinearity = "tanh"
+    val inputSize: Int,
+    val hiddenSize: Int,
+    val bias: Boolean = true,
+    val nonLinearity: String | RNNNonlinearity = "tanh"
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

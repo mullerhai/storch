@@ -90,11 +90,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * TODO use dtype
   */
 final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
-    numFeatures: Int,
-    eps: Float | Double = 1e-05f,
-    momentum: Float | Option[Float] = 0.1f,
-    affine: Boolean = true,
-    trackRunningStats: Boolean = true
+    val numFeatures: Int,
+    val eps: Float | Double = 1e-05f,
+    val momentum: Float | Option[Float] = 0.1f,
+    val affine: Boolean = true,
+    val trackRunningStats: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

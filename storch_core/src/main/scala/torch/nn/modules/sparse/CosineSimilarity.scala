@@ -61,8 +61,8 @@ import org.bytedeco.javacpp.{LongPointer, DoublePointer}
  */
 // format: on
 final class CosineSimilarity[ParamType <: FloatNN | ComplexNN: Default](
-    dim: Int | Option[Int] = 1,
-    eps: Double | Option[Double] = 1e-8
+    val dim: Int | Option[Int] = 1,
+    val eps: Double | Option[Double] = 1e-8
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

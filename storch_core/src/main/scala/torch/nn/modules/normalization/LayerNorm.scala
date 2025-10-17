@@ -86,9 +86,9 @@ import internal.NativeConverters.fromNative
   */
 // format: on
 final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
-    normalizedShape: Seq[Int],
-    eps: Double = 1e-05,
-    elementWiseAffine: Boolean = true
+    val normalizedShape: Seq[Int],
+    val eps: Double = 1e-05,
+    val elementWiseAffine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

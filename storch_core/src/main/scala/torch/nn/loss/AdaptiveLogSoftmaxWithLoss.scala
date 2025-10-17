@@ -13,11 +13,11 @@ import org.bytedeco.pytorch.{
 
 //class torch.nn.AdaptiveLogSoftmaxWithLoss(in_features, n_classes, cutoffs, div_value=4.0, head_bias=False, device=None, dtype=None)[source]
 final class AdaptiveLogSoftmaxWithLoss(
-    inFeatures: Long,
-    nClasses: Long,
-    cutoffs: Array[Long],
-    divValue: Double = 4.0,
-    headBias: Boolean = false
+    val inFeatures: Long,
+    val nClasses: Long,
+    val cutoffs: Array[Long],
+    val divValue: Double = 4.0,
+    val headBias: Boolean = false
 ) extends LossFunc {
 
   val cutoffsVec = LongVector(cutoffs*)

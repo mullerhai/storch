@@ -52,11 +52,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
  */
 // format: on
 final class Fold[D <: DType: Default](
-    outputSize: Int | (Int, Int) | (Int, Int, Int),
-    kernelSize: Int | (Int, Int) | (Int, Int, Int),
-    dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
-    padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
-    stride: Int | (Int, Int) = 1
+    val outputSize: Int | (Int, Int) | (Int, Int, Int),
+    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
+    val padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
+    val stride: Int | (Int, Int) = 1
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = FoldOptions(toNative(outputSize), toNative(kernelSize))

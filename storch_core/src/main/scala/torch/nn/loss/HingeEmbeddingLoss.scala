@@ -15,10 +15,10 @@ import org.bytedeco.pytorch.{
 }
 //class torch.nn.HingeEmbeddingLoss(margin=1.0, size_average=None, reduce=None, reduction='mean')[source]
 final class HingeEmbeddingLoss(
-    margin: Double = 1.0,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val margin: Double = 1.0,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: HingeEmbeddingLossOptions = new HingeEmbeddingLossOptions()

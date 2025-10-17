@@ -31,7 +31,7 @@ import org.bytedeco.pytorch.LongOptionalVector
   * number of input planes.
   */
 final class AdaptiveAvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
-    outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
+    val outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

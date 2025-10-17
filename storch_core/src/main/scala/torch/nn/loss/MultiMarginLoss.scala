@@ -16,12 +16,12 @@ import torch.nn.modules.Module
 
 //class torch.nn.MultiMarginLoss(p=1, margin=1.0, weight=None, size_average=None, reduce=None, reduction='mean')[source]
 final class MultiMarginLoss(
-    p: Int = 1,
-    margin: Double = 1.0,
-    weight: Option[Tensor[?]] = None,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val p: Int = 1,
+    val margin: Double = 1.0,
+    val weight: Option[Tensor[?]] = None,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: MultiMarginLossOptions = new MultiMarginLossOptions()

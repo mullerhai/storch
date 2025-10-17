@@ -47,15 +47,15 @@ import internal.NativeConverters.fromNative
   *   If set to ``false``, the layer will not learn an additive bias. Default: ``true``
   */
 final class Linear[ParamType <: FloatNN | ComplexNN: Default](
-    inFeatures: Long,
-    outFeatures: Long,
-    addBias: Boolean = true
+    val in_features: Long,
+    val out_features: Long,
+    val add_bias: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new LinearOptions(inFeatures, outFeatures)
-  options.bias().put(addBias)
+  private val options = new LinearOptions(in_features, out_features)
+  options.bias().put(add_bias)
 
   override private[torch] val nativeModule: LinearImpl = new LinearImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -67,6 +67,7 @@ final class Linear[ParamType <: FloatNN | ComplexNN: Default](
   def reset_parameters(): Unit = nativeModule.reset_parameters()
 
   def weight = fromNative[ParamType](nativeModule.weight())
+
   def weight_=(t: Tensor[ParamType]): Tensor[ParamType] =
     nativeModule.weight(t.native)
     t
@@ -84,7 +85,7 @@ final class Linear[ParamType <: FloatNN | ComplexNN: Default](
   )
 
   override def toString =
-    s"${getClass.getSimpleName}(inFeatures=$inFeatures, outFeatures=$outFeatures, bias=$addBias)"
+    s"${getClass.getSimpleName}(in_features=$in_features, out_features=$out_features, bias=$add_bias)"
 
 object Linear:
   def apply[ParamType <: FloatNN | ComplexNN: Default](

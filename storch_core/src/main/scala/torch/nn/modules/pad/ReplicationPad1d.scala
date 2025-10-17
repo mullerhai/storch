@@ -28,7 +28,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * number of input planes.
   */
 final class ReplicationPad1d[ParamType <: FloatNN | ComplexNN: Default](
-    padding: Int | (Int, Int)
+    val padding: Int | (Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

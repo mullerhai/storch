@@ -30,7 +30,7 @@ import torch.nn.modules
   * val output = m(input)
   * ```
   */
-final class Softmin[D <: DType: Default](dim: Int = 1) extends TensorModule[D]:
+final class Softmin[D <: DType: Default](val dim: Int = 1) extends TensorModule[D]:
 
   val option = SoftminOptions(dim)
 

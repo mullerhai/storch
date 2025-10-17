@@ -31,14 +31,14 @@ import torch.nn.modules.recurrent.RNN.RNNNonlinearity
   * @group nn_conv
   */
 final class RNN[ParamType <: FloatNN | ComplexNN: Default](
-    inputSize: Int,
-    hiddenSize: Int,
-    numLayers: Int = 1,
-    nonLinearity: String | RNNNonlinearity = "tanh",
-    bias: Boolean = true,
-    batchFirst: Boolean = false,
-    dropout: Float | Double = 0f,
-    bidirectional: Boolean = false
+    val inputSize: Int,
+    val hiddenSize: Int,
+    val numLayers: Int = 1,
+    val nonLinearity: String | RNNNonlinearity = "tanh",
+    val bias: Boolean = true,
+    val batchFirst: Boolean = false,
+    val dropout: Float | Double = 0f,
+    val bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensor = (PackedSequence, Tensor[ParamType])

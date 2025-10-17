@@ -26,7 +26,7 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class PixelUnshuffle[D <: FloatNN | ComplexNN: Default](
-    downscaleFactor: Int
+    val downscaleFactor: Int
 ) extends TensorModule[D]:
 
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

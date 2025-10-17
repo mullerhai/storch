@@ -48,17 +48,17 @@ import internal.NativeConverters.fromNative
   *   additive bias. Default: ``true``
   */
 final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
-    inFeatures1: Int,
-    inFeatures2: Int,
-    outFeatures: Int,
-    addBias: Boolean = true
+    val in1_features: Int,
+    val in2_features: Int,
+    val out_features: Int,
+    val bias: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options =
-    new BilinearOptions(inFeatures1.toLong, inFeatures2.toLong, outFeatures.toLong)
-  options.bias().put(addBias)
+    new BilinearOptions(in1_features.toLong, in2_features.toLong, out_features.toLong)
+  options.bias().put(bias)
 
   override private[torch] val nativeModule: BilinearImpl = new BilinearImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -74,7 +74,8 @@ final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
     nativeModule.weight(t.native)
     t
 
-  def bias = fromNative[ParamType](nativeModule.bias())
+  def bias(un_used: Int*) = fromNative[ParamType](nativeModule.bias())
+
   def bias_=(t: Tensor[ParamType]): Tensor[ParamType] =
     nativeModule.bias(t.native)
     t
@@ -87,15 +88,15 @@ final class Bilinear[ParamType <: FloatNN | ComplexNN: Default](
   )
 
   override def toString =
-    s"${getClass.getSimpleName}(inFeatures1=$inFeatures1, inFeatures2=$inFeatures2, outFeatures=$outFeatures, bias=$addBias)"
+    s"${getClass.getSimpleName}(in1_features=$in1_features, in2_features=$in2_features, out_features=$out_features, bias=$bias)"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 
 object Bilinear:
 
   def apply[ParamType <: FloatNN | ComplexNN: Default](
-      in_features1: Int,
-      in_features2: Int,
+      in1_features: Int,
+      in2_features: Int,
       out_features: Int,
       bias: Boolean = true
-  ): Bilinear[ParamType] = new Bilinear(in_features1, in_features2, out_features, bias)
+  ): Bilinear[ParamType] = new Bilinear(in1_features, in2_features, out_features, bias)

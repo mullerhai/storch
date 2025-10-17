@@ -8,8 +8,8 @@ package attention
 //import torch.internal.NativeConverters.{fromNative, toNative}
 
 class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
-    dModel: Long,
-    maxLen: Long = 28 * 28
+    val dModel: Long,
+    val maxLen: Long = 28 * 28
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

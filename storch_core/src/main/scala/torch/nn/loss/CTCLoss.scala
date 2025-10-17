@@ -7,8 +7,11 @@ import org.bytedeco.pytorch.{CTCLossImpl, CTCLossOptions, LossReduction, kMean, 
 import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 //class torch.nn.CTCLoss(blank=0, reduction='mean', zero_infinity=False)[source]
-final class CTCLoss(blank: Long = 0, reduction: String = "mean", zero_infinity: Boolean = false)
-    extends LossFunc {
+final class CTCLoss(
+    val blank: Long = 0,
+    val reduction: String = "mean",
+    val zero_infinity: Boolean = false
+) extends LossFunc {
 
   private[torch] val options: CTCLossOptions = new CTCLossOptions()
   val lossReduction = reduction match {

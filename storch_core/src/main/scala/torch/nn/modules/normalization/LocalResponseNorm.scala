@@ -82,10 +82,10 @@ import torch.internal.NativeConverters.fromNative
   * TODO use dtype
   */
 final class LocalResponseNorm[ParamType <: FloatNN | ComplexNN: Default](
-    size: Int,
-    alpha: Double = 0.0001,
-    beta: Double = 0.75,
-    k: Double = 1.0
+    val size: Int,
+    val alpha: Double = 0.0001,
+    val beta: Double = 0.75,
+    val k: Double = 1.0
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

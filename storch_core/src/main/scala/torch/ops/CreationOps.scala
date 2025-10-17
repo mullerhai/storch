@@ -82,14 +82,14 @@ private[torch] trait CreationOps {
     fromNative(tensor.native)
   }
 
-  def tensor[U <: ScalaType : ClassTag, D <: DType](
-                                                               data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
-                                                                 Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
-                                                               layout: Layout = Strided,
-                                                               device: Device = CPU,
-                                                               requires_grad: Boolean = false,
-                                                               dtype: D = torch.float32
-                                                             ): Tensor[D] = {
+  def tensor[U <: ScalaType: ClassTag, D <: DType](
+      data: U | Seq[U] | Seq[Seq[U]] | Seq[Seq[Seq[U]]] | Seq[Seq[Seq[Seq[U]]]] |
+        Seq[Seq[Seq[Seq[Seq[U]]]]] | NDArray[U],
+      layout: Layout = Strided,
+      device: Device = CPU,
+      requires_grad: Boolean = false,
+      dtype: D = torch.float32
+  ): Tensor[D] = {
     val tensor = Tensor.apply(data, layout, device, requires_grad)
     tensor.requires_grad_(requires_grad)
     fromNative(tensor.native).to(dtype = dtype)

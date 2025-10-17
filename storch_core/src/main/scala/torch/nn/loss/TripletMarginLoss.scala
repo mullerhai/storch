@@ -14,15 +14,15 @@ import org.bytedeco.pytorch.{
   kNone
 }
 
-//class torch.nn.TripletMarginLoss(margin=1.0, p=2.0, eps=1e-06, swap=False, size_average=None, reduce=None, reduction='mean')[source]
+//class torch.nn.dTripletMarginLoss(margin=1.0, p=2.0, eps=1e-06, swap=False, size_average=None, reduce=None, reduction='mean')[source]
 final class TripletMarginLoss(
-    margin: Double = 1.0,
-    p: Double = 2.0,
-    eps: Double = 1e-06,
-    swap: Boolean = false,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val margin: Double = 1.0,
+    val p: Double = 2.0,
+    val eps: Double = 1e-06,
+    val swap: Boolean = false,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
   private[torch] val options: TripletMarginLossOptions = new TripletMarginLossOptions()
 

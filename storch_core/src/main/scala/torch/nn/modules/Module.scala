@@ -181,7 +181,7 @@ abstract class Module {
   def is_training: Boolean = nativeModule.is_training
 
   def is_training(un_used: Int*): Boolean = nativeModule.is_training
-  
+
   def train(on: Boolean = true): Unit = nativeModule.train(on)
 
   def is_serializable: Boolean = nativeModule.is_serializable
@@ -195,7 +195,7 @@ abstract class Module {
   def to(device: Device, non_blocking: Boolean = false): this.type =
     nativeModule.to(device.toNative, non_blocking)
     this
-    
+
   def zero_grad(set_to_none: Boolean = false): Unit = nativeModule.zero_grad(set_to_none)
 
   def save(outputArchive: OutputArchive) = nativeModule.save(outputArchive)

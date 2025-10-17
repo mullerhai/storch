@@ -33,12 +33,12 @@ import torch.nn.modules.Module
 // TODO optional args
 //class torch.nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=-100, reduce=None, reduction='mean', label_smoothing=0.0)[source]
 final class CrossEntropyLoss(
-    weight: Option[Tensor[?]] = None,
-    ignore_index: Long = -100,
-    reduction: String = "mean",
-    label_smoothing: Double = 0.0,
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val weight: Option[Tensor[?]] = None,
+    val ignore_index: Long = -100,
+    val reduction: String = "mean",
+    val label_smoothing: Double = 0.0,
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: CrossEntropyLossOptions = new CrossEntropyLossOptions()

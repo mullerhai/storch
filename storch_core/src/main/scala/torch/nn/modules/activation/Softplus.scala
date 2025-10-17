@@ -25,9 +25,9 @@ import torch.nn.modules
   * ```
   */
 final class Softplus[D <: DType: Default](
-    beta: Float = 1.0f,
-    threshold: Float = 20.0f,
-    size: Option[Int] = None
+    val beta: Float = 1.0f,
+    val threshold: Float = 20.0f,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   val option = if size.isDefined then SoftplusOptions(size.get) else SoftplusOptions()

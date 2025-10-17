@@ -32,9 +32,9 @@ import org.bytedeco.pytorch.{ELUImpl, ELUOptions}
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
 final class ELU[D <: DType: Default](
-    alpha: Float = 1.0f,
-    inplace: Boolean = false,
-    size: Option[Int] = None
+    val alpha: Float = 1.0f,
+    val inplace: Boolean = false,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   val options = if size.isDefined then ELUOptions(size.get) else ELUOptions()

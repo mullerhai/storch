@@ -58,13 +58,13 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   */
 // format: on
 final class Embedding[ParamType <: FloatNN | ComplexNN: Default](
-    numEmbeddings: Int,
-    embeddingDim: Int,
-    paddingIdx: Option[Int] | Int = None,
-    maxNorm: Option[Float] | Float = None,
-    normType: Option[Float] | Float = Some(2.0f),
-    scaleGradByFreq: Boolean | Option[Boolean] = false,
-    sparse: Boolean | Option[Boolean] = false
+    val numEmbeddings: Int,
+    val embeddingDim: Int,
+    val paddingIdx: Option[Int] | Int = None,
+    val maxNorm: Option[Float] | Float = None,
+    val normType: Option[Float] | Float = Some(2.0f),
+    val scaleGradByFreq: Boolean | Option[Boolean] = false,
+    val sparse: Boolean | Option[Boolean] = false
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:

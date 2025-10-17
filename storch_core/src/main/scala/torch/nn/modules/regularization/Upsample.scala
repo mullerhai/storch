@@ -77,13 +77,13 @@ import torch.nn.modules.regularization.Upsample.UpsampleMode
  */
 // format: on
 final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
-    size: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val size: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = None,
-    scaleFactor: Float | (Float, Float) | (Float, Float, Float) | Option[Float] |
+    val scaleFactor: Float | (Float, Float) | (Float, Float, Float) | Option[Float] |
       Option[(Float, Float)] | Option[(Float, Float, Float)],
-    mode: UpsampleMode | String = UpsampleMode.kNearest,
-    alignCorners: Option[Boolean] = None,
-    recomputeScaleFactor: Option[Boolean] = None
+    val mode: UpsampleMode | String = UpsampleMode.kNearest,
+    val alignCorners: Option[Boolean] = None,
+    val recomputeScaleFactor: Option[Boolean] = None
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

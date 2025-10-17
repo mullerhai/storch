@@ -38,7 +38,7 @@ import torch.internal.NativeConverters.fromNative
   * val output = m(input)
   * ```
   */
-final class LogSoftmax[D <: DType: Default](dim: Int) extends TensorModule[D]:
+final class LogSoftmax[D <: DType: Default](val dim: Int) extends TensorModule[D]:
 
   private val options = new LogSoftmaxOptions(dim.toLong)
   options.dim().put(dim)

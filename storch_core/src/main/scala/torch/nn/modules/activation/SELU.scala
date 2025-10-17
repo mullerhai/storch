@@ -30,7 +30,7 @@ import torch.internal.NativeConverters.fromNative
   *
   * When the input Tensor is a sparse tensor then the unspecifed values are treated as ``-inf``.
   */
-final class SELU[D <: DType: Default](inplace: Boolean = false, size: Option[Int] = None)
+final class SELU[D <: DType: Default](val inplace: Boolean = false, val size: Option[Int] = None)
     extends TensorModule[D]:
 
   val options = if size.isDefined then SELUOptions(size.get) else SELUOptions()

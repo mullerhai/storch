@@ -25,7 +25,7 @@ import org.bytedeco.pytorch.{PixelShuffleImpl, PixelShuffleOptions}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
-final class PixelShuffle[D <: FloatNN | ComplexNN: Default](upscaleFactor: Int)
+final class PixelShuffle[D <: FloatNN | ComplexNN: Default](val upscaleFactor: Int)
     extends TensorModule[D]:
 
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

@@ -28,9 +28,9 @@ import torch.internal.NativeConverters.fromNative
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class LeakyReLU[D <: DType: Default](
-    negativeSlope: Float = 0.01f,
-    inplace: Boolean = false,
-    size: Option[Int] = None
+    val negativeSlope: Float = 0.01f,
+    val inplace: Boolean = false,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   private val options =

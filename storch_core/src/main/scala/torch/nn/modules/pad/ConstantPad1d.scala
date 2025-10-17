@@ -27,8 +27,8 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * output features is equal to the number of input planes. FloatNN | ComplexNN: Default
   */
 final class ConstantPad1d[ParamType <: FloatNN | ComplexNN: Default](
-    padding: Int | (Int, Int),
-    value: Float | Double
+    val padding: Int | (Int, Int),
+    val value: Float | Double
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

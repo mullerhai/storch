@@ -16,11 +16,11 @@ import torch.nn.modules.Module
 
 //class torch.nn.BCEWithLogitsLoss(weight=None, size_average=None, reduce=None, reduction='mean', pos_weight=None)[source]
 final class BCEWithLogitsLoss(
-    weight: Option[Tensor[?]] = None,
-    reduction: String = "mean",
-    pos_weight: Option[Tensor[?]] = None,
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val weight: Option[Tensor[?]] = None,
+    val reduction: String = "mean",
+    val pos_weight: Option[Tensor[?]] = None,
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: BCEWithLogitsLossOptions = new BCEWithLogitsLossOptions()

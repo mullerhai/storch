@@ -27,7 +27,7 @@ import org.bytedeco.pytorch.TanhImpl
   * val output = m(input)
   * ```
   */
-final class Softshrink[D <: DType: Default](lambda: Float = 0.5f) extends TensorModule[D]:
+final class Softshrink[D <: DType: Default](val lambda: Float = 0.5f) extends TensorModule[D]:
 
   val option = SoftshrinkOptions(lambda.toDouble)
   option.lambda().put(lambda.toDouble)

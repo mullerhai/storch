@@ -34,19 +34,19 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv custom_encoder ,custom_decoder,
   */
 final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
-    dModel: Int = 512,
-    nhead: Int = 8,
-    numEncoderLayers: Int = 6,
-    numDecoderLayers: Int = 6,
-    dimFeedforward: Int = 2048,
-    dropout: Float | Double = 0.1,
-    activation: TransformerActivation | String = TransformerActivation.kReLU,
-    customEncoder: Option[AnyModule] = None,
-    customDecoder: Option[AnyModule] = None,
-    layer_norm_eps: Float = 1e-05,
-    batch_first: Boolean = false,
-    norm_first: Boolean = false,
-    bias: Boolean = true
+    val dModel: Int = 512,
+    val nhead: Int = 8,
+    val numEncoderLayers: Int = 6,
+    val numDecoderLayers: Int = 6,
+    val dimFeedforward: Int = 2048,
+    val dropout: Float | Double = 0.1,
+    val activation: TransformerActivation | String = TransformerActivation.kReLU,
+    val customEncoder: Option[AnyModule] = None,
+    val customDecoder: Option[AnyModule] = None,
+    val layer_norm_eps: Float = 1e-05,
+    val batch_first: Boolean = false,
+    val norm_first: Boolean = false,
+    val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

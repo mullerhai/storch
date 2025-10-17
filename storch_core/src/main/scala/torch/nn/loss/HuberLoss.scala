@@ -8,7 +8,7 @@ import torch.internal.NativeConverters.fromNative
 import torch.nn.modules.Module
 
 //class torch.nn.HuberLoss(reduction='mean', delta=1.0)[source]
-final class HuberLoss(reduction: String = "mean", delta: Double = 1.0) extends LossFunc {
+final class HuberLoss(val reduction: String = "mean", val delta: Double = 1.0) extends LossFunc {
 
   private[torch] val options: HuberLossOptions = new HuberLossOptions()
   val lossReduction = reduction match {

@@ -31,8 +31,10 @@ import org.bytedeco.pytorch.{GELUImpl, GELUOptions}
   * approximate ： none , "tanh" When the input Tensor is a sparse tensor then the unspecifed values
   * are treated as ``-inf``.
   */
-final class GELU[D <: DType: Default](approximate: String = "none", size: Option[Int] = None)
-    extends TensorModule[D]:
+final class GELU[D <: DType: Default](
+    val approximate: String = "none",
+    val size: Option[Int] = None
+) extends TensorModule[D]:
 
   val options = if size.isDefined then GELUOptions(size.get) else GELUOptions()
 

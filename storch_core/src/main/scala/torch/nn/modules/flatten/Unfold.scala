@@ -51,12 +51,12 @@ import torch.internal.NativeConverters.{toNative, fromNative}
  */
 // format: on
 final class Unfold[D <: DType: Default](
-    kernelSize: Int | (Int, Int) | (Int, Int, Int),
-    dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 1,
-    padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 0,
-    stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+    val stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 1
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

@@ -18,10 +18,10 @@ import torch.nn.modules.Module
 
 //class torch.nn.BCELoss(weight=None, size_average=None, reduce=None, reduction='mean')
 final class BCELoss(
-    weight: Option[Tensor[?]] = None,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val weight: Option[Tensor[?]] = None,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: BCELossOptions = new BCELossOptions()

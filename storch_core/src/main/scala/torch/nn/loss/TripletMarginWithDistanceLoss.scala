@@ -19,7 +19,7 @@ import torch.internal.NativeConverters.fromNative
 /*Parameters
 distance_function (Callable, optional) – A nonnegative, real-valued function that quantifies the closeness of two tensors. If not specified, nn.PairwiseDistance will be used. Default: None
 
-margin (float, optional) – A nonnegative margin representing the minimum difference between the positive and negative distances required for the loss to be 0. Larger margins penalize cases where the negative examples are not distant enough from the anchors, relative to the positives. Default:
+margin (float, optional)  – A nonnegative margin representing the minimum difference between the positive and negative distances required for the loss to be 0. Larger margins penalize cases where the negative examples are not distant enough from the anchors, relative to the positives. Default:
 1
 1
 .
@@ -30,10 +30,10 @@ reduction (str, optional) – Specifies the (optional) reduction to apply to the
  */
 
 final class TripletMarginWithDistanceLoss(
-    distance_function: Option[Pointer] = None,
-    margin: Double = 1.0,
-    swap: Boolean = false,
-    reduction: String = "mean"
+    val distance_function: Option[Pointer] = None,
+    val margin: Double = 1.0,
+    val swap: Boolean = false,
+    val reduction: String = "mean"
 ) extends LossFunc {
 
   private[torch] val options: TripletMarginWithDistanceLossOptions =

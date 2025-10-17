@@ -52,11 +52,11 @@ import torch.internal.NativeConverters.{fromNative, toNative}
  */
 // format: on
 final class Unflatten[D <: DType: Default](
-    dim: Int | Option[Int] = 1,
-    unflattenedSize: Seq[Int] | (Int, Int) | (Int, Int, Int) | (Int, Int, Int, Int) |
+    val dim: Int | Option[Int] = 1,
+    val unflattenedSize: Seq[Int] | (Int, Int) | (Int, Int, Int) | (Int, Int, Int, Int) |
       Option[Seq[Int]] = None,
-    dimName: Option[String] = None,
-    namedShape: Option[Map[String, Int]] = None
+    val dimName: Option[String] = None,
+    val namedShape: Option[Map[String, Int]] = None
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   val size = unflattenedSize match {

@@ -398,10 +398,10 @@ private[torch] def derivedArangeType[Start <: ScalaType, End <: ScalaType, Step 
 ): DType = promotedDType(scalaToDType(start), promotedDType(scalaToDType(end), scalaToDType(step)))
 
 type DTypeOrDeriveArange[
-  T <: DType | Derive,
-  Start <: ScalaType,
-  End <: ScalaType,
-  Step <: ScalaType
+    T <: DType | Derive,
+    Start <: ScalaType,
+    End <: ScalaType,
+    Step <: ScalaType
 ] <: DType =
   T match
     case Derive => DerivedArangeType[Start, End, Step]

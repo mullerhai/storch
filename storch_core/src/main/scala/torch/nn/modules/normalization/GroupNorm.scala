@@ -36,10 +36,10 @@ import torch.internal.NativeConverters.fromNative
   *   parameters initialized to ones (for weights) and zeros (for biases)
   */
 final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
-    numGroups: Int,
-    numChannels: Int,
-    eps: Double = 1e-05,
-    affine: Boolean = true
+    val numGroups: Int,
+    val numChannels: Int,
+    val eps: Double = 1e-05,
+    val affine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

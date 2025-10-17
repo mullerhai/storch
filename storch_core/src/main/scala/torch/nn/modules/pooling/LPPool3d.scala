@@ -26,10 +26,10 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class LPPool3d[D <: FloatNN | ComplexNN: Default](
-    normType: Float,
-    kernelSize: Int | (Int, Int, Int),
-    stride: Int | (Int, Int, Int),
-    ceilMode: Boolean = false
+    val normType: Float,
+    val kernelSize: Int | (Int, Int, Int),
+    val stride: Int | (Int, Int, Int) | Option[Int] = None,
+    val ceilMode: Boolean = false
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: LPPool3dOptions = LPPool3dOptions(toNative(kernelSize))
@@ -37,6 +37,7 @@ final class LPPool3d[D <: FloatNN | ComplexNN: Default](
   stride match {
     case s: Int             => options.stride().put(Array(s.toLong, s.toLong, s.toLong)*)
     case s: (Int, Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+    case None               => {}
   }
   kernelSize match {
     case s: Int => options.kernel_size().put(Array(s.toLong, s.toLong, s.toLong)*)
@@ -63,7 +64,7 @@ object LPPool3d:
   def apply[D <: FloatNN | ComplexNN: Default](
       norm_type: Float,
       kernel_size: Int | (Int, Int, Int),
-      stride: Int | (Int, Int, Int),
+      stride: Int | (Int, Int, Int) | Option[Int] = None,
       ceil_mode: Boolean = false
   ): LPPool3d[D] =
     new LPPool3d[D](norm_type, kernel_size, stride, ceil_mode)

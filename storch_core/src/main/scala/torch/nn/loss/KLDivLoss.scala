@@ -17,10 +17,10 @@ import torch.nn.modules.Module
 
 //class torch.nn.KLDivLoss(size_average=None, reduce=None, reduction='mean', log_target=False)
 final class KLDivLoss(
-    reduction: String = "mean",
-    log_target: Boolean = false,
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val reduction: String = "mean",
+    val log_target: Boolean = false,
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: KLDivLossOptions = reduction match {

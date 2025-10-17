@@ -16,10 +16,10 @@ import org.bytedeco.pytorch.{
 
 //class torch.nn.CosineEmbeddingLoss(margin=0.0, size_average=None, reduce=None, reduction='mean')[source]
 final class CosineEmbeddingLoss(
-    margin: Double = 0.0,
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val margin: Double = 0.0,
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: CosineEmbeddingLossOptions = new CosineEmbeddingLossOptions()

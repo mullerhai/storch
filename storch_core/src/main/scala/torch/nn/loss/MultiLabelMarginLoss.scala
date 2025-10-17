@@ -16,9 +16,9 @@ import torch.internal.NativeConverters.fromNative
 
 //class torch.nn.MultiLabelMarginLoss(size_average=None, reduce=None, reduction='mean')
 final class MultiLabelMarginLoss(
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: MultiLabelMarginLossOptions = new MultiLabelMarginLossOptions()

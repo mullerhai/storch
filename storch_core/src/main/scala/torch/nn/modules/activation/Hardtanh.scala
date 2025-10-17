@@ -28,10 +28,10 @@ import torch.internal.NativeConverters.fromNative
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class Hardtanh[D <: DType: Default](
-    minVal: Float,
-    maxVal: Float,
-    inplace: Boolean = false,
-    size: Option[Int] = None
+    val minVal: Float,
+    val maxVal: Float,
+    val inplace: Boolean = false,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   private val options =

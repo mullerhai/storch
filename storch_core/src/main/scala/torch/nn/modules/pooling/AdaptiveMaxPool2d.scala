@@ -32,9 +32,9 @@ import org.bytedeco.pytorch.LongOptional
   * number of input planes.
   */
 final class AdaptiveMaxPool2d[ParamType <: FloatNN | ComplexNN: Default](
-    outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) | (Option[Int], Int) |
-      (Int, Option[Int]),
-    returnIndices: Boolean = false
+    val outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) |
+      (Option[Int], Int) | (Int, Option[Int]),
+    val returnIndices: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")

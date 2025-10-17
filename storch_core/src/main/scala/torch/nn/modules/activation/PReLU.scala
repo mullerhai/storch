@@ -27,9 +27,9 @@ import torch.internal.NativeConverters.fromNative
   * init=0.25, device=None, dtype=None $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class PReLU[D <: DType: Default](
-    numParameters: Int = 1,
-    init: Float = 0.25f,
-    size: Option[Int] = None
+    val numParameters: Int = 1,
+    val init: Float = 0.25f,
+    val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   private val options = if size.isDefined then new PReLUOptions(size.get) else new PReLUOptions()

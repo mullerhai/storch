@@ -9,9 +9,9 @@ import torch.nn.modules.Module
 
 //class torch.nn.L1Loss(size_average=None, reduce=None, reduction='mean')[source]
 final class L1Loss(
-    reduction: String = "mean",
-    size_average: Option[Boolean] = None,
-    reduce: Option[Boolean] = None
+    val reduction: String = "mean",
+    val size_average: Option[Boolean] = None,
+    val reduce: Option[Boolean] = None
 ) extends LossFunc {
 
   private[torch] val options: L1LossOptions = new L1LossOptions()

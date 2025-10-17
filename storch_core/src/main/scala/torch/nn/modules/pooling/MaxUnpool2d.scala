@@ -25,9 +25,9 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
-    kernelSize: Int | (Int, Int),
-    stride: Int | (Int, Int),
-    padding: Int | (Int, Int) = 0
+    val kernelSize: Int | (Int, Int),
+    val stride: Int | (Int, Int) | Option[Int] = None,
+    val padding: Int | (Int, Int) = 0
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options: MaxUnpool2dOptions = kernelSize match {
@@ -38,6 +38,7 @@ final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
+    case None          => {}
   }
   padding match {
     case s: Int        => options.padding().put(Array(s.toLong, s.toLong)*)
@@ -82,7 +83,7 @@ final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
 object MaxUnpool2d:
   def apply[D <: FloatNN | ComplexNN: Default](
       kernel_size: Int | (Int, Int),
-      stride: Int | (Int, Int),
+      stride: Int | (Int, Int) | Option[Int] = None,
       padding: Int | (Int, Int) = 0
   ): MaxUnpool2d[D] =
     new MaxUnpool2d(kernel_size, stride, padding)
