@@ -9,7 +9,7 @@ import scala.math.{Pi, cos}
   */
 class CosineAnnealingLR(
     override val optimizer: Optimizer,
-    t_max: Int,
+    T_max: Int,
     eta_min: Float = 0.0f,
     last_epoch: Int = -1,
     verbose: Boolean = false
@@ -46,20 +46,20 @@ class CosineAnnealingLR(
       optimizer.param_groups.map(param => param.paramGroup.options().get_lr().toFloat)
     } else if (_step_count == 1 && last_epoch > 0) {
       base_lrs.zip(optimizer.param_groups).map { case (base_lr, group) =>
-        val lr = eta_min + (base_lr - eta_min) * (1 + cos(last_epoch * Pi / t_max)) / 2.0f
+        val lr = eta_min + (base_lr - eta_min) * (1 + cos(last_epoch * Pi / T_max)) / 2.0f
         lr.toFloat
       }
-    } else if ((last_epoch - 1 - t_max) % (2 * t_max) == 0) {
+    } else if ((last_epoch - 1 - T_max) % (2 * T_max) == 0) {
       base_lrs.zip(optimizer.param_groups).map { case (base_lr, group) =>
         val lr =
           group.paramGroup.options().get_lr().asInstanceOf[Float] + (base_lr - eta_min) * (1 - cos(
-            Pi / t_max
+            Pi / T_max
           )) / 2.0f
         lr.toFloat
       }
     } else {
       optimizer.param_groups.map(group =>
-        val lr = (1 + cos(Pi * last_epoch / t_max)) / (1 + cos(Pi * (last_epoch - 1) / t_max)) *
+        val lr = (1 + cos(Pi * last_epoch / T_max)) / (1 + cos(Pi * (last_epoch - 1) / T_max)) *
           (group.paramGroupDict("lr").asInstanceOf[Float] - eta_min) + eta_min
         lr.toFloat
       )
@@ -68,7 +68,7 @@ class CosineAnnealingLR(
 
   override def get_closed_form_lr(): Seq[Float] = {
     base_lrs.map(base_lr => {
-      val bash_lr = eta_min + (base_lr - eta_min) * (1 + cos(Pi * last_epoch / t_max)) / 2.0f
+      val bash_lr = eta_min + (base_lr - eta_min) * (1 + cos(Pi * last_epoch / T_max)) / 2.0f
       bash_lr.toFloat
     })
   }

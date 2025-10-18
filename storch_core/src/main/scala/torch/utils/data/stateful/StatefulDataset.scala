@@ -1,4 +1,4 @@
-package torch.utils.data.dataset.normal
+package torch.utils.data.stateful
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{

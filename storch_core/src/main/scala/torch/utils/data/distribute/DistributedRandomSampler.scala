@@ -1,7 +1,6 @@
 package torch
 package utils
 package data
-package sampler
 package distribute
 
 import org.bytedeco.pytorch
@@ -12,6 +11,7 @@ import org.bytedeco.pytorch.{
   SizeTVectorOptional,
   DistributedRandomSampler as DRS
 }
+import torch.utils.data.sampler.Sampler
 
 class DistributedRandomSampler(
     size: Long,

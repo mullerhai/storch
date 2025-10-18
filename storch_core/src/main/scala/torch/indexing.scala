@@ -51,6 +51,8 @@ object indexing:
     // python tensor[0:-1:1]  use as ->  ::
     def :: : Slice = Slice(start, None, None)
 
+    def by(step: Int | Option[Int]) : Slice = Slice(start, None, step)
+
     // python tensor[s:e]  [only start end, step as default 1 ,use as  :-> s.&&(e)  slice(s,e,1)
   extension (start: Int | Option[Int])
     def &&(end: Int | Option[Int]): Slice =
@@ -66,6 +68,11 @@ object indexing:
       // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
       // So step and start are reversed here
       Slice(start, end, Some(1))
+
+    def untils(end: Int | Option[Int]): Slice =
+        // Note that despite the names, :: reverses the operators, that is a :: b calls b.::(a)
+        // So step and start are reversed here
+        Slice(start, end, Some(1))
 
   // python tensor[s:e:t] [have start end step ], use as :-> s.&#(e,t)   slice(s,e,t)
   extension (start: Int | Option[Int])

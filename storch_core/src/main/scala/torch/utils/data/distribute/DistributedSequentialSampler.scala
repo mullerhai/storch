@@ -1,7 +1,6 @@
 package torch
 package utils
 package data
-package sampler
 package distribute
 
 import org.bytedeco.pytorch
@@ -10,13 +9,21 @@ import org.bytedeco.pytorch.{
   OutputArchive,
   SizeTOptional,
   SizeTVectorOptional,
-  DistributedSampler as DS
+  DistributedSequentialSampler as DSS
 }
-import torch.internal.NativeConverters.{toNative}
+import torch.utils.data.sampler.Sampler
 
-class DistributedSampler(epoch: Int) extends DS(epoch.toNative) with Sampler {
+class DistributedSequentialSampler(
+    size: Long,
+    num_replicas: Long = 1,
+    rank: Long = 0,
+    allow_duplicates: Boolean = true
+) extends DSS(size, num_replicas, rank, allow_duplicates)
+    with Sampler {
 
   override def reset(new_size: SizeTOptional): Unit = super.reset(new_size)
+
+  override def reset(): Unit = super.reset()
 
   override def next(batch_size: Long): SizeTVectorOptional = super.next(batch_size)
 
@@ -24,4 +31,5 @@ class DistributedSampler(epoch: Int) extends DS(epoch.toNative) with Sampler {
 
   override def load(archive: InputArchive): Unit = super.load(archive)
 
+  override def index(): Long = super.index()
 }

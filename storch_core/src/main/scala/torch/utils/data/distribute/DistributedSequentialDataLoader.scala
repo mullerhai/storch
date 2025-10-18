@@ -1,7 +1,6 @@
 package torch
 package utils
 package data
-package dataloader
 package distribute
 
 import scala.collection.mutable
@@ -10,19 +9,16 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
   DataLoaderOptions,
-  Example,
-  ExampleIterator,
   ExampleVector,
   ExampleVectorIterator,
   ExampleVectorOptional,
   FullDataLoaderOptions,
   JavaDistributedSequentialDataLoader as DSDL
 }
-import torch.internal.NativeConverters.{fromNative, toNative}
-import torch.utils.data.dataloader.TorchDataLoaderOptions
+import torch.utils.data.dataloader.{TorchDataLoader, TorchDataLoaderOptions}
 import torch.utils.data.dataset.normal
 import torch.utils.data.dataset.normal.JavaDataset
-import torch.utils.data.sampler.distribute.DistributedSequentialSampler
+import torch.utils.data.distribute.DistributedSequentialSampler
 
 object DistributedSequentialDataLoader {
 

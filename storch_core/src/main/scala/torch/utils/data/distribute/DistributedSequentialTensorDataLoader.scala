@@ -1,28 +1,32 @@
 package torch
 package utils
 package data
-package dataloader
-package stafeful
+package distribute
 
-import org.bytedeco.pytorch
-import org.bytedeco.pytorch.DataLoaderOptions as DLOP
-import org.bytedeco.pytorch.{
-  FullDataLoaderOptions,
-  TensorExample,
-  TensorExampleVector,
-  TensorExampleIterator,
-  TensorExampleVectorIterator,
-  JavaStatefulTensorDataLoader as STDL
-}
-import torch.utils.data.dataset.normal.StatefulTensorDataset
-import torch.utils.data.dataset.normal
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import org.bytedeco.pytorch
+import org.bytedeco.pytorch.{
+  FullDataLoaderOptions,
+  TensorExampleVector,
+  TensorExampleVectorIterator,
+  JavaDistributedSequentialTensorDataLoader as DSTDL
+}
+import torch.utils.data.dataloader.{TorchDataLoader, TorchTensorDataLoaderOptions}
+import torch.utils.data.dataset.normal.NormalTensorDataset
+import torch.utils.data.distribute.DistributedSequentialSampler
+import torch.utils.data.dataset.normal
+import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 
-object StatefulTensorDataLoader {
-  def apply(dataset: normal.StatefulTensorDataset, option: TorchTensorDataLoaderOptions) =
-    new StatefulTensorDataLoader(
+object DistributedSequentialTensorDataLoader {
+  def apply(
+      dataset: NormalTensorDataset,
+      sampler: DistributedSequentialSampler,
+      option: TorchTensorDataLoaderOptions
+  ) =
+    new DistributedSequentialTensorDataLoader(
       dataset,
+      sampler,
       option.batch_size,
       option.shuffle,
       option.num_workers,
@@ -33,8 +37,9 @@ object StatefulTensorDataLoader {
     )
 }
 
-class StatefulTensorDataLoader(
-    dataset: normal.StatefulTensorDataset,
+class DistributedSequentialTensorDataLoader(
+    dataset: NormalTensorDataset,
+    sampler: DistributedSequentialSampler,
     batch_size: Int,
     shuffle: Boolean = false,
     num_workers: Int = 0,
@@ -42,7 +47,7 @@ class StatefulTensorDataLoader(
     drop_last: Boolean = false,
     in_order: Boolean = true,
     timeout: Float = 0
-) extends STDL(dataset, new DLOP())
+) extends DSTDL(dataset, sampler, new DLOP())
     with TorchDataLoader
     with Iterable[TensorExampleVector] {
 
@@ -56,7 +61,7 @@ class StatefulTensorDataLoader(
     timeout = timeout
   )
 
-  private lazy val nativeDataLoader = new STDL(dataset, option.toNative)
+  private lazy val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
 
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
@@ -64,14 +69,13 @@ class StatefulTensorDataLoader(
 
   override def join(): Unit = nativeDataLoader.join()
 
-  override def options(): FullDataLoaderOptions = nativeDataLoader.options()
+  override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(option.toNative)
 
   private val iteratorBuffer = new ListBuffer[TensorExampleVector]()
 
   def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
-
     if (iteratorBuffer.length == 0) {
-      val nativeDataLoader = new STDL(dataset, option.toNative)
+      val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
       var current: TensorExampleVectorIterator = nativeDataLoader.begin
       val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
       while (!current.equals(endIterator)) {
@@ -101,11 +105,11 @@ class StatefulTensorDataLoader(
 
   def iterator_raw: Iterator[TensorExampleVector] = new Iterator[TensorExampleVector] {
 
-    private lazy val nativeDataLoader = new STDL(dataset, option.toNative)
+    private lazy val nativeDataLoader = new DSTDL(dataset, sampler, option.toNative)
 
-    private var current: TensorExampleVectorIterator = nativeDataLoader.begin()
+    private var current: TensorExampleVectorIterator = nativeDataLoader.begin
 
-    private val endIterator: TensorExampleVectorIterator = nativeDataLoader.end()
+    private val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
 
     override def hasNext: Boolean = !current.equals(endIterator)
 

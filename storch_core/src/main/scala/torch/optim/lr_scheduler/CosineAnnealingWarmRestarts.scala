@@ -8,19 +8,19 @@ import torch.optim.Optimizer
   */
 class CosineAnnealingWarmRestarts(
     override val optimizer: Optimizer,
-    t_0: Int,
-    t_mult: Int = 1,
+    T_0: Int,
+    T_mult: Int = 1,
     eta_min: Float = 0.0f,
     last_epoch: Int = -1,
     verbose: Boolean = false
 ) extends LRScheduler(optimizer) {
 //  override var verbose: Boolean = verbose
-  require(t_0 > 0 && t_0.isInstanceOf[Int], s"Expected positive integer t_0, but got $t_0")
-  require(t_mult >= 1 && t_mult.isInstanceOf[Int], s"Expected integer t_mult >= 1, but got $t_mult")
+  require(T_0 > 0 && T_0.isInstanceOf[Int], s"Expected positive integer T_0, but got $T_0")
+  require(T_mult >= 1 && T_mult.isInstanceOf[Int], s"Expected integer T_mult >= 1, but got $T_mult")
 
-//  val t_0: Int = t_0
-  var t_i: Int = t_0
-//  val t_mult: Int = t_mult
+//  val T_0: Int = T_0
+  var t_i: Int = T_0
+//  val T_mult: Int = T_mult
 //  val eta_min: Float = eta_min
   var t_cur: Int = last_epoch
 
@@ -67,23 +67,23 @@ class CosineAnnealingWarmRestarts(
 
     // 计算t_cur和t_i
     if (epoch.isDefined) {
-      if (current_epoch >= t_0) {
-        if (t_mult == 1) {
-          t_cur = (current_epoch % t_0).toInt
+      if (current_epoch >= T_0) {
+        if (T_mult == 1) {
+          t_cur = (current_epoch % T_0).toInt
         } else {
-          val n = log((current_epoch / t_0 * (t_mult - 1) + 1), t_mult).toInt
-          t_cur = (current_epoch - t_0 * (math.pow(t_mult, n) - 1) / (t_mult - 1)).toInt
-          t_i = t_0 * math.pow(t_mult, n).toInt
+          val n = log((current_epoch / T_0 * (T_mult - 1) + 1), T_mult).toInt
+          t_cur = (current_epoch - T_0 * (math.pow(T_mult, n) - 1) / (T_mult - 1)).toInt
+          t_i = T_0 * math.pow(T_mult, n).toInt
         }
       } else {
-        t_i = t_0
+        t_i = T_0
         t_cur = current_epoch.toInt
       }
     } else {
       t_cur += 1
       if (t_cur >= t_i) {
         t_cur -= t_i
-        t_i *= t_mult
+        t_i *= T_mult
       }
     }
 

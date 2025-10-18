@@ -22,6 +22,9 @@ import torch.internal.NativeConverters.fromNative
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.global.torch_cuda as torchCuda
 import torch.distribute.DistBackend
+import org.bytedeco.javacpp.*
+import org.bytedeco.cuda.cudart.*
+import org.bytedeco.cuda.global.cudart.cudaDeviceReset
 
 /** This package adds support for CUDA tensor types, that implement the same function as CPU
   * tensors, but they utilize GPUs for computation.
@@ -43,11 +46,18 @@ package object cuda {
 //
 //  def getCudnnHandle = torchCuda.getCudnnHandle()
 
-//  def empty_cache(un_used: Int*): Unit = torchCuda.empty_cache()
-//
+  def empty_cache(un_used: Int*): Unit = cudaDeviceReset()
+
+// udaPointerGetAttributes(cudaPointerAttributes attributes, @Const Pointer ptr);
+  //public static native @Cast("CUresult") int cuMemGetInfo(@Cast("size_t*") SizeTPointer _free, @Cast("size_t*") SizeTPointer total);
 //  def memory_allocated(device: Device) = torchCuda.memory_allocated(device)
-//
-//  def memory_reserved(device: Device) = torchCuda.memory_reserved(device)
+
+// Cast("cudaError_t") int cudaDeviceSetMemPool(int device, CUmemPoolHandle_st memPool);
+//int cudaDeviceGetMemPool(@ByPtrPtr CUmemPoolHandle_st memPool, int device);
+  //      val memInfo = new cudaDeviceProp()
+  //      cudaGetDeviceProperties(memInfo, id)
+  //      memInfo.totalGlobalMem()
+  //  def memory_reserved(device: Device) = torchCuda.memory_reserved(device)
 
   def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
 

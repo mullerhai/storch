@@ -1,37 +1,29 @@
 package torch
 package utils
 package data
-package dataloader
-package stream
+package stateful
 
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
-  DataLoaderOptions,
-  ExampleVectorOptional,
   FullDataLoaderOptions,
-  TensorExample,
+//  TensorExample,
+//  TensorExampleIterator,
   TensorExampleVector,
-  TensorExampleIterator,
   TensorExampleVectorIterator,
-  JavaStreamTensorDataLoader as STDL
+  JavaStatefulTensorDataLoader as STDL
 }
+import torch.utils.data.dataloader.{TorchDataLoader, TorchTensorDataLoaderOptions}
+//import torch.utils.data.stateful.StatefulTensorDataset
+//import torch.utils.data.stateful
 
-import torch.utils.data.dataset.normal
-import torch.utils.data.dataset.normal.stream.StreamTensorDataset
-import torch.utils.data.sampler.stream.StreamSampler
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
-object StreamTensorDataLoader {
-  def apply(
-      dataset: StreamTensorDataset,
-      sampler: StreamSampler,
-      option: TorchTensorDataLoaderOptions
-  ) =
-    new StreamTensorDataLoader(
+object StatefulTensorDataLoader {
+  def apply(dataset: StatefulTensorDataset, option: TorchTensorDataLoaderOptions) =
+    new StatefulTensorDataLoader(
       dataset,
-      sampler,
       option.batch_size,
       option.shuffle,
       option.num_workers,
@@ -42,9 +34,8 @@ object StreamTensorDataLoader {
     )
 }
 
-class StreamTensorDataLoader(
-    dataset: StreamTensorDataset,
-    sampler: StreamSampler,
+class StatefulTensorDataLoader(
+    dataset: StatefulTensorDataset,
     batch_size: Int,
     shuffle: Boolean = false,
     num_workers: Int = 0,
@@ -52,7 +43,7 @@ class StreamTensorDataLoader(
     drop_last: Boolean = false,
     in_order: Boolean = true,
     timeout: Float = 0
-) extends STDL(dataset, sampler, new DLOP())
+) extends STDL(dataset, new DLOP())
     with TorchDataLoader
     with Iterable[TensorExampleVector] {
 
@@ -66,7 +57,7 @@ class StreamTensorDataLoader(
     timeout = timeout
   )
 
-  private lazy val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
+  private lazy val nativeDataLoader = new STDL(dataset, option.toNative)
 
   override def begin(): TensorExampleVectorIterator = nativeDataLoader.begin()
 
@@ -81,7 +72,7 @@ class StreamTensorDataLoader(
   def getIteratorBuffer: mutable.Buffer[TensorExampleVector] = {
 
     if (iteratorBuffer.length == 0) {
-      val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
+      val nativeDataLoader = new STDL(dataset, option.toNative)
       var current: TensorExampleVectorIterator = nativeDataLoader.begin
       val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
       while (!current.equals(endIterator)) {
@@ -111,11 +102,11 @@ class StreamTensorDataLoader(
 
   def iterator_raw: Iterator[TensorExampleVector] = new Iterator[TensorExampleVector] {
 
-    private lazy val nativeDataLoader = new STDL(dataset, sampler, option.toNative)
+    private lazy val nativeDataLoader = new STDL(dataset, option.toNative)
 
-    private var current: TensorExampleVectorIterator = nativeDataLoader.begin
+    private var current: TensorExampleVectorIterator = nativeDataLoader.begin()
 
-    private val endIterator: TensorExampleVectorIterator = nativeDataLoader.end
+    private val endIterator: TensorExampleVectorIterator = nativeDataLoader.end()
 
     override def hasNext: Boolean = !current.equals(endIterator)
 

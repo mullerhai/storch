@@ -21,6 +21,7 @@ import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.TensorVector
 import org.bytedeco.pytorch.TensorListIterator
 import torch.internal.NativeConverters.fromNative
+import scala.annotation.StaticAnnotation
 
 object utils:
   def clipGradNorm_(

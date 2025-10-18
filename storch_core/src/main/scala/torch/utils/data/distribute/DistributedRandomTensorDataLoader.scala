@@ -1,7 +1,6 @@
 package torch
 package utils
 package data
-package dataloader
 package distribute
 
 import scala.collection.mutable
@@ -9,14 +8,13 @@ import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{
   FullDataLoaderOptions,
-  TensorExample,
   TensorExampleVector,
-  TensorExampleIterator,
   TensorExampleVectorIterator,
   JavaDistributedRandomTensorDataLoader as DRTDL
 }
+import torch.utils.data.dataloader.{TorchDataLoader, TorchTensorDataLoaderOptions}
 import torch.utils.data.dataset.normal.NormalTensorDataset
-import torch.utils.data.sampler.distribute.DistributedRandomSampler
+import torch.utils.data.distribute.DistributedRandomSampler
 import torch.utils.data.dataset.normal
 import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 

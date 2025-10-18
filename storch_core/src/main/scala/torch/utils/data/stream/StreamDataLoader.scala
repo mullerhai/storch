@@ -1,29 +1,26 @@
 package torch
 package utils
 package data
-package dataloader
-package stafeful
+package stream
 
 import org.bytedeco.pytorch
+import org.bytedeco.pytorch.DataLoaderOptions as DLOP
 import org.bytedeco.pytorch.{
+  DataLoaderOptions,
   ExampleVector,
   ExampleVectorIterator,
   FullDataLoaderOptions,
-  JavaStatefulDataLoader as SDL
+  JavaStreamDataLoader as SDL
 }
-import torch.utils.data.dataset.normal.StatefulDataset
-import org.bytedeco.pytorch.DataLoaderOptions as DLOP
-import torch.utils.data.dataloader.{TorchDataLoader, TorchDataLoaderOptions}
 import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.dataloader.stafeful.StatefulDataLoader
+import torch.utils.data.dataloader.{TorchDataLoader}
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
-
-object StatefulDataLoader {
-
-  def apply(dataset: StatefulDataset, option: TorchDataLoaderOptions) =
-    new StatefulDataLoader(
+object StreamDataLoader {
+  def apply(dataset: StreamDataset, sampler: StreamSampler, option: TorchDataLoaderOptions) =
+    new StreamDataLoader(
       dataset,
+      sampler,
       option.batch_size,
       option.shuffle,
       option.num_workers,
@@ -34,8 +31,9 @@ object StatefulDataLoader {
     )
 }
 
-class StatefulDataLoader(
-    dataset: StatefulDataset,
+class StreamDataLoader(
+    dataset: StreamDataset,
+    sampler: StreamSampler,
     batch_size: Int,
     shuffle: Boolean = false,
     num_workers: Int = 0,
@@ -43,7 +41,7 @@ class StatefulDataLoader(
     drop_last: Boolean = false,
     in_order: Boolean = true,
     timeout: Float = 0
-) extends SDL(dataset, new DLOP())
+) extends SDL(dataset, sampler, new DLOP())
     with TorchDataLoader
     with Iterable[ExampleVector] {
 
@@ -57,7 +55,7 @@ class StatefulDataLoader(
     timeout = timeout
   )
 
-  private lazy val nativeDataLoader = new SDL(dataset, option.toNative)
+  private lazy val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
 
   override def begin(): ExampleVectorIterator = nativeDataLoader.begin()
 
@@ -65,13 +63,16 @@ class StatefulDataLoader(
 
   override def join(): Unit = nativeDataLoader.join()
 
-  override def options(): FullDataLoaderOptions = nativeDataLoader.options()
+  override def options(): FullDataLoaderOptions = new FullDataLoaderOptions(
+    option.toNative
+  )
 
   private val iteratorBuffer = new ListBuffer[ExampleVector]()
 
   def getIteratorBuffer: mutable.Buffer[ExampleVector] = {
+
     if (iteratorBuffer.length == 0) {
-      val nativeDataLoader = new SDL(dataset, option.toNative)
+      val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
       var current: ExampleVectorIterator = nativeDataLoader.begin
       val endIterator: ExampleVectorIterator = nativeDataLoader.end
       while (!current.equals(endIterator)) {
@@ -101,7 +102,7 @@ class StatefulDataLoader(
 
   def iterator_raw: Iterator[ExampleVector] = new Iterator[ExampleVector] {
 
-    private lazy val nativeDataLoader = new SDL(dataset, option.toNative)
+    private lazy val nativeDataLoader = new SDL(dataset, sampler, option.toNative)
 
     private var current: ExampleVectorIterator = nativeDataLoader.begin()
 

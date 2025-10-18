@@ -2825,8 +2825,103 @@ private[torch] trait BLASOps {
   def absolute[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.absolute(t1.native))
 
-//  def abs[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
-//    fromNative(torchNative.abs(t1.native))
+  def flatten[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
+    fromNative(torchNative.flatten(t1.native))
+
+  def flatten[D1 <: DType](t1: Tensor[D1], start_dim: Int = 1, end_dim: Int = -1): Tensor[D1] =
+    fromNative(torchNative.flatten(t1.native, start_dim.toLong, end_dim.toLong))
+
+  import org.bytedeco.pytorch.{FoldOptions, UnfoldOptions}
+
+  def fold[D1 <: DType](
+      t1: Tensor[D1],
+      output_size: Int | (Int, Int) | (Int, Int, Int),
+      kernel_size: Int | (Int, Int) | (Int, Int, Int),
+      dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
+      padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
+      stride: Int | (Int, Int) = 1
+  ): Tensor[D1] = {
+
+    val options = FoldOptions(toNative(output_size), toNative(kernel_size))
+
+    dilation match {
+      case d: Int                => options.dilation().put(toNative(d))
+      case d: (Int, Int)         => options.dilation().put(toNative(d))
+      case d: Option[Int]        => if d.isDefined then options.dilation().put(toNative(d.get))
+      case d: Option[(Int, Int)] => if d.isDefined then options.dilation().put(toNative(d.get))
+    }
+    padding match {
+      case p: Int                => options.padding().put(toNative(p))
+      case p: (Int, Int)         => options.padding().put(toNative(p))
+      case p: Option[Int]        => if p.isDefined then options.padding().put(toNative(p.get))
+      case p: Option[(Int, Int)] => if p.isDefined then options.padding().put(toNative(p.get))
+    }
+
+    stride match {
+      case s: Int        => options.stride().put(Array(s.toLong)*)
+      case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
+    }
+
+    output_size match {
+      case s: Int        => options.output_size().put(Array(s.toLong)*)
+      case s: (Int, Int) => options.output_size().put(Array(s._1.toLong, s._2.toLong)*)
+      case s: (Int, Int, Int) =>
+        options.output_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+    }
+
+    kernel_size match {
+      case s: Int        => options.kernel_size().put(Array(s.toLong)*)
+      case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
+      case s: (Int, Int, Int) =>
+        options.kernel_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
+    }
+    fromNative(torchNative.fold(t1.native, options))
+
+  }
+
+  def unfold[D1 <: DType](
+      t1: Tensor[D1],
+      kernel_size: Int | (Int, Int) | (Int, Int, Int),
+      dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+        Option[(Int, Int, Int)] = 1,
+      padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+        Option[(Int, Int, Int)] = 0,
+      stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
+        Option[(Int, Int, Int)] = 1
+  ): Tensor[D1] = {
+    val options = UnfoldOptions(toNative(kernel_size))
+    options.kernel_size().put(toNative(kernel_size))
+    stride match {
+      case s: Int                     => options.stride().put(toNative(s))
+      case s: (Int, Int)              => options.stride().put(toNative(s))
+      case s: (Int, Int, Int)         => options.stride().put(toNative(s))
+      case s: Option[Int]             => if s.isDefined then options.stride().put(toNative(s.get))
+      case s: Option[(Int, Int)]      => if s.isDefined then options.stride().put(toNative(s.get))
+      case s: Option[(Int, Int, Int)] => if s.isDefined then options.stride().put(toNative(s.get))
+    }
+    padding match {
+      case s: Int                     => options.padding().put(toNative(s))
+      case s: (Int, Int)              => options.padding().put(toNative(s))
+      case s: (Int, Int, Int)         => options.padding().put(toNative(s))
+      case s: Option[Int]             => if s.isDefined then options.padding().put(toNative(s.get))
+      case s: Option[(Int, Int)]      => if s.isDefined then options.padding().put(toNative(s.get))
+      case s: Option[(Int, Int, Int)] => if s.isDefined then options.padding().put(toNative(s.get))
+    }
+    dilation match {
+      case s: Int                     => options.dilation().put(toNative(s))
+      case s: (Int, Int)              => options.dilation().put(toNative(s))
+      case s: (Int, Int, Int)         => options.dilation().put(toNative(s))
+      case s: Option[Int]             => if s.isDefined then options.dilation().put(toNative(s.get))
+      case s: Option[(Int, Int)]      => if s.isDefined then options.dilation().put(toNative(s.get))
+      case s: Option[(Int, Int, Int)] => if s.isDefined then options.dilation().put(toNative(s.get))
+    }
+    fromNative(torchNative.unfold(t1.native, options))
+  }
+
+  def unflatten[D1 <: DType](t1: Tensor[D1], dim: Int = 1, unflattened_size: Seq[Int]): Tensor[D1] =
+    fromNative(
+      torchNative.unflatten(t1.native, dim.toLong, unflattened_size.map(_.toLong).toArray*)
+    )
 
   def matrix_power[D1 <: DType](t1: Tensor[D1], num: Int): Tensor[D1] =
     fromNative(torchNative.matrix_power(t1.native, num))
@@ -2860,6 +2955,18 @@ private[torch] trait BLASOps {
   def flattenDenseTensors[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
     fromNative(torchNative.flattenDenseTensors(tensorVector))
+
+  def flatten_dense_tensors[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    fromNative(torchNative.flatten_dense_tensors(tensorVector))
+
+  def unflatten_dense_tensors[D1 <: DType](
+      tensor: Tensor[D1],
+      tensorArray: Seq[Tensor[D1]]
+  ): Seq[Tensor[D1]] =
+    val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
+    val denseTensorSeq = torchNative.unflatten_dense_tensors(tensor.native, tensorVector)
+    tensorVectorToSeqTensor(denseTensorSeq)
 
   def newLikeFlat[D1 <: DType](tensorArray: Seq[Tensor[D1]]): Tensor[D1] =
     val tensorVector = TensorVector(tensorArray.map(_.native).toArray*)
