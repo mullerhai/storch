@@ -31,31 +31,31 @@ import torch.nn.modules.recurrent.RNN.RNNNonlinearity
   * @group nn_conv
   */
 final class RNN[ParamType <: FloatNN | ComplexNN: Default](
-    val inputSize: Int,
-    val hiddenSize: Int,
-    val numLayers: Int = 1,
-    val nonLinearity: String | RNNNonlinearity = "tanh",
+    val input_size: Int,
+    val hidden_size: Int,
+    val num_layers: Int = 1,
+    val nonlinearity: String | RNNNonlinearity = "tanh",
     val bias: Boolean = true,
-    val batchFirst: Boolean = false,
+    val batch_first: Boolean = false,
     val dropout: Float | Double = 0f,
     val bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensor = (PackedSequence, Tensor[ParamType])
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new RNNOptions(inputSize.toLong, hiddenSize.toLong)
+  private val options = new RNNOptions(input_size.toLong, hidden_size.toLong)
   options.bias().put(bias)
   dropout match {
     case p: Float  => options.dropout().put(p.toDouble)
     case p: Double => options.dropout().put(p)
   }
-  options.batch_first().put(batchFirst)
+  options.batch_first().put(batch_first)
   options.bidirectional().put(bidirectional)
-  options.input_size().put(LongPointer(1).put(inputSize.toLong))
-  options.hidden_size().put(LongPointer(1).put(hiddenSize.toLong))
-  options.num_layers().put(LongPointer(1).put(numLayers.toLong))
+  options.input_size().put(LongPointer(1).put(input_size.toLong))
+  options.hidden_size().put(LongPointer(1).put(hidden_size.toLong))
+  options.num_layers().put(LongPointer(1).put(num_layers.toLong))
 
-  nonLinearity match
+  nonlinearity match
     case "tanh" | "Tanh"       => options.nonlinearity().put(new kTanh)
     case "relu" | "Relu"       => options.nonlinearity().put(new kReLU)
     case RNNNonlinearity.kTanh => options.nonlinearity().put(new kTanh)
@@ -149,7 +149,7 @@ final class RNN[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = options.bias().get()
 
   override def toString =
-    s"${getClass.getSimpleName}(inputSize=$inputSize, hiddenSize=$hiddenSize,numLayers=${numLayers}, nonLinearity ${nonLinearity},batchFirst = ${batchFirst},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
+    s"${getClass.getSimpleName}(inputSize=$input_size, hiddenSize=$hidden_size,numLayers=${num_layers}, nonLinearity ${nonlinearity},batchFirst = ${batch_first},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 
@@ -158,7 +158,7 @@ object RNN:
       input_size: Int,
       hidden_size: Int,
       num_layers: Int = 1,
-      non_linearity: String | RNNNonlinearity = "tanh",
+      nonlinearity: String | RNNNonlinearity = "tanh",
       bias: Boolean = true,
       batch_first: Boolean = false,
       dropout: Float | Double = 0f,
@@ -167,7 +167,7 @@ object RNN:
     input_size,
     hidden_size,
     num_layers,
-    non_linearity,
+    nonlinearity,
     bias,
     batch_first,
     dropout,

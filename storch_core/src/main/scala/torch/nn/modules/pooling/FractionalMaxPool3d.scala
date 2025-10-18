@@ -28,17 +28,19 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * T_TensorTensor_T, LongExpandingArrayOptional, DoubleExpandingArrayOptional,
   */
 final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int, Int),
-    val outputSize: Option[Int] | Option[(Int, Int, Int)] = None,
-    val outputRatio: Option[Float] | Option[(Float, Float, Float)] = None,
-    val returnIndices: Boolean = false,
-    val randomSamples: Option[Seq[Float] | Tensor[D]] = None
+    val kernel_size: Int | (Int, Int, Int),
+    val output_size: Option[Int] | Option[(Int, Int, Int)] = None,
+    val output_ratio: Option[Float] | Option[(Float, Float, Float)] = None,
+    val return_indices: Boolean = false,
+    val random_samples: Option[Seq[Float] | Tensor[D]] = None
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: FractionalMaxPool3dOptions = FractionalMaxPool3dOptions(toNative(kernelSize))
+  private val options: FractionalMaxPool3dOptions = FractionalMaxPool3dOptions(
+    toNative(kernel_size)
+  )
 
-  if outputSize.isDefined then
-    outputSize.get match {
+  if output_size.isDefined then
+    output_size.get match {
       case t: Int =>
 //      options.output_size().put(Array(t.toLong,t.toLong)*)
         options.output_size().put(LongPointer(t.toLong))
@@ -52,8 +54,8 @@ final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
         println("output_size three elements full")
       //      options.output_size().put(toNative(t))
     }
-  if outputRatio.isDefined then
-    outputRatio.get match {
+  if output_ratio.isDefined then
+    output_ratio.get match {
       case t: Float =>
         options.output_ratio().put(DoublePointer(t.toDouble))
         options.output_ratio().put(DoublePointer(t.toDouble))
@@ -68,12 +70,12 @@ final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
       //      options.output_ratio().put(DoublePointer(Array(t._1.toDouble, t._2.toDouble)*))
     }
 
-  options.kernel_size().put(toNative(kernelSize))
-  randomSamples match {
+  options.kernel_size().put(toNative(kernel_size))
+  random_samples match {
     case Some(t: Seq[Float]) => options._random_samples().put(torch.Tensor(t).native)
     case Some(t: Tensor[D])  => options._random_samples().put(t.native)
     case None =>
-      println(s"randomSamples is None outputSize ${outputSize} outputRatio ${outputRatio}")
+      println(s"randomSamples is None outputSize ${output_size} outputRatio ${output_ratio}")
   }
   println(s"FractionalMaxPool3d raw  options kernel ${options.kernel_size().get(0)} k2 ${options
       .kernel_size()
@@ -90,7 +92,7 @@ final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
   override private[torch] val nativeModule: FractionalMaxPool3dImpl = FractionalMaxPool3dImpl(
     options
   )
-  println(s"FractionalMaxPool3d options kernel ${nativeModule.options().kernel_size().get(0)} k2 ${nativeModule
+  println(s"FractionalMaxPool3d  options kernel ${nativeModule.options().kernel_size().get(0)} k2 ${nativeModule
       .options()
       .kernel_size()
       .get(1)}   k3 ${options.kernel_size().get(2)}  outsize ${nativeModule.options().output_size().has_value()}  ${nativeModule
@@ -107,7 +109,7 @@ final class FractionalMaxPool3d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize,outputSize ${outputSize} outputRatio ${outputRatio} returnIndices ${returnIndices} randomSamples ${randomSamples} )"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size,outputSize ${output_size} outputRatio ${output_ratio} returnIndices ${return_indices} randomSamples ${random_samples} )"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))

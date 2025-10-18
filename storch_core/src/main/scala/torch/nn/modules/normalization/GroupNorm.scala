@@ -36,14 +36,14 @@ import torch.internal.NativeConverters.fromNative
   *   parameters initialized to ones (for weights) and zeros (for biases)
   */
 final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
-    val numGroups: Int,
-    val numChannels: Int,
+    val num_groups: Int,
+    val num_channels: Int,
     val eps: Double = 1e-05,
     val affine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: GroupNormOptions = GroupNormOptions(numGroups, numChannels)
+  private val options: GroupNormOptions = GroupNormOptions(num_groups, num_channels)
   options.eps().put(eps)
   options.affine().put(affine)
 
@@ -56,7 +56,7 @@ final class GroupNorm[ParamType <: FloatNN | ComplexNN: Default](
 
   def reset(): Unit = nativeModule.reset()
   override def toString =
-    s"${getClass.getSimpleName}(numGroups = ${numGroups}, numChannels = ${numChannels},eps=$eps affine=$affine)"
+    s"${getClass.getSimpleName}(numGroups = ${num_groups}, numChannels = ${num_channels},eps=$eps affine=$affine)"
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))

@@ -65,32 +65,32 @@ import org.bytedeco.pytorch.global.torch.ScalarType
  */
 // format: on
 final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
-    val numEmbeddings: Int,
-    val embeddingDim: Int,
-    val maxNorm: Option[Float] | Float = None,
-    val normType: Option[Float] | Float = Some(2.0f),
-    val scaleGradByFreq: Boolean | Option[Boolean] = false,
+    val num_embeddings: Int,
+    val embedding_dim: Int,
+    val max_norm: Option[Float] | Float = None,
+    val norm_type: Option[Float] | Float = Some(2.0f),
+    val scale_grad_by_freq: Boolean | Option[Boolean] = false,
     val mode: EmbeddingBagMode | String = EmbeddingBagMode.kMean,
     val sparse: Boolean | Option[Boolean] = false,
-    val includeLastOffset: Boolean | Option[Boolean] = false,
-    val paddingIdx: Option[Int] | Int = None,
-    val needWeight: Option[Tensor[ParamType]] = None
+    val include_last_offset: Boolean | Option[Boolean] = false,
+    val padding_idx: Option[Int] | Int = None,
+    val need_weight: Option[Tensor[ParamType]] = None
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new EmbeddingBagOptions(numEmbeddings.toLong, embeddingDim.toLong)
+  private val options = new EmbeddingBagOptions(num_embeddings.toLong, embedding_dim.toLong)
 
-  maxNorm match {
+  max_norm match {
     case m: Float         => options.max_norm().put(m.toDouble)
     case m: Option[Float] => if m.isDefined then options.max_norm().put(m.get.toDouble)
   }
 
-  normType match {
+  norm_type match {
     case n: Float         => options.norm_type().put(n.toDouble)
     case n: Option[Float] => if n.isDefined then options.norm_type().put(n.get.toDouble)
   }
-  scaleGradByFreq match {
+  scale_grad_by_freq match {
     case s: Boolean         => options.scale_grad_by_freq().put(s)
     case s: Option[Boolean] => if s.isDefined then options.scale_grad_by_freq().put(s.get)
   }
@@ -98,17 +98,17 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
     case s: Boolean         => options.sparse().put(s)
     case s: Option[Boolean] => if s.isDefined then options.sparse().put(s.get)
   }
-  includeLastOffset match {
+  include_last_offset match {
     case i: Boolean         => options.include_last_offset().put(i)
     case i: Option[Boolean] => if i.isDefined then options.include_last_offset().put(i.get)
   }
 
-  paddingIdx match {
+  padding_idx match {
     case p: Int         => options.padding_idx().put(p)
     case p: Option[Int] => if p.isDefined then options.padding_idx().put(p.get)
   }
 
-  if needWeight.isDefined then options._weight().put(needWeight.get.native)
+  if need_weight.isDefined then options._weight().put(need_weight.get.native)
 
   mode match
     case EmbeddingBagMode.kMean | "mean" | "Mean" | "MEAN" => options.mode().put(new kMean)
@@ -117,8 +117,11 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
 
   override val nativeModule: EmbeddingBagImpl = EmbeddingBagImpl(options)
   nativeModule.to(paramType.toScalarType, false)
+
   override def hasBias(): Boolean = false
+
   def weight: Tensor[ParamType] = fromNative(nativeModule.weight)
+
   def weight_=(w: Tensor[ParamType]): Tensor[ParamType] =
     nativeModule.weight(w.native)
     w
@@ -221,12 +224,12 @@ final class EmbeddingBag[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   override def toString(): String =
-    val numEmbed = s"numEmbeddings=$numEmbeddings"
-    val dim = s"embeddingDim=$embeddingDim"
-    val padding = s"paddingIdx=$paddingIdx"
-    val maxN = s"maxNorm=$maxNorm"
-    val normT = s"normType=$normType"
-    val scale = s"scaleGradByFreq=$scaleGradByFreq"
+    val numEmbed = s"numEmbeddings=$num_embeddings"
+    val dim = s"embeddingDim=$embedding_dim"
+    val padding = s"paddingIdx=$padding_idx"
+    val maxN = s"maxNorm=$max_norm"
+    val normT = s"normType=$norm_type"
+    val scale = s"scaleGradByFreq=$scale_grad_by_freq"
     val s = s"sparse=$sparse"
     s"${getClass().getSimpleName()}($numEmbed, $dim, $padding, $maxN, $normT, $scale, $s )"
 

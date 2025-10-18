@@ -52,12 +52,12 @@ import torch.internal.NativeConverters.fromNative
   *   last dim to flatten
   */
 // format: on
-final class Flatten[D <: DType: Default](val startDim: Int = 1, val endDim: Int = -1)
+final class Flatten[D <: DType: Default](val start_dim: Int = 1, val end_dim: Int = -1)
     extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = FlattenOptions()
-  options.start_dim().put(LongPointer(1).put(startDim))
-  options.end_dim().put(LongPointer(1).put(endDim))
+  options.start_dim().put(LongPointer(1).put(start_dim))
+  options.end_dim().put(LongPointer(1).put(end_dim))
 
   override val nativeModule: FlattenImpl = FlattenImpl(options)
 
@@ -68,7 +68,7 @@ final class Flatten[D <: DType: Default](val startDim: Int = 1, val endDim: Int 
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    s"${getClass.getSimpleName}(startDim = ${startDim}, endDim = ${endDim}"
+    s"${getClass.getSimpleName}(startDim = ${start_dim}, endDim = ${end_dim}"
 
 object Flatten:
   def apply[D <: DType: Default](start_dim: Int = 1, end_dim: Int = -1): Flatten[D] =

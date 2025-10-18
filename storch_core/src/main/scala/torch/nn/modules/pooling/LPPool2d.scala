@@ -26,26 +26,26 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class LPPool2d[D <: FloatNN | ComplexNN: Default](
-    val normType: Float,
-    val kernelSize: Int | (Int, Int),
+    val norm_type: Float,
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] = None,
-    val ceilMode: Boolean = false
+    val ceil_mode: Boolean = false
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: LPPool2dOptions = LPPool2dOptions(toNative(kernelSize))
+  private val options: LPPool2dOptions = LPPool2dOptions(toNative(kernel_size))
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
     case None          => {}
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
 
-  options.norm_type().put(DoublePointer(1).put(normType.toDouble))
-  options.ceil_mode().put(ceilMode)
+  options.norm_type().put(DoublePointer(1).put(norm_type.toDouble))
+  options.ceil_mode().put(ceil_mode)
 
   override private[torch] val nativeModule: LPPool2dImpl = LPPool2dImpl(options)
 
@@ -54,7 +54,7 @@ final class LPPool2d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, normType=$normType, ceilMode=$ceilMode)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, normType=$norm_type, ceilMode=$ceil_mode)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))

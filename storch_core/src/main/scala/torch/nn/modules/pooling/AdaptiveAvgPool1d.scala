@@ -31,11 +31,11 @@ import org.bytedeco.pytorch.LongOptionalVector
   * number of input planes.
   */
 final class AdaptiveAvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
-    val outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
+    val output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int)
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private def nativeOutputSize = outputSize match
+  private def nativeOutputSize = output_size match
     case (h: Int, w: Int) =>
       toNative(h, w)
     case x: Int => toNative(x)
@@ -60,7 +60,7 @@ final class AdaptiveAvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
   )
 
   override def toString =
-    s"${getClass.getSimpleName}(outputSize=$outputSize)"
+    s"${getClass.getSimpleName}(outputSize=$output_size)"
 
 }
 

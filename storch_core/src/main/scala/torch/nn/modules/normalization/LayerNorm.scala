@@ -86,36 +86,41 @@ import internal.NativeConverters.fromNative
   */
 // format: on
 final class LayerNorm[ParamType <: FloatNN | ComplexNN: Default](
-    val normalizedShape: Seq[Int],
+    val normalized_shape: Seq[Int] | Int,
     val eps: Double = 1e-05,
-    val elementWiseAffine: Boolean = true
+    val elementwise_affine: Boolean = true
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val shape: LongVector = LongVector(normalizedShape.map(_.toLong): _*)
+  private val shape: LongVector = normalized_shape match
+    case s: Seq[Int] => LongVector(s.map(_.toLong): _*)
+    case i: Int      => LongVector(Seq(i).map(_.toLong): _*)
+
   private val options: LayerNormOptions = LayerNormOptions(shape)
   options.eps().put(eps)
-  options.elementwise_affine().put(elementWiseAffine)
+  options.elementwise_affine().put(elementwise_affine)
 
   override private[torch] val nativeModule: LayerNormImpl = LayerNormImpl(options)
 
   val weight: Tensor[ParamType] = fromNative[ParamType](nativeModule.weight)
+
   val bias: Tensor[ParamType] = fromNative[ParamType](nativeModule.bias)
 
   override def hasBias(): Boolean = true
 
   def reset(): Unit = nativeModule.reset()
   override def toString =
-    s"${getClass.getSimpleName}(normalizedShape = ${normalizedShape.mkString(" ")}, elementWiseAffine = ${elementWiseAffine},eps=$eps )"
+    s"${getClass.getSimpleName}(normalizedShape = ${normalized_shape}, elementWiseAffine = ${elementwise_affine},eps=$eps )"
 
   def apply(t: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(t.native))
+
   def forward(input: Tensor[ParamType]): Tensor[ParamType] =
     fromNative[ParamType](nativeModule.forward(input.native))
 
 object LayerNorm:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
-      normalized_shape: Seq[Int],
+      normalized_shape: Seq[Int] | Int,
       eps: Double = 1e-05,
       element_wise_affine: Boolean = true
   ): LayerNorm[ParamType] =

@@ -31,23 +31,23 @@ import org.bytedeco.pytorch.LongOptional
   * number of input planes.
   */
 final class AvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int),
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] = None,
     val padding: Int | (Int, Int) = 0,
-    val ceilMode: Boolean = false,
-    val countIncludePad: Boolean = true,
-    val divisorOverride: Option[Int] = None
+    val ceil_mode: Boolean = false,
+    val count_include_pad: Boolean = true,
+    val divisor_override: Option[Int] = None
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  val options = new AvgPool1dOptions(toNative(kernelSize))
+  val options = new AvgPool1dOptions(toNative(kernel_size))
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
     case None          => {}
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
@@ -56,9 +56,9 @@ final class AvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
     case s: (Int, Int) => options.padding().put(Array(s._1.toLong, s._2.toLong)*)
   }
 
-  options.ceil_mode().put(ceilMode)
-  options.count_include_pad().put(countIncludePad)
-  if divisorOverride.isDefined then options.divisor_override().put(toOptional(divisorOverride))
+  options.ceil_mode().put(ceil_mode)
+  options.count_include_pad().put(count_include_pad)
+  if divisor_override.isDefined then options.divisor_override().put(toOptional(divisor_override))
 
   override protected[torch] val nativeModule: AvgPool1dImpl = AvgPool1dImpl(
     options
@@ -76,7 +76,7 @@ final class AvgPool1d[ParamType <: FloatNN | ComplexNN: Default](
   )
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding, countIncludePad=$countIncludePad,  ceilMode=$ceilMode)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, padding=$padding, countIncludePad=$count_include_pad,  ceilMode=$ceil_mode)"
 
 }
 

@@ -29,14 +29,14 @@ import torch.{Default, FloatNN, ComplexNN, Tensor}
   * @group nn_conv
   */
 final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
-    val inputSize: Int,
-    val hiddenSize: Int,
+    val input_size: Int,
+    val hidden_size: Int,
     val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new LSTMCellOptions(inputSize.toLong, hiddenSize.toLong)
-  options.hidden_size().put(hiddenSize.toLong)
+  private val options = new LSTMCellOptions(input_size.toLong, hidden_size.toLong)
+  options.hidden_size().put(hidden_size.toLong)
   options.bias().put(bias)
 
   override private[torch] val nativeModule: LSTMCellImpl = LSTMCellImpl(options)
@@ -175,7 +175,7 @@ final class LSTMCell[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = options.bias().get()
 
   override def toString =
-    s"${getClass.getSimpleName}(inputSize=$inputSize, hiddenSize=$hiddenSize bias=$bias)"
+    s"${getClass.getSimpleName}(inputSize=$input_size, hiddenSize=$hidden_size bias=$bias)"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 

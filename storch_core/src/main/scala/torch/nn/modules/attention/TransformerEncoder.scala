@@ -41,19 +41,19 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv
   */
 final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
-    val encoderLayer: TransformerEncoderLayer[ParamType],
-    val numLayers: Int,
+    val encoder_layer: TransformerEncoderLayer[ParamType],
+    val num_layers: Int,
     val activation: TransformerActivation | String = TransformerActivation.kReLU,
     val norm: Option[AnyModule] = None,
-    val enableNestedTensor: Boolean = true,
-    val layerNormEps: Float = 1e-5,
-    val batchFirst: Boolean = false,
-    val normFirst: Boolean = false,
+    val enable_nested_tensor: Boolean = true,
+    val layer_norm_eps: Float = 1e-5,
+    val batch_first: Boolean = false,
+    val norm_first: Boolean = false,
     val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  protected val layerOptions = encoderLayer.options
+  protected val layerOptions = encoder_layer.options
 
   activation match {
     case TransformerActivation.kReLU | "relu" | "Relu" | "ReLU" | "RELU" | "ReLu" =>
@@ -62,9 +62,9 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
       layerOptions.activation().put(new kGELU)
   }
 
-  private val options = new TransformerEncoderOptions(layerOptions, numLayers.toLong)
+  private val options = new TransformerEncoderOptions(layerOptions, num_layers.toLong)
 
-  options.num_layers().put(LongPointer(1).put(numLayers.toLong))
+  options.num_layers().put(LongPointer(1).put(num_layers.toLong))
   if (norm.isDefined) options.norm().put(norm.get)
 
   override private[torch] val nativeModule: TransformerEncoderImpl = TransformerEncoderImpl(options)
@@ -107,7 +107,7 @@ final class TransformerEncoder[ParamType <: FloatNN | ComplexNN: Default](
   def reset_parameters(): Unit = nativeModule.reset_parameters()
 
   override def toString =
-    s"${getClass.getSimpleName}(numLayers=$numLayers, bias=$bias activation=${activation.toString} norm=$norm   )"
+    s"${getClass.getSimpleName}(numLayers=$num_layers, bias=$bias activation=${activation.toString} norm=$norm   )"
 
   override def apply(src: Tensor[ParamType]): Tensor[ParamType] = fromNative(
     nativeModule.forward(src.native)

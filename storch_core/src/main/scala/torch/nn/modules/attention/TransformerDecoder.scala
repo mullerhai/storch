@@ -40,21 +40,21 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv
   */
 final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
-    val decoderLayer: TransformerDecoderLayer[ParamType],
-    val numLayers: Int,
+    val decoder_layer: TransformerDecoderLayer[ParamType],
+    val num_layers: Int,
     val norm: Option[AnyModule] = None,
-    val layerNormEps: Float = 1e-5,
-    val batchFirst: Boolean = false,
-    val normFirst: Boolean = false,
+    val layer_norm_eps: Float = 1e-5,
+    val batch_first: Boolean = false,
+    val norm_first: Boolean = false,
     val activation: TransformerActivation | String = TransformerActivation.kReLU,
     val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  protected val layerOptions = decoderLayer.options
+  protected val layerOptions = decoder_layer.options
 
   override def toString =
-    s"${getClass.getSimpleName}(numLayers=$numLayers, bias=$bias activation=${activation.toString} norm=$norm   )"
+    s"${getClass.getSimpleName}(numLayers=$num_layers, bias=$bias activation=${activation.toString} norm=$norm )"
 
   activation match {
     case TransformerActivation.kReLU | "relu" | "Relu" | "ReLU" | "RELU" | "ReLu" =>
@@ -63,9 +63,9 @@ final class TransformerDecoder[ParamType <: FloatNN | ComplexNN: Default](
       layerOptions.activation().put(new kGELU)
   }
 
-  private val options = new TransformerDecoderOptions(layerOptions, numLayers.toLong)
+  private val options = new TransformerDecoderOptions(layerOptions, num_layers.toLong)
 
-  options.num_layers().put(LongPointer(1).put(numLayers.toLong))
+  options.num_layers().put(LongPointer(1).put(num_layers.toLong))
   if (norm.isDefined) options.norm().put(norm.get)
 
   override private[torch] val nativeModule: TransformerDecoderImpl = TransformerDecoderImpl(options)

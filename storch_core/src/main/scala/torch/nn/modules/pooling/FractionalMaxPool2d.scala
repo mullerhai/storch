@@ -28,18 +28,20 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * LongExpandingArrayOptional, DoubleExpandingArrayOptional
   */
 final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int),
-    val outputSize: Option[Int] | Option[(Int, Int)] = None,
-    val outputRatio: Option[Float] | Option[(Float, Float)] = None,
-    val returnIndices: Boolean = false,
-    val randomSamples: Option[Seq[Float] | Tensor[D]] = None
+    val kernel_size: Int | (Int, Int),
+    val output_size: Option[Int] | Option[(Int, Int)] = None,
+    val output_ratio: Option[Float] | Option[(Float, Float)] = None,
+    val return_indices: Boolean = false,
+    val random_samples: Option[Seq[Float] | Tensor[D]] = None
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: FractionalMaxPool2dOptions = FractionalMaxPool2dOptions(toNative(kernelSize))
+  private val options: FractionalMaxPool2dOptions = FractionalMaxPool2dOptions(
+    toNative(kernel_size)
+  )
 
-  options.kernel_size().put(toNative(kernelSize))
-  if outputSize.isDefined then
-    outputSize.get match {
+  options.kernel_size().put(toNative(kernel_size))
+  if output_size.isDefined then
+    output_size.get match {
       case t: Int =>
         options.output_size().put(LongPointer(1).put(t.toLong))
         options.output_size().put(LongPointer(2).put(t.toLong))
@@ -52,8 +54,8 @@ final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
 //      options.output_size().put(toNative(t))
     }
 
-  if outputRatio.isDefined then
-    outputRatio.get match {
+  if output_ratio.isDefined then
+    output_ratio.get match {
       case t: Float =>
         options.output_ratio().put(DoublePointer(1).put(t.toDouble))
         options.output_ratio().put(DoublePointer(2).put(t.toDouble))
@@ -66,11 +68,11 @@ final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
 //      options.output_ratio().put(DoublePointer(Array(t._1.toDouble, t._2.toDouble)*))
     }
 
-  randomSamples match {
+  random_samples match {
     case Some(t: Seq[Float]) => options._random_samples().put(torch.Tensor(t).native)
     case Some(t: Tensor[D])  => options._random_samples().put(t.native)
     case None =>
-      println(s"randomSamples is None, outputSize: ${outputSize} outputRatio ${outputRatio}")
+      println(s"randomSamples is None, outputSize: ${output_size} outputRatio ${output_ratio}")
   }
 
   println(s"FractionalMaxPool2d raw  options kernel ${options.kernel_size().get(0)} k2 ${options.kernel_size().get(1)} outsize ${options
@@ -101,7 +103,7 @@ final class FractionalMaxPool2d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize,outputSize ${outputSize} outputRatio ${outputRatio} returnIndices ${returnIndices} randomSamples ${randomSamples} )"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size,outputSize ${output_size} outputRatio ${output_ratio} returnIndices ${return_indices} randomSamples ${random_samples} )"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
 

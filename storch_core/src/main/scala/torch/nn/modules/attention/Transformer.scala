@@ -34,15 +34,15 @@ import torch.nn.modules.attention.Transformer.TransformerActivation
   * @group nn_conv custom_encoder ,custom_decoder,
   */
 final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
-    val dModel: Int = 512,
+    val d_model: Int = 512,
     val nhead: Int = 8,
-    val numEncoderLayers: Int = 6,
-    val numDecoderLayers: Int = 6,
-    val dimFeedforward: Int = 2048,
+    val num_encoder_layers: Int = 6,
+    val num_decoder_layers: Int = 6,
+    val dim_feedforward: Int = 2048,
     val dropout: Float | Double = 0.1,
     val activation: TransformerActivation | String = TransformerActivation.kReLU,
-    val customEncoder: Option[AnyModule] = None,
-    val customDecoder: Option[AnyModule] = None,
+    val custom_encoder: Option[AnyModule] = None,
+    val custom_decoder: Option[AnyModule] = None,
     val layer_norm_eps: Float = 1e-05,
     val batch_first: Boolean = false,
     val norm_first: Boolean = false,
@@ -51,23 +51,23 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options = new TransformerOptions(
-    dModel.toLong,
+    d_model.toLong,
     nhead.toLong,
-    numEncoderLayers.toLong,
-    numDecoderLayers.toLong
+    num_encoder_layers.toLong,
+    num_decoder_layers.toLong
   )
-  options.num_encoder_layers().put(LongPointer(1).put(numEncoderLayers.toLong))
-  options.num_decoder_layers().put(LongPointer(1).put(numDecoderLayers.toLong))
-  options.dim_feedforward().put(LongPointer(1).put(dimFeedforward.toLong))
+  options.num_encoder_layers().put(LongPointer(1).put(num_encoder_layers.toLong))
+  options.num_decoder_layers().put(LongPointer(1).put(num_decoder_layers.toLong))
+  options.dim_feedforward().put(LongPointer(1).put(dim_feedforward.toLong))
   dropout match {
     case d: Double => options.dropout().put(DoublePointer(1).put(d))
     case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
   }
   options.nhead().put(LongPointer(1).put(nhead.toLong))
-  options.d_model().put(LongPointer(1).put(dModel.toLong))
+  options.d_model().put(LongPointer(1).put(d_model.toLong))
 
-  if (customEncoder.isDefined) options.custom_encoder().put(customEncoder.get)
-  if (customDecoder.isDefined) options.custom_decoder().put(customDecoder.get)
+  if (custom_encoder.isDefined) options.custom_encoder().put(custom_encoder.get)
+  if (custom_decoder.isDefined) options.custom_decoder().put(custom_decoder.get)
 
   activation match {
     case TransformerActivation.kReLU | "relu" | "Relu" | "RELU" | "ReLu" | "ReLU" =>
@@ -169,7 +169,7 @@ final class Transformer[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = false
 
   override def toString =
-    s"${getClass.getSimpleName}(dimFeedforward=$dimFeedforward, bias=$bias d_model=$dModel nhead=$nhead numEncoderLayers= ${numEncoderLayers} numDecoderLayers= ${numDecoderLayers} dropout=$dropout customEncoder=$customEncoder customDecoder=$customDecoder activation=$activation  )"
+    s"${getClass.getSimpleName}(dimFeedforward=$dim_feedforward, bias=$bias d_model=$d_model nhead=$nhead numEncoderLayers= ${num_encoder_layers} numDecoderLayers= ${num_decoder_layers} dropout=$dropout customEncoder=$custom_encoder customDecoder=$custom_decoder activation=$activation  )"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 

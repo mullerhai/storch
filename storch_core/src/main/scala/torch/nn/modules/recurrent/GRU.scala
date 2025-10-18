@@ -30,25 +30,39 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   *
   * @group nn_conv
   */
+object GRU:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      input_size: Int,
+      hidden_size: Int,
+      num_layers: Int = 1,
+      bias: Boolean = true,
+      batch_first: Boolean = false,
+      dropout: Float | Double = 0f,
+      bidirectional: Boolean = false
+  ): GRU[ParamType] =
+    new GRU(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)
+
 final class GRU[ParamType <: FloatNN | ComplexNN: Default](
-    val inputSize: Int,
-    val hiddenSize: Int,
-    val numLayers: Int = 1,
+    val input_size: Int,
+    val hidden_size: Int,
+    val num_layers: Int = 1,
     val bias: Boolean = true,
-    val batchFirst: Boolean = false,
+    val batch_first: Boolean = false,
     val dropout: Float | Double = 0f,
     val bidirectional: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   type PackedSequenceTensor = (PackedSequence, Tensor[ParamType]) // T_PackedSequenceTensor_T
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new GRUOptions(inputSize.toLong, hiddenSize.toLong)
+  private val options = new GRUOptions(input_size.toLong, hidden_size.toLong)
+  override def toString =
+    s"${getClass.getSimpleName}(inputSize=$input_size, hiddenSize=$hidden_size,numLayers=${num_layers},batchFirst = ${batch_first},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
 
-  options.input_size().put(LongPointer(1).put(inputSize.toLong))
-  options.hidden_size().put(LongPointer(1).put(hiddenSize.toLong))
-  options.num_layers().put(LongPointer(1).put(numLayers.toLong))
+  options.input_size().put(LongPointer(1).put(input_size.toLong))
+  options.hidden_size().put(LongPointer(1).put(hidden_size.toLong))
+  options.num_layers().put(LongPointer(1).put(num_layers.toLong))
   options.bias().put(bias)
-  options.batch_first().put(batchFirst)
+  options.batch_first().put(batch_first)
   dropout match {
     case p: Float  => options.dropout().put(p.toDouble)
     case p: Double => options.dropout().put(p)
@@ -144,22 +158,7 @@ final class GRU[ParamType <: FloatNN | ComplexNN: Default](
 
   def reset_parameters(): Unit = nativeModule.reset_parameters()
 
-  override def toString =
-    s"${getClass.getSimpleName}(inputSize=$inputSize, hiddenSize=$hiddenSize,numLayers=${numLayers},batchFirst = ${batchFirst},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
-
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
-
-object GRU:
-  def apply[ParamType <: FloatNN | ComplexNN: Default](
-      input_size: Int,
-      hidden_size: Int,
-      num_layers: Int = 1,
-      bias: Boolean = true,
-      batch_first: Boolean = false,
-      dropout: Float | Double = 0f,
-      bidirectional: Boolean = false
-  ): GRU[ParamType] =
-    new GRU(input_size, hidden_size, num_layers, bias, batch_first, dropout, bidirectional)
 
 //  def apply(
 //             input: Tensor[ParamType]

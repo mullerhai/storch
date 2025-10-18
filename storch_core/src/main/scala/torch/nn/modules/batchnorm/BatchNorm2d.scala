@@ -90,16 +90,16 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * TODO use dtype
   */
 final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
-    val numFeatures: Int,
+    val num_features: Int,
     val eps: Float | Double = 1e-05f,
     val momentum: Float | Option[Float] = 0.1f,
     val affine: Boolean = true,
-    val trackRunningStats: Boolean = true
+    val track_running_stats: Boolean = true
 ) extends HasParams[ParamType]
     with HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new BatchNormOptions(toNative(numFeatures))
+  private val options = new BatchNormOptions(toNative(num_features))
 
   eps match {
     case e: Double => options.eps().put(e)
@@ -112,7 +112,7 @@ final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
   }
 
   options.affine().put(affine)
-  options.track_running_stats().put(trackRunningStats)
+  options.track_running_stats().put(track_running_stats)
 
   override private[torch] val nativeModule: BatchNorm2dImpl = BatchNorm2dImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -142,7 +142,7 @@ final class BatchNorm2d[ParamType <: FloatNN | ComplexNN: Default](
   )
 
   override def toString(): String =
-    s"${getClass().getSimpleName()}(numFeatures=$numFeatures eps=$eps momentum=$momentum affine=$affine trackRunningStats=$trackRunningStats)"
+    s"${getClass().getSimpleName()}(numFeatures=$num_features eps=$eps momentum=$momentum affine=$affine trackRunningStats=$track_running_stats)"
 
 object BatchNorm2d:
 

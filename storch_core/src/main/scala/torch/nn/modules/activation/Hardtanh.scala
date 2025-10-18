@@ -28,8 +28,8 @@ import torch.internal.NativeConverters.fromNative
   * $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class Hardtanh[D <: DType: Default](
-    val minVal: Float,
-    val maxVal: Float,
+    val min_val: Float,
+    val max_val: Float,
     val inplace: Boolean = false,
     val size: Option[Int] = None
 ) extends TensorModule[D]:
@@ -37,8 +37,8 @@ final class Hardtanh[D <: DType: Default](
   private val options =
     if size.isDefined then new HardtanhOptions(size.get) else new HardtanhOptions()
   options.inplace().put(inplace)
-  options.min_val().put(minVal.toDouble)
-  options.max_val().put(maxVal.toDouble)
+  options.min_val().put(min_val.toDouble)
+  options.max_val().put(max_val.toDouble)
 
   override protected[torch] val nativeModule: HardtanhImpl = HardtanhImpl(options)
 
@@ -49,7 +49,7 @@ final class Hardtanh[D <: DType: Default](
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    getClass().getSimpleName() + s"(size=$size,minVal=$minVal,maxVal=$maxVal,inplace=$inplace)"
+    getClass().getSimpleName() + s"(size=$size,minVal=$min_val,maxVal=$max_val,inplace=$inplace)"
 
 object Hardtanh:
   def apply[D <: DType: Default](

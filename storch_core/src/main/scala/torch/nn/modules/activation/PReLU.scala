@@ -27,14 +27,14 @@ import torch.internal.NativeConverters.fromNative
   * init=0.25, device=None, dtype=None $\text{ReLU}(x) = (x)^+ = \max(0, x)$
   */
 final class PReLU[D <: DType: Default](
-    val numParameters: Int = 1,
+    val num_parameters: Int = 1,
     val init: Float = 0.25f,
     val size: Option[Int] = None
 ) extends TensorModule[D]:
 
   private val options = if size.isDefined then new PReLUOptions(size.get) else new PReLUOptions()
   options.init.put(init.toDouble)
-  options.num_parameters().put(numParameters.toLong)
+  options.num_parameters().put(num_parameters.toLong)
 
   override protected[torch] val nativeModule: PReLUImpl = PReLUImpl(options)
 
@@ -47,7 +47,7 @@ final class PReLU[D <: DType: Default](
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    getClass().getSimpleName() + s"(init=$init,numParameters=$numParameters,Size=$size)"
+    getClass().getSimpleName() + s"(init=$init,numParameters=$num_parameters,Size=$size)"
 
 object PReLU:
   def apply[D <: DType: Default](

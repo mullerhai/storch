@@ -27,12 +27,12 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * torch.nn.MaxUnpool3d(kernel_size, stride=None, padding=0)
   */
 final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val kernel_size: Int | (Int, Int) | (Int, Int, Int),
     val stride: Int | (Int, Int) | (Int, Int, Int) | Option[Int] = None,
     val padding: Int | (Int, Int) | (Int, Int, Int) = 0
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: MaxUnpool3dOptions = kernelSize match {
+  private val options: MaxUnpool3dOptions = kernel_size match {
     case k: Int             => MaxUnpool3dOptions(toNative((k, k, k)))
     case k: (Int, Int)      => MaxUnpool3dOptions(toNative(k))
     case k: (Int, Int, Int) => MaxUnpool3dOptions(toNative(k))
@@ -49,7 +49,7 @@ final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
     case s: (Int, Int)      => options.padding().put(toNative(s))
     case s: (Int, Int, Int) => options.padding().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(toNative((s, s, s)))
     case s: (Int, Int) => options.kernel_size().put(toNative(s))
     case s: (Int, Int, Int) =>
@@ -63,7 +63,7 @@ final class MaxUnpool3d[D <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = false
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, padding=$padding)"
 
   def apply(input: Tensor[D], indices: Tensor[Int64]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, indices.native)
@@ -91,4 +91,4 @@ object MaxUnpool3d:
   ): MaxUnpool3d[D] =
     new MaxUnpool3d(kernel_size, stride, padding)
 
-//  def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+//  def  apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))

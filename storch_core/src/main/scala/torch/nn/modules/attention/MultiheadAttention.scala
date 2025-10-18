@@ -31,41 +31,41 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * @group nn_conv
   */
 final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
-    val embedDim: Int,
-    val numHeads: Int,
+    val embed_dim: Int,
+    val num_heads: Int,
     val dropout: Float | Double = 0.0f,
     val bias: Boolean = true,
-    val addBiasKV: Boolean = false,
-    val addZeroAttn: Boolean = false,
-    val kDim: Int | Option[Int] = None,
-    val vDim: Int | Option[Int] = None,
-    val batchFirst: Boolean = false
+    val add_bias_kv: Boolean = false,
+    val add_zero_attn: Boolean = false,
+    val kdim: Int | Option[Int] = None,
+    val vdim: Int | Option[Int] = None,
+    val batch_first: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new MultiheadAttentionOptions(embedDim.toLong, numHeads.toLong)
-  options.embed_dim().put(LongPointer(1).put(embedDim.toLong))
-  options.num_heads().put(LongPointer(1).put(numHeads.toLong))
+  private val options = new MultiheadAttentionOptions(embed_dim.toLong, num_heads.toLong)
+  options.embed_dim().put(LongPointer(1).put(embed_dim.toLong))
+  options.num_heads().put(LongPointer(1).put(num_heads.toLong))
   dropout match {
     case d: Double => options.dropout().put(DoublePointer(1).put(d))
     case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
   }
 
   options.bias().put(bias)
-  options.add_bias_kv().put(addBiasKV)
-  options.add_zero_attn().put(addZeroAttn)
+  options.add_bias_kv().put(add_bias_kv)
+  options.add_zero_attn().put(add_zero_attn)
 
-  kDim match {
+  kdim match {
     case k: Int => options.kdim().put(k.toLong)
     case k: Option[Int] =>
       if k.isDefined then options.kdim().put(LongPointer(1).put(k.get.toLong))
-      else options.kdim().put(LongPointer(1).put(embedDim.toLong))
+      else options.kdim().put(LongPointer(1).put(embed_dim.toLong))
   }
-  vDim match {
+  vdim match {
     case v: Int => options.vdim().put(v.toLong)
     case v: Option[Int] =>
       if v.isDefined then options.vdim().put(LongPointer(1).put(v.get.toLong))
-      else options.vdim().put(LongPointer(1).put(embedDim.toLong))
+      else options.vdim().put(LongPointer(1).put(embed_dim.toLong))
   }
 
   override private[torch] val nativeModule: MultiheadAttentionImpl = MultiheadAttentionImpl(options)
@@ -180,7 +180,7 @@ final class MultiheadAttention[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = options.bias().get()
 
   override def toString(): String =
-    s"${getClass().getSimpleName()}(embedDim=$embedDim numHeads=$numHeads dropout=$dropout bias=$bias addBiasKV=$addBiasKV addZeroAttn=$addZeroAttn kDim=$kDim vDim=$vDim)"
+    s"${getClass().getSimpleName()}(embedDim=$embed_dim numHeads=$num_heads dropout=$dropout bias=$bias addBiasKV=$add_bias_kv addZeroAttn=$add_zero_attn kdim=$kdim vdim=$vdim)"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 

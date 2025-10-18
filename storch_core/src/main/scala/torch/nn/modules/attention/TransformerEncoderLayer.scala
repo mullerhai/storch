@@ -33,25 +33,25 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 import torch.nn.modules.attention.Transformer.TransformerActivation
 
 final class TransformerEncoderLayer[ParamType <: FloatNN | ComplexNN: Default](
-    val dModel: Int,
-    val nHead: Int,
-    val dimFeedforward: Int = 2048,
+    val d_model: Int,
+    val nhead: Int,
+    val dim_feedforward: Int = 2048,
     val dropout: Float | Double = 0.1,
     val activation: TransformerActivation | String = TransformerActivation.kReLU,
-    val layerNormEps: Float = 1e-5,
-    val batchFirst: Boolean = false,
-    val normFirst: Boolean = false,
+    val layer_norm_eps: Float = 1e-5,
+    val batch_first: Boolean = false,
+    val norm_first: Boolean = false,
     val bias: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   override def toString =
-    s"${getClass.getSimpleName}(dModel=$dModel, nHead=$nHead activation=${activation.toString} dimFeedforward=$dimFeedforward dropout= $dropout bias=$bias)"
+    s"${getClass.getSimpleName}(dModel=$d_model, nHead=$nhead activation=${activation.toString} dimFeedforward=$dim_feedforward dropout= $dropout bias=$bias)"
 
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  val options = new TransformerEncoderLayerOptions(dModel.toLong, nHead.toLong)
-  options.d_model().put(dModel)
-  options.nhead().put(nHead.toLong)
-  options.dim_feedforward().put(LongPointer(1).put(dimFeedforward.toLong))
+  val options = new TransformerEncoderLayerOptions(d_model.toLong, nhead.toLong)
+  options.d_model().put(d_model)
+  options.nhead().put(nhead.toLong)
+  options.dim_feedforward().put(LongPointer(1).put(dim_feedforward.toLong))
   dropout match {
     case d: Double => options.dropout().put(DoublePointer(1).put(d))
     case d: Float  => options.dropout().put(DoublePointer(1).put(d.toDouble))
@@ -109,7 +109,7 @@ final class TransformerEncoderLayer[ParamType <: FloatNN | ComplexNN: Default](
 object TransformerEncoderLayer:
   def apply[PT <: FloatNN | ComplexNN: Default](
       d_model: Int,
-      n_head: Int,
+      nhead: Int,
       dim_feedforward: Int = 2048,
       dropout: Float | Double = 0.1,
       activation: TransformerActivation | String = TransformerActivation.kReLU,
@@ -119,7 +119,7 @@ object TransformerEncoderLayer:
       bias: Boolean = true
   ): TransformerEncoderLayer[PT] = new TransformerEncoderLayer[PT](
     d_model,
-    n_head,
+    nhead,
     dim_feedforward,
     dropout,
     activation,

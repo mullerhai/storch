@@ -79,11 +79,11 @@ import torch.nn.modules.regularization.Upsample.UpsampleMode
 final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
     val size: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = None,
-    val scaleFactor: Float | (Float, Float) | (Float, Float, Float) | Option[Float] |
+    val scale_factor: Float | (Float, Float) | (Float, Float, Float) | Option[Float] |
       Option[(Float, Float)] | Option[(Float, Float, Float)],
     val mode: UpsampleMode | String = UpsampleMode.kNearest,
-    val alignCorners: Option[Boolean] = None,
-    val recomputeScaleFactor: Option[Boolean] = None
+    val align_corners: Option[Boolean] = None,
+    val recompute_scale_factor: Option[Boolean] = None
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
@@ -99,7 +99,7 @@ final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
     case None                       => ""
   }
 
-  scaleFactor match {
+  scale_factor match {
     case sf: Float => options.scale_factor().put(DoubleVector(1).put(sf.toDouble))
     case sf: (Float, Float) =>
       options.scale_factor().put(DoubleVector(sf._1.toDouble, sf._2.toDouble))
@@ -123,7 +123,7 @@ final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
 
   }
 
-  if alignCorners.isDefined then options.align_corners().put(alignCorners.get)
+  if align_corners.isDefined then options.align_corners().put(align_corners.get)
 
   private val upsampleModeNative = mode match
     case UpsampleMode.kNearest | "nearest" | "Nearest" => options.mode().put(new kNearest)
@@ -148,8 +148,8 @@ final class Upsample[ParamType <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass().getSimpleName()} size = ${size} scaleFactor = ${scaleFactor} upsampleMode = ${mode
-        .toString()} alignCorners= ${alignCorners})"
+    s"${getClass().getSimpleName()} size = ${size} scaleFactor = ${scale_factor} upsampleMode = ${mode
+        .toString()} alignCorners= ${align_corners})"
 
 object Upsample:
   def apply[ParamType <: FloatNN | ComplexNN: Default](

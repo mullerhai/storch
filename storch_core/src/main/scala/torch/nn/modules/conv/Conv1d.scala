@@ -29,20 +29,20 @@ import torch.nn.modules.conv.Conv1d.PaddingMode
   * @group nn_conv
   */
 final class Conv1d[ParamType <: FloatNN | ComplexNN: Default](
-    val inChannels: Int,
-    val outChannels: Int,
-    val kernelSize: Int | (Int, Int),
+    val in_channels: Int,
+    val out_channels: Int,
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
     val padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
     val dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
     val groups: Int | Option[Int] = 1,
     val bias: Boolean | Option[Boolean] = true,
-    val paddingMode: PaddingMode | String | Option[String] = PaddingMode.Zeros
+    val padding_mode: PaddingMode | String | Option[String] = PaddingMode.Zeros
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options =
-    new Conv1dOptions(inChannels.toLong, outChannels.toLong, toNative(kernelSize))
+    new Conv1dOptions(in_channels.toLong, out_channels.toLong, toNative(kernel_size))
   stride match {
     case s: Int                => options.stride().put(toNative(s))
     case s: (Int, Int)         => options.stride().put(toNative(s))
@@ -70,7 +70,7 @@ final class Conv1d[ParamType <: FloatNN | ComplexNN: Default](
     case b: Option[Boolean] => if b.isDefined then options.bias().put(b.get)
   }
 
-  paddingMode match
+  padding_mode match
     case PaddingMode.Zeros | "zeros" | "Zeros" | Some("zeros") | Some("Zeros") =>
       options.padding_mode().put(new kZeros)
     case PaddingMode.Reflect | "reflect" | "Reflect" | Some("reflect") | Some("Reflect") =>
@@ -104,7 +104,7 @@ final class Conv1d[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = options.bias().get()
 
   override def toString =
-    s"${getClass.getSimpleName} ($inChannels, $outChannels, kernelSize=$kernelSize, stride=$stride, padding=$padding, bias=$bias)"
+    s"${getClass.getSimpleName} ($in_channels, $out_channels, kernelSize=$kernel_size, stride=$stride, padding=$padding, bias=$bias)"
 
 object Conv1d:
 

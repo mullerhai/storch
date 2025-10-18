@@ -31,17 +31,17 @@ import torch.nn.modules.recurrent.RNNCell.RNNNonlinearity
   * @group nn_conv
   */
 final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
-    val inputSize: Int,
-    val hiddenSize: Int,
+    val input_size: Int,
+    val hidden_size: Int,
     val bias: Boolean = true,
-    val nonLinearity: String | RNNNonlinearity = "tanh"
+    val nonlinearity: String | RNNNonlinearity = "tanh"
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new RNNCellOptions(inputSize.toLong, hiddenSize.toLong)
+  private val options = new RNNCellOptions(input_size.toLong, hidden_size.toLong)
   options.bias().put(bias)
 
-  nonLinearity match
+  nonlinearity match
     case "tanh" | "Tanh"       => options.nonlinearity().put(new kTanh)
     case "relu" | "Relu"       => options.nonlinearity().put(new kReLU)
     case RNNNonlinearity.kTanh => options.nonlinearity().put(new kTanh)
@@ -97,7 +97,7 @@ final class RNNCell[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = options.bias().get()
 
   override def toString =
-    s"${getClass.getSimpleName}(inputSize=$inputSize, hiddenSize=$hiddenSize, nonLinearity ${nonLinearity} bias=$bias)"
+    s"${getClass.getSimpleName}(inputSize=$input_size, hiddenSize=$hidden_size, nonLinearity ${nonlinearity} bias=$bias)"
 
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
 
@@ -106,7 +106,7 @@ object RNNCell:
       input_size: Int,
       hidden_size: Int,
       bias: Boolean = true,
-      non_linearity: String | RNNNonlinearity = "tanh" // RNNNonlinearity.kTanh
-  ): RNNCell[ParamType] = new RNNCell(input_size, hidden_size, bias, non_linearity)
+      nonlinearity: String | RNNNonlinearity = "tanh" // RNNNonlinearity.kTanh
+  ): RNNCell[ParamType] = new RNNCell(input_size, hidden_size, bias, nonlinearity)
   enum RNNNonlinearity:
     case kTanh, kReLU

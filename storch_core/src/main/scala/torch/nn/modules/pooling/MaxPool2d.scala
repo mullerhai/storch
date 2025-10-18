@@ -25,15 +25,15 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 
 /** Applies a 2D max pooling over an input signal composed of several input planes. */
 final class MaxPool2d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int),
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] = None,
     val padding: Int | (Int, Int) = 0,
     val dilation: Int | (Int, Int) = 1,
-    val returnIndices: Boolean = false,
-    val ceilMode: Boolean = false
+    val return_indices: Boolean = false,
+    val ceil_mode: Boolean = false
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: MaxPool2dOptions = kernelSize match {
+  private val options: MaxPool2dOptions = kernel_size match {
     case k: Int        => MaxPool2dOptions(toNative((k, k)))
     case k: (Int, Int) => MaxPool2dOptions(toNative(k))
   }
@@ -42,7 +42,7 @@ final class MaxPool2d[D <: FloatNN | ComplexNN: Default](
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
     case None          => {}
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
@@ -55,7 +55,7 @@ final class MaxPool2d[D <: FloatNN | ComplexNN: Default](
     case s: (Int, Int) => options.dilation().put(Array(s._1.toLong, s._2.toLong)*)
   }
 
-  options.ceil_mode().put(ceilMode)
+  options.ceil_mode().put(ceil_mode)
   override private[torch] val nativeModule: MaxPool2dImpl = MaxPool2dImpl(options)
 
   override def hasBias(): Boolean = false
@@ -63,7 +63,7 @@ final class MaxPool2d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding, dilation=$dilation, ceilMode=$ceilMode)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, padding=$padding, dilation=$dilation, ceilMode=$ceil_mode)"
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))

@@ -51,7 +51,7 @@ import torch.internal.NativeConverters.{toNative, fromNative}
  */
 // format: on
 final class Unfold[D <: DType: Default](
-    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val kernel_size: Int | (Int, Int) | (Int, Int, Int),
     val dilation: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
       Option[(Int, Int, Int)] = 1,
     val padding: Int | (Int, Int) | (Int, Int, Int) | Option[Int] | Option[(Int, Int)] |
@@ -60,8 +60,8 @@ final class Unfold[D <: DType: Default](
       Option[(Int, Int, Int)] = 1
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = UnfoldOptions(toNative(kernelSize))
-  options.kernel_size().put(toNative(kernelSize))
+  private val options = UnfoldOptions(toNative(kernel_size))
+  options.kernel_size().put(toNative(kernel_size))
   stride match {
     case s: Int                     => options.stride().put(toNative(s))
     case s: (Int, Int)              => options.stride().put(toNative(s))
@@ -97,7 +97,7 @@ final class Unfold[D <: DType: Default](
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    s"${getClass.getSimpleName}( kernelSize = ${kernelSize}, dilation = ${dilation}, padding = ${padding}, stride = ${stride}"
+    s"${getClass.getSimpleName}( kernelSize = ${kernel_size}, dilation = ${dilation}, padding = ${padding}, stride = ${stride}"
 
 object Unfold:
 

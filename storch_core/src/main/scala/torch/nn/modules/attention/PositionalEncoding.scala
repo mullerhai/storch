@@ -8,16 +8,16 @@ package attention
 //import torch.internal.NativeConverters.{fromNative, toNative}
 
 class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
-    val dModel: Long,
-    val maxLen: Long = 28 * 28
+    val d_model: Long,
+    val max_len: Long = 28 * 28
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  val arr = Seq(maxLen, dModel)
+  val arr = Seq(max_len, d_model)
   var encoding = torch.zeros(size = arr.map(_.toInt), dtype = this.paramType)
-  val position = torch.arange(0, maxLen, dtype = this.paramType).unsqueeze(1)
+  val position = torch.arange(0, max_len, dtype = this.paramType).unsqueeze(1)
   val div_term =
-    torch.exp(torch.arange(0, dModel, 2).float() * (-torch.log(Tensor(10000.0)) / dModel))
+    torch.exp(torch.arange(0, d_model, 2).float() * (-torch.log(Tensor(10000.0)) / d_model))
   val sinPosition = torch.sin(position * div_term).to(dtype = this.paramType)
   val cosPosition = torch.cos(position * div_term).to(dtype = this.paramType)
   val indexSin = torch.Tensor(Seq(0L, 1L))
@@ -27,7 +27,7 @@ class PositionalEncoding[ParamType <: FloatNN | ComplexNN: Default](
   encoding = encoding.unsqueeze(0)
 
   override def toString =
-    s"${getClass.getSimpleName}(d_model=$dModel max_len=$maxLen)"
+    s"${getClass.getSimpleName}(d_model=$d_model max_len=$max_len)"
 
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = {
 

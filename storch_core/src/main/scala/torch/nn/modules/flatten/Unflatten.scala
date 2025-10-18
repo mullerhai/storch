@@ -53,13 +53,13 @@ import torch.internal.NativeConverters.{fromNative, toNative}
 // format: on
 final class Unflatten[D <: DType: Default](
     val dim: Int | Option[Int] = 1,
-    val unflattenedSize: Seq[Int] | (Int, Int) | (Int, Int, Int) | (Int, Int, Int, Int) |
+    val unflattened_size: Seq[Int] | (Int, Int) | (Int, Int, Int) | (Int, Int, Int, Int) |
       Option[Seq[Int]] = None,
-    val dimName: Option[String] = None,
-    val namedShape: Option[Map[String, Int]] = None
+    val dim_name: Option[String] = None,
+    val named_shape: Option[Map[String, Int]] = None
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  val size = unflattenedSize match {
+  val size = unflattened_size match {
     case s: (Int, Int)      => LongVector(Array(s._1.toLong, s._2.toLong)*)
     case s: (Int, Int, Int) => LongVector(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
     case s: (Int, Int, Int, Int) =>
@@ -75,17 +75,20 @@ final class Unflatten[D <: DType: Default](
       if d.isDefined then UnflattenOptions(d.get.toLong, size)
       else
         UnflattenOptions(
-          dimName.get,
-          StringLongVector(namedShape.get.keys.toArray, namedShape.get.values.map(_.toLong).toArray)
+          dim_name.get,
+          StringLongVector(
+            named_shape.get.keys.toArray,
+            named_shape.get.values.map(_.toLong).toArray
+          )
         )
 
   }
-  dimName match {
+  dim_name match {
     case d: Option[String] =>
       if d.isDefined then options.dimname().put(BytePointer(d.get))
   }
 
-  namedShape match {
+  named_shape match {
     case d: Option[Map[String, Int]] =>
       if d.isDefined then
         options
@@ -101,11 +104,12 @@ final class Unflatten[D <: DType: Default](
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    s"${getClass.getSimpleName}(dim = ${dim}, dimName = ${dimName} namedShape ${namedShape
-        .toString()} sizes ${unflattenedSize})"
+    s"${getClass.getSimpleName}(dim = ${dim}, dimName = ${dim_name} namedShape ${named_shape
+        .toString()} sizes ${unflattened_size})"
 
 object Unflatten:
 

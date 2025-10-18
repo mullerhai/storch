@@ -30,12 +30,34 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   *
   * @group nn_conv
   */
+object LSTM:
+  def apply[ParamType <: FloatNN | ComplexNN: Default](
+      input_size: Int,
+      hidden_size: Int,
+      num_layers: Int = 1,
+      bias: Boolean = true,
+      batch_first: Boolean = false,
+      dropout: Float | Double = 0.1f,
+      bidirectional: Boolean = false,
+      proj_size: Int = 0
+  ): LSTM[ParamType] =
+    new LSTM(
+      input_size,
+      hidden_size,
+      num_layers,
+      bias,
+      batch_first,
+      dropout,
+      bidirectional,
+      proj_size
+    )
+
 final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
-    val inputSize: Int,
-    val hiddenSize: Int,
-    val numLayers: Int = 1,
+    val input_size: Int,
+    val hidden_size: Int,
+    val num_layers: Int = 1,
     val bias: Boolean = true,
-    val batchFirst: Boolean = false,
+    val batch_first: Boolean = false,
     val dropout: Float | Double = 0.1f,
     val bidirectional: Boolean = false,
     val proj_size: Int = 0
@@ -44,17 +66,20 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
   type PackedSequenceTensorTensor =
     (PackedSequence, Tensor[ParamType], Tensor[ParamType]) // T_PackedSequenceT_TensorTensor_T_T
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = new LSTMOptions(inputSize.toLong, hiddenSize.toLong)
-  options.input_size().put(LongPointer(1).put(inputSize.toLong))
-  options.hidden_size().put(LongPointer(1).put(hiddenSize.toLong))
-  options.num_layers().put(LongPointer(1).put(numLayers.toLong))
+  private val options = new LSTMOptions(input_size.toLong, hidden_size.toLong)
+  options.input_size().put(LongPointer(1).put(input_size.toLong))
+  options.hidden_size().put(LongPointer(1).put(hidden_size.toLong))
+  options.num_layers().put(LongPointer(1).put(num_layers.toLong))
   dropout match {
     case p: Float  => options.dropout().put(p.toDouble)
     case p: Double => options.dropout().put(p)
   }
   options.bias().put(bias)
-  options.batch_first().put(batchFirst)
+  options.batch_first().put(batch_first)
   options.bidirectional().put(bidirectional)
+
+  override def toString =
+    s"${getClass.getSimpleName}(inputSize=$input_size, hiddenSize=$hidden_size,numLayers=${num_layers},batchFirst = ${batch_first},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
 
   override private[torch] val nativeModule: LSTMImpl = LSTMImpl(options)
   nativeModule.to(paramType.toScalarType, false)
@@ -217,32 +242,7 @@ final class LSTM[ParamType <: FloatNN | ComplexNN: Default](
 
   override def hasBias(): Boolean = options.bias().get()
 
-  override def toString =
-    s"${getClass.getSimpleName}(inputSize=$inputSize, hiddenSize=$hiddenSize,numLayers=${numLayers},batchFirst = ${batchFirst},dropout = ${dropout},bidirectional = ${bidirectional} bias=$bias)"
-
   override def apply(v1: Tensor[ParamType]): Tensor[ParamType] = ???
-
-object LSTM:
-  def apply[ParamType <: FloatNN | ComplexNN: Default](
-      input_size: Int,
-      hidden_size: Int,
-      num_layers: Int = 1,
-      bias: Boolean = true,
-      batch_first: Boolean = false,
-      dropout: Float | Double = 0.1f,
-      bidirectional: Boolean = false,
-      proj_size: Int = 0
-  ): LSTM[ParamType] =
-    new LSTM(
-      input_size,
-      hidden_size,
-      num_layers,
-      bias,
-      batch_first,
-      dropout,
-      bidirectional,
-      proj_size
-    )
 
 //options.hidden_size().put(hiddenSize.toLong)
 //options.num_layers().put(numLayers)

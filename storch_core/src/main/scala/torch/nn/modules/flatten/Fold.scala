@@ -52,14 +52,14 @@ import torch.internal.NativeConverters.{fromNative, toNative}
  */
 // format: on
 final class Fold[D <: DType: Default](
-    val outputSize: Int | (Int, Int) | (Int, Int, Int),
-    val kernelSize: Int | (Int, Int) | (Int, Int, Int),
+    val output_size: Int | (Int, Int) | (Int, Int, Int),
+    val kernel_size: Int | (Int, Int) | (Int, Int, Int),
     val dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
     val padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
     val stride: Int | (Int, Int) = 1
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options = FoldOptions(toNative(outputSize), toNative(kernelSize))
+  private val options = FoldOptions(toNative(output_size), toNative(kernel_size))
 
   dilation match {
     case d: Int                => options.dilation().put(toNative(d))
@@ -79,14 +79,14 @@ final class Fold[D <: DType: Default](
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
   }
 
-  outputSize match {
+  output_size match {
     case s: Int        => options.output_size().put(Array(s.toLong)*)
     case s: (Int, Int) => options.output_size().put(Array(s._1.toLong, s._2.toLong)*)
     case s: (Int, Int, Int) =>
       options.output_size().put(Array(s._1.toLong, s._2.toLong, s._3.toLong)*)
   }
 
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
     case s: (Int, Int, Int) =>
@@ -100,10 +100,11 @@ final class Fold[D <: DType: Default](
   def reset(): Unit = nativeModule.reset()
 
   def apply(t: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(t.native))
+
   def forward(input: Tensor[D]): Tensor[D] = fromNative(nativeModule.forward(input.native))
 
   override def toString =
-    s"${getClass.getSimpleName}(outputSize = ${outputSize}, kernelSize = ${kernelSize}, dilation = ${dilation}, padding = ${padding}, stride = ${stride}"
+    s"${getClass.getSimpleName}(outputSize = ${output_size}, kernelSize = ${kernel_size}, dilation = ${dilation}, padding = ${padding}, stride = ${stride}"
 
 object Fold:
   def apply[D <: DType: Default](

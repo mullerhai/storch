@@ -30,20 +30,20 @@ import torch.nn.modules.conv.Conv2d.PaddingMode
   * @group nn_conv
   */
 final class Conv2d[ParamType <: FloatNN | ComplexNN: Default](
-    val inChannels: Int,
-    val outChannels: Int,
-    val kernelSize: Int | (Int, Int),
+    val in_channels: Int,
+    val out_channels: Int,
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
     val padding: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 0,
     val dilation: Int | (Int, Int) | Option[Int] | Option[(Int, Int)] = 1,
     val groups: Int | Option[Int] = 1,
     val bias: Boolean | Option[Boolean] = true,
-    val paddingMode: PaddingMode | String | Option[String] = PaddingMode.Zeros
+    val padding_mode: PaddingMode | String | Option[String] = PaddingMode.Zeros
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
   private val options =
-    new Conv2dOptions(inChannels.toLong, outChannels.toLong, toNative(kernelSize))
+    new Conv2dOptions(in_channels.toLong, out_channels.toLong, toNative(kernel_size))
 
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
@@ -62,7 +62,7 @@ final class Conv2d[ParamType <: FloatNN | ComplexNN: Default](
     case s: Option[(Int, Int)] =>
       if s.isDefined then options.dilation().put(Array(s.get._1.toLong, s.get._2.toLong)*)
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
@@ -83,7 +83,7 @@ final class Conv2d[ParamType <: FloatNN | ComplexNN: Default](
     case b: Option[Boolean] => if b.isDefined then options.bias().put(b.get)
   }
 
-  paddingMode match
+  padding_mode match
     case PaddingMode.Zeros | "zeros" | "Zeros" | Some("zeros") | Some("Zeros") =>
       options.padding_mode().put(new kZeros)
     case PaddingMode.Reflect | "reflect" | "Reflect" | Some("reflect") | Some("Reflect") =>
@@ -117,7 +117,7 @@ final class Conv2d[ParamType <: FloatNN | ComplexNN: Default](
   def reset_parameters(): Unit = nativeModule.reset_parameters()
 
   override def toString =
-    s"${getClass.getSimpleName} ($inChannels, $outChannels, kernelSize=$kernelSize, stride=$stride, padding=$padding, bias=$bias)"
+    s"${getClass.getSimpleName} ($in_channels, $out_channels, kernelSize=$kernel_size, stride=$stride, padding=$padding, bias=$bias)"
 
 object Conv2d:
   def apply[ParamType <: FloatNN | ComplexNN: Default](

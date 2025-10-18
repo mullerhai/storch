@@ -23,14 +23,14 @@ import org.bytedeco.pytorch
 import org.bytedeco.pytorch.{MaxUnpool2dImpl, MaxUnpool2dOptions, LongVectorOptional, LongVector}
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-/** Applies a 2D max pooling over an input signal composed of several input planes. */
+/** Applies a 2D max pooling over an  input signal composed of several input planes. */
 final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int),
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] = None,
     val padding: Int | (Int, Int) = 0
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: MaxUnpool2dOptions = kernelSize match {
+  private val options: MaxUnpool2dOptions = kernel_size match {
     case k: Int        => MaxUnpool2dOptions(toNative((k, k)))
     case k: (Int, Int) => MaxUnpool2dOptions(toNative(k))
   }
@@ -44,7 +44,7 @@ final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
     case s: Int        => options.padding().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.padding().put(Array(s._1.toLong, s._2.toLong)*)
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
@@ -56,7 +56,7 @@ final class MaxUnpool2d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, padding=$padding)"
 
   def apply(input: Tensor[D], indices: Tensor[Int64]): Tensor[D] = fromNative(
     nativeModule.forward(input.native, indices.native)

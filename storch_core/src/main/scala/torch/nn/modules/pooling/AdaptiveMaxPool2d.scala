@@ -32,13 +32,13 @@ import org.bytedeco.pytorch.LongOptional
   * number of input planes.
   */
 final class AdaptiveMaxPool2d[ParamType <: FloatNN | ComplexNN: Default](
-    val outputSize: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) |
+    val output_size: Int | Option[Int] | (Option[Int], Option[Int]) | (Int, Int) |
       (Option[Int], Int) | (Int, Option[Int]),
-    val returnIndices: Boolean = false
+    val return_indices: Boolean = false
 ) extends HasParams[ParamType]
     with TensorModule[ParamType] {
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private def nativeOutputSize = outputSize match
+  private def nativeOutputSize = output_size match
     case (h: Int, w: Int) =>
       new LongOptionalVector(new LongOptional(h), new LongOptional(w)) // failed
     case x: Int =>
@@ -70,7 +70,7 @@ final class AdaptiveMaxPool2d[ParamType <: FloatNN | ComplexNN: Default](
     val outputWithIndices = nativeModule.forward_with_indices(t.native)
     (fromNative(outputWithIndices.get0()), fromNative(outputWithIndices.get1()))
   override def toString =
-    s"${getClass.getSimpleName}(outputSize=$outputSize returnIndices=$returnIndices)"
+    s"${getClass.getSimpleName}(outputSize=$output_size returnIndices=$return_indices)"
 }
 
 object AdaptiveMaxPool2d:

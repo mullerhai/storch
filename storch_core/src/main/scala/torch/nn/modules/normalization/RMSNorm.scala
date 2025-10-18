@@ -9,16 +9,19 @@ import org.bytedeco.pytorch.{LayerNormImpl, LayerNormOptions, LongVector}
 import internal.NativeConverters.fromNative
 
 final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
-    val normalizedShape: Seq[Int],
+    val normalized_shape: Seq[Int] | Int,
     val eps: Double = 1e-05,
-    val elementWiseAffine: Boolean = true
+    val elementwise_affine: Boolean = true
 ) extends HasParams[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
 
+  private val normalizedShapeLong: Seq[Long] = normalized_shape match
+    case s: Seq[Int] => s.map(_.toLong)
+    case i: Int      => Seq(i).map(_.toLong)
   var weight: Tensor[ParamType] =
     registerParameter(
-      torch.empty(normalizedShape, dtype = this.paramType, requires_grad = true),
+      torch.empty(normalizedShapeLong.map(_.toInt), dtype = this.paramType, requires_grad = true),
       true,
       "weight"
     )
@@ -26,38 +29,38 @@ final class RMSNorm[ParamType <: FloatNN | ComplexNN: Default](
   override def hasBias(): Boolean = false
 
   override def toString =
-    s"${getClass.getSimpleName}(normalizedShape = ${normalizedShape.mkString(" ")}, elementWiseAffine = ${elementWiseAffine},eps=$eps )"
+    s"${getClass.getSimpleName}(normalizedShape = ${normalizedShapeLong.mkString(" ")}, elementWiseAffine = ${elementwise_affine},eps=$eps )"
 
   def apply(input: Tensor[ParamType]): Tensor[ParamType] = {
     val output =
-      if elementWiseAffine then
+      if elementwise_affine then
         torch.rms_norm(
           input,
-          normalizedShape.map(_.toLong),
+          normalizedShapeLong,
           Some(weight.to(DType.float32)),
           Some(eps)
         )
-      else torch.rms_norm(input, normalizedShape.map(_.toLong), None, Some(eps))
+      else torch.rms_norm(input, normalizedShapeLong, None, Some(eps))
     output.to(input.dtype)
   }
 
   def forward(input: Tensor[ParamType]): Tensor[ParamType] = {
     val output =
-      if elementWiseAffine then
+      if elementwise_affine then
         torch.rms_norm(
           input,
-          normalizedShape.map(_.toLong),
+          normalizedShapeLong,
           Some(weight.to(DType.float32)),
           Some(eps)
         )
-      else torch.rms_norm(input, normalizedShape.map(_.toLong), None, Some(eps))
+      else torch.rms_norm(input, normalizedShapeLong, None, Some(eps))
     output.to(input.dtype)
   }
 
 object RMSNorm:
   def apply[ParamType <: FloatNN | ComplexNN: Default](
-      normalized_shape: Seq[Int],
+      normalized_shape: Seq[Int] | Int,
       eps: Double = 1e-05,
-      element_wise_affine: Boolean = true
+      elementwise_affine: Boolean = true
   ): RMSNorm[ParamType] =
-    new RMSNorm(normalized_shape, eps, element_wise_affine)
+    new RMSNorm(normalized_shape, eps, elementwise_affine)

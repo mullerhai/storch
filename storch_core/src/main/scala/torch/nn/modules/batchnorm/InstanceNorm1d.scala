@@ -38,15 +38,15 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   *   parameters initialized to ones (for weights) and zeros (for biases)
   */
 final class InstanceNorm1d[ParamType <: FloatNN | ComplexNN: Default](
-    val numFeatures: Int,
+    val num_features: Int,
     val eps: Float | Double = 1e-05f,
     val momentum: Float | Option[Float] = 0.1f,
     val affine: Boolean = false,
-    val trackRunningStats: Boolean = false
+    val track_running_stats: Boolean = false
 ) extends HasWeight[ParamType]
     with TensorModule[ParamType]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: InstanceNormOptions = InstanceNormOptions(toNative(numFeatures))
+  private val options: InstanceNormOptions = InstanceNormOptions(toNative(num_features))
 
   options.affine().put(affine)
   eps match {
@@ -59,8 +59,8 @@ final class InstanceNorm1d[ParamType <: FloatNN | ComplexNN: Default](
       if m.isDefined then options.momentum().put(DoublePointer(1).put(m.get.toDouble))
   }
 
-  options.num_features().put(LongPointer(1).put(numFeatures.toLong))
-  options.track_running_stats.put(trackRunningStats)
+  options.num_features().put(LongPointer(1).put(num_features.toLong))
+  options.track_running_stats.put(track_running_stats)
 
   override private[torch] val nativeModule: InstanceNorm1dImpl = InstanceNorm1dImpl(options)
 
@@ -87,7 +87,7 @@ final class InstanceNorm1d[ParamType <: FloatNN | ComplexNN: Default](
     fromNative[ParamType](nativeModule.forward(input.native))
 
   override def toString(): String =
-    s"${getClass().getSimpleName()}(numFeatures=$numFeatures eps=$eps momentum=$momentum affine=$affine trackRunningStats=$trackRunningStats)"
+    s"${getClass().getSimpleName()}(numFeatures=$num_features eps=$eps momentum=$momentum affine=$affine trackRunningStats=$track_running_stats)"
 
 object InstanceNorm1d:
 

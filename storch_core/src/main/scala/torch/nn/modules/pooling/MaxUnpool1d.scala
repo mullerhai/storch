@@ -27,12 +27,12 @@ import torch.internal.NativeConverters.{fromNative, toNative}
   * torch.nn.MaxUnpool1d(kernel_size, stride=None, padding=0)
   */
 final class MaxUnpool1d[D <: FloatNN | ComplexNN: Default](
-    val kernelSize: Int | (Int, Int),
+    val kernel_size: Int | (Int, Int),
     val stride: Int | (Int, Int) | Option[Int] = None,
     val padding: Int | (Int, Int) = 0
 ) extends TensorModule[D]:
   System.setProperty("org.bytedeco.javacpp.nopointergc", "true")
-  private val options: MaxUnpool1dOptions = MaxUnpool1dOptions(toNative(kernelSize))
+  private val options: MaxUnpool1dOptions = MaxUnpool1dOptions(toNative(kernel_size))
   stride match {
     case s: Int        => options.stride().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.stride().put(Array(s._1.toLong, s._2.toLong)*)
@@ -42,7 +42,7 @@ final class MaxUnpool1d[D <: FloatNN | ComplexNN: Default](
     case s: Int        => options.padding().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.padding().put(Array(s._1.toLong, s._2.toLong)*)
   }
-  kernelSize match {
+  kernel_size match {
     case s: Int        => options.kernel_size().put(Array(s.toLong, s.toLong)*)
     case s: (Int, Int) => options.kernel_size().put(Array(s._1.toLong, s._2.toLong)*)
   }
@@ -54,7 +54,7 @@ final class MaxUnpool1d[D <: FloatNN | ComplexNN: Default](
   def reset(): Unit = nativeModule.reset()
 
   override def toString(): String =
-    s"${getClass.getSimpleName}(kernelSize=$kernelSize, stride=$stride, padding=$padding)"
+    s"${getClass.getSimpleName}(kernelSize=$kernel_size, stride=$stride, padding=$padding)"
 
   def apply(input: Tensor[D], indices: Tensor[Int64], outputSize: Array[Int]): Tensor[D] =
     val out = outputSize.map(_.toLong)
