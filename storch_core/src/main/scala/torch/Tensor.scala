@@ -1531,13 +1531,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   }
 
   def scalarClassTag: ClassTag[DTypeToScala[D]] = this.dtype match {
-    case Float   => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Double  => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Byte    => ClassTag.Byte.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Short   => ClassTag.Short.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Int     => ClassTag.Int.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Long    => ClassTag.Long.asInstanceOf[ClassTag[DTypeToScala[D]]]
-    case Boolean => ClassTag.Boolean.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Float                          => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Double                         => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Byte                           => ClassTag.Byte.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Short                          => ClassTag.Short.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Int                            => ClassTag.Int.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Long                           => ClassTag.Long.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case Boolean                        => ClassTag.Boolean.asInstanceOf[ClassTag[DTypeToScala[D]]]
     case DType.float16 | DType.bfloat16 => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
     case DType.float32                  => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
     case DType.float64                  => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
@@ -5868,7 +5868,8 @@ object Tensor:
           )
           .toSeq
         this.apply(dataSeq, Strided, device, requires_grad)
-      case _ => throw new IllegalArgumentException(s"Unsupported array dimension： shapeSize $shapeSize")
+      case _ =>
+        throw new IllegalArgumentException(s"Unsupported array dimension： shapeSize $shapeSize")
     }
     tensor
   }

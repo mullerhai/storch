@@ -40,6 +40,8 @@ package object cuda {
 
   def device_count = torchNative.cuda_device_count()
 
+  def device_count(un_used: Int*) = torchNative.cuda_device_count()
+
   def cudnn_is_available: Boolean = torchNative.cudnn_is_available()
 //
 //  def getCurrentCUDASolverDnHandle = torchCuda.getCurrentCUDASolverDnHandle()
@@ -49,7 +51,7 @@ package object cuda {
   def empty_cache(un_used: Int*): Unit = cudaDeviceReset()
 
 // udaPointerGetAttributes(cudaPointerAttributes attributes, @Const Pointer ptr);
-  //public static native @Cast("CUresult") int cuMemGetInfo(@Cast("size_t*") SizeTPointer _free, @Cast("size_t*") SizeTPointer total);
+  // public static native @Cast("CUresult") int cuMemGetInfo(@Cast("size_t*") SizeTPointer _free, @Cast("size_t*") SizeTPointer total);
 //  def memory_allocated(device: Device) = torchCuda.memory_allocated(device)
 
 // Cast("cudaError_t") int cudaDeviceSetMemPool(int device, CUmemPoolHandle_st memPool);
@@ -58,6 +60,38 @@ package object cuda {
   //      cudaGetDeviceProperties(memInfo, id)
   //      memInfo.totalGlobalMem()
   //  def memory_reserved(device: Device) = torchCuda.memory_reserved(device)
+
+  def current_device = torchCuda.current_device()
+
+  def device_count_ensure_non_zero = torchCuda.device_count_ensure_non_zero()
+
+  def make_generator_cuda = torchCuda.make_generator_cuda()
+
+  def set_target_device = torchCuda.SetTargetDevice()
+
+  def MaybeExchangeDevice(device: Byte) = torchCuda.MaybeExchangeDevice(device)
+
+  def ExchangeDevice(device: Byte) = torchCuda.ExchangeDevice(device)
+
+  def get_device(device: String): Int = {
+    val pointer = new BytePointer(device)
+    torchCuda.GetDevice(pointer)
+  }
+
+  def getCurrentDeviceProperties = torchCuda.getCurrentDeviceProperties()
+
+  def GetDeviceCount(devs: Array[Int]) = torchCuda.GetDeviceCount(devs)
+
+  def SetDevice(device: Byte) = torchCuda.SetDevice(device)
+
+  def MaybeSetDevice(device: Byte) = torchCuda.MaybeSetDevice(device)
+
+  def hasPrimaryContext(device_index: Byte) = torchCuda.hasPrimaryContext(device_index)
+//  def get_device_name(device: Int) = torchCuda.get_device_name(device)
+
+  def clearCublasWorkspaces = torchCuda.clearCublasWorkspaces()
+
+  def getDeviceIndexWithPrimaryContext() = torchCuda.getDeviceIndexWithPrimaryContext()
 
   def currentStreamCaptureStatusMayInitCtx = torchCuda.currentStreamCaptureStatusMayInitCtx()
 
@@ -85,7 +119,9 @@ package object cuda {
 
   def getNumGPUs = torchCuda.getNumGPUs()
 
-  def clearCublasWorkspaces = torchCuda.clearCublasWorkspaces()
+  def get_num_gpus = torchCuda.getNumGPUs()
+
+  def warp_size = torchCuda.warp_size()
 
   def getDefaultCUDAStream = torchCuda.getDefaultCUDAStream()
 
@@ -100,6 +136,8 @@ package object cuda {
   def getMemoryFraction(frac: Byte) = torchCuda.getMemoryFraction(frac)
 
   def isEnabled: Boolean = torchCuda.isEnabled()
+
+  def is_enabled: Boolean = torchCuda.isEnabled()
 
   def enable(flag: Boolean) = torchCuda.enable(flag)
 

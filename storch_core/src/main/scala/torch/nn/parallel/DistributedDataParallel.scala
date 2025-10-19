@@ -1,5 +1,3 @@
 package torch.nn.parallel
 
-object DistributedDataParallel {
-
-}
+object DistributedDataParallel {}
