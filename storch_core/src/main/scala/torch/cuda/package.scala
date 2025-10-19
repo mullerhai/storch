@@ -63,6 +63,8 @@ package object cuda {
 
   def current_device = torchCuda.current_device()
 
+  def current_device(un_used: Int*) = torchCuda.current_device()
+
   def device_count_ensure_non_zero = torchCuda.device_count_ensure_non_zero()
 
   def make_generator_cuda = torchCuda.make_generator_cuda()

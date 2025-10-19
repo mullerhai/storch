@@ -853,6 +853,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def >(other: ScalaType): Tensor[Bool] = gt(other)
 
+  def >>(other: ScalaType): Boolean = {
+    val boolTensor = gt(other)
+    boolTensor.all().item()
+  }
+
+  def <<(other: ScalaType): Boolean = {
+    val boolTensor = lt(other)
+    boolTensor.all().item()
+  }
+
 //  def gt[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.gt(other.native))
 
   def >[D <: DType](other: Tensor[D]): Tensor[Bool] = fromNative(native.gt(other.native))
@@ -1385,12 +1395,44 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       indices: Seq[
         Slice | Int | Long | Tensor[Bool] | Tensor[UInt8] | Tensor[Int64] | Seq[T] | None.type |
           Ellipsis
-      ],
-      values: Tensor[D] | ScalaType
+      ] | Tensor[Bool] | Tensor[Int64] | Tensor[Int32] | Tensor[UInt8],
+      values: Tensor[?] | ScalaType
   ): this.type =
     values match
-      case t: Tensor[D]            => native.index_put_(nativeIndices(indices*), t.native)
-      case s: ScalaType @unchecked => native.index_put_(nativeIndices(indices*), s.toScalar)
+      case t: Tensor[?]=>
+        indices match {
+          case i: Tensor[Bool] => native.index_put_(nativeIndices(Seq(i)*), t.native)
+          case i: Tensor[Int64] => native.index_put_(nativeIndices(Seq(i)*), t.native)
+          case i: Tensor[Int32] => native.index_put_(nativeIndices(Seq(i)*), t.native)
+          case i: Tensor[UInt8] => native.index_put_(nativeIndices(Seq(i)*), t.native)
+          case s: Seq[Slice] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Int] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Long] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Tensor[Bool]] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Tensor[Int64]] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Tensor[UInt8]] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Seq[T]] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[None.type ] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case s: Seq[Ellipsis] @unchecked => native.index_put_(nativeIndices(s*), t.native)
+          case _  => throw new IllegalArgumentException("Invalid Tensor indices")
+        }
+
+      case s: ScalaType @unchecked =>
+        indices match {
+          case i: Tensor[Bool] => native.index_put_(nativeIndices(Seq(i)*), s.toScalar)
+          case i: Tensor[Int64] => native.index_put_(nativeIndices(Seq(i)*), s.toScalar)
+          case i: Tensor[Int32] => native.index_put_(nativeIndices(Seq(i)*), s.toScalar)
+          case i: Tensor[UInt8] => native.index_put_(nativeIndices(Seq(i)*), s.toScalar)
+          case seq: Seq[Slice] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Int] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Long] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Tensor[Bool]] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Tensor[Int64]] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Tensor[UInt8]] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[None.type ] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case seq: Seq[Ellipsis] @unchecked => native.index_put_(nativeIndices(seq*), s.toScalar)
+          case _  => throw new IllegalArgumentException("Invalid ScalarType indices")
+        }
     this
 
   def requiresGrad: Boolean = native.requires_grad()

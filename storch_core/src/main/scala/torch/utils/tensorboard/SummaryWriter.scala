@@ -29,8 +29,11 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
   writeFileVersionEvent("brain.Event:2")
 //  writeSessionLogEvent("brain.Event:2")
 
-  def add_scalar(tag: String, scalarValue: Double, globalStep: Long): Unit =
-    addScalar(tag, scalarValue, globalStep)
+  def add_scalar(tag: String, scalarValue: Double | Float, globalStep: Long): Unit =
+    scalarValue match {
+      case d: Double => addScalar(tag, d, globalStep)
+      case f: Float  => addScalar(tag, f.toDouble, globalStep)
+    }
 
   def addScalar(tag: String, scalarValue: Double, globalStep: Long): Unit = {
 //    val tensorProto = TensorProto(
@@ -65,8 +68,12 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_scalar(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit =
-    addScalars(mainTag, tagScalarsDict, globalStep)
+  def add_scalar(mainTag: String, tagScalarsDict: Map[String, Double] | Map[String, Float], globalStep: Long): Unit =
+    tagScalarsDict match {
+      case d: Map[String, Double] => addScalars(mainTag, d, globalStep)
+      case f: Map[String, Float]  => addScalars(mainTag, f.mapValues(_.toDouble).toMap, globalStep)
+    }
+
 
   def addScalars(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit = {
     val values = tagScalarsDict.map { case (tag, value) =>
@@ -99,8 +106,11 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_tensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit =
-    addTensors(tag, tensors, globalStep)
+  def add_tensors(tag: String, tensors: Seq[Double] | List[Float], globalStep: Long): Unit =
+    tensors match {
+      case d: Seq[Double] => addTensors(tag, d, globalStep)
+      case f: List[Float] => addTensors(tag, f.map(_.toDouble), globalStep)
+    }
 
   def addTensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit = {
     val tensorProto = TensorProto(
@@ -214,8 +224,11 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_histogram(tag: String, values: Seq[Double], globalStep: Long): Unit =
-    addHistogram(tag, values, globalStep)
+  def add_histogram(tag: String, values: Seq[Double] | List[Float], globalStep: Long): Unit =
+    values match {
+      case d: Seq[Double] => addHistogram(tag, d, globalStep)
+      case f: List[Float] => addHistogram(tag, f.map(_.toDouble), globalStep)
+    }
 
   def addHistogram(tag: String, values: Seq[Double], globalStep: Long): Unit = {
     val minVal = values.min

@@ -1067,6 +1067,9 @@ private[torch] trait CreationOps {
     val byteArray = SerializeUtils.serialize(state_dict)
     Files.write(Paths.get(checkpoint_filePath), byteArray)
   }
+
+  def pickle_save(tensors: SeqMap[String, Tensor[DType]]) = pickleSave(tensors)
+
   def pickleSave(tensors: SeqMap[String, Tensor[DType]]) =
     tensors.map { (k, v) =>
       (IValue(k), IValue(v.native))

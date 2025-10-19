@@ -1,3 +1,8 @@
-package torch.nn.parallel
+package torch
+package nn
+package parallel
 
-object DistributedDataParallel {}
+object DistributedDataParallel {
+
+  println(s"DistributedDataParallel is available: ${torch.cuda.is_available()}")
+}
