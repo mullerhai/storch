@@ -1538,6 +1538,16 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     case Int     => ClassTag.Int.asInstanceOf[ClassTag[DTypeToScala[D]]]
     case Long    => ClassTag.Long.asInstanceOf[ClassTag[DTypeToScala[D]]]
     case Boolean => ClassTag.Boolean.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.float16 | DType.bfloat16 => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.float32                  => ClassTag.Float.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.float64                  => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.int8 | DType.uint8       => ClassTag.Byte.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.int16                    => ClassTag.Short.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.int32                    => ClassTag.Int.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.int64                    => ClassTag.Long.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.bool                     => ClassTag.Boolean.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.complex64                => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
+    case DType.complex128               => ClassTag.Double.asInstanceOf[ClassTag[DTypeToScala[D]]]
 //    case Complex[Float] => ClassTag(classOf[Complex[Float]]).asInstanceOf[ClassTag[DTypeToScala[D]]]
 //    case _: Complex128.type => ClassTag(classOf[Complex[Double]]).asInstanceOf[ClassTag[DTypeToScala[D]]]
     case _ =>
@@ -5835,6 +5845,9 @@ object Tensor:
     val shapeSize = data.getShape.size
     val ndArray = data.getArray
     val tensor: Tensor[ScalaToDType[U]] = (data.getArray, shapeSize) match {
+      case (singleDim: Array[U], 0) =>
+        val dataSeq = singleDim.toSeq.asInstanceOf[Seq[U]]
+        Tensor(dataSeq, Strided, device, requires_grad)
       case (singleDim: Array[U], 1) =>
         val dataSeq = singleDim.toSeq.asInstanceOf[Seq[U]]
         Tensor(dataSeq, Strided, device, requires_grad)
@@ -5855,7 +5868,7 @@ object Tensor:
           )
           .toSeq
         this.apply(dataSeq, Strided, device, requires_grad)
-      case _ => throw new IllegalArgumentException("Unsupported array dimension")
+      case _ => throw new IllegalArgumentException(s"Unsupported array dimension： shapeSize $shapeSize")
     }
     tensor
   }
