@@ -1057,7 +1057,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def norm: Tensor[D] = fromNative(native.norm())
 
-  def norm(un_used: Int*): Tensor[D] = fromNative(native.norm())
+  def norm(un_used: String*): Tensor[D] = fromNative(native.norm())
 
   def norm[S <: ScalaType](s: S): Tensor[Div[D, ScalaToDType[S]]] = {
     val sFloat = s match {
@@ -1268,7 +1268,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     * 0-D and 1-D tensors are returned as is. When input is a 2-D tensor this is equivalent to
     * `transpose(input, 0, 1)`.
     */
-  def t: Tensor[D] = fromNative(native.t())
+//  def t: Tensor[D] = fromNative(native.t())
 
   def T: Tensor[D] = fromNative(native.t())
 

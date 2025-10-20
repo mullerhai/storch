@@ -83,7 +83,7 @@ package object torch
     }
   }
 
-  def enable_grad[A](op: => A): A = {
+  def enable_grads[A](op: => A): A = {
     import org.bytedeco.pytorch.GradMode
     Using.resource(GradMode()) { _ =>
       GradMode.set_enabled(true)
