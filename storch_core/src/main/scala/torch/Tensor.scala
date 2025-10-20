@@ -1268,7 +1268,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     * 0-D and 1-D tensors are returned as is. When input is a 2-D tensor this is equivalent to
     * `transpose(input, 0, 1)`.
     */
-//  def t: Tensor[D] = fromNative(native.t())
+  def t: Tensor[D] = fromNative(native.t())
 
   def T: Tensor[D] = fromNative(native.t())
 
