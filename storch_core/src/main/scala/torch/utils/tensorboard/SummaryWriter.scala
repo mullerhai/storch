@@ -68,12 +68,15 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_scalar(mainTag: String, tagScalarsDict: Map[String, Double] | Map[String, Float], globalStep: Long): Unit =
+  def add_scalar(
+      mainTag: String,
+      tagScalarsDict: Map[String, Double] | Map[String, Float],
+      globalStep: Long
+  ): Unit =
     tagScalarsDict match {
       case d: Map[String, Double] => addScalars(mainTag, d, globalStep)
       case f: Map[String, Float]  => addScalars(mainTag, f.mapValues(_.toDouble).toMap, globalStep)
     }
-
 
   def addScalars(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit = {
     val values = tagScalarsDict.map { case (tag, value) =>

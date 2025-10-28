@@ -4,13 +4,14 @@ package data
 
 import org.bytedeco.pytorch.*
 import org.bytedeco.pytorch.Tensor as TensorNative
-import torch.utils.data.dataloader.TorchDataLoaderOptions
-import torch.utils.data.datareader.ChunkDataReader
+import torch.utils.data.dataloader.{TorchDataLoader, TorchDataLoaderOptions}
+import torch.utils.data.datareader.{ChunkDataReader, ExampleVectorReader}
 import org.bytedeco.javacpp.chrono.{Milliseconds, Seconds}
 import torch.utils.data.dataloader.sequential.SequentialDataLoader
 import torch.utils.data.dataloader.random.RandomDataLoader
-import torch.utils.data.sampler.{SequentialSampler, RandomSampler as TorchSampler}
+import torch.utils.data.sampler.{Sampler, SequentialSampler, RandomSampler}
 import torch.{DType, Default, Tensor, *}
+
 import scala.collection.mutable
 import scala.collection.Iterator
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
@@ -18,7 +19,7 @@ import torch.utils.data.Dataset as DatasetTrait
 import torch.utils.data.dataset.normal.JavaDataset
 import torch.internal.NativeConverters.{fromNative, toNative}
 
-class DataLoader[ParamType <: DType: Default](
+class DataVectorLoader[ParamType <: DType: Default](
     val dataset: DatasetTrait[ParamType, ? <: DType] | JavaDataset |
       NormalTensorDataset[ParamType, ? <: DType],
     val batch_size: Int,
@@ -27,8 +28,8 @@ class DataLoader[ParamType <: DType: Default](
     val max_jobs: Long = 0L,
     val drop_last: Boolean = false,
     val in_order: Boolean = true,
-    val sampler: TorchSampler | Option[TorchSampler] = None,
-    val batch_sampler: TorchSampler | Option[TorchSampler] = None,
+    val sampler: Sampler | Option[Sampler] = None,
+    val batch_sampler: Sampler | Option[Sampler] = None,
     val timeout: Float = 0.0f,
     val pin_memory: Boolean = false,
     val prefetch_factor: Option[Int] = None,
@@ -42,16 +43,17 @@ class DataLoader[ParamType <: DType: Default](
     case d: NormalTensorDataset[ParamType, ? <: DType] => d.length
   }
   val chunkSampler = sampler match {
-    case Some(sampler)   => sampler
-    case None            => new TorchSampler(dataLength)
-    case s: TorchSampler => s
+    case Some(sampler) => sampler
+    case None          => new RandomSampler(dataLength)
+    case s: Sampler    => s
   }
 
   val batchSampler = batch_sampler match {
-    case Some(sampler)   => sampler
-    case None            => new TorchSampler(dataLength)
-    case s: TorchSampler => s
+    case Some(sampler) => sampler
+    case None          => new RandomSampler(dataLength)
+    case s: Sampler    => s
   }
+
   private val options = TorchDataLoaderOptions(
     batch_size = batch_size,
     shuffle = shuffle,
@@ -98,35 +100,27 @@ class DataLoader[ParamType <: DType: Default](
     example
   }
 
-  private def createChunkDataReader(examples: Seq[Example]): ChunkDataReader = {
-    val reader = new ChunkDataReader()
-    val exampleVector = new org.bytedeco.pytorch.ExampleVector(examples*)
-    reader(exampleVector)
+  private def createExampleVectorReader(exampleSeq: Seq[Example]): ExampleVectorReader = {
+
+    val reader = new ExampleVectorReader {
+      override def exampleVec: ExampleVector = new org.bytedeco.pytorch.ExampleVector(exampleSeq*)
+    }
+//    reader(exampleSeq)
     reader
   }
 
-  private def createChunkDataset(
-      reader: ChunkDataReader,
+  private def createJavaDataset(
+      reader: ExampleVectorReader,
       examples: Seq[Example],
       options: TorchDataLoaderOptions
-  ): ChunkDataset = {
+  ): JavaDataset = {
 
     if (options.shuffle) {
       // for random sampler
-      new ChunkDataset(
-        reader,
-        chunkSampler,
-        batchSampler,
-        new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
-      )
+      new JavaDataset(reader)
     } else {
       // for sequential sampler
-      new ChunkDataset(
-        reader,
-        chunkSampler,
-        batchSampler,
-        new ChunkDatasetOptions(prefetch_factor.getOrElse(2), options.batch_size.toLong)
-      )
+      new JavaDataset(reader)
     }
 
   }
@@ -145,34 +139,33 @@ class DataLoader[ParamType <: DType: Default](
     loaderOpts.enforce_ordering().put(options.in_order)
     loaderOpts.workers().put(options.num_workers)
     loaderOpts.max_jobs().put(options.max_jobs)
-//    loaderOpts.timeout(new Milliseconds(new Seconds(options.timeout.toLong)))
+    //    loaderOpts.timeout(new Milliseconds(new Seconds(options.timeout.toLong)))
     //    loaderOpts.timeout.put(new Milliseconds(options.timeout.toLong)) //todo Javacpp Bug here timeout will make null pointer
     new ChunkRandomDataLoader(ds, loaderOpts)
   }
 
   private def createSequentialDataLoader(
       ds: JavaDataset,
-      sampler: SequentialSampler,
+//                                          sampler: SequentialSampler,
       options: TorchDataLoaderOptions
   ): SequentialDataLoader[ParamType] = {
-    SequentialDataLoader[ParamType](ds, sampler, options)
+    SequentialDataLoader[ParamType](ds, chunkSampler.asInstanceOf[SequentialSampler], options)
   }
 
   private def createRandomDataLoader(
       ds: JavaDataset,
-      sampler: TorchSampler,
       options: TorchDataLoaderOptions
   ): RandomDataLoader[ParamType] = {
-    RandomDataLoader[ParamType](ds, sampler, options)
+    RandomDataLoader[ParamType](ds, chunkSampler.asInstanceOf[RandomSampler], options)
   }
 
   private val examples = convertDatasetToExamples()
-  private val reader = createChunkDataReader(examples)
+  private val reader = createExampleVectorReader(examples)
 
-  private val nativeDataset: ChunkDataset = createChunkDataset(reader, examples, options)
-  private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
-  private lazy val nativeDataLoaderMain: ChunkRandomDataLoader =
-    createChunkRandomDataLoader(sharedBatchDataset, options)
+  private val nativeDataset: JavaDataset = createJavaDataset(reader, examples, options)
+//  private val sharedBatchDataset = createChunkSharedBatchDataset(nativeDataset)
+//  private lazy val nativeDataLoaderMain: ChunkRandomDataLoader =
+//    createChunkRandomDataLoader(sharedBatchDataset, options)
 
   private def exampleToTuple(example: Example): (Tensor[ParamType], Tensor[ParamType]) = {
     val feature = fromNative(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
@@ -185,47 +178,41 @@ class DataLoader[ParamType <: DType: Default](
   def getIteratorBuffer: mutable.Buffer[(Tensor[ParamType], Tensor[ParamType])] = {
 
     if (iteratorBuffer.length == 0) {
-      val nativeDataLoader: ChunkRandomDataLoader =
-        createChunkRandomDataLoader(sharedBatchDataset, options)
-
-      var current: ExampleIterator = nativeDataLoader.begin
-      val endIterator: ExampleIterator = nativeDataLoader.end
-      while (!current.equals(endIterator)) {
-        val example = current.access
-        val feature =
-          torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-        val target =
-          torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
-        iteratorBuffer.append(
-          (feature.reshape(feature.shape*), target.reshape(target.shape*))
-        )
-        current = current.increment()
+      if (options.shuffle || chunkSampler.isInstanceOf[RandomSampler]) {
+        val nativeDataLoader = createRandomDataLoader(nativeDataset, options)
+        var current = nativeDataLoader.begin()
+        val endIterator: ExampleVectorIterator = nativeDataLoader.end()
+        while (!current.equals(endIterator)) {
+          val example = exampleVectorToExample(current.access)
+          val feature =
+            torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+          val target =
+            torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
+          iteratorBuffer.append(
+            (feature.reshape(feature.shape*), target.reshape(target.shape*))
+          )
+          current = current.increment()
+        }
+      } else {
+        val nativeDataLoader = createSequentialDataLoader(nativeDataset, options)
+        var current = nativeDataLoader.begin()
+        val endIterator: ExampleVectorIterator = nativeDataLoader.end()
+        while (!current.equals(endIterator)) {
+          val example = exampleVectorToExample(current.access)
+          val feature =
+            torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
+          val target =
+            torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
+          iteratorBuffer.append(
+            (feature.reshape(feature.shape*), target.reshape(target.shape*))
+          )
+          current = current.increment()
+        }
       }
+
     }
     iteratorBuffer
   }
-
-//  def getIteratorBuffer2: mutable.Buffer[(Tensor[ParamType], Tensor[ParamType])] = {
-//
-//    if (iteratorBuffer.length == 0) {
-//      val nativeDataLoader: RandomDataLoader[ParamType] = createRandomDataLoader(sharedBatchDataset, sampler, options)
-//
-//      var current: ExampleIterator = nativeDataLoader.begin()
-//      val endIterator: ExampleIterator = nativeDataLoader.end()
-//      while (!current.equals(endIterator)) {
-//        val example = current.access
-//        val feature =
-//          torch.from_native(example.data()).to(dtype = implicitly[Default[ParamType]].dtype)
-//        val target =
-//          torch.from_native(example.target()).to(dtype = implicitly[Default[ParamType]].dtype)
-//        iteratorBuffer.append(
-//          (feature.reshape(feature.shape *), target.reshape(target.shape *))
-//        )
-//        current = current.increment()
-//      }
-//    }
-//    iteratorBuffer
-//  }
 
   override def iterator: Iterator[(Tensor[ParamType], Tensor[ParamType])] = {
 

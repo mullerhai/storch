@@ -644,7 +644,7 @@ private[torch] trait CreationOps {
   def linspace[D <: DType](
       start: Double,
       end: Double,
-      steps: Long,
+      steps: Int,
       dtype: D = float32,
       layout: Layout = Strided,
       device: Device = CPU,
@@ -654,7 +654,7 @@ private[torch] trait CreationOps {
       torchNative.torch_linspace(
         new Scalar(start),
         new Scalar(end),
-        steps,
+        steps.toLong,
         NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
       )
     )
@@ -663,7 +663,7 @@ private[torch] trait CreationOps {
   def logspace[D <: DType](
       start: Double,
       end: Float,
-      steps: Long,
+      steps: Int,
       base: Double = 10.0,
       dtype: D = float32,
       layout: Layout = Strided,
@@ -673,7 +673,7 @@ private[torch] trait CreationOps {
     torchNative.torch_logspace(
       new Scalar(start),
       new Scalar(end),
-      steps,
+      steps.toLong,
       base,
       NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
     )

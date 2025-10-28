@@ -3,7 +3,4 @@ package nn
 package modules
 package graph
 
-trait MessagePass[ParamDType <: DType] extends Module {
-
-
-}
+trait MessagePass[ParamDType <: DType] extends Module {}

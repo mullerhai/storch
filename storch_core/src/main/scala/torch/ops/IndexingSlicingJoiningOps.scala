@@ -20,8 +20,8 @@ package ops
 import internal.NativeConverters.*
 import org.bytedeco.pytorch.global.torch as torchNative
 import org.bytedeco.pytorch.TensorArrayRef
-import org.bytedeco.pytorch.TensorVector
-
+import org.bytedeco.pytorch.{TensorVector, TensorOptional}
+import org.bytedeco.pytorch.TensorOptionalList
 import scala.collection.mutable.ListBuffer
 
 /** Indexing, Slicing, Joining, Mutating Ops
@@ -657,6 +657,151 @@ private[torch] trait IndexingSlicingJoiningOps {
           torchNative.index_select(input.native, dim.toLong, index.to(dtype = torch.int64).native)
         )
   }
+
+  /*
+  // dim (int) – the axis along which to index
+  // index (LongTensor) – the indices of elements to scatter and add, can be either empty or of the same dimensionality as src. When empty, the operation returns self unchanged.
+  // torch.index_reduce(input: Tensor, dim: int, index: Tensor, source: Tensor, reduce: str, *, include_self: bool = True, out: Optional[Tensor]) → Tensor
+   */
+  def index_reduce[D <: DType](
+      input: Tensor[D],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D],
+      reduceMode: String,
+      includeSelf: Boolean = true
+  ): Tensor[D] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(
+          torchNative.index_reduce(
+            input.native,
+            dim.toLong,
+            index.native,
+            src.native,
+            reduceMode,
+            includeSelf
+          )
+        )
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_reduce(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            src.native,
+            reduceMode,
+            includeSelf
+          )
+        )
+
+  }
+
+  def index_reduce[D <: DType](
+      input: Tensor[D],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      src: Tensor[D],
+      reduceMode: String
+  ): Tensor[D] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(
+          torchNative.index_reduce(input.native, dim.toLong, index.native, src.native, reduceMode)
+        )
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_reduce(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            src.native,
+            reduceMode
+          )
+        )
+
+  }
+
+  /*
+   *dim (int) – dimension along which to index
+  // index (LongTensor) – indices of self tensor to fill in
+  // value (float) – the value to fill with
+  // Tensor.index_fill_(dim, index, value) → Tensor
+   */
+  def index_fill[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      value: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(torchNative.index_fill(input.native, dim.toLong, index.native, value.native))
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_fill(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            value.native
+          )
+        )
+  }
+
+  /*
+  // dim (int) – dimension along which to index
+  // index (LongTensor) – indices of tensor to select from
+  // tensor (Tensor) – the tensor containing values to copy
+  // Tensor.index_copy_(dim, index, tensor) → Tensor
+   */
+  def index_copy[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      dim: Int,
+      index: Tensor[Int64] | Tensor[Int32],
+      source: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] = {
+    index.dtype match
+      case torch.int64 =>
+        fromNative(
+          torchNative.index_copy(input.native, dim.toLong, index.native, source.native)
+        )
+      case torch.int32 =>
+        fromNative(
+          torchNative.index_copy(
+            input.native,
+            dim.toLong,
+            index.to(dtype = torch.int64).native,
+            source.native
+          )
+        )
+
+  }
+
+  /*
+  // indices (tuple of LongTensor) – tensors used to index into self.
+  // values (Tensor) – tensor of same dtype as self.
+  // accumulate (bool) – whether to accumulate into self
+  // Tensor.index_put_(indices, values, accumulate=False) → Tensor
+   */
+  def index_put[D <: DType](
+      input: Tensor[D],
+      indices: Seq[Tensor[Int64]] | Seq[Tensor[Int32]],
+      value: Tensor[D],
+      accumulate: Boolean = false
+  ): Tensor[D] = {
+    val list = new TensorOptionalList()
+    indices.zipWithIndex.map(tensorIndex => {
+      tensorIndex._1.dtype match
+        case torch.int64 => list.set(tensorIndex._2, new TensorOptional(tensorIndex._1.native))
+        case torch.int32 =>
+          list.set(
+            tensorIndex._2,
+            new TensorOptional(tensorIndex._1.to(dtype = torch.int64).native)
+          )
+    })
+    fromNative(torchNative.index_put(input.native, list, value.native, accumulate))
+
+  }
 //    fromNative(torchNative.index_select(input.native, dim.toLong, index.native))
   /** Returns a new 1-D tensor which indexes the `input` tensor according to the boolean mask `mask`
     * which is a <span class="title-ref">BoolTensor</span>.
@@ -689,11 +834,32 @@ private[torch] trait IndexingSlicingJoiningOps {
   def maskedSelect[D <: DType](input: Tensor[D], mask: Tensor[Bool]): Tensor[D] =
     fromNative(torchNative.masked_select(input.native, mask.native))
 
-  def masked_select[D1 <: DType, D2 <: DType](
+  def masked_select[D1 <: DType](
       input: Tensor[D1],
-      mask: Tensor[D2]
-  ): Tensor[Promoted[D1, D2]] =
+      mask: Tensor[Bool]
+  ): Tensor[D1] =
     fromNative(torchNative.masked_select(input.native, mask.native))
+
+  def masked_fill[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      mask: Tensor[Bool],
+      value: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.masked_fill(input.native, mask.native, value.native))
+
+  def masked_fill[D1 <: DType, S <: ScalaType](
+      input: Tensor[D1],
+      mask: Tensor[Bool],
+      value: S
+  ): Tensor[Div[D1, ScalaToDType[S]]] =
+    fromNative(torchNative.masked_fill(input.native, mask.native, value.toScalar))
+
+  def masked_scatter[D1 <: DType, D2 <: DType](
+      input: Tensor[D1],
+      mask: Tensor[Bool],
+      value: Tensor[D2]
+  ): Tensor[Promoted[D1, D2]] =
+    fromNative(torchNative.masked_scatter(input.native, mask.native, value.native))
 
   /** Moves the dimension(s) of `input` at the position(s) in `source` to the position(s) in
     * `destination`.
@@ -743,6 +909,7 @@ private[torch] trait IndexingSlicingJoiningOps {
     */
   def movedim[D <: DType](input: Tensor[D], source: Int, destination: Int): Tensor[D] =
     fromNative(torchNative.movedim(input.native, source.toLong, destination.toLong))
+
   def movedim[D <: DType](input: Tensor[D], source: Seq[Int], destination: Seq[Int]): Tensor[D] =
     fromNative(
       torchNative.movedim(input.native, source.map(_.toLong).toArray, destination.map(_.toLong)*)
