@@ -29,13 +29,13 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
   writeFileVersionEvent("brain.Event:2")
 //  writeSessionLogEvent("brain.Event:2")
 
-  def add_scalar(tag: String, scalarValue: Double | Float, globalStep: Long): Unit =
+  def add_scalar(tag: String, scalarValue: Double | Float, globalStep: Int): Unit =
     scalarValue match {
       case d: Double => addScalar(tag, d, globalStep)
       case f: Float  => addScalar(tag, f.toDouble, globalStep)
     }
 
-  def addScalar(tag: String, scalarValue: Double, globalStep: Long): Unit = {
+  def addScalar(tag: String, scalarValue: Double, globalStep: Int): Unit = {
 //    val tensorProto = TensorProto(
 //      dtype = DataType.DT_FLOAT,
 //      tensorShape = Some(TensorShapeProto()),
@@ -71,14 +71,14 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
   def add_scalar(
       mainTag: String,
       tagScalarsDict: Map[String, Double] | Map[String, Float],
-      globalStep: Long
+      globalStep: Int
   ): Unit =
     tagScalarsDict match {
       case d: Map[String, Double] => addScalars(mainTag, d, globalStep)
       case f: Map[String, Float]  => addScalars(mainTag, f.mapValues(_.toDouble).toMap, globalStep)
     }
 
-  def addScalars(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Long): Unit = {
+  def addScalars(mainTag: String, tagScalarsDict: Map[String, Double], globalStep: Int): Unit = {
     val values = tagScalarsDict.map { case (tag, value) =>
       val tensorProto = TensorProto(
         dtype = DataType.DT_FLOAT,
@@ -109,13 +109,13 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_tensors(tag: String, tensors: Seq[Double] | List[Float], globalStep: Long): Unit =
+  def add_tensors(tag: String, tensors: Seq[Double] | List[Float], globalStep: Int): Unit =
     tensors match {
       case d: Seq[Double] => addTensors(tag, d, globalStep)
       case f: List[Float] => addTensors(tag, f.map(_.toDouble), globalStep)
     }
 
-  def addTensors(tag: String, tensors: Seq[Double], globalStep: Long): Unit = {
+  def addTensors(tag: String, tensors: Seq[Double], globalStep: Int): Unit = {
     val tensorProto = TensorProto(
       dtype = DataType.DT_FLOAT,
       tensorShape = Some(
@@ -148,10 +148,10 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_audio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Long): Unit =
+  def add_audio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Int): Unit =
     addAudio(tag, audioData, sampleRate, globalStep)
 
-  def addAudio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Long): Unit = {
+  def addAudio(tag: String, audioData: Array[Byte], sampleRate: Float, globalStep: Int): Unit = {
     val audioByteString = ByteString.copyFrom(audioData)
     val audioSummary = Audio(
       sampleRate = sampleRate,
@@ -187,7 +187,7 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
       imageData: Array[Byte],
       width: Int,
       height: Int,
-      globalStep: Long
+      globalStep: Int
   ): Unit = addImage(tag, imageData, width, height, globalStep)
 
   def addImage(
@@ -195,7 +195,7 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
       imageData: Array[Byte],
       width: Int,
       height: Int,
-      globalStep: Long
+      globalStep: Int
   ): Unit = {
     val imageByteString = ByteString.copyFrom(imageData)
     val imageSummary = Image(
@@ -227,13 +227,13 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writeEvent(summary, globalStep)
   }
 
-  def add_histogram(tag: String, values: Seq[Double] | List[Float], globalStep: Long): Unit =
+  def add_histogram(tag: String, values: Seq[Double] | List[Float], globalStep: Int): Unit =
     values match {
       case d: Seq[Double] => addHistogram(tag, d, globalStep)
       case f: List[Float] => addHistogram(tag, f.map(_.toDouble), globalStep)
     }
 
-  def addHistogram(tag: String, values: Seq[Double], globalStep: Long): Unit = {
+  def addHistogram(tag: String, values: Seq[Double], globalStep: Int): Unit = {
     val minVal = values.min
     val maxVal = values.max
     val num = values.length.toLong
@@ -339,12 +339,12 @@ class SummaryWriter(logDir: String, tfEventFilePath: String = "train.tfevents") 
     writer.write(eventLogger.toByteArray)
   }
 
-  def write_event(summary: Summary, globalStep: Long): Unit = writeEvent(summary, globalStep)
+  def write_event(summary: Summary, globalStep: Int): Unit = writeEvent(summary, globalStep)
 
-  private def writeEvent(summary: Summary, globalStep: Long): Unit = {
+  private def writeEvent(summary: Summary, globalStep: Int): Unit = {
     val event = Event(
       wallTime = System.currentTimeMillis() / 1000.0,
-      step = globalStep,
+      step = globalStep.toLong,
       what = Event.What.Summary(summary)
 //      fileVersion = Some("brain.Event:2")
     )

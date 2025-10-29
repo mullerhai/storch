@@ -290,7 +290,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def scalar_type(un_used: Int*) = native.scalar_type()
 
-  def stride(dim: Long) = native.stride(dim)
+  def stride(dim: Int) = native.stride(dim.toLong)
 
   def size(dim: Long) = native.size(dim)
 
@@ -1071,7 +1071,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     )
   }
 
-  def norm[D1 <: DType, S <: ScalaType](p: S, dim: Long*): Tensor[D1] = {
+  def norm[D1 <: DType, S <: ScalaType](p: S, dim: Int*): Tensor[D1] = {
 
     val pFloat = p match {
       case m: Float  => m
@@ -1079,7 +1079,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
       case m: Int    => m.toFloat
       case m: Long   => m.toFloat
     }
-    fromNative(native.norm(ScalarOptional(toScalar(pFloat)), dim*))
+    fromNative(native.norm(ScalarOptional(toScalar(pFloat)), dim.map(_.toLong)*))
   }
 
   def norm[D1 <: DType, S <: ScalaType](
@@ -1138,8 +1138,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     *   If there are multiple maximal values in a reduced row then the indices of the first maximal
     *   value are returned.
     */
-  def max(dim: Long, keepdim: Boolean = false): TensorTuple[D] =
-    val nativeTuple = native.max(dim, keepdim)
+  def max(dim: Int, keepdim: Boolean = false): TensorTuple[D] =
+    val nativeTuple = native.max(dim.toLong, keepdim)
     TensorTuple(values = fromNative(nativeTuple.get0), indices = new Int64Tensor(nativeTuple.get1))
 
   def maximum[D2 <: DType](other: Tensor[D2]): Tensor[Promoted[D, D2]] =
@@ -1229,7 +1229,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
   def shape: Seq[Int] = size
 
   def softmax[Out <: FloatNN | Derive](
-      dim: Long,
+      dim: Int,
       dtype: Out = derive
   ): Tensor[DTypeOrDeriveFromTensor[D, Out]] = F.softmax(input = this, dim = dim, dtype = dtype)
 
@@ -1854,23 +1854,23 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def to_sparse: Tensor[D] = fromNative(native.to_sparse)
 
-  def to_sparse_csr(dense_dim: Long): Tensor[D] = fromNative(
-    native.to_sparse_csr(LongOptional(dense_dim))
+  def to_sparse_csr(dense_dim: Int): Tensor[D] = fromNative(
+    native.to_sparse_csr(LongOptional(dense_dim.toLong))
   )
 
-  def to_sparse_csc(dense_dim: Long): Tensor[D] = fromNative(
-    native.to_sparse_csc(LongOptional(dense_dim))
+  def to_sparse_csc(dense_dim: Int): Tensor[D] = fromNative(
+    native.to_sparse_csc(LongOptional(dense_dim.toLong))
   )
 
-  def to_sparse_bsr(blockSize: Seq[Long], dense_dim: Long): Tensor[D] = fromNative(
-    native.to_sparse_bsr(blockSize.toArray, LongOptional(dense_dim))
+  def to_sparse_bsr(blockSize: Seq[Long], dense_dim: Int): Tensor[D] = fromNative(
+    native.to_sparse_bsr(blockSize.toArray, LongOptional(dense_dim.toLong))
   )
 
-  def to_sparse_bsc(blockSize: Seq[Long], dense_dim: Long): Tensor[D] = fromNative(
-    native.to_sparse_bsc(blockSize.toArray, LongOptional(dense_dim))
+  def to_sparse_bsc(blockSize: Seq[Long], dense_dim: Int): Tensor[D] = fromNative(
+    native.to_sparse_bsc(blockSize.toArray, LongOptional(dense_dim.toLong))
   )
 
-  def to_sparse_coo(sparse_dim: Long): Tensor[D] = fromNative(native.to_sparse(sparse_dim))
+  def to_sparse_coo(sparse_dim: Int): Tensor[D] = fromNative(native.to_sparse(sparse_dim.toLong))
 
   def to_dense(un_used: Int*): Tensor[D] = fromNative(native.to_dense)
 
@@ -3284,8 +3284,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     fromNative(native.repeat_interleave(repeats.native, dimOpt, outputSizeOpt))
   }
 
-  def repeat_interleave[D1 <: DType](repeats: Long, dim: Long): Tensor[D1] =
-    fromNative(native.repeat_interleave(repeats, new LongOptional(dim), new LongOptional()))
+  def repeat_interleave[D1 <: DType](repeats: Long, dim: Int): Tensor[D1] =
+    fromNative(native.repeat_interleave(repeats, new LongOptional(dim.toLong), new LongOptional()))
 
   def repeat_interleave[D1 <: DType](
       repeats: Long,
@@ -3744,10 +3744,10 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def std(unbiased: Boolean): Tensor[D] = fromNative(native.std(unbiased))
 
-  def prod_with_dim(dim: Long, keepdim: Boolean = false, dtype: ScalarTypeOptional): Tensor[D] =
-    fromNative(native.prod(dim, keepdim, dtype))
+  def prod_with_dim(dim: Int, keepdim: Boolean = false, dtype: ScalarTypeOptional): Tensor[D] =
+    fromNative(native.prod(dim.toLong, keepdim, dtype))
 
-  def prod(dim: Long): Tensor[D] = fromNative(native.prod(dim))
+  def prod(dim: Int): Tensor[D] = fromNative(native.prod(dim.toLong))
 
   def prod(un_used: Int*): Tensor[D] = fromNative(native.prod())
 
@@ -5078,7 +5078,7 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         fromNative(native.gather(dim.toLong, index.to(dtype = torch.int64).native, sparse_grad))
   }
 
-  def gather(dim: Long, index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
+  def gather(dim: Int, index: Tensor[Int64] | Tensor[Int32]): Tensor[D] = {
     index.dtype match
       case torch.int64 => fromNative(native.gather(dim.toLong, index.native))
       case torch.int32 =>
@@ -5249,12 +5249,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
 
   def digamma: Tensor[D] = fromNative(native.digamma())
 
-  def polygamma_(n: Long): this.type = {
-    native.polygamma_(n)
+  def polygamma_(n: Int): this.type = {
+    native.polygamma_(n.toLong)
     this
   }
 
-  def polygamma(n: Long): Tensor[D] = fromNative(native.polygamma(n))
+  def polygamma(n: Int): Tensor[D] = fromNative(native.polygamma(n.toLong))
 
   def erfinv_(): this.type = {
     native.erfinv_()
@@ -5455,12 +5455,12 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.remainder(other.native)
   )
 
-  def renorm_[S <: ScalaType](p: S, dim: Long, maxnorm: S): this.type = {
-    native.renorm_(toScalar(p), dim, toScalar(maxnorm))
+  def renorm_[S <: ScalaType](p: S, dim: Int, maxnorm: S): this.type = {
+    native.renorm_(toScalar(p), dim.toLong, toScalar(maxnorm))
     this
   }
-  def renorm_(p: Float, dim: Long, maxnorm: Float): this.type = {
-    native.renorm_(toScalar(p), dim, toScalar(maxnorm))
+  def renorm_(p: Float, dim: Int, maxnorm: Float): this.type = {
+    native.renorm_(toScalar(p), dim.toLong, toScalar(maxnorm))
     this
   }
 
@@ -5566,8 +5566,8 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     (s, t)
   }
 
-  def unfold(dimension: Long, size: Long, step: Long): Tensor[D] = fromNative(
-    native.unfold(dimension, size, step)
+  def unfold(dimension: Int, size: Int, step: Int): Tensor[D] = fromNative(
+    native.unfold(dimension.toLong, size.toLong, step.toLong)
   )
   def float_power[D1 <: DType](exponent: Tensor[D1]): Tensor[Promoted[D1, D]] = fromNative(
     native.float_power(exponent.native)
@@ -5581,13 +5581,13 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
     native.pow(exponent.native)
   )
 
-  def renorm(p: Float, dim: Long, maxnorm: Float): Tensor[D] = fromNative(
-    native.renorm(toScalar(p), dim, toScalar(maxnorm))
+  def renorm(p: Float, dim: Int, maxnorm: Float): Tensor[D] = fromNative(
+    native.renorm(toScalar(p), dim.toLong, toScalar(maxnorm))
   )
 
-  def renorm[S <: ScalaType](p: S, dim: Long, maxnorm: S): Tensor[Promoted[D, ScalaToDType[S]]] =
+  def renorm[S <: ScalaType](p: S, dim: Int, maxnorm: S): Tensor[Promoted[D, ScalaToDType[S]]] =
     fromNative(
-      native.renorm(toScalar(p), dim, toScalar(maxnorm))
+      native.renorm(toScalar(p), dim.toLong, toScalar(maxnorm))
     )
 
   def alias(un_used: Int*): Tensor[D] = fromNative(native.alias())
@@ -5687,9 +5687,9 @@ sealed abstract class Tensor[D <: DType]( /* private[torch]  */ val native: pyto
         case _ =>
           val innerSummary = {
             def summarizeSlice(index: Int) = summarize(tensor(index), maxEntries)
-            val sliceLen = tensor.size(0).toInt
+            val sliceLen = tensor.size(0)
             if sliceLen <= math.max(maxEntries, 6) then
-              for (i <- 0 until sliceLen.toInt) yield summarizeSlice(i)
+              for (i <- 0 until sliceLen) yield summarizeSlice(i)
             else
               val start = for (i <- 0 until maxEntries / 2) yield summarizeSlice(i)
               val end = for (i <- sliceLen - maxEntries / 2 until sliceLen) yield summarizeSlice(i)

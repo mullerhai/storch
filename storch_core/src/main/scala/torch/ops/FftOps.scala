@@ -25,40 +25,40 @@ import scala.reflect.ClassTag
 
 trait FftOps {
 
-  def hamming_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
-    torchNative.hamming_window(window_length)
+  def hamming_window[D <: DType](window_length: Int): Tensor[D] = fromNative(
+    torchNative.hamming_window(window_length.toLong)
   )
 
   // torch.hann_window(window_length, periodic=True, *, dtype=None, layout=torch.strided, device=None, requires_grad=False) → Tensor
-  def hann_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
-    torchNative.hann_window(window_length)
+  def hann_window[D <: DType](window_length: Int): Tensor[D] = fromNative(
+    torchNative.hann_window(window_length.toLong)
   )
 
-  def kaiser_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
-    torchNative.kaiser_window(window_length)
+  def kaiser_window[D <: DType](window_length: Int): Tensor[D] = fromNative(
+    torchNative.kaiser_window(window_length.toLong)
   )
 
-  def bartlett_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
-    torchNative.bartlett_window(window_length)
+  def bartlett_window[D <: DType](window_length: Int): Tensor[D] = fromNative(
+    torchNative.bartlett_window(window_length.toLong)
   )
 
-  def blackman_window[D <: DType](window_length: Long): Tensor[D] = fromNative(
-    torchNative.blackman_window(window_length)
+  def blackman_window[D <: DType](window_length: Int): Tensor[D] = fromNative(
+    torchNative.blackman_window(window_length.toLong)
   )
 
-  def hamming_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
-    torchNative.hamming_window(window_length, periodic)
+  def hamming_window[D <: DType](window_length: Int, periodic: Boolean): Tensor[D] = fromNative(
+    torchNative.hamming_window(window_length.toLong, periodic)
   )
 
   def hamming_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       alpha: Double,
       beta: Double
-  ): Tensor[D] = fromNative(torchNative.hamming_window(window_length, periodic, alpha, beta))
+  ): Tensor[D] = fromNative(torchNative.hamming_window(window_length.toLong, periodic, alpha, beta))
 
   def hamming_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       alpha: Double = 0.54d,
       beta: Double = 0.46d,
@@ -69,16 +69,16 @@ trait FftOps {
   ): Tensor[D] =
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
     fromNative(
-      torchNative.hamming_window(window_length, periodic, alpha, beta, options)
+      torchNative.hamming_window(window_length.toLong, periodic, alpha, beta, options)
     )
 
   // torch.hann_window(window_length, periodic=True, *, dtype=None, layout=torch.strided, device=None, requires_grad=False) → Tensor
-  def hann_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
-    torchNative.hann_window(window_length, periodic)
+  def hann_window[D <: DType](window_length: Int, periodic: Boolean): Tensor[D] = fromNative(
+    torchNative.hann_window(window_length.toLong, periodic)
   )
 
   def hann_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       dtype: D,
       device: Device = CPU,
@@ -86,18 +86,18 @@ trait FftOps {
       requires_grad: Boolean = false
   ): Tensor[D] =
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
-    fromNative(torchNative.hann_window(window_length, periodic, options))
+    fromNative(torchNative.hann_window(window_length.toLong, periodic, options))
 
-  def kaiser_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
-    torchNative.kaiser_window(window_length, periodic)
+  def kaiser_window[D <: DType](window_length: Int, periodic: Boolean): Tensor[D] = fromNative(
+    torchNative.kaiser_window(window_length.toLong, periodic)
   )
 
-  def blackman_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
-    torchNative.blackman_window(window_length, periodic)
+  def blackman_window[D <: DType](window_length: Int, periodic: Boolean): Tensor[D] = fromNative(
+    torchNative.blackman_window(window_length.toLong, periodic)
   )
 
   def blackman_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       dtype: D,
       device: Device = CPU,
@@ -105,16 +105,16 @@ trait FftOps {
       requires_grad: Boolean = false
   ): Tensor[D] =
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
-    fromNative(torchNative.blackman_window(window_length, periodic, options))
+    fromNative(torchNative.blackman_window(window_length.toLong, periodic, options))
 
   def kaiser_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       beta: Double
-  ): Tensor[D] = fromNative(torchNative.kaiser_window(window_length, periodic, beta))
+  ): Tensor[D] = fromNative(torchNative.kaiser_window(window_length.toLong, periodic, beta))
 
   def kaiser_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       beta: Double = 12.0d,
       dtype: D,
@@ -123,14 +123,14 @@ trait FftOps {
       requires_grad: Boolean = false
   ): Tensor[D] =
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
-    fromNative(torchNative.kaiser_window(window_length, periodic, beta, options))
+    fromNative(torchNative.kaiser_window(window_length.toLong, periodic, beta, options))
 
-  def bartlett_window[D <: DType](window_length: Long, periodic: Boolean): Tensor[D] = fromNative(
-    torchNative.bartlett_window(window_length, periodic)
+  def bartlett_window[D <: DType](window_length: Int, periodic: Boolean): Tensor[D] = fromNative(
+    torchNative.bartlett_window(window_length.toLong, periodic)
   )
 
   def bartlett_window[D <: DType](
-      window_length: Long,
+      window_length: Int,
       periodic: Boolean,
       dtype: D,
       device: Device = CPU,
@@ -138,7 +138,7 @@ trait FftOps {
       requires_grad: Boolean = false
   ): Tensor[D] =
     val options = NativeConverters.tensorOptions(dtype, layout, device, requires_grad)
-    fromNative(torchNative.bartlett_window(window_length, periodic, options))
+    fromNative(torchNative.bartlett_window(window_length.toLong, periodic, options))
 
   def istft[D <: DType](input: Tensor[D], n_fft: Long): Tensor[D] = fromNative(
     torchNative.istft(input.native, n_fft)

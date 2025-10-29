@@ -159,7 +159,7 @@ private[torch] trait BLASOps {
 
   def log_softmax[In <: DType, Out <: FloatNN | Derive](
       input: Tensor[In],
-      dim: Long,
+      dim: Int,
       dtype: Out = derive
   ): Tensor[DTypeOrDeriveFromTensor[In, Out]] =
     val derivedDType = dtype match
@@ -168,7 +168,7 @@ private[torch] trait BLASOps {
     val nativeDType =
       if dtype == input.dtype then ScalarTypeOptional()
       else ScalarTypeOptional(derivedDType.toScalarType)
-    fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
+    fromNative(torchNative.log_softmax(input.native, dim.toLong, nativeDType))
 
   def segment_reduce[D <: DType](input: Tensor[D], reduceMode: String): Tensor[D] = {
     fromNative(torchNative.segment_reduce(input.native, reduceMode))
@@ -304,8 +304,8 @@ private[torch] trait BLASOps {
       )
     )
 
-  def renorm[D1 <: DType](t1: Tensor[D1], p: Double, maxNorm: Double, dim: Long): Tensor[D1] =
-    fromNative(torchNative.renorm(t1.native, toScalar(p), dim, toScalar(maxNorm)))
+  def renorm[D1 <: DType](t1: Tensor[D1], p: Double, maxNorm: Double, dim: Int): Tensor[D1] =
+    fromNative(torchNative.renorm(t1.native, toScalar(p), dim.toLong, toScalar(maxNorm)))
 
   def renorm[D1 <: DType](t1: Tensor[D1], p: Float, dim: Int, maxNorm: Float): Tensor[D1] =
     fromNative(torchNative.renorm(t1.native, toScalar(p), dim.toLong, toScalar(maxNorm)))
@@ -1583,7 +1583,7 @@ private[torch] trait BLASOps {
   def norm[D1 <: FloatNN | BFloat16, S <: ScalaType](
       t1: Tensor[D1],
       p: S,
-      dim: Long*
+      dim: Int*
   ): Tensor[D1] = {
     val pFloat = p match {
       case m: Float  => m
@@ -1591,7 +1591,7 @@ private[torch] trait BLASOps {
       case m: Int    => m.toFloat
       case m: Long   => m.toFloat
     }
-    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(pFloat)), dim*))
+    fromNative(torchNative.norm(t1.native, ScalarOptional(toScalar(pFloat)), dim.map(_.toLong)*))
   }
 
   def norm[D1 <: FloatNN | BFloat16, S <: ScalaType](
@@ -1795,13 +1795,13 @@ private[torch] trait BLASOps {
     fromNative(torchNative.repeat_interleave(t1.native, repeats, dimOpt, outputSizeOpt))
   }
 
-  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Long, dim: Long): Tensor[D1] =
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Int, dim: Int): Tensor[D1] =
     fromNative(
-      torchNative.repeat_interleave(t1.native, repeats, new LongOptional(dim), new LongOptional())
+      torchNative.repeat_interleave(t1.native, repeats.toLong, new LongOptional(dim.toLong), new LongOptional())
     )
 
-  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Long): Tensor[D1] =
-    fromNative(torchNative.repeat_interleave(t1.native, repeats))
+  def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Int): Tensor[D1] =
+    fromNative(torchNative.repeat_interleave(t1.native, repeats.toLong))
 
   def repeat_interleave[D1 <: DType](t1: Tensor[D1], repeats: Tensor[Int64]): Tensor[D1] =
     fromNative(torchNative.repeat_interleave(t1.native, repeats.native))
@@ -2336,8 +2336,8 @@ private[torch] trait BLASOps {
   def triu_indices[D1 <: DType](row: Long, col: Long): Tensor[D1] =
     fromNative(torchNative.triu_indices(row, col))
 
-  def trapezoid[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Long): Tensor[D1] =
-    fromNative(torchNative.trapezoid(t1.native, t2.native, dim))
+  def trapezoid[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Int): Tensor[D1] =
+    fromNative(torchNative.trapezoid(t1.native, t2.native, dim.toLong))
 
   // torch.isin(elements, test_elements, *, assume_unique=False, invert=False)
   def isin[D1 <: DType](elements: Tensor[D1], test_elements: Tensor[D1]): Tensor[D1] =
@@ -2380,8 +2380,8 @@ private[torch] trait BLASOps {
   //  def trapezoid[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1]): Tensor[D1] =
 //    fromNative(torchNative.trapezoid(t1.native, t2.native))
 
-  def trapezoid[D1 <: DType, S <: ScalaType](t1: Tensor[D1], t2: S, dim: Long): Tensor[D1] =
-    fromNative(torchNative.trapezoid(t1.native, toScalar(t2), dim))
+  def trapezoid[D1 <: DType, S <: ScalaType](t1: Tensor[D1], t2: S, dim: Int): Tensor[D1] =
+    fromNative(torchNative.trapezoid(t1.native, toScalar(t2), dim.toLong))
 
   def trapezoid[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.trapezoid(t1.native))
@@ -2389,11 +2389,11 @@ private[torch] trait BLASOps {
   def trapz[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.trapz(t1.native))
 
-  def trapz[D1 <: DType](t1: Tensor[D1], xy: Double, dim: Long): Tensor[D1] =
-    fromNative(torchNative.trapz(t1.native, xy, dim))
+  def trapz[D1 <: DType](t1: Tensor[D1], xy: Double, dim: Int): Tensor[D1] =
+    fromNative(torchNative.trapz(t1.native, xy, dim.toLong))
 
-  def trapz[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Long): Tensor[D1] =
-    fromNative(torchNative.trapz(t1.native, t2.native, dim))
+  def trapz[D1 <: DType](t1: Tensor[D1], t2: Tensor[D1], dim: Int): Tensor[D1] =
+    fromNative(torchNative.trapz(t1.native, t2.native, dim.toLong))
 
   def tril_raw[D1 <: DType](t1: Tensor[D1]): Tensor[D1] =
     fromNative(torchNative.tril(t1.native))

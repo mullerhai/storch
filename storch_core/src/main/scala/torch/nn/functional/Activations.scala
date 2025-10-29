@@ -46,7 +46,7 @@ private[torch] trait Activations {
     */
   def logSoftmax[In <: DType, Out <: FloatNN | Derive](
       input: Tensor[In],
-      dim: Long,
+      dim: Int,
       dtype: Out = derive
   ): Tensor[DTypeOrDeriveFromTensor[In, Out]] =
     val derivedDType = dtype match
@@ -55,11 +55,11 @@ private[torch] trait Activations {
     val nativeDType =
       if dtype == input.dtype then ScalarTypeOptional()
       else ScalarTypeOptional(derivedDType.toScalarType)
-    fromNative(torchNative.log_softmax(input.native, dim, nativeDType))
+    fromNative(torchNative.log_softmax(input.native, dim.toLong, nativeDType))
 
   def log_softmax[In <: DType, Out <: FloatNN | Derive](
       input: Tensor[In],
-      dim: Long,
+      dim: Int,
       dtype: Out = derive
   ) = logSoftmax(input, dim, dtype)
 
@@ -94,7 +94,7 @@ private[torch] trait Activations {
     */
   def softmax[In <: DType, Out <: FloatNN | Derive](
       input: Tensor[In],
-      dim: Long,
+      dim: Int,
       dtype: Out = derive
   ): Tensor[DTypeOrDeriveFromTensor[In, Out]] =
     val derivedDType = dtype match
@@ -103,7 +103,7 @@ private[torch] trait Activations {
     val nativeDType =
       if dtype == input.dtype then ScalarTypeOptional()
       else ScalarTypeOptional(derivedDType.toScalarType)
-    fromNative(torchNative.softmax(input.native, dim, nativeDType))
+    fromNative(torchNative.softmax(input.native, dim.toLong, nativeDType))
 
   def relu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.relu_(input.native))
 
@@ -160,8 +160,8 @@ private[torch] trait Activations {
 
   def selu_[D <: DType](input: Tensor[D]): Tensor[D] = fromNative(torchNative.selu_(input.native))
 
-  def glu[D <: DType](input: Tensor[D], dim: Long): Tensor[D] = fromNative(
-    torchNative.glu(input.native, dim)
+  def glu[D <: DType](input: Tensor[D], dim: Int): Tensor[D] = fromNative(
+    torchNative.glu(input.native, dim.toLong)
   )
 
   def gelu[D <: DType](input: Tensor[D], approximate: String = "none"): Tensor[D] = {
@@ -193,8 +193,8 @@ private[torch] trait Activations {
     torchNative.softsign(input.native)
   )
 
-  def softmin[D <: DType](input: Tensor[D], dim: Long, dtype: DType): Tensor[D] = {
-    val options = SoftminFuncOptions(dim)
+  def softmin[D <: DType](input: Tensor[D], dim: Int, dtype: DType): Tensor[D] = {
+    val options = SoftminFuncOptions(dim.toLong)
     options.dtype().put(ScalarTypeOptional(dtype.toScalarType))
     fromNative(
       torchNative.softmin(input.native, options)

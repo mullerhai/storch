@@ -252,9 +252,9 @@ private[torch] trait CreationOps {
   }
 // def zeros[D <: DType](size: Int*): Tensor[Float32] =
 //   zeros[D](size.toSeq)
-  def cumsum[D <: DType](input: Tensor[D], dim: Long, dtype: D = float32): Tensor[D] =
+  def cumsum[D <: DType](input: Tensor[D], dim: Int, dtype: D = float32): Tensor[D] =
     fromNative(
-      torchNative.cumsum(input.native, dim, ScalarTypeOptional(dtype.toScalarType))
+      torchNative.cumsum(input.native, dim.toLong, ScalarTypeOptional(dtype.toScalarType))
     )
 
   /** Returns a tensor filled with the scalar value `0`, with the shape defined by the variable
